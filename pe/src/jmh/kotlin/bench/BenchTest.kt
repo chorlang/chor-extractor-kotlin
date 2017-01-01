@@ -3,6 +3,7 @@ package bench
 import ce.ChoreographyExtraction
 import org.openjdk.jmh.annotations.*
 
+
 @BenchmarkMode(Mode.All)
 @Warmup(iterations = 1)
 @Measurement(iterations = 1, batchSize = 10)

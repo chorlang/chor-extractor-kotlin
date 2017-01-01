@@ -63,13 +63,13 @@ compileKotlin {
     }
 }
 
-/*compileTestKotlin {
+compileTestKotlin {
     kotlinOptions {
         jvmTarget = kotlin_jvm_target
     }
-}*/
+}
 
-mainClassName = "epp.NetworkProjection"
+mainClassName = "np.NetworkProjection"
 
 task singleJar(type: Jar) {
     manifest {
