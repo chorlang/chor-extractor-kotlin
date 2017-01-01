@@ -69,8 +69,8 @@ class MergingProjection() {
         }
 
         private fun merge(left: ConditionSP, right: ConditionSP): SPNode {
-            val leftCondition = merge(left.thenBehaviour, left.thenBehaviour) as Behaviour
-            val rightCondition = merge(right.elseBehaviour, right.elseBehaviour) as Behaviour
+            val leftCondition = merge(left.thenBehaviour, left.elseBehaviour) as Behaviour
+            val rightCondition = merge(right.thenBehaviour, right.elseBehaviour) as Behaviour
             if (left.expression != right.expression)
                 throw MergingException("Can't merge conditions " + leftCondition.toString() + " and " + rightCondition.toString())
 
