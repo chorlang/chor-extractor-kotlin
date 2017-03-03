@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/corechor.iml" filepath="$PROJECT_DIR$/.idea/modules/corechor.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/corechor_main.iml" filepath="$PROJECT_DIR$/.idea/modules/corechor_main.iml" group="corechor" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/corechor_test.iml" filepath="$PROJECT_DIR$/.idea/modules/corechor_test.iml" group="corechor" />
+    </modules>
+  </component>
+</project>
