@@ -24,7 +24,7 @@
  THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-lexer grammar CommonLexerRules;
+grammar CommonLexerRules;
 
 IntegerLiteral
     :   DecimalIntegerLiteral
@@ -253,28 +253,32 @@ DEF : 'def';
 IN : 'in';
 
 
-Expression : Value | Wildcard;
+Expression : Identifier
+    |   Value
+    |   Wildcard
+    ;
 
-Process : 'a'..'z';
+Process : Identifier; // previously 'a'..'z';
 
-Procedure : 'A'..'Z';
+Procedure : Identifier; // previously 'A'..'Z';
 
 Label : StringLiteral;
 
-Value : IntegerLiteral
-    |   FloatingPointLiteral
+Value : INT
     |   CharacterLiteral
     |   StringLiteral
     |   BooleanLiteral
     ;
 
+INT     : [0-9]+ ;
+
 Terminate : 'stop';
 Parallel : '|';
-Wildcard : '*';
+Wildcard : 'this';
 Arrow : '->';
 Send : '!';
 Receive : '?';
 Select : '+';
 Choose : '&';
 Has : ':';
-Continue : ';'
+Continue : ';';

@@ -15,7 +15,16 @@ dependencies {
     antlr "org.antlr:antlr4:4.5" // use ANTLR version 4
 }
 
+sourceSets {
+    main {
+        antlr {
+            include "Network.g4"
+        }
+    }
+}
+
 generateGrammarSource {
+    outputDirectory = file("src/main/antlr-gen")
     maxHeapSize = "64m"
     arguments += ["-visitor", "-long-messages"]
 }
