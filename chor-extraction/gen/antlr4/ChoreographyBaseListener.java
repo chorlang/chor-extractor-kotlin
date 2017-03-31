@@ -64,6 +64,18 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterCommunication(ChoreographyParser.CommunicationContext ctx) { }
 	/**
 	 * {@inheritDoc}

@@ -5,14 +5,21 @@ import antlr4.ChoreographyParser;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ChorVisitor extends ChoreographyBaseVisitor< Void > {
 
-    Map<String, String> proc = new HashMap<>();
+    private HashMap<String, String> proc = new HashMap<>();
+    private HashMap<String, String> ends = new HashMap<>();
+    private HashMap<String, List<String>> procedures = new HashMap<>();
 
-    public ChorVisitor (HashMap proc){
-        this.proc = proc;
+    public ChorVisitor(Set<String> processes, HashMap<String, List<String>> procedures){
+        for (String s : processes) {
+            proc.put(s, s + " has ");
+            ends.put(s, ""); //create the copy of processes to store endings of operations, e.g "}" in p&{l: C} when C is not calculated yet
+        }
     }
 
     @Override
@@ -45,7 +52,7 @@ public class ChorVisitor extends ChoreographyBaseVisitor< Void > {
     @Override public Void visitProcess(ChoreographyParser.ProcessContext ctx) {
         System.out.println("Process");
         //String process = ctx.getText();
-        //proc.put(process, process);
+        //processes.put(process, process);
         visitChildren(ctx);
         return null;
     }
@@ -66,7 +73,12 @@ public class ChorVisitor extends ChoreographyBaseVisitor< Void > {
     public Void visitTerminal( TerminalNode node ) {
         if (node.getText().equals("stop")){
             for(Map.Entry<String,String> entry: proc.entrySet()) {
-                proc.put(entry.getKey(), entry.getValue() + "stop");
+                String key = entry.getKey();
+                if (ends.containsKey(key)){
+                    proc.put(key, entry.getValue() + "stop" + ends.get(key));
+                } else {
+                    proc.put(key, entry.getValue() + "stop");
+                }
             }
         }
         System.out.println( this.toString() + " | Visiting terminal " + node.getText() );
@@ -88,6 +100,7 @@ public class ChorVisitor extends ChoreographyBaseVisitor< Void > {
 
     @Override public Void visitProcedureInvocation(ChoreographyParser.ProcedureInvocationContext ctx) {
         System.out.println("ProcedureInvocation");
+
         visitChildren(ctx);
         return null;
     }
@@ -118,8 +131,10 @@ public class ChorVisitor extends ChoreographyBaseVisitor< Void > {
         String s = new StringBuilder().append(receivingProcess).append("+").append(label).append(";").toString();
         proc.put(sendingProcess, proc.get(sendingProcess) + s);
 
-        String r = new StringBuilder().append(sendingProcess).append("&{").append("};").toString();
+        String r = new StringBuilder().append(sendingProcess).append("&{").append(label).append(": ").toString();
         proc.put(receivingProcess, proc.get(receivingProcess) + r);
+
+        putToEnds(receivingProcess, "}");
 
         visitChildren(ctx);
         return null;
@@ -139,8 +154,19 @@ public class ChorVisitor extends ChoreographyBaseVisitor< Void > {
         return null;
     }
 
-    public HashMap<String,String> returnChoreography(){
-        return (HashMap<String, String>) proc;
+    private void putToEnds(String processName, String thingToPut){
+        ends.put(processName, thingToPut + ends.get(processName));
     }
 
+    public HashMap<String, String> getProc() {
+        return proc;
+    }
+
+    public HashMap<String, String> getEnds() {
+        return ends;
+    }
+
+    public HashMap<String, List<String>> getProcedures() {
+        return procedures;
+    }
 }

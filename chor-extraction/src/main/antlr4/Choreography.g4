@@ -12,9 +12,11 @@ choreography : communication Continue choreography
 
 condition : 'if' process DOT expr 'then' choreography 'else' choreography;
 
-procedureDefinition: 'def' procedure ASSIGN choreography 'in' choreography;
+procedureDefinition: 'def' procedure ASSIGN internal_choreography 'in' choreography;
 
 procedureInvocation: procedure;
+
+internal_choreography : choreography;
 
 communication : send | choose;
 

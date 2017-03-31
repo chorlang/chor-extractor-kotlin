@@ -29,13 +29,14 @@ public class ChoreographyParser extends Parser {
 		Select=60, Choose=61, Continue=62;
 	public static final int
 		RULE_choreography = 0, RULE_condition = 1, RULE_procedureDefinition = 2, 
-		RULE_procedureInvocation = 3, RULE_communication = 4, RULE_send = 5, RULE_choose = 6, 
-		RULE_sendingProcess = 7, RULE_receivingProcess = 8, RULE_expr = 9, RULE_value = 10, 
-		RULE_procedure = 11, RULE_process = 12, RULE_label = 13;
+		RULE_procedureInvocation = 3, RULE_internal_choreography = 4, RULE_communication = 5, 
+		RULE_send = 6, RULE_choose = 7, RULE_sendingProcess = 8, RULE_receivingProcess = 9, 
+		RULE_expr = 10, RULE_value = 11, RULE_procedure = 12, RULE_process = 13, 
+		RULE_label = 14;
 	public static final String[] ruleNames = {
 		"choreography", "condition", "procedureDefinition", "procedureInvocation", 
-		"communication", "send", "choose", "sendingProcess", "receivingProcess", 
-		"expr", "value", "procedure", "process", "label"
+		"internal_choreography", "communication", "send", "choose", "sendingProcess", 
+		"receivingProcess", "expr", "value", "procedure", "process", "label"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
@@ -148,45 +149,45 @@ public class ChoreographyParser extends Parser {
 		ChoreographyContext _localctx = new ChoreographyContext(_ctx, getState());
 		enterRule(_localctx, 0, RULE_choreography);
 		try {
-			setState(36);
+			setState(38);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,0,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(28);
-				communication();
-				setState(29);
-				match(Continue);
 				setState(30);
+				communication();
+				setState(31);
+				match(Continue);
+				setState(32);
 				choreography();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(32);
+				setState(34);
 				condition();
 				}
 				break;
 			case 3:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(33);
+				setState(35);
 				procedureInvocation();
 				}
 				break;
 			case 4:
 				enterOuterAlt(_localctx, 4);
 				{
-				setState(34);
+				setState(36);
 				procedureDefinition();
 				}
 				break;
 			case 5:
 				enterOuterAlt(_localctx, 5);
 				{
-				setState(35);
+				setState(37);
 				match(TERMINATE);
 				}
 				break;
@@ -242,21 +243,21 @@ public class ChoreographyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(38);
-			match(T__0);
-			setState(39);
-			process();
 			setState(40);
-			match(DOT);
+			match(T__0);
 			setState(41);
-			expr();
+			process();
 			setState(42);
-			match(T__1);
+			match(DOT);
 			setState(43);
-			choreography();
+			expr();
 			setState(44);
-			match(T__2);
+			match(T__1);
 			setState(45);
+			choreography();
+			setState(46);
+			match(T__2);
+			setState(47);
 			choreography();
 			}
 		}
@@ -276,11 +277,11 @@ public class ChoreographyParser extends Parser {
 			return getRuleContext(ProcedureContext.class,0);
 		}
 		public TerminalNode ASSIGN() { return getToken(ChoreographyParser.ASSIGN, 0); }
-		public List<ChoreographyContext> choreography() {
-			return getRuleContexts(ChoreographyContext.class);
+		public Internal_choreographyContext internal_choreography() {
+			return getRuleContext(Internal_choreographyContext.class,0);
 		}
-		public ChoreographyContext choreography(int i) {
-			return getRuleContext(ChoreographyContext.class,i);
+		public ChoreographyContext choreography() {
+			return getRuleContext(ChoreographyContext.class,0);
 		}
 		public ProcedureDefinitionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
@@ -307,17 +308,17 @@ public class ChoreographyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(47);
-			match(T__3);
-			setState(48);
-			procedure();
 			setState(49);
-			match(ASSIGN);
+			match(T__3);
 			setState(50);
-			choreography();
+			procedure();
 			setState(51);
-			match(T__4);
+			match(ASSIGN);
 			setState(52);
+			internal_choreography();
+			setState(53);
+			match(T__4);
+			setState(54);
 			choreography();
 			}
 		}
@@ -361,8 +362,52 @@ public class ChoreographyParser extends Parser {
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(54);
+			setState(56);
 			procedure();
+			}
+		}
+		catch (RecognitionException re) {
+			_localctx.exception = re;
+			_errHandler.reportError(this, re);
+			_errHandler.recover(this, re);
+		}
+		finally {
+			exitRule();
+		}
+		return _localctx;
+	}
+
+	public static class Internal_choreographyContext extends ParserRuleContext {
+		public ChoreographyContext choreography() {
+			return getRuleContext(ChoreographyContext.class,0);
+		}
+		public Internal_choreographyContext(ParserRuleContext parent, int invokingState) {
+			super(parent, invokingState);
+		}
+		@Override public int getRuleIndex() { return RULE_internal_choreography; }
+		@Override
+		public void enterRule(ParseTreeListener listener) {
+			if ( listener instanceof ChoreographyListener ) ((ChoreographyListener)listener).enterInternal_choreography(this);
+		}
+		@Override
+		public void exitRule(ParseTreeListener listener) {
+			if ( listener instanceof ChoreographyListener ) ((ChoreographyListener)listener).exitInternal_choreography(this);
+		}
+		@Override
+		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
+			if ( visitor instanceof ChoreographyVisitor ) return ((ChoreographyVisitor<? extends T>)visitor).visitInternal_choreography(this);
+			else return visitor.visitChildren(this);
+		}
+	}
+
+	public final Internal_choreographyContext internal_choreography() throws RecognitionException {
+		Internal_choreographyContext _localctx = new Internal_choreographyContext(_ctx, getState());
+		enterRule(_localctx, 8, RULE_internal_choreography);
+		try {
+			enterOuterAlt(_localctx, 1);
+			{
+			setState(58);
+			choreography();
 			}
 		}
 		catch (RecognitionException re) {
@@ -404,22 +449,22 @@ public class ChoreographyParser extends Parser {
 
 	public final CommunicationContext communication() throws RecognitionException {
 		CommunicationContext _localctx = new CommunicationContext(_ctx, getState());
-		enterRule(_localctx, 8, RULE_communication);
+		enterRule(_localctx, 10, RULE_communication);
 		try {
-			setState(58);
+			setState(62);
 			_errHandler.sync(this);
 			switch ( getInterpreter().adaptivePredict(_input,1,_ctx) ) {
 			case 1:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(56);
+				setState(60);
 				send();
 				}
 				break;
 			case 2:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(57);
+				setState(61);
 				choose();
 				}
 				break;
@@ -469,19 +514,19 @@ public class ChoreographyParser extends Parser {
 
 	public final SendContext send() throws RecognitionException {
 		SendContext _localctx = new SendContext(_ctx, getState());
-		enterRule(_localctx, 10, RULE_send);
+		enterRule(_localctx, 12, RULE_send);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(60);
-			sendingProcess();
-			setState(61);
-			match(DOT);
-			setState(62);
-			expr();
-			setState(63);
-			match(Arrow);
 			setState(64);
+			sendingProcess();
+			setState(65);
+			match(DOT);
+			setState(66);
+			expr();
+			setState(67);
+			match(Arrow);
+			setState(68);
 			receivingProcess();
 			}
 		}
@@ -530,21 +575,21 @@ public class ChoreographyParser extends Parser {
 
 	public final ChooseContext choose() throws RecognitionException {
 		ChooseContext _localctx = new ChooseContext(_ctx, getState());
-		enterRule(_localctx, 12, RULE_choose);
+		enterRule(_localctx, 14, RULE_choose);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(66);
-			sendingProcess();
-			setState(67);
-			match(Arrow);
-			setState(68);
-			receivingProcess();
-			setState(69);
-			match(LBRACK);
 			setState(70);
-			label();
+			sendingProcess();
 			setState(71);
+			match(Arrow);
+			setState(72);
+			receivingProcess();
+			setState(73);
+			match(LBRACK);
+			setState(74);
+			label();
+			setState(75);
 			match(RBRACK);
 			}
 		}
@@ -584,11 +629,11 @@ public class ChoreographyParser extends Parser {
 
 	public final SendingProcessContext sendingProcess() throws RecognitionException {
 		SendingProcessContext _localctx = new SendingProcessContext(_ctx, getState());
-		enterRule(_localctx, 14, RULE_sendingProcess);
+		enterRule(_localctx, 16, RULE_sendingProcess);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(73);
+			setState(77);
 			process();
 			}
 		}
@@ -628,11 +673,11 @@ public class ChoreographyParser extends Parser {
 
 	public final ReceivingProcessContext receivingProcess() throws RecognitionException {
 		ReceivingProcessContext _localctx = new ReceivingProcessContext(_ctx, getState());
-		enterRule(_localctx, 16, RULE_receivingProcess);
+		enterRule(_localctx, 18, RULE_receivingProcess);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(75);
+			setState(79);
 			process();
 			}
 		}
@@ -674,15 +719,15 @@ public class ChoreographyParser extends Parser {
 
 	public final ExprContext expr() throws RecognitionException {
 		ExprContext _localctx = new ExprContext(_ctx, getState());
-		enterRule(_localctx, 18, RULE_expr);
+		enterRule(_localctx, 20, RULE_expr);
 		try {
-			setState(80);
+			setState(84);
 			_errHandler.sync(this);
 			switch (_input.LA(1)) {
 			case Identifier:
 				enterOuterAlt(_localctx, 1);
 				{
-				setState(77);
+				setState(81);
 				match(Identifier);
 				}
 				break;
@@ -692,14 +737,14 @@ public class ChoreographyParser extends Parser {
 			case StringLiteral:
 				enterOuterAlt(_localctx, 2);
 				{
-				setState(78);
+				setState(82);
 				value();
 				}
 				break;
 			case Wildcard:
 				enterOuterAlt(_localctx, 3);
 				{
-				setState(79);
+				setState(83);
 				match(Wildcard);
 				}
 				break;
@@ -744,12 +789,12 @@ public class ChoreographyParser extends Parser {
 
 	public final ValueContext value() throws RecognitionException {
 		ValueContext _localctx = new ValueContext(_ctx, getState());
-		enterRule(_localctx, 20, RULE_value);
+		enterRule(_localctx, 22, RULE_value);
 		int _la;
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(82);
+			setState(86);
 			_la = _input.LA(1);
 			if ( !((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << INT) | (1L << BooleanLiteral) | (1L << CharacterLiteral) | (1L << StringLiteral))) != 0)) ) {
 			_errHandler.recoverInline(this);
@@ -795,11 +840,11 @@ public class ChoreographyParser extends Parser {
 
 	public final ProcedureContext procedure() throws RecognitionException {
 		ProcedureContext _localctx = new ProcedureContext(_ctx, getState());
-		enterRule(_localctx, 22, RULE_procedure);
+		enterRule(_localctx, 24, RULE_procedure);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(84);
+			setState(88);
 			match(Identifier);
 			}
 		}
@@ -837,11 +882,11 @@ public class ChoreographyParser extends Parser {
 
 	public final ProcessContext process() throws RecognitionException {
 		ProcessContext _localctx = new ProcessContext(_ctx, getState());
-		enterRule(_localctx, 24, RULE_process);
+		enterRule(_localctx, 26, RULE_process);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(86);
+			setState(90);
 			match(Identifier);
 			}
 		}
@@ -879,11 +924,11 @@ public class ChoreographyParser extends Parser {
 
 	public final LabelContext label() throws RecognitionException {
 		LabelContext _localctx = new LabelContext(_ctx, getState());
-		enterRule(_localctx, 26, RULE_label);
+		enterRule(_localctx, 28, RULE_label);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
-			setState(88);
+			setState(92);
 			match(Identifier);
 			}
 		}
@@ -899,27 +944,28 @@ public class ChoreographyParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3@]\4\2\t\2\4\3\t\3"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3@a\4\2\t\2\4\3\t\3"+
 		"\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f"+
-		"\t\f\4\r\t\r\4\16\t\16\4\17\t\17\3\2\3\2\3\2\3\2\3\2\3\2\3\2\3\2\5\2\'"+
-		"\n\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4\3\4\3\4\3"+
-		"\5\3\5\3\6\3\6\5\6=\n\6\3\7\3\7\3\7\3\7\3\7\3\7\3\b\3\b\3\b\3\b\3\b\3"+
-		"\b\3\b\3\t\3\t\3\n\3\n\3\13\3\13\3\13\5\13S\n\13\3\f\3\f\3\r\3\r\3\16"+
-		"\3\16\3\17\3\17\3\17\2\2\20\2\4\6\b\n\f\16\20\22\24\26\30\32\34\2\3\4"+
-		"\2\b\b\f\16U\2&\3\2\2\2\4(\3\2\2\2\6\61\3\2\2\2\b8\3\2\2\2\n<\3\2\2\2"+
-		"\f>\3\2\2\2\16D\3\2\2\2\20K\3\2\2\2\22M\3\2\2\2\24R\3\2\2\2\26T\3\2\2"+
-		"\2\30V\3\2\2\2\32X\3\2\2\2\34Z\3\2\2\2\36\37\5\n\6\2\37 \7@\2\2 !\5\2"+
-		"\2\2!\'\3\2\2\2\"\'\5\4\3\2#\'\5\b\5\2$\'\5\6\4\2%\'\7\t\2\2&\36\3\2\2"+
-		"\2&\"\3\2\2\2&#\3\2\2\2&$\3\2\2\2&%\3\2\2\2\'\3\3\2\2\2()\7\3\2\2)*\5"+
-		"\32\16\2*+\7\26\2\2+,\5\24\13\2,-\7\4\2\2-.\5\2\2\2./\7\5\2\2/\60\5\2"+
-		"\2\2\60\5\3\2\2\2\61\62\7\6\2\2\62\63\5\30\r\2\63\64\7\27\2\2\64\65\5"+
-		"\2\2\2\65\66\7\7\2\2\66\67\5\2\2\2\67\7\3\2\2\289\5\30\r\29\t\3\2\2\2"+
-		":=\5\f\7\2;=\5\16\b\2<:\3\2\2\2<;\3\2\2\2=\13\3\2\2\2>?\5\20\t\2?@\7\26"+
-		"\2\2@A\5\24\13\2AB\7;\2\2BC\5\22\n\2C\r\3\2\2\2DE\5\20\t\2EF\7;\2\2FG"+
-		"\5\22\n\2GH\7\23\2\2HI\5\34\17\2IJ\7\24\2\2J\17\3\2\2\2KL\5\32\16\2L\21"+
-		"\3\2\2\2MN\5\32\16\2N\23\3\2\2\2OS\7\63\2\2PS\5\26\f\2QS\7:\2\2RO\3\2"+
-		"\2\2RP\3\2\2\2RQ\3\2\2\2S\25\3\2\2\2TU\t\2\2\2U\27\3\2\2\2VW\7\63\2\2"+
-		"W\31\3\2\2\2XY\7\63\2\2Y\33\3\2\2\2Z[\7\63\2\2[\35\3\2\2\2\5&<R";
+		"\t\f\4\r\t\r\4\16\t\16\4\17\t\17\4\20\t\20\3\2\3\2\3\2\3\2\3\2\3\2\3\2"+
+		"\3\2\5\2)\n\2\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\4"+
+		"\3\4\3\4\3\5\3\5\3\6\3\6\3\7\3\7\5\7A\n\7\3\b\3\b\3\b\3\b\3\b\3\b\3\t"+
+		"\3\t\3\t\3\t\3\t\3\t\3\t\3\n\3\n\3\13\3\13\3\f\3\f\3\f\5\fW\n\f\3\r\3"+
+		"\r\3\16\3\16\3\17\3\17\3\20\3\20\3\20\2\2\21\2\4\6\b\n\f\16\20\22\24\26"+
+		"\30\32\34\36\2\3\4\2\b\b\f\16X\2(\3\2\2\2\4*\3\2\2\2\6\63\3\2\2\2\b:\3"+
+		"\2\2\2\n<\3\2\2\2\f@\3\2\2\2\16B\3\2\2\2\20H\3\2\2\2\22O\3\2\2\2\24Q\3"+
+		"\2\2\2\26V\3\2\2\2\30X\3\2\2\2\32Z\3\2\2\2\34\\\3\2\2\2\36^\3\2\2\2 !"+
+		"\5\f\7\2!\"\7@\2\2\"#\5\2\2\2#)\3\2\2\2$)\5\4\3\2%)\5\b\5\2&)\5\6\4\2"+
+		"\')\7\t\2\2( \3\2\2\2($\3\2\2\2(%\3\2\2\2(&\3\2\2\2(\'\3\2\2\2)\3\3\2"+
+		"\2\2*+\7\3\2\2+,\5\34\17\2,-\7\26\2\2-.\5\26\f\2./\7\4\2\2/\60\5\2\2\2"+
+		"\60\61\7\5\2\2\61\62\5\2\2\2\62\5\3\2\2\2\63\64\7\6\2\2\64\65\5\32\16"+
+		"\2\65\66\7\27\2\2\66\67\5\n\6\2\678\7\7\2\289\5\2\2\29\7\3\2\2\2:;\5\32"+
+		"\16\2;\t\3\2\2\2<=\5\2\2\2=\13\3\2\2\2>A\5\16\b\2?A\5\20\t\2@>\3\2\2\2"+
+		"@?\3\2\2\2A\r\3\2\2\2BC\5\22\n\2CD\7\26\2\2DE\5\26\f\2EF\7;\2\2FG\5\24"+
+		"\13\2G\17\3\2\2\2HI\5\22\n\2IJ\7;\2\2JK\5\24\13\2KL\7\23\2\2LM\5\36\20"+
+		"\2MN\7\24\2\2N\21\3\2\2\2OP\5\34\17\2P\23\3\2\2\2QR\5\34\17\2R\25\3\2"+
+		"\2\2SW\7\63\2\2TW\5\30\r\2UW\7:\2\2VS\3\2\2\2VT\3\2\2\2VU\3\2\2\2W\27"+
+		"\3\2\2\2XY\t\2\2\2Y\31\3\2\2\2Z[\7\63\2\2[\33\3\2\2\2\\]\7\63\2\2]\35"+
+		"\3\2\2\2^_\7\63\2\2_\37\3\2\2\2\5(@V";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

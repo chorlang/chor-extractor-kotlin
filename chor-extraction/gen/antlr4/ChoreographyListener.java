@@ -48,6 +48,16 @@ public interface ChoreographyListener extends ParseTreeListener {
 	 */
 	void exitProcedureInvocation(ChoreographyParser.ProcedureInvocationContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ChoreographyParser#internal_choreography}.
+	 * @param ctx the parse tree
+	 */
+	void enterInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ChoreographyParser#internal_choreography}.
+	 * @param ctx the parse tree
+	 */
+	void exitInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ChoreographyParser#communication}.
 	 * @param ctx the parse tree
 	 */

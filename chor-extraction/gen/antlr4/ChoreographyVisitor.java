@@ -35,6 +35,12 @@ public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProcedureInvocation(ChoreographyParser.ProcedureInvocationContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ChoreographyParser#internal_choreography}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#communication}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

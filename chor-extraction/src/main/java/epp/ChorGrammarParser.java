@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.util.HashMap;
+import java.util.Set;
 
 public class ChorGrammarParser {
     private ANTLRInputStream stream;
@@ -32,21 +33,20 @@ public class ChorGrammarParser {
     }
 
     public static void main(String[] args){
-        ChorGrammarParser grammarParser = new ChorGrammarParser("p.e->q;q.e->p;r.a->q;p->q[l];stop");
+        ChorGrammarParser grammarParser = new ChorGrammarParser("r.e->u;def A = p.e->q in A");
         ParseTree tree = grammarParser.getParseTree();
         if (tree!=null) {
-            ChorProcessVisitor pr = new ChorProcessVisitor();
-            pr.visit(tree);
-            HashMap pro = pr.returnChoreography();
-            System.out.println("Processes:");
-            for (Object value : pro.values())
-              System.out.println(value);
+            PreProcessingVisitor preProcessingVisitor = new PreProcessingVisitor();
+            preProcessingVisitor.visit(tree);
+            Set<String> processes = preProcessingVisitor.getProcesses();
+            HashMap procedures = preProcessingVisitor.getProcedures();
 
-            ChorVisitor v = new ChorVisitor(pro);
-            v.visit(tree);
-            HashMap cho = v.returnChoreography();
+            ChorVisitor chorVisitor = new ChorVisitor(processes, procedures);
+            chorVisitor.visit(tree);
+
+            HashMap<String, String> chorProcesses = chorVisitor.getProc();
             System.out.println("Return:");
-            for (Object value : cho.values())
+            for (Object value : chorProcesses.values())
                 System.out.println(value);
 
 

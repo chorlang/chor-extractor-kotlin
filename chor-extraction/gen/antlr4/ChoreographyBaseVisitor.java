@@ -45,6 +45,13 @@ public class ChoreographyBaseVisitor<T> extends AbstractParseTreeVisitor<T> impl
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitCommunication(ChoreographyParser.CommunicationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
