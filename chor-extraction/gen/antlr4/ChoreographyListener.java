@@ -58,6 +58,16 @@ public interface ChoreographyListener extends ParseTreeListener {
 	 */
 	void exitInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ChoreographyParser#external_choreography}.
+	 * @param ctx the parse tree
+	 */
+	void enterExternal_choreography(ChoreographyParser.External_choreographyContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ChoreographyParser#external_choreography}.
+	 * @param ctx the parse tree
+	 */
+	void exitExternal_choreography(ChoreographyParser.External_choreographyContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ChoreographyParser#communication}.
 	 * @param ctx the parse tree
 	 */
@@ -108,6 +118,36 @@ public interface ChoreographyListener extends ParseTreeListener {
 	 */
 	void exitReceivingProcess(ChoreographyParser.ReceivingProcessContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link ChoreographyParser#firstExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterFirstExpression(ChoreographyParser.FirstExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ChoreographyParser#firstExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitFirstExpression(ChoreographyParser.FirstExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ChoreographyParser#secondExpression}.
+	 * @param ctx the parse tree
+	 */
+	void enterSecondExpression(ChoreographyParser.SecondExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ChoreographyParser#secondExpression}.
+	 * @param ctx the parse tree
+	 */
+	void exitSecondExpression(ChoreographyParser.SecondExpressionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ChoreographyParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression(ChoreographyParser.ExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ChoreographyParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression(ChoreographyParser.ExpressionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ChoreographyParser#expr}.
 	 * @param ctx the parse tree
 	 */
@@ -117,16 +157,6 @@ public interface ChoreographyListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitExpr(ChoreographyParser.ExprContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ChoreographyParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void enterValue(ChoreographyParser.ValueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ChoreographyParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void exitValue(ChoreographyParser.ValueContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ChoreographyParser#procedure}.
 	 * @param ctx the parse tree
@@ -157,4 +187,14 @@ public interface ChoreographyListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLabel(ChoreographyParser.LabelContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ChoreographyParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void enterValue(ChoreographyParser.ValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ChoreographyParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void exitValue(ChoreographyParser.ValueContext ctx);
 }

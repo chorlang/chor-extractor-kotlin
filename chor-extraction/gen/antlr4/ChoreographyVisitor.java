@@ -41,6 +41,12 @@ public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ChoreographyParser#external_choreography}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExternal_choreography(ChoreographyParser.External_choreographyContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#communication}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -71,17 +77,29 @@ public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitReceivingProcess(ChoreographyParser.ReceivingProcessContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link ChoreographyParser#firstExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitFirstExpression(ChoreographyParser.FirstExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ChoreographyParser#secondExpression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSecondExpression(ChoreographyParser.SecondExpressionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ChoreographyParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression(ChoreographyParser.ExpressionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitExpr(ChoreographyParser.ExprContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#value}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitValue(ChoreographyParser.ValueContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#procedure}.
 	 * @param ctx the parse tree
@@ -100,4 +118,10 @@ public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLabel(ChoreographyParser.LabelContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ChoreographyParser#value}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitValue(ChoreographyParser.ValueContext ctx);
 }

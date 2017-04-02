@@ -9,42 +9,40 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import java.util.HashMap;
 import java.util.Set;
 
-public class ChorGrammarParser {
+public class ChoreographyGrammarParser {
     private ANTLRInputStream stream;
     private ChoreographyLexer lexer;
     private ChoreographyParser parser;
     private ParseTree tree;
 
-    public ChorGrammarParser(String grammar) {
+    public ChoreographyGrammarParser(String grammar) {
         try {
             stream = new ANTLRInputStream(grammar);
             lexer = new ChoreographyLexer(stream);
             parser = new ChoreographyParser(new CommonTokenStream(lexer));
             tree = parser.choreography();
-            //System.out.println("text: " + tree.getText());
-            //System.out.println("parser: " + tree.toStringTree(parser));
         } catch (Exception e){
             System.out.println(e.getMessage());
         }
     }
 
-    public ParseTree getParseTree(){
+    public ParseTree getTree() {
         return tree;
     }
 
     public static void main(String[] args){
-        ChorGrammarParser grammarParser = new ChorGrammarParser("r.e->u;def A = p.e->q in A");
-        ParseTree tree = grammarParser.getParseTree();
+        ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("p.expr->q;stop");
+        ParseTree tree = grammarParser.getTree();
         if (tree!=null) {
-            PreProcessingVisitor preProcessingVisitor = new PreProcessingVisitor();
-            preProcessingVisitor.visit(tree);
-            Set<String> processes = preProcessingVisitor.getProcesses();
-            HashMap procedures = preProcessingVisitor.getProcedures();
+            PreprocessingVisitor preprocessingVisitor = new PreprocessingVisitor();
+            preprocessingVisitor.visit(tree);
+            Set<String> processes = preprocessingVisitor.getProcesses();
+            HashMap procedures = preprocessingVisitor.getProcedures();
 
-            ChorVisitor chorVisitor = new ChorVisitor(processes, procedures);
-            chorVisitor.visit(tree);
+            ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor(processes, procedures);
+            choreographyVisitor.visit(tree);
 
-            HashMap<String, String> chorProcesses = chorVisitor.getProc();
+            HashMap<String, String> chorProcesses = choreographyVisitor.getProcesses();
             System.out.println("Return:");
             for (Object value : chorProcesses.values())
                 System.out.println(value);

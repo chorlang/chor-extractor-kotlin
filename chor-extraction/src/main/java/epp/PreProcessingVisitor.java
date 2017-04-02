@@ -1,46 +1,51 @@
 package epp;
 
 import antlr4.ChoreographyBaseVisitor;
-import antlr4.ChoreographyParser;
+import antlr4.ChoreographyParser.ProcessContext;
+import antlr4.ChoreographyParser.ConditionContext;
+import antlr4.ChoreographyParser.ChoreographyContext;
+import antlr4.ChoreographyParser.ProcedureDefinitionContext;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-public class PreProcessingVisitor extends ChoreographyBaseVisitor {
+public class PreprocessingVisitor extends ChoreographyBaseVisitor {
 
     private Set<String> processes;
     private HashMap<String,Set<String>> procedures;
 
-    public PreProcessingVisitor(){
+    public PreprocessingVisitor(){
         processes = new HashSet();
         procedures = new HashMap();
     }
 
 
     @Override
-    public Set<String> visitChoreography(ChoreographyParser.ChoreographyContext ctx) {
+    public Set<String> visitChoreography(ChoreographyContext ctx) {
         visitChildren(ctx);
         return processes;
     }
 
     @Override
-    public Object visitCondition(ChoreographyParser.ConditionContext ctx) {
+    public Object visitCondition(ConditionContext ctx) {
+
+
         return super.visitCondition(ctx);
     }
 
     @Override
-    public Object visitProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx) {
+    public Object visitProcedureDefinition(ProcedureDefinitionContext ctx) {
         //procedures.put(ctx.procedure().getText(), visitChoreography());
 
-        PreProcessingVisitor ppp = new PreProcessingVisitor();
+        PreprocessingVisitor ppp = new PreprocessingVisitor();
         ppp.visit(ctx.internal_choreography());
         procedures.put(ctx.procedure().getText(), ppp.processes);
         return super.visitProcedureDefinition(ctx);
     }
 
     @Override
-    public Object visitProcess(ChoreographyParser.ProcessContext ctx) {
+    public Object visitProcess(ProcessContext ctx) {
         processes.add(ctx.getText());
         Object p = visitChildren(ctx);
         return "a";

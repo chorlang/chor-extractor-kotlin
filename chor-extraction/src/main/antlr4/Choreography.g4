@@ -10,33 +10,37 @@ choreography : communication Continue choreography
     |   TERMINATE
     ;
 
-condition : 'if' process DOT expr 'then' choreography 'else' choreography;
+condition : 'if' firstExpression '=' secondExpression 'then' internal_choreography 'else' external_choreography;
 
-procedureDefinition: 'def' procedure ASSIGN internal_choreography 'in' choreography;
+procedureDefinition: 'def' procedure ASSIGN internal_choreography 'in' external_choreography;
 
 procedureInvocation: procedure;
 
 internal_choreography : choreography;
+external_choreography: choreography;
 
 communication : send | choose;
 
-send: sendingProcess DOT expr Arrow receivingProcess;
+send: sendingProcess DOT expression Arrow receivingProcess;
 choose: sendingProcess Arrow receivingProcess LBRACK label RBRACK;
 
 sendingProcess: process;
 receivingProcess: process;
+firstExpression: expression;
+secondExpression: expression;
 
-expr : Identifier
-    |   value
-    |   Wildcard
-    ;
-
-value : INT
-    |   CharacterLiteral
-    |   StringLiteral
+expression : Identifier
     |   BooleanLiteral
+    |   Wildcard
+    |   expr
     ;
+
+expr: expr ('*'|'/') expr
+    |	expr ('+'|'-') expr
+    |	INT
+    |	'(' expr ')'
+;
 
 INT     : [0-9]+ ;
 TERMINATE : 'stop';
-procedure : Identifier; // previously 'A'..'Z';
+procedure : Identifier;
