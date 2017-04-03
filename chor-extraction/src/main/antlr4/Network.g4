@@ -7,7 +7,7 @@ network : TERMINATE
     |   process 'has' behaviour
     ;
 
-behaviour : process Send LT expr GT Continue behaviour
+behaviour : process Send LT expr GT Continue behaviour <SendAction>
     |   process Receive Continue behaviour
     |   process Select label Continue behaviour
     |   process Choose LBRACE (label COLON behaviour) (',' label COLON behaviour)* RBRACE Continue behaviour

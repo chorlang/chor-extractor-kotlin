@@ -1,4 +1,4 @@
-// Generated from /Users/lara/Documents/projects/core-choreographies/chor-extraction/src/main/antlr4/Network.g4 by ANTLR 4.6
+// Generated from /home/fmontesi/programs/core-choreographies/chor-extraction/src/main/antlr4/Network.g4 by ANTLR 4.6
 package antlr4;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
