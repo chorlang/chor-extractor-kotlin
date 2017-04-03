@@ -21,11 +21,9 @@ external_choreography: choreography;
 
 communication : send | choose;
 
-send: sendingProcess DOT expression Arrow receivingProcess;
-choose: sendingProcess Arrow receivingProcess LBRACK label RBRACK;
+send: process DOT expression Arrow process;
+choose: process Arrow process LBRACK label RBRACK;
 
-sendingProcess: process;
-receivingProcess: process;
 firstExpression: expression;
 secondExpression: expression;
 

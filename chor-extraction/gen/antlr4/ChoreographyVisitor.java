@@ -65,18 +65,6 @@ public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitChoose(ChoreographyParser.ChooseContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#sendingProcess}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSendingProcess(ChoreographyParser.SendingProcessContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#receivingProcess}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitReceivingProcess(ChoreographyParser.ReceivingProcessContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#firstExpression}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

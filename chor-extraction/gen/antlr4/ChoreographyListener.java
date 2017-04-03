@@ -98,26 +98,6 @@ public interface ChoreographyListener extends ParseTreeListener {
 	 */
 	void exitChoose(ChoreographyParser.ChooseContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ChoreographyParser#sendingProcess}.
-	 * @param ctx the parse tree
-	 */
-	void enterSendingProcess(ChoreographyParser.SendingProcessContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ChoreographyParser#sendingProcess}.
-	 * @param ctx the parse tree
-	 */
-	void exitSendingProcess(ChoreographyParser.SendingProcessContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ChoreographyParser#receivingProcess}.
-	 * @param ctx the parse tree
-	 */
-	void enterReceivingProcess(ChoreographyParser.ReceivingProcessContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ChoreographyParser#receivingProcess}.
-	 * @param ctx the parse tree
-	 */
-	void exitReceivingProcess(ChoreographyParser.ReceivingProcessContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ChoreographyParser#firstExpression}.
 	 * @param ctx the parse tree
 	 */

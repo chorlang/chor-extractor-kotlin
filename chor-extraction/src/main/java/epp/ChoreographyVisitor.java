@@ -3,11 +3,12 @@ package epp;
 import antlr4.ChoreographyBaseVisitor;
 import antlr4.ChoreographyParser.*;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.RuleNode;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.*;
 
-public class ChoreographyVisitor extends ChoreographyBaseVisitor<String> {
+public class ChoreographyVisitor extends ChoreographyBaseVisitor<ArrayList<Pair>> {
 
     private HashMap<String, String> processes = new HashMap<>();
     private HashMap<String, String> ends = new HashMap<>();
@@ -22,7 +23,7 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<String> {
     }
 
     @Override
-    public String visitExpr(ExprContext ctx) {
+    public ArrayList<Pair> visitExpr(ExprContext ctx) {
     //    System.out.println("Expression");
 
 
@@ -31,29 +32,57 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<String> {
     }
 
     @Override
-    public String visit(ParseTree tree) {
+    public ArrayList<Pair> visitProcedure(ProcedureContext ctx) {
+        return super.visitProcedure(ctx);
+    }
+
+    @Override
+    public ArrayList<Pair> visitProcess(ProcessContext ctx) {
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public ArrayList<Pair> visitLabel(LabelContext ctx) {
+        return super.visitLabel(ctx);
+    }
+
+    @Override
+    public ArrayList<Pair> visitValue(ValueContext ctx) {
+        return super.visitValue(ctx);
+    }
+
+    @Override
+    public ArrayList<Pair> visit(ParseTree tree) {
 
         return super.visit(tree);
     }
 
     @Override
-    public String visitTerminal(TerminalNode node ) {
-        /*if (node.getText().equals("stop")){
-            for(Map.Entry<String,String> entry: processes.entrySet()) {
-                String key = entry.getKey();
-                if (ends.containsKey(key)){
-                    processes.put(key, entry.getValue() + "stop" + ends.get(key));
-                } else {
-                    processes.put(key, entry.getValue() + "stop");
-                }
-            }
-        }*/
-        //System.out.println( this.toString() + " | Visiting terminal " + node.getText() );
-        return null;
+    public ArrayList<Pair> visitChildren(RuleNode node) {
+        ArrayList<ArrayList<Pair>> result = new ArrayList<>();
+        int n = node.getChildCount();
+
+        for(int i = 0; i < n; ++i) {
+            ParseTree c = node.getChild(i);
+            ArrayList<Pair> childResult = c.accept(this);
+            result.add(childResult);
+        }
+
+        return result;
     }
 
     @Override
-    public String visitCondition(ConditionContext ctx) {
+    public ArrayList<Pair> visitTerminal(TerminalNode node ) {
+        return new ArrayList<Pair>(){{add(new Pair(ParseNodesEnum.TERMINALNODE.toString(), node.getText()));}};
+    }
+
+    @Override
+    public ArrayList<Pair> visitChoreography(ChoreographyContext ctx) {
+        return super.visitChoreography(ctx);
+    }
+
+    @Override
+    public ArrayList<Pair> visitCondition(ConditionContext ctx) {
 
         //boolean evaluationResult = evalute(ctx.firstExpression(), ctx.secondExpression());
 
@@ -74,18 +103,11 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<String> {
 
         ChoreographyContextComparator comparator = new ChoreographyContextComparator();
 
-        Thread p1 = new Thread(new MergingVisitor(ctx.internal_choreography(), comparator));
-        Thread p2 = new Thread(new MergingVisitor(ctx.external_choreography(), comparator));
-        p1.start();
-        p2.start();
-
-
-
         return null;
     }
 
     @Override
-    public String visitProcedureDefinition(ProcedureDefinitionContext ctx) {
+    public ArrayList<Pair> visitProcedureDefinition(ProcedureDefinitionContext ctx) {
         String procedureName = ctx.procedure().getText();
         HashSet<String> procedureProcesses = (HashSet<String>) procedures.get(procedureName);
         if (!procedureProcesses.isEmpty()){
@@ -103,7 +125,7 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<String> {
         return null;
     }
 
-    @Override public String visitProcedureInvocation(ProcedureInvocationContext ctx) {
+    @Override public ArrayList<Pair> visitProcedureInvocation(ProcedureInvocationContext ctx) {
         String procedureName = ctx.procedure().getText();
         HashSet<String> procedureProcesses = (HashSet<String>) procedures.get(procedureName);
         if (!procedureProcesses.isEmpty()) {
@@ -116,11 +138,27 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<String> {
     }
 
     @Override
-    public String visitSend(SendContext ctx) {
+    public ArrayList<Pair> visitInternal_choreography(Internal_choreographyContext ctx) {
+        return super.visitInternal_choreography(ctx);
+    }
 
-        //HashMap<String, String> result = visitChildren(ctx);
+    @Override
+    public ArrayList<Pair> visitExternal_choreography(External_choreographyContext ctx) {
+        return super.visitExternal_choreography(ctx);
+    }
 
-        String sendingProcess = ctx.sendingProcess().getText();
+    @Override
+    public ArrayList<Pair> visitCommunication(CommunicationContext ctx) {
+        return super.visitCommunication(ctx);
+    }
+
+    @Override
+    public ArrayList<Pair> visitSend(SendContext ctx) {
+
+        ArrayList<Pair> result = visitChildren(ctx);
+
+        if (result!=null){
+            /* String sendingProcess = ctx.sendingProcess().getText();
         String receivingProcess = ctx.receivingProcess().getText();
         String expression = ctx.expression().getText();
 
@@ -129,12 +167,16 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<String> {
 
         String r = new StringBuilder().append(sendingProcess).append("?;").toString();
         processes.put(receivingProcess, processes.get(receivingProcess) + r);
+        */
 
-        return null;
+        }
+
+        return result;
     }
 
+
     @Override
-    public String visitChoose(ChooseContext ctx) {
+    public ArrayList<Pair> visitChoose(ChooseContext ctx) {
         String sendingProcess = ctx.sendingProcess().getText();
         String receivingProcess = ctx.receivingProcess().getText();
         String label = ctx.label().getText();
@@ -147,8 +189,23 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<String> {
 
         putToEnds(receivingProcess, "}");
 
-        visitChildren(ctx);
+        visitChildren(ctx); */
         return null;
+    }
+
+    @Override
+    public ArrayList<Pair> visitFirstExpression(FirstExpressionContext ctx) {
+        return super.visitFirstExpression(ctx);
+    }
+
+    @Override
+    public ArrayList<Pair> visitSecondExpression(SecondExpressionContext ctx) {
+        return super.visitSecondExpression(ctx);
+    }
+
+    @Override
+    public ArrayList<Pair> visitExpression(ExpressionContext ctx) {
+        return super.visitExpression(ctx);
     }
 
     private void putToEnds(String processName, String thingToPut){
