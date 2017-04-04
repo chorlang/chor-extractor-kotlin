@@ -17,6 +17,18 @@ public class ProcedureDefinition implements CCNode {
         this.inChoreography = inChoreography;
     }
 
+    public String getProcedure() {
+        return procedure;
+    }
+
+    public CCNode getChoreography() {
+        return choreography;
+    }
+
+    public CCNode getInChoreography() {
+        return inChoreography;
+    }
+
     @Override
     public <T> T accept(CCVisitor<T> visitor) {
         return visitor.visit(this);

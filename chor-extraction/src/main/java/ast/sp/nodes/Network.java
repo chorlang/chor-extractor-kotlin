@@ -3,19 +3,17 @@ package ast.sp.nodes;
 import ast.sp.interfaces.Behaviour;
 import ast.sp.interfaces.NetworkInterface;
 
-import java.util.HashSet;
-
 public class Network implements NetworkInterface{
 
     private final String process;
     private final Behaviour behaviour;
 
-    private HashSet<NetworkInterface> parallelNetworks;
+
+    private Network nextNetwork;
 
     public Network(String process, Behaviour behaviour) {
         this.process = process;
         this.behaviour = behaviour;
-        parallelNetworks = new HashSet<>();
     }
 
     public String getProcess() {
@@ -26,11 +24,9 @@ public class Network implements NetworkInterface{
         return behaviour;
     }
 
-    public HashSet<NetworkInterface> getParallelNetworks() {
-        return parallelNetworks;
+    public void setNextNetwork(Network nextNetwork) {
+        this.nextNetwork = nextNetwork;
     }
 
-    public void setParallelNetworks(HashSet<NetworkInterface> parallelNetworks) {
-        this.parallelNetworks = parallelNetworks;
-    }
+
 }

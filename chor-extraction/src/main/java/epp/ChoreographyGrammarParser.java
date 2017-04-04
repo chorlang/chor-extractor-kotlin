@@ -8,6 +8,8 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.util.HashSet;
+
 public class ChoreographyGrammarParser {
     private ANTLRInputStream stream;
     private ChoreographyLexer lexer;
@@ -35,9 +37,10 @@ public class ChoreographyGrammarParser {
         if (tree!=null) {
             ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor();
             CCNode ccast = choreographyVisitor.getCCAST(tree);
+            HashSet processes = choreographyVisitor.getProcesses();
 
             BehaviourProjection behaviourProjection = new BehaviourProjection();
-            SPNode ssast = behaviourProjection.getSPAST(ccast);
+            SPNode ssast = behaviourProjection.getSPAST(ccast, processes);
         }
     }
 }
