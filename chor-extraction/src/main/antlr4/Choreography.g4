@@ -1,44 +1,35 @@
 grammar Choreography;
 import CommonLexerRules;
 
-//compilationUnit : choreography EOF;
-
-choreography : communication Continue choreography
+choreography : interaction ';' choreography
     |   condition
     |   procedureInvocation
     |   procedureDefinition
     |   TERMINATE
     ;
 
-condition : 'if' firstExpression '=' secondExpression 'then' internal_choreography 'else' external_choreography;
+condition : 'if' process '.' expression 'then' choreography 'else' choreography;
 
-procedureDefinition: 'def' procedure ASSIGN internal_choreography 'in' external_choreography;
+procedureDefinition: 'def' procedure ASSIGN choreography 'in' choreography;
 
 procedureInvocation: procedure;
 
-internal_choreography : choreography;
-external_choreography: choreography;
+interaction : communication | selection;
 
-communication : send | choose;
-
-send: process DOT expression Arrow process;
-choose: process Arrow process LBRACK label RBRACK;
-
-firstExpression: expression;
-secondExpression: expression;
+communication: process DOT expression Arrow process;
+selection: process Arrow process LBRACK label RBRACK;
 
 expression : Identifier
     |   BooleanLiteral
     |   Wildcard
-    |   expr
+    |   INT
     ;
 
-expr: expr ('*'|'/') expr
-    |	expr ('+'|'-') expr
-    |	INT
-    |	'(' expr ')'
-;
+//expr: expr ('*'|'/') expr
+//    |	expr ('+'|'-') expr
+//    |	INT
+//    |	'(' expr ')'
+//;
 
 INT     : [0-9]+ ;
 TERMINATE : 'stop';
-procedure : Identifier;

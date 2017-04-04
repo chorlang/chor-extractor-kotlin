@@ -6,9 +6,6 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.HashMap;
-import java.util.Set;
-
 public class ChoreographyGrammarParser {
     private ANTLRInputStream stream;
     private ChoreographyLexer lexer;
@@ -34,20 +31,13 @@ public class ChoreographyGrammarParser {
         ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("p.expr->q;stop");
         ParseTree tree = grammarParser.getTree();
         if (tree!=null) {
-            PreprocessingVisitor preprocessingVisitor = new PreprocessingVisitor();
-            preprocessingVisitor.visit(tree);
-            Set<String> processes = preprocessingVisitor.getProcesses();
-            HashMap procedures = preprocessingVisitor.getProcedures();
-
-            ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor(processes, procedures);
+            ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor(tree);
             choreographyVisitor.visit(tree);
 
-            HashMap<String, String> chorProcesses = choreographyVisitor.getProcesses();
-            System.out.println("Return:");
-            for (Object value : chorProcesses.values())
-                System.out.println(value);
-
-
+        //    HashMap<String, String> chorProcesses = choreographyVisitor.getProcesses();
+        //    System.out.println("Return:");
+        //    for (Object value : chorProcesses.values())
+        //        System.out.println(value);
         }
 
     }

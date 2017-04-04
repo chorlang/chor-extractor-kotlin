@@ -35,17 +35,11 @@ public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProcedureInvocation(ChoreographyParser.ProcedureInvocationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#internal_choreography}.
+	 * Visit a parse tree produced by {@link ChoreographyParser#interaction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#external_choreography}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExternal_choreography(ChoreographyParser.External_choreographyContext ctx);
+	T visitInteraction(ChoreographyParser.InteractionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#communication}.
 	 * @param ctx the parse tree
@@ -53,29 +47,11 @@ public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitCommunication(ChoreographyParser.CommunicationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#send}.
+	 * Visit a parse tree produced by {@link ChoreographyParser#selection}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitSend(ChoreographyParser.SendContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#choose}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitChoose(ChoreographyParser.ChooseContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#firstExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFirstExpression(ChoreographyParser.FirstExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#secondExpression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSecondExpression(ChoreographyParser.SecondExpressionContext ctx);
+	T visitSelection(ChoreographyParser.SelectionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#expression}.
 	 * @param ctx the parse tree
@@ -83,23 +59,17 @@ public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitExpression(ChoreographyParser.ExpressionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#expr}.
+	 * Visit a parse tree produced by {@link ChoreographyParser#process}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpr(ChoreographyParser.ExprContext ctx);
+	T visitProcess(ChoreographyParser.ProcessContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#procedure}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitProcedure(ChoreographyParser.ProcedureContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#process}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProcess(ChoreographyParser.ProcessContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#label}.
 	 * @param ctx the parse tree
