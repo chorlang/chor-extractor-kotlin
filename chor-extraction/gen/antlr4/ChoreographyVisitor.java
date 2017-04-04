@@ -11,6 +11,12 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	/**
+	 * Visit a parse tree produced by {@link ChoreographyParser#prog}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProg(ChoreographyParser.ProgContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#choreography}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

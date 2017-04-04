@@ -1,4 +1,4 @@
-package ast.sp;
+package ast.sp.interfaces;
 
 /**
  * Created by fmontesi on 03/04/17.

@@ -1,21 +1,28 @@
 package ast.cc.nodes;
 
-import ast.cc.CCNode;
 import ast.cc.CCVisitor;
+import ast.cc.interfaces.CCNode;
+import ast.cc.interfaces.Interaction;
 
 /**
  * Created by lara on 03/04/17.
  */
-public class Communication extends CCNode
+public class Communication implements Interaction
 {
     private final String sender;
     private final String receiver;
     private final String expression;
+    private final CCNode continuation;
 
-    public Communication(String sender, String receiver, String expression) {
+    public CCNode getContinuation() {
+        return continuation;
+    }
+
+    public Communication(String sender, String receiver, String expression, CCNode continuation) {
         this.sender = sender;
         this.receiver = receiver;
         this.expression = expression;
+        this.continuation = continuation;
     }
 
     public <T> T accept( CCVisitor<T> visitor )

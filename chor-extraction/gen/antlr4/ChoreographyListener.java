@@ -8,6 +8,16 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface ChoreographyListener extends ParseTreeListener {
 	/**
+	 * Enter a parse tree produced by {@link ChoreographyParser#prog}.
+	 * @param ctx the parse tree
+	 */
+	void enterProg(ChoreographyParser.ProgContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ChoreographyParser#prog}.
+	 * @param ctx the parse tree
+	 */
+	void exitProg(ChoreographyParser.ProgContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link ChoreographyParser#choreography}.
 	 * @param ctx the parse tree
 	 */

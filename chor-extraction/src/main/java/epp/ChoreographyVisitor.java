@@ -1,8 +1,12 @@
 package epp;
 
 import antlr4.ChoreographyBaseVisitor;
-import antlr4.ChoreographyParser.*;
-import ast.cc.CCNode;
+import antlr4.ChoreographyParser.CommunicationContext;
+import antlr4.ChoreographyParser.SelectionContext;
+import antlr4.ChoreographyParser.ConditionContext;
+import antlr4.ChoreographyParser.ProcedureDefinitionContext;
+import antlr4.ChoreographyParser.ProcedureInvocationContext;
+import ast.cc.interfaces.CCNode;
 import ast.cc.nodes.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
@@ -13,21 +17,14 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
     }
 
     @Override
-    public CCNode visitInteraction(InteractionContext ctx) {
-
-        CCNode communication = visit(ctx.communication());
-        CCNode continuation = visit(ctx.choreography());
-
-        return new Interaction(communication, continuation);
-    }
-
-    @Override
     public CCNode visitCommunication(CommunicationContext ctx) {
         String sender = ctx.process().get(0).getText();
         String receiver = ctx.process().get(1).getText();
         String expression = ctx.expression().getText();
 
-        return new Communication(sender,receiver,expression);
+        CCNode continuation = visit(ctx.choreography());
+
+        return new Communication(sender,receiver,expression, continuation);
     }
 
     @Override
@@ -36,7 +33,9 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
         String receiver = ctx.process().get(1).getText();
         String expression = ctx.label().getText();
 
-        return new Selection(sender,receiver,expression);
+        CCNode continuation = visit(ctx.choreography());
+
+        return new Selection(sender,receiver,expression, continuation);
     }
 
     @Override

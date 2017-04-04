@@ -11,7 +11,6 @@ public interface CCVisitor<T>
     public T visit( Communication n );
     public T visit( Condition n );
     public T visit( Termination n );
-    public T visit( Interaction n );
     public T visit( ProcedureDefinition n );
     public T visit( ProcedureInvocation n );
 }

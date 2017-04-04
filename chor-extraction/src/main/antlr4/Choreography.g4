@@ -14,22 +14,16 @@ procedureDefinition: 'def' procedure ASSIGN choreography 'in' choreography;
 
 procedureInvocation: procedure;
 
-interaction : communication ';' choreography | selection ';' choreography;
+interaction : communication | selection;
 
-communication: process DOT expression Arrow process;
-selection: process Arrow process LBRACK label RBRACK;
+communication: process DOT expression Arrow process ';' choreography;
+selection: process Arrow process LBRACK label RBRACK ';' choreography;
 
 expression : Identifier
     |   BooleanLiteral
     |   Wildcard
     |   INT
     ;
-
-//expr: expr ('*'|'/') expr
-//    |	expr ('+'|'-') expr
-//    |	INT
-//    |	'(' expr ')'
-//;
 
 INT     : [0-9]+ ;
 TERMINATE : 'stop';

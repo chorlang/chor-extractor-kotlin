@@ -5,9 +5,10 @@
  */
 package epp;
 
+import ast.cc.interfaces.CCNode;
 import ast.cc.CCVisitor;
 import ast.cc.nodes.*;
-import ast.sp.SPNode;
+import ast.sp.interfaces.SPNode;
 
 /**
  *
@@ -15,11 +16,15 @@ import ast.sp.SPNode;
  */
 public class BehaviourProjection implements CCVisitor< SPNode >
 {
-	public SPNode visit( Selection n )
+    public SPNode getSPAST(CCNode node){
+        return node.accept(this);
+    }
+
+    public SPNode visit(Selection n )
     {
         // Visit n.continuation() first, getting the projection of the continuation
-        // Create the return SendLabel with the continuation you got and the information for the head here.
-        //return SendLabel();
+        // Create the return Sending with the continuation you got and the information for the head here.
+        //return Sending();
         return null;
     }
 
@@ -28,11 +33,6 @@ public class BehaviourProjection implements CCVisitor< SPNode >
         return null;
     }
 
-    /*@Override
-    public SPNode visit(Continuation n) {
-        return null;
-    }*/
-
     @Override
     public SPNode visit(Condition n) {
         return null;
@@ -40,11 +40,6 @@ public class BehaviourProjection implements CCVisitor< SPNode >
 
     @Override
     public SPNode visit(Termination n) {
-        return null;
-    }
-
-    @Override
-    public SPNode visit(Interaction n) {
         return null;
     }
 
