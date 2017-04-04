@@ -9,9 +9,9 @@ import ast.cc.CCVisitor;
 public class Interaction extends CCNode {
 
     private final CCNode node;
-    private final Continuation continuation;
+    private final CCNode continuation;
 
-    public Interaction(CCNode node, Continuation continuation) {
+    public Interaction(CCNode node, CCNode continuation) {
         this.node = node;
         this.continuation = continuation;
     }

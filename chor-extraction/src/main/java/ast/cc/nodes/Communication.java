@@ -11,13 +11,11 @@ public class Communication extends CCNode
     private final String sender;
     private final String receiver;
     private final String expression;
-    private final CCNode continuation;
 
-    public Communication(String sender, String receiver, String expression, CCNode continuation) {
+    public Communication(String sender, String receiver, String expression) {
         this.sender = sender;
         this.receiver = receiver;
         this.expression = expression;
-        this.continuation = continuation;
     }
 
     public <T> T accept( CCVisitor<T> visitor )
@@ -35,9 +33,5 @@ public class Communication extends CCNode
 
     public String getExpression() {
         return expression;
-    }
-
-    public CCNode getContinuation() {
-        return continuation;
     }
 }

@@ -1,7 +1,7 @@
 grammar Choreography;
 import CommonLexerRules;
 
-choreography : interaction ';' choreography
+choreography : interaction
     |   condition
     |   procedureInvocation
     |   procedureDefinition
@@ -14,7 +14,7 @@ procedureDefinition: 'def' procedure ASSIGN choreography 'in' choreography;
 
 procedureInvocation: procedure;
 
-interaction : communication | selection;
+interaction : communication ';' choreography | selection ';' choreography;
 
 communication: process DOT expression Arrow process;
 selection: process Arrow process LBRACK label RBRACK;

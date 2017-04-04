@@ -2,6 +2,7 @@ package epp;
 
 import antlr4.ChoreographyLexer;
 import antlr4.ChoreographyParser;
+import ast.cc.CCNode;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -28,17 +29,12 @@ public class ChoreographyGrammarParser {
     }
 
     public static void main(String[] args){
-        ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("p.expr->q;stop");
+        ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("if p.e then p.expr->q;stop else def X = p.e->q;stop in X");
         ParseTree tree = grammarParser.getTree();
         if (tree!=null) {
-            ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor(tree);
-            choreographyVisitor.visit(tree);
-
-        //    HashMap<String, String> chorProcesses = choreographyVisitor.getProcesses();
-        //    System.out.println("Return:");
-        //    for (Object value : chorProcesses.values())
-        //        System.out.println(value);
+            ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor();
+            CCNode ccast = choreographyVisitor.getCCAST(tree);
+            ccast.toString();
         }
-
     }
 }

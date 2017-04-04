@@ -3,145 +3,69 @@ package epp;
 import antlr4.ChoreographyBaseVisitor;
 import antlr4.ChoreographyParser.*;
 import ast.cc.CCNode;
+import ast.cc.nodes.*;
 import org.antlr.v4.runtime.tree.ParseTree;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
-
-    private HashSet<String> processes = new HashSet<>();
-
-    public ChoreographyVisitor(ParseTree parseTree){
-        ProcessesCollectingVisitor visitor = new ProcessesCollectingVisitor();
-        visitor.visit(parseTree);
-        this.processes = visitor.getProcesses();
-    }
-
-    @Override
-    public CCNode visit(ParseTree tree) {
-        return super.visit(tree);
-    }
-
-    @Override
-    public CCNode visitChoreography(ChoreographyContext ctx) {
-        return super.visitChoreography(ctx);
-    }
-
-    @Override
-    public CCNode visitCondition(ConditionContext ctx) {
-        return null;
-    }
-
-    @Override
-    public CCNode visitProcedureDefinition(ProcedureDefinitionContext ctx) {
-        /*String procedureName = ctx.procedure().getText();
-        HashSet<String> procedureProcesses = (HashSet<String>) procedures.get(procedureName);
-        if (!procedureProcesses.isEmpty()){
-            for (String process: procedureProcesses) {
-                String behaviour = new StringBuilder().append("def ").append(procedureName).append(" = ").toString();
-                processes.put(process, processes.get(process) + behaviour);
-            }
-
-            for (String process: procedureProcesses) {
-                processes.put(process, processes.get(process) + " in ");
-            }
-
-        }*/
-
-        return null;
-    }
-
-    @Override public CCNode visitProcedureInvocation(ProcedureInvocationContext ctx) {
-        String procedureName = ctx.procedure().getText();
-        HashSet<String> procedureProcesses = (HashSet<String>) procedures.get(procedureName);
-        if (!procedureProcesses.isEmpty()) {
-            for (String process : procedureProcesses) {
-                processes.put(process, processes.get(process) + procedureName);
-            }
-        }
-        //visitChildren(ctx);
-        return null;
+    public CCNode getCCAST(ParseTree parseTree){
+        return this.visit(parseTree);
     }
 
     @Override
     public CCNode visitInteraction(InteractionContext ctx) {
-        return super.visitInteraction(ctx);
+
+        CCNode communication = visit(ctx.communication());
+        CCNode continuation = visit(ctx.choreography());
+
+        return new Interaction(communication, continuation);
     }
 
     @Override
     public CCNode visitCommunication(CommunicationContext ctx) {
-        return super.visitCommunication(ctx);
+        String sender = ctx.process().get(0).getText();
+        String receiver = ctx.process().get(1).getText();
+        String expression = ctx.expression().getText();
+
+        return new Communication(sender,receiver,expression);
     }
 
     @Override
     public CCNode visitSelection(SelectionContext ctx) {
-        return super.visitSelection(ctx);
+        String sender = ctx.process().get(0).getText();
+        String receiver = ctx.process().get(1).getText();
+        String expression = ctx.label().getText();
+
+        return new Selection(sender,receiver,expression);
     }
 
     @Override
-    public CCNode visitExpression(ExpressionContext ctx) {
-        return super.visitExpression(ctx);
-    }
-
-       /* public CCNode visitSend(SendContext ctx) {
-
-        CCNode result = visitChildren(ctx);
-
-        if (result!=null){
-            /* String sendingProcess = ctx.sendingProcess().getText();
-        String receivingProcess = ctx.receivingProcess().getText();
+    public CCNode visitCondition(ConditionContext ctx) {
+        String process = ctx.process().getText();
         String expression = ctx.expression().getText();
+        CCNode thenChoreography = visit(ctx.choreography().get(0));
+        CCNode elseChoreography = visit(ctx.choreography().get(1));
 
-        String s = new StringBuilder().append(receivingProcess).append("!<").append(expression).append(">;").toString();
-        processes.put(sendingProcess, processes.get(sendingProcess) + s);
-
-        String r = new StringBuilder().append(sendingProcess).append("?;").toString();
-        processes.put(receivingProcess, processes.get(receivingProcess) + r);
-
-        }
-        return result;
-    }
-
-
-    @Override
-    public ArrayList<Pair> visitChoose(ChooseContext ctx) {
-        String sendingProcess = ctx.sendingProcess().getText();
-        String receivingProcess = ctx.receivingProcess().getText();
-        String label = ctx.label().getText();
-
-        String s = new StringBuilder().append(receivingProcess).append("+").append(label).append(";").toString();
-        processes.put(sendingProcess, processes.get(sendingProcess) + s);
-
-        String r = new StringBuilder().append(sendingProcess).append("&{").append(label).append(": ").toString();
-        processes.put(receivingProcess, processes.get(receivingProcess) + r);
-
-        putToEnds(receivingProcess, "}");
-
-        visitChildren(ctx);
-        return null;
-    }*/
-
-    @Override
-    public CCNode visitProcedure(ProcedureContext ctx) {
-        return super.visitProcedure(ctx);
+        return new Condition(process, expression, thenChoreography, elseChoreography);
     }
 
     @Override
-    public CCNode visitProcess(ProcessContext ctx) {
-        return visitChildren(ctx);
+    public CCNode visitProcedureDefinition(ProcedureDefinitionContext ctx) {
+        String procedurename = ctx.procedure().getText();
+        CCNode choreography = visit(ctx.choreography(0));
+        CCNode inchoreography = visit(ctx.choreography(1));
+
+        return new ProcedureDefinition(procedurename, choreography, inchoreography);
+    }
+
+    @Override public CCNode visitProcedureInvocation(ProcedureInvocationContext ctx) {
+        String procedureName = ctx.procedure().getText();
+
+        return new ProcedureInvocation(procedureName);
     }
 
     @Override
-    public CCNode visitLabel(LabelContext ctx) {
-        return super.visitLabel(ctx);
+    public CCNode visitTerminal(TerminalNode node) {
+        return new Termination();
     }
-
-    @Override
-    public CCNode visitValue(ValueContext ctx) {
-        return super.visitValue(ctx);
-    }
-
 }

@@ -11,14 +11,12 @@ public class Selection extends CCNode
     private final String sender;
     private final String receiver;
     private final String label;
-    private final CCNode continuation;
 
-    public Selection(String sender, String receiver, String label, CCNode continuation)
+    public Selection(String sender, String receiver, String label)
     {
         this.sender = sender;
         this.receiver = receiver;
         this.label = label;
-        this.continuation = continuation;
     }
 
     public <T> T accept( CCVisitor<T> visitor )
@@ -38,7 +36,4 @@ public class Selection extends CCNode
         return label;
     }
 
-    public CCNode getContinuation() {
-        return continuation;
-    }
 }

@@ -6,12 +6,12 @@ import ast.cc.CCVisitor;
 /**
  * Created by lara on 04/04/17.
  */
-public class Procedure extends CCNode {
+public class ProcedureDefinition extends CCNode {
     private final String procedure;
     private final CCNode choreography;
     private final CCNode inChoreography;
 
-    public Procedure(String procedure, CCNode choreography, CCNode inChoreography) {
+    public ProcedureDefinition(String procedure, CCNode choreography, CCNode inChoreography) {
         this.procedure = procedure;
         this.choreography = choreography;
         this.inChoreography = inChoreography;

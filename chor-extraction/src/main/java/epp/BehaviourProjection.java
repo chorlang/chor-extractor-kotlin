@@ -6,10 +6,7 @@
 package epp;
 
 import ast.cc.CCVisitor;
-import ast.cc.nodes.Communication;
-import ast.cc.nodes.Continuation;
-import ast.cc.nodes.Condition;
-import ast.cc.nodes.Selection;
+import ast.cc.nodes.*;
 import ast.sp.SPNode;
 
 /**
@@ -22,7 +19,8 @@ public class BehaviourProjection implements CCVisitor< SPNode >
     {
         // Visit n.continuation() first, getting the projection of the continuation
         // Create the return SendLabel with the continuation you got and the information for the head here.
-        return SendLabel();
+        //return SendLabel();
+        return null;
     }
 
     @Override
@@ -30,13 +28,33 @@ public class BehaviourProjection implements CCVisitor< SPNode >
         return null;
     }
 
-    @Override
+    /*@Override
     public SPNode visit(Continuation n) {
+        return null;
+    }*/
+
+    @Override
+    public SPNode visit(Condition n) {
         return null;
     }
 
     @Override
-    public SPNode visit(Condition n) {
+    public SPNode visit(Termination n) {
+        return null;
+    }
+
+    @Override
+    public SPNode visit(Interaction n) {
+        return null;
+    }
+
+    @Override
+    public SPNode visit(ProcedureDefinition n) {
+        return null;
+    }
+
+    @Override
+    public SPNode visit(ProcedureInvocation n) {
         return null;
     }
 }
