@@ -17,62 +17,65 @@ import ast.sp.interfaces.Behaviour;
 import ast.sp.interfaces.SPNode;
 import ast.sp.nodes.*;
 
-import java.util.HashSet;
-
 /**
  *
  * @author Fabrizio Montesi <famontesi@gmail.com>
  */
 public class BehaviourProjection implements CCVisitor< SPNode >
 {
-    private HashSet<String> processes;
+    private String processName;
+    private MergingProjection mp;
 
-    public SPNode getSPAST(CCNode node, HashSet<String> processes){
-        this.processes = processes;
+    public SPNode getSPAST(CCNode node, String processName){
+        this.processName = processName;
+        mp = new MergingProjection(processName);
         return node.accept(this);
+
     }
 
-    public SPNode visit(Selection n )
-    {
-        // Visit n.continuation() first, getting the projection of the continuation
-        // Create the return Sending with the continuation you got and the information for the head here.
-        //return Sending();
-
-        String receiver = n.getReceiver();
-        String label = n.getLabel();
-        String sender = n.getSender();
+    public SPNode visit(Selection n ) {
         SPNode continuation = (n.getContinuation()).accept(this);
+        final SPNode retVal;
 
+        if( processName.equals( n.getSender() ) ) {
+            retVal = new ast.sp.nodes.Selection( (Behaviour) continuation, n.getReceiver(), n.getLabel());
+        } else if ( processName.equals( n.getReceiver() ) ) {
+            retVal = new Offering( (Behaviour) continuation, n.getSender(), n.getLabel() );
+        } else {
+            retVal = continuation;
+        }
 
-
-        return null;
+        return retVal;
     }
 
     @Override
     public SPNode visit(Communication n) {
-        String receiver = n.getReceiver();
-        String expression = n.getExpression();
-        String sender = n.getSender();
         SPNode continuation = (n.getContinuation()).accept(this);
 
-        SPNode sending = new Sending((Behaviour) continuation, receiver,expression);
-        SPNode receiving = new Receiving((Behaviour) continuation, sender);
+        final SPNode retVal;
+        if( processName.equals( n.getSender() ) ) {
+            retVal = new Sending( (Behaviour) continuation, n.getReceiver(), n.getExpression() );
+        } else if ( processName.equals( n.getReceiver() ) ) {
+            retVal = new Receiving( (Behaviour) continuation, n.getSender() );
+        } else {
+            retVal = continuation;
+        }
 
-
-        return null;
+        return retVal;
     }
 
     @Override
     public SPNode visit(Condition n) {
-        String process =  n.getProcess();
-        String expression = n.getExpression();
+        final SPNode retVal;
 
-        Behaviour thenbehaviour = (Behaviour) n.getThenChoreography();
-        Behaviour elsebehaviour = (Behaviour) n.getElseChoreograpy();
+        if( processName.equals( n.getProcess() ) ) {
+            retVal = new ast.sp.nodes.Condition( n.getProcess(), n.getExpression(), (Behaviour) n.getThenChoreography(), (Behaviour) n.getElseChoreograpy());
+        } else {
+            Behaviour merge = mp.merge( n.getThenChoreography(), n.getElseChoreograpy());
+            retVal = merge;
+        }
 
-        SPNode condition = new ast.sp.nodes.Condition(process,expression,thenbehaviour,elsebehaviour);
-
-        return condition;
+        return retVal;
     }
 
     @Override
@@ -82,16 +85,30 @@ public class BehaviourProjection implements CCVisitor< SPNode >
 
     @Override
     public SPNode visit(ProcedureDefinition n) {
-        String procedure =  n.getProcedure();
-        Behaviour behaviour = (Behaviour) n.getChoreography();
-        Behaviour inbehaviour = (Behaviour) n.getInChoreography();
+        final SPNode retval;
 
-        SPNode procedureDefinition = new ast.sp.nodes.ProcedureDefinition(procedure, behaviour, inbehaviour);
-        return procedureDefinition;
+        if (n.getProcesses().contains(processName)){
+            retval = new ast.sp.nodes.ProcedureDefinition(n.getProcedure(), (Behaviour) n.getChoreography(), (Behaviour) n.getInChoreography()));
+        } else {
+            retval = (SPNode) n.getInChoreography();
+            return retval;
+        }
+
+        return retval;
+
     }
 
     @Override
     public SPNode visit(ProcedureInvocation n) {
-        return new ast.sp.nodes.ProcedureInvocation(n.getProcedure());
+        final SPNode retval;
+
+        if (n.getProcesses().contains(processName)){
+            retval =  new ast.sp.nodes.ProcedureInvocation(n.getProcedure());
+        } else {
+            retval = (SPNode) new Termination();
+            return retval;
+        }
+
+        return retval;
     }
 }

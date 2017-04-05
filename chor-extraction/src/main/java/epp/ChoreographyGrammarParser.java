@@ -3,12 +3,9 @@ package epp;
 import antlr4.ChoreographyLexer;
 import antlr4.ChoreographyParser;
 import ast.cc.interfaces.CCNode;
-import ast.sp.interfaces.SPNode;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-
-import java.util.HashSet;
 
 public class ChoreographyGrammarParser {
     private ANTLRInputStream stream;
@@ -37,10 +34,10 @@ public class ChoreographyGrammarParser {
         if (tree!=null) {
             ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor();
             CCNode ccast = choreographyVisitor.getCCAST(tree);
-            HashSet processes = choreographyVisitor.getProcesses();
+            //String process = choreographyVisitor.getProcesses().;
 
             BehaviourProjection behaviourProjection = new BehaviourProjection();
-            SPNode ssast = behaviourProjection.getSPAST(ccast, processes);
+            //SPNode ssast = behaviourProjection.getSPAST(ccast, process);
         }
     }
 }

@@ -3,14 +3,18 @@ package ast.cc.nodes;
 import ast.cc.interfaces.CCNode;
 import ast.cc.CCVisitor;
 
+import java.util.HashSet;
+
 /**
  * Created by lara on 04/04/17.
  */
 public class ProcedureInvocation implements CCNode{
-    public final String procedure;
+    private final String procedure;
+    private final HashSet<String> processes;
 
-    public ProcedureInvocation(String procedure) {
+    public ProcedureInvocation(String procedure, HashSet<String> processes) {
         this.procedure = procedure;
+        this.processes = processes;
     }
 
     @Override
@@ -20,5 +24,9 @@ public class ProcedureInvocation implements CCNode{
 
     public String getProcedure() {
         return procedure;
+    }
+
+    public HashSet<String> getProcesses() {
+        return processes;
     }
 }

@@ -76,13 +76,13 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
         CCNode choreography = visit(ctx.choreography(0));
         CCNode inchoreography = visit(ctx.choreography(1));
 
-        return new ProcedureDefinition(procedurename, choreography, inchoreography);
+        return new ProcedureDefinition(procedurename, choreography, inchoreography, processes);
     }
 
     @Override public CCNode visitProcedureInvocation(ProcedureInvocationContext ctx) {
         String procedureName = ctx.procedure().getText();
 
-        return new ProcedureInvocation(procedureName);
+        return new ProcedureInvocation(procedureName, processes);
     }
 
     @Override
