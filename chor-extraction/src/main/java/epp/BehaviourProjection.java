@@ -8,14 +8,10 @@ package epp;
 import ast.cc.CCVisitor;
 import ast.cc.interfaces.CCNode;
 import ast.cc.nodes.*;
-import ast.cc.nodes.Condition;
-import ast.cc.nodes.ProcedureDefinition;
-import ast.cc.nodes.ProcedureInvocation;
-import ast.cc.nodes.Selection;
-import ast.cc.nodes.Termination;
 import ast.sp.interfaces.Behaviour;
 import ast.sp.interfaces.SPNode;
-import ast.sp.nodes.*;
+import ast.sp.nodes.Receiving;
+import ast.sp.nodes.Sending;
 
 /**
  *
@@ -26,21 +22,20 @@ public class BehaviourProjection implements CCVisitor< SPNode >
     private String processName;
     private MergingProjection mp;
 
-    public SPNode getSPAST(CCNode node, String processName){
+    public SPNode getSPAST(CCNode node, String processName) throws MergingException {
         this.processName = processName;
         mp = new MergingProjection(processName);
         return node.accept(this);
-
     }
 
-    public SPNode visit(Selection n ) {
+    public SPNode visit(Selection n ) throws MergingException {
         SPNode continuation = (n.getContinuation()).accept(this);
         final SPNode retVal;
 
         if( processName.equals( n.getSender() ) ) {
             retVal = new ast.sp.nodes.Selection( (Behaviour) continuation, n.getReceiver(), n.getLabel());
         } else if ( processName.equals( n.getReceiver() ) ) {
-            retVal = new Offering( (Behaviour) continuation, n.getSender(), n.getLabel() );
+            retVal = new ast.sp.nodes.Selection( (Behaviour) continuation, n.getSender(), n.getLabel() );
         } else {
             retVal = continuation;
         }
@@ -49,7 +44,7 @@ public class BehaviourProjection implements CCVisitor< SPNode >
     }
 
     @Override
-    public SPNode visit(Communication n) {
+    public SPNode visit(Communication n) throws MergingException {
         SPNode continuation = (n.getContinuation()).accept(this);
 
         final SPNode retVal;
@@ -65,13 +60,18 @@ public class BehaviourProjection implements CCVisitor< SPNode >
     }
 
     @Override
-    public SPNode visit(Condition n) {
+    public SPNode visit(Condition n) throws MergingException {
         final SPNode retVal;
 
         if( processName.equals( n.getProcess() ) ) {
-            retVal = new ast.sp.nodes.Condition( n.getProcess(), n.getExpression(), (Behaviour) n.getThenChoreography(), (Behaviour) n.getElseChoreograpy());
+            retVal = new ast.sp.nodes.Condition( n.getProcess(), n.getExpression(), (Behaviour) n.getThenChoreography().accept( this ), (Behaviour) n.getElseChoreograpy().accept( this ) );
         } else {
-            Behaviour merge = mp.merge( n.getThenChoreography(), n.getElseChoreograpy());
+            Behaviour merge = null;
+            try {
+                merge = (Behaviour) mp.merge( n.getThenChoreography().accept( this ), n.getElseChoreograpy().accept( this ) );
+            } catch (MergingException e) {
+                e.printStackTrace();
+            }
             retVal = merge;
         }
 
@@ -80,15 +80,15 @@ public class BehaviourProjection implements CCVisitor< SPNode >
 
     @Override
     public SPNode visit(Termination n) {
-        return (SPNode) new Termination();
+        return (SPNode) new ast.sp.nodes.Termination();
     }
 
     @Override
-    public SPNode visit(ProcedureDefinition n) {
+    public SPNode visit(ProcedureDefinition n) throws MergingException {
         final SPNode retval;
 
         if (n.getProcesses().contains(processName)){
-            retval = new ast.sp.nodes.ProcedureDefinition(n.getProcedure(), (Behaviour) n.getChoreography(), (Behaviour) n.getInChoreography()));
+            retval = new ast.sp.nodes.ProcedureDefinition(n.getProcedure(), (Behaviour) n.getChoreography().accept(this), (Behaviour) n.getInChoreography().accept(this));
         } else {
             retval = (SPNode) n.getInChoreography();
             return retval;

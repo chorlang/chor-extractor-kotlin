@@ -1,7 +1,8 @@
 package ast.cc.nodes;
 
-import ast.cc.interfaces.CCNode;
 import ast.cc.CCVisitor;
+import ast.cc.interfaces.CCNode;
+import epp.MergingException;
 
 /**
  * Created by lara on 03/04/17.
@@ -37,7 +38,7 @@ public class Condition implements CCNode{
 
 
     @Override
-    public <T> T accept(CCVisitor<T> visitor) {
+    public <T> T accept(CCVisitor<T> visitor) throws MergingException {
         return visitor.visit(this);
     }
 }

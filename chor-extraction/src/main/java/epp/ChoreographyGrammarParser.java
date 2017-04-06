@@ -3,9 +3,12 @@ package epp;
 import antlr4.ChoreographyLexer;
 import antlr4.ChoreographyParser;
 import ast.cc.interfaces.CCNode;
+import ast.sp.interfaces.SPNode;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.HashSet;
 
 public class ChoreographyGrammarParser {
     private ANTLRInputStream stream;
@@ -28,16 +31,21 @@ public class ChoreographyGrammarParser {
         return tree;
     }
 
-    public static void main(String[] args){
-        ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("if p.e then p.expr->q;stop else def X = p.e->q;stop in X");
+    public static void main(String[] args) throws MergingException {
+        ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("if p.e then p.expr->q;q.expr->s;stop else p.expr->q;q.expr->s;stop");
         ParseTree tree = grammarParser.getTree();
         if (tree!=null) {
             ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor();
             CCNode ccast = choreographyVisitor.getCCAST(tree);
-            //String process = choreographyVisitor.getProcesses().;
+            HashSet<String> processes = choreographyVisitor.getProcesses();
 
             BehaviourProjection behaviourProjection = new BehaviourProjection();
-            //SPNode ssast = behaviourProjection.getSPAST(ccast, process);
+            HashSet<SPNode> projectionNodes = new HashSet<>();
+            for (String process: processes) {
+                SPNode ssast = behaviourProjection.getSPAST(ccast, process);
+                projectionNodes.add(ssast);
+            }
+            projectionNodes.toString();
         }
     }
 }

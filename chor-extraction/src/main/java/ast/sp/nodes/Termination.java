@@ -1,11 +1,11 @@
 package ast.sp.nodes;
 
 import ast.sp.interfaces.Behaviour;
-import ast.sp.interfaces.NetworkInterface;
+import ast.sp.interfaces.SPNode;
 
 /**
  * Created by lara on 04/04/17.
  */
-public class Termination implements Behaviour, NetworkInterface {
+public class Termination implements Behaviour, SPNode {
     private final String termination = "stop";
 }

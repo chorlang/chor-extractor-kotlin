@@ -2,6 +2,7 @@ package ast.cc.nodes;
 
 import ast.cc.interfaces.CCNode;
 import ast.cc.CCVisitor;
+import epp.MergingException;
 
 import java.util.HashSet;
 
@@ -18,7 +19,7 @@ public class ProcedureInvocation implements CCNode{
     }
 
     @Override
-    public <T> T accept(CCVisitor<T> visitor) {
+    public <T> T accept(CCVisitor<T> visitor) throws MergingException {
         return visitor.visit(this);
     }
 

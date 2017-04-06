@@ -3,6 +3,7 @@ package ast.cc.nodes;
 import ast.cc.CCVisitor;
 import ast.cc.interfaces.CCNode;
 import ast.cc.interfaces.Interaction;
+import epp.MergingException;
 
 /**
  * Created by lara on 03/04/17.
@@ -25,8 +26,7 @@ public class Communication implements Interaction
         this.continuation = continuation;
     }
 
-    public <T> T accept( CCVisitor<T> visitor )
-    {
+    public <T> T accept( CCVisitor<T> visitor ) throws MergingException {
         return visitor.visit( this );
     }
 
