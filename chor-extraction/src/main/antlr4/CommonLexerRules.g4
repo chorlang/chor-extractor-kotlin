@@ -159,9 +159,9 @@ DOT             : '.';
 ASSIGN          : '=';
 GT              : '>';
 LT              : '<';
-// BANG            : '!'; //replaced with send
+BANG            : '!'; //replaced with send
 TILDE           : '~';
-// QUESTION        : '?'; //replaced with receive
+QUESTION        : '?'; //replaced with receive
 COLON           : ':'; //replaced with has
 EQUAL           : '==';
 LE              : '<=';
@@ -171,12 +171,12 @@ AND             : '&&';
 OR              : '||';
 INC             : '++';
 DEC             : '--';
-// ADD             : '+'; //replaced with select
+ADD             : '+'; //replaced with select
 SUB             : '-';
-// MUL             : '*'; //replaced with wildcard
+MUL             : '*'; //replaced with wildcard
 DIV             : '/';
-// BITAND          : '&'; //replace with choose
-// BITOR           : '|'; //replaced with parallel
+BITAND          : '&'; //replace with choose
+// BITOR           : '|'; //replaced with parallelNetworks
 CARET           : '^';
 MOD             : '%';
 
@@ -276,8 +276,9 @@ TERMINATE : 'stop';
 Parallel : '|';
 Wildcard : 'this';
 Arrow : '->';
-Send : '!';
-Receive : '?';
-Select : '+';
-Choose : '&';
-Continue : ';';
+
+//expr: expr ('*'|'/') expr
+//    |	expr ('+'|'-') expr
+//    |	INT
+//    |	'(' expr ')'
+//;

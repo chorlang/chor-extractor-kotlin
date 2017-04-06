@@ -2,12 +2,13 @@ package epp;
 
 import antlr4.ChoreographyLexer;
 import antlr4.ChoreographyParser;
+import ast.cc.interfaces.CCNode;
+import ast.sp.interfaces.SPNode;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.HashMap;
-import java.util.Set;
+import java.util.HashSet;
 
 public class ChoreographyGrammarParser {
     private ANTLRInputStream stream;
@@ -30,25 +31,21 @@ public class ChoreographyGrammarParser {
         return tree;
     }
 
-    public static void main(String[] args){
-        ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("p.expr->q;stop");
+    public static void main(String[] args) throws MergingException {
+        ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("if p.e then p.expr->q;q.expr->s;stop else p.expr->q;q.expr->s;stop");
         ParseTree tree = grammarParser.getTree();
         if (tree!=null) {
-            PreprocessingVisitor preprocessingVisitor = new PreprocessingVisitor();
-            preprocessingVisitor.visit(tree);
-            Set<String> processes = preprocessingVisitor.getProcesses();
-            HashMap procedures = preprocessingVisitor.getProcedures();
+            ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor();
+            CCNode ccast = choreographyVisitor.getCCAST(tree);
+            HashSet<String> processes = choreographyVisitor.getProcesses();
 
-            ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor(processes, procedures);
-            choreographyVisitor.visit(tree);
-
-            HashMap<String, String> chorProcesses = choreographyVisitor.getProcesses();
-            System.out.println("Return:");
-            for (Object value : chorProcesses.values())
-                System.out.println(value);
-
-
+            BehaviourProjection behaviourProjection = new BehaviourProjection();
+            HashSet<SPNode> projectionNodes = new HashSet<>();
+            for (String process: processes) {
+                SPNode ssast = behaviourProjection.getSPAST(ccast, process);
+                projectionNodes.add(ssast);
+            }
+            projectionNodes.toString();
         }
-
     }
 }

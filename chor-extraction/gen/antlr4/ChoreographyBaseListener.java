@@ -16,6 +16,18 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterProg(ChoreographyParser.ProgContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitProg(ChoreographyParser.ProgContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterChoreography(ChoreographyParser.ChoreographyContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -64,25 +76,13 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx) { }
+	@Override public void enterInteraction(ChoreographyParser.InteractionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitInternal_choreography(ChoreographyParser.Internal_choreographyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExternal_choreography(ChoreographyParser.External_choreographyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExternal_choreography(ChoreographyParser.External_choreographyContext ctx) { }
+	@Override public void exitInteraction(ChoreographyParser.InteractionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -100,73 +100,13 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterSend(ChoreographyParser.SendContext ctx) { }
+	@Override public void enterSelection(ChoreographyParser.SelectionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitSend(ChoreographyParser.SendContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterChoose(ChoreographyParser.ChooseContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitChoose(ChoreographyParser.ChooseContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterSendingProcess(ChoreographyParser.SendingProcessContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSendingProcess(ChoreographyParser.SendingProcessContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterReceivingProcess(ChoreographyParser.ReceivingProcessContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitReceivingProcess(ChoreographyParser.ReceivingProcessContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterFirstExpression(ChoreographyParser.FirstExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitFirstExpression(ChoreographyParser.FirstExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterSecondExpression(ChoreographyParser.SecondExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitSecondExpression(ChoreographyParser.SecondExpressionContext ctx) { }
+	@Override public void exitSelection(ChoreographyParser.SelectionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -184,13 +124,13 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpr(ChoreographyParser.ExprContext ctx) { }
+	@Override public void enterProcess(ChoreographyParser.ProcessContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitExpr(ChoreographyParser.ExprContext ctx) { }
+	@Override public void exitProcess(ChoreographyParser.ProcessContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -203,18 +143,6 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitProcedure(ChoreographyParser.ProcedureContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterProcess(ChoreographyParser.ProcessContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitProcess(ChoreographyParser.ProcessContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

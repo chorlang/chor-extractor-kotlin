@@ -38,25 +38,95 @@ public interface NetworkListener extends ParseTreeListener {
 	 */
 	void exitBehaviour(NetworkParser.BehaviourContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NetworkParser#expr}.
+	 * Enter a parse tree produced by {@link NetworkParser#interaction}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpr(NetworkParser.ExprContext ctx);
+	void enterInteraction(NetworkParser.InteractionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NetworkParser#expr}.
+	 * Exit a parse tree produced by {@link NetworkParser#interaction}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpr(NetworkParser.ExprContext ctx);
+	void exitInteraction(NetworkParser.InteractionContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NetworkParser#value}.
+	 * Enter a parse tree produced by {@link NetworkParser#sending}.
 	 * @param ctx the parse tree
 	 */
-	void enterValue(NetworkParser.ValueContext ctx);
+	void enterSending(NetworkParser.SendingContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NetworkParser#value}.
+	 * Exit a parse tree produced by {@link NetworkParser#sending}.
 	 * @param ctx the parse tree
 	 */
-	void exitValue(NetworkParser.ValueContext ctx);
+	void exitSending(NetworkParser.SendingContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#receiving}.
+	 * @param ctx the parse tree
+	 */
+	void enterReceiving(NetworkParser.ReceivingContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#receiving}.
+	 * @param ctx the parse tree
+	 */
+	void exitReceiving(NetworkParser.ReceivingContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#selection}.
+	 * @param ctx the parse tree
+	 */
+	void enterSelection(NetworkParser.SelectionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#selection}.
+	 * @param ctx the parse tree
+	 */
+	void exitSelection(NetworkParser.SelectionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#offering}.
+	 * @param ctx the parse tree
+	 */
+	void enterOffering(NetworkParser.OfferingContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#offering}.
+	 * @param ctx the parse tree
+	 */
+	void exitOffering(NetworkParser.OfferingContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void enterCondition(NetworkParser.ConditionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#condition}.
+	 * @param ctx the parse tree
+	 */
+	void exitCondition(NetworkParser.ConditionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#procedureDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcedureDefinition(NetworkParser.ProcedureDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#procedureDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcedureDefinition(NetworkParser.ProcedureDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#procedureInvocation}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcedureInvocation(NetworkParser.ProcedureInvocationContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#procedureInvocation}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcedureInvocation(NetworkParser.ProcedureInvocationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterExpression(NetworkParser.ExpressionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitExpression(NetworkParser.ExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NetworkParser#process}.
 	 * @param ctx the parse tree
@@ -87,4 +157,14 @@ public interface NetworkListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitLabel(NetworkParser.LabelContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void enterValue(NetworkParser.ValueContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#value}.
+	 * @param ctx the parse tree
+	 */
+	void exitValue(NetworkParser.ValueContext ctx);
 }

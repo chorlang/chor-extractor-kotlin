@@ -29,17 +29,59 @@ public interface NetworkVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitBehaviour(NetworkParser.BehaviourContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NetworkParser#expr}.
+	 * Visit a parse tree produced by {@link NetworkParser#interaction}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpr(NetworkParser.ExprContext ctx);
+	T visitInteraction(NetworkParser.InteractionContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NetworkParser#value}.
+	 * Visit a parse tree produced by {@link NetworkParser#sending}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitValue(NetworkParser.ValueContext ctx);
+	T visitSending(NetworkParser.SendingContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#receiving}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitReceiving(NetworkParser.ReceivingContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#selection}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSelection(NetworkParser.SelectionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#offering}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOffering(NetworkParser.OfferingContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#condition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitCondition(NetworkParser.ConditionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#procedureDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedureDefinition(NetworkParser.ProcedureDefinitionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#procedureInvocation}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedureInvocation(NetworkParser.ProcedureInvocationContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitExpression(NetworkParser.ExpressionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NetworkParser#process}.
 	 * @param ctx the parse tree
@@ -58,4 +100,10 @@ public interface NetworkVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitLabel(NetworkParser.LabelContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#value}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitValue(NetworkParser.ValueContext ctx);
 }
