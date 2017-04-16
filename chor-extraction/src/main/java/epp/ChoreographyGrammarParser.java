@@ -32,7 +32,7 @@ public class ChoreographyGrammarParser {
     }
 
     public static void main(String[] args) throws MergingException {
-        ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("if p.e then p.expr->q;q.expr->s;stop else p.expr->q;q.expr->s;stop");
+        ChoreographyGrammarParser grammarParser = new ChoreographyGrammarParser("if p.e then p.e->q;stop else p.e->q;stop");
         ParseTree tree = grammarParser.getTree();
         if (tree!=null) {
             ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor();

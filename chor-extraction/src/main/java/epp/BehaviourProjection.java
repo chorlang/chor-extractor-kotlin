@@ -20,11 +20,9 @@ import ast.sp.nodes.Sending;
 public class BehaviourProjection implements CCVisitor< SPNode >
 {
     private String processName;
-    private MergingProjection mp;
 
     public SPNode getSPAST(CCNode node, String processName) throws MergingException {
         this.processName = processName;
-        mp = new MergingProjection(processName);
         return node.accept(this);
     }
 
@@ -68,7 +66,7 @@ public class BehaviourProjection implements CCVisitor< SPNode >
         } else {
             Behaviour merge = null;
             try {
-                merge = (Behaviour) mp.merge( n.getThenChoreography().accept( this ), n.getElseChoreograpy().accept( this ) );
+                merge = (Behaviour) MergingProjection.merge( n.getThenChoreography().accept( this ), n.getElseChoreograpy().accept( this ) );
             } catch (MergingException e) {
                 e.printStackTrace();
             }

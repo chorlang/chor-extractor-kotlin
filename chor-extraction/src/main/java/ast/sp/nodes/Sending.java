@@ -29,4 +29,8 @@ public class Sending implements Interaction {
     public String getExpression() {
         return expression;
     }
+
+    public String toString() {
+        return process + "!<" + expression + ">; " + continuation.toString();
+    }
 }
