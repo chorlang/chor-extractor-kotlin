@@ -13,6 +13,8 @@ import ast.sp.interfaces.SPNode;
 import ast.sp.nodes.Receiving;
 import ast.sp.nodes.Sending;
 
+import java.util.HashMap;
+
 /**
  *
  * @author Fabrizio Montesi <famontesi@gmail.com>
@@ -33,7 +35,7 @@ public class BehaviourProjection implements CCVisitor< SPNode >
         if( processName.equals( n.getSender() ) ) {
             retVal = new ast.sp.nodes.Selection( (Behaviour) continuation, n.getReceiver(), n.getLabel());
         } else if ( processName.equals( n.getReceiver() ) ) {
-            retVal = new ast.sp.nodes.Selection( (Behaviour) continuation, n.getSender(), n.getLabel() );
+            retVal = new ast.sp.nodes.Offering(n.getSender(), new HashMap<String, Behaviour>(){{put(n.getLabel(), (Behaviour) continuation);}});
         } else {
             retVal = continuation;
         }

@@ -15,4 +15,8 @@ public class ProcedureInvocation implements Behaviour {
     public String getProcedure() {
         return procedure;
     }
+
+    public String toString() {
+        return procedure;
+    }
 }

@@ -33,4 +33,8 @@ public class Condition implements Behaviour{
     public Behaviour getElseBehaviour() {
         return elseBehaviour;
     }
+
+    public String toString() {
+        return "if " + process + "." + expression + " then " + thenBehaviour.toString() + " else " + elseBehaviour.toString();
+    }
 }

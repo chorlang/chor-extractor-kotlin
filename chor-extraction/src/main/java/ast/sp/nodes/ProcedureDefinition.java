@@ -27,4 +27,8 @@ public class ProcedureDefinition implements Behaviour {
     public Behaviour getInBehaviour() {
         return inBehaviour;
     }
+
+    public String toString() {
+        return "def " + procedure + " =" + behaviour.toString() + " in " + inBehaviour.toString();
+    }
 }

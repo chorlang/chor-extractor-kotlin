@@ -28,4 +28,8 @@ public class Selection implements Interaction {
     public String getLabel() {
         return label;
     }
+
+    public String toString() {
+        return process + " + " + label + "; " + continuation.toString();
+    }
 }

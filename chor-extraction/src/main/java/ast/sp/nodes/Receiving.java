@@ -22,4 +22,8 @@ public class Receiving implements Interaction {
     public String getProcess() {
         return process;
     }
+
+    public String toString() {
+        return process + "?; " + continuation.toString();
+    }
 }

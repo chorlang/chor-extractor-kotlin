@@ -8,4 +8,8 @@ import ast.sp.interfaces.SPNode;
  */
 public class Termination implements Behaviour, SPNode {
     private final String termination = "stop";
+
+    public String toString() {
+        return "stop";
+    }
 }
