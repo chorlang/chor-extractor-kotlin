@@ -73,7 +73,9 @@ public class MergingProjection {
     public static SPNode merge(Condition left, Condition right) throws MergingException {
         Behaviour leftCondition = (Behaviour) merge(left.getThenBehaviour(), left.getThenBehaviour());
         Behaviour rightCondition = (Behaviour) merge(right.getElseBehaviour(), right.getElseBehaviour());
-        return merge(leftCondition, rightCondition);
+        assertCondition( left.getProcess().equals( right.getProcess() ), "" );
+        assertCondition( left.getExpression().equals( right.getExpression() ), "" );
+        return new Condition(left.getProcess(), left.getExpression(), leftCondition, rightCondition );
     }
 
     public static SPNode merge(ProcedureInvocation left, ProcedureInvocation right){
