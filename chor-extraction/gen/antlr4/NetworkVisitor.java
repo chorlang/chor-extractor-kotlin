@@ -11,17 +11,17 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface NetworkVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by {@link NetworkParser#prog}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProg(NetworkParser.ProgContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link NetworkParser#network}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
 	T visitNetwork(NetworkParser.NetworkContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#processBehaviour}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcessBehaviour(NetworkParser.ProcessBehaviourContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NetworkParser#behaviour}.
 	 * @param ctx the parse tree
@@ -58,6 +58,12 @@ public interface NetworkVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitOffering(NetworkParser.OfferingContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#labeledBehaviour}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitLabeledBehaviour(NetworkParser.LabeledBehaviourContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NetworkParser#condition}.
 	 * @param ctx the parse tree

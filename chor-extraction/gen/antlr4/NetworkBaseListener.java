@@ -16,18 +16,6 @@ public class NetworkBaseListener implements NetworkListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterProg(NetworkParser.ProgContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitProg(NetworkParser.ProgContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterNetwork(NetworkParser.NetworkContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -35,6 +23,18 @@ public class NetworkBaseListener implements NetworkListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitNetwork(NetworkParser.NetworkContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterProcessBehaviour(NetworkParser.ProcessBehaviourContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitProcessBehaviour(NetworkParser.ProcessBehaviourContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -107,6 +107,18 @@ public class NetworkBaseListener implements NetworkListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitOffering(NetworkParser.OfferingContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterLabeledBehaviour(NetworkParser.LabeledBehaviourContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitLabeledBehaviour(NetworkParser.LabeledBehaviourContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

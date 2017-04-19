@@ -62,8 +62,8 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
     public CCNode visitCondition(ConditionContext ctx) {
         String process = ctx.process().getText();
         String expression = ctx.expression().getText();
-        CCNode thenChoreography = visit(ctx.choreography().get(0));
-        CCNode elseChoreography = visit(ctx.choreography().get(1));
+        CCNode thenChoreography = visit(ctx.choreography(0));
+        CCNode elseChoreography = visit(ctx.choreography(1));
 
         processes.add(process);
 

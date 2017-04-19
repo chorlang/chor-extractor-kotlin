@@ -1,10 +1,10 @@
 grammar Network;
 import CommonLexerRules;
 
-prog: network (Parallel network)*;
+network: processBehaviour (Parallel processBehaviour)*;
 
-network : TERMINATE
-    |   process '=' behaviour
+processBehaviour : TERMINATE
+    |   process 'is' behaviour
     ;
 
 behaviour : interaction
@@ -15,16 +15,18 @@ behaviour : interaction
     |   TERMINATE
     ;
 
-interaction : sending ';' behaviour
-    |   receiving ';' behaviour
-    |   selection ';' behaviour
+interaction : sending
+    |   receiving
+    |   selection
     ;
 
-sending: process BANG LT expression GT;
-receiving: process QUESTION;
-selection: process ADD label;
+sending: process BANG LT expression GT ';' behaviour;
+receiving: process QUESTION ';' behaviour;
+selection: process ADD label ';' behaviour;
 
-offering: process '&' LBRACE (label COLON behaviour) (',' label COLON behaviour)* RBRACE;
+offering: process '&' LBRACE (labeledBehaviour) (',' labeledBehaviour)* RBRACE;
+labeledBehaviour: label COLON behaviour;
+
 condition: 'if' process '.' expression 'then' behaviour 'else' behaviour;
 procedureDefinition: 'def' procedure ASSIGN behaviour 'in' behaviour;
 procedureInvocation: procedure;

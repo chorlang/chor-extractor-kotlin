@@ -8,16 +8,6 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface NetworkListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link NetworkParser#prog}.
-	 * @param ctx the parse tree
-	 */
-	void enterProg(NetworkParser.ProgContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NetworkParser#prog}.
-	 * @param ctx the parse tree
-	 */
-	void exitProg(NetworkParser.ProgContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link NetworkParser#network}.
 	 * @param ctx the parse tree
 	 */
@@ -27,6 +17,16 @@ public interface NetworkListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitNetwork(NetworkParser.NetworkContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#processBehaviour}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcessBehaviour(NetworkParser.ProcessBehaviourContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#processBehaviour}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcessBehaviour(NetworkParser.ProcessBehaviourContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NetworkParser#behaviour}.
 	 * @param ctx the parse tree
@@ -87,6 +87,16 @@ public interface NetworkListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitOffering(NetworkParser.OfferingContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#labeledBehaviour}.
+	 * @param ctx the parse tree
+	 */
+	void enterLabeledBehaviour(NetworkParser.LabeledBehaviourContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#labeledBehaviour}.
+	 * @param ctx the parse tree
+	 */
+	void exitLabeledBehaviour(NetworkParser.LabeledBehaviourContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NetworkParser#condition}.
 	 * @param ctx the parse tree

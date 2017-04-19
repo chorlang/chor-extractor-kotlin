@@ -17,14 +17,14 @@ public class NetworkBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitProg(NetworkParser.ProgContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNetwork(NetworkParser.NetworkContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitNetwork(NetworkParser.NetworkContext ctx) { return visitChildren(ctx); }
+	@Override public T visitProcessBehaviour(NetworkParser.ProcessBehaviourContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -67,6 +67,13 @@ public class NetworkBaseVisitor<T> extends AbstractParseTreeVisitor<T> implement
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitOffering(NetworkParser.OfferingContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitLabeledBehaviour(NetworkParser.LabeledBehaviourContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
