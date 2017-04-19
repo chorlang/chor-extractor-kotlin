@@ -47,7 +47,7 @@ public class PositiveTests extends Assert {
     @Theory
     public void testProjection(final Object... testData) throws MergingException {
         String test = (String) testData[0];
-        final String actual = epp.projectToString(test);
+        final String actual = epp.project(test).toString();
         assertEquals(test, testData[1], actual);
         System.out.println("Test: " + test);
         System.out.println("Output: " + testData[1]);
