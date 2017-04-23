@@ -23,7 +23,8 @@ public class NetworkVisitor extends NetworkBaseVisitor<SPNode>{
         network = new Network(new HashMap<>());
         List<ProcessBehaviourContext> pb =  ctx.processBehaviour();
         for (ProcessBehaviourContext pbc: pb) {
-            network.addProcess((HashMap<String, SPNode>) visit(pbc));
+            Network sp = (Network) visit(pbc);
+            network.addProcess(sp);
         }
 
         return network;
