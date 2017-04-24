@@ -18,6 +18,8 @@ public class PositiveTests extends Assert {
 
     @DataPoints
     public static Object[][] data = new Object[][] {
+            // { "main { stop }", "" },                                             //termination
+            // { "def X { p.e->q;stop } main { X }", "p is def X =q!<e>; stop in X | q is def X =p?; stop in X" }, //procedure definition/invocation
             { "stop", "" },                                             //termination
             { "p.e->q;stop", "p is q!<e>; stop | q is p?; stop" },      //communication
             { "p->q[l];stop", "p is q + l; stop | q is p&{l: stop}" },  //selection
