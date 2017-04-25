@@ -1,13 +1,13 @@
 package ast.cc.nodes;
 
 import ast.cc.CCVisitor;
-import ast.cc.interfaces.CCNode;
+import ast.cc.interfaces.Choreography;
 import epp.MergingException;
 
 /**
  * Created by lara on 04/04/17.
  */
-public class Termination implements CCNode {
+public class Termination implements Choreography {
     private final String termination = "stop";
 
     @Override

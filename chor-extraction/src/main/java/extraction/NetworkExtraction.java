@@ -112,8 +112,8 @@ public class NetworkExtraction {
                     String selectionProcess = offering.getProcess();
 
                     SPNode node = network.get(offering.getProcess());
-                    if ((node != null) && (node instanceof Selection) && (((Selection) node).getProcess().equals(process.getKey()))) {
-                        Selection selection = (Selection) node;
+                    if ((node != null) && (node instanceof SelectionSP ) && (((SelectionSP) node).getProcess().equals(process.getKey()))) {
+                        SelectionSP selection = (SelectionSP) node;
                         String offeringProcess = selection.getProcess();
 
                         ExtractionLabel label = new ast.sp.labels.Selection(selectionProcess, offeringProcess, selection.getLabel());
@@ -127,9 +127,9 @@ public class NetworkExtraction {
 
                         networks.addLast(nextNode);
                     }
-                } else if (processBehaviour instanceof Selection) {
+                } else if (processBehaviour instanceof SelectionSP) {
 
-                    Selection selection = (Selection) processBehaviour;
+                    SelectionSP selection = (SelectionSP) processBehaviour;
                     String offeringProcess = selection.getProcess();
 
                     SPNode node = network.get(selection.getProcess());
@@ -147,8 +147,8 @@ public class NetworkExtraction {
 
                         networks.addLast(nextNode);
                     }
-                } else if (processBehaviour instanceof Condition) {
-                    Condition condition = (Condition) processBehaviour;
+                } else if (processBehaviour instanceof ConditionSP) {
+                    ConditionSP condition = (ConditionSP) processBehaviour;
 
                     ExtractionLabel label = new Then(condition.getProcess(), condition.getExpression());
 

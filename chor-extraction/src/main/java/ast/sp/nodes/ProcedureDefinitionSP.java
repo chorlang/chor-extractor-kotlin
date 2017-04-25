@@ -5,12 +5,12 @@ import ast.sp.interfaces.Behaviour;
 /**
  * Created by lara on 04/04/17.
  */
-public class ProcedureDefinition implements Behaviour {
+public class ProcedureDefinitionSP implements Behaviour {
     private final String procedure;
     private final Behaviour behaviour;
     private final Behaviour inBehaviour;
 
-    public ProcedureDefinition(String procedure, Behaviour behaviour, Behaviour inBehaviour) {
+    public ProcedureDefinitionSP(String procedure, Behaviour behaviour, Behaviour inBehaviour) {
         this.procedure = procedure;
         this.behaviour = behaviour;
         this.inBehaviour = inBehaviour;

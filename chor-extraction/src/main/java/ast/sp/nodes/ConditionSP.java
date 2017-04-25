@@ -5,13 +5,13 @@ import ast.sp.interfaces.Behaviour;
 /**
  * Created by lara on 04/04/17.
  */
-public class Condition implements Behaviour{
+public class ConditionSP implements Behaviour{
     private final String process;
     private final String expression;
     private final Behaviour thenBehaviour;
     private final Behaviour elseBehaviour;
 
-    public Condition(String process, String expression, Behaviour thenBehaviour, Behaviour elseBehaviour) {
+    public ConditionSP(String process, String expression, Behaviour thenBehaviour, Behaviour elseBehaviour) {
         this.process = process;
         this.expression = expression;
         this.thenBehaviour = thenBehaviour;

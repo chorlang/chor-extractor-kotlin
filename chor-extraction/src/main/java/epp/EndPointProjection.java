@@ -24,7 +24,7 @@ public class EndPointProjection {
             stream = new ANTLRInputStream(grammar);
             lexer = new ChoreographyLexer(stream);
             parser = new ChoreographyParser(new CommonTokenStream(lexer));
-            tree = parser.choreography();
+            tree = parser.program();
         } catch (Exception e){
             System.out.println(e.getMessage());
         }

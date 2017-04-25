@@ -6,12 +6,12 @@ import ast.sp.interfaces.Interaction;
 /**
  * Created by lara on 04/04/17.
  */
-public class Selection implements Interaction {
+public class SelectionSP implements Interaction {
     private final Behaviour continuation;
     private final String process;
     private final String label;
 
-    public Selection(Behaviour continuation, String process, String label) {
+    public SelectionSP(Behaviour continuation, String process, String label) {
         this.continuation = continuation;
         this.process = process;
         this.label = label;

@@ -2,12 +2,13 @@ package ast.cc.nodes;
 
 import ast.cc.CCVisitor;
 import ast.cc.interfaces.CCNode;
+import ast.cc.interfaces.Choreography;
 import epp.MergingException;
 
 /**
  * Created by lara on 03/04/17.
  */
-public class Condition implements CCNode{
+public class Condition implements Choreography{
     private final String process;
     private final String expression;
     private final CCNode thenChoreography;

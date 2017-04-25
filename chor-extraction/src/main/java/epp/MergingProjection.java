@@ -20,8 +20,8 @@ public class MergingProjection {
         }
     }
 
-    public static SPNode merge(Termination left, Termination right){
-        return new Termination();
+    public static SPNode merge(TerminationSP left, TerminationSP right){
+        return new TerminationSP();
     }
 
     public static SPNode merge(Sending left, Sending right) throws MergingException {
@@ -38,12 +38,12 @@ public class MergingProjection {
 
     }
 
-    public static SPNode merge(Selection left, Selection right) throws MergingException {
+    public static SPNode merge(SelectionSP left, SelectionSP right) throws MergingException {
         assertCondition ((left.getProcess().equals(right.getProcess())),"");
         assertCondition ((left.getLabel().equals(right.getLabel())),"");
 
         Behaviour continuation = (Behaviour) merge(left.getContinuation(), right.getContinuation());
-        return new Selection(continuation, left.getProcess(), left.getLabel());
+        return new SelectionSP(continuation, left.getProcess(), left.getLabel());
     }
 
     public static SPNode merge(Offering left, Offering right) throws MergingException {
@@ -70,26 +70,26 @@ public class MergingProjection {
         return new Offering(left.getProcess(), labels);
     }
 
-    public static SPNode merge(Condition left, Condition right) throws MergingException {
+    public static SPNode merge(ConditionSP left, ConditionSP right) throws MergingException {
         Behaviour leftCondition = (Behaviour) merge(left.getThenBehaviour(), left.getThenBehaviour());
         Behaviour rightCondition = (Behaviour) merge(right.getElseBehaviour(), right.getElseBehaviour());
         assertCondition( left.getProcess().equals( right.getProcess() ), "" );
         assertCondition( left.getExpression().equals( right.getExpression() ), "" );
-        return new Condition(left.getProcess(), left.getExpression(), leftCondition, rightCondition );
+        return new ConditionSP(left.getProcess(), left.getExpression(), leftCondition, rightCondition );
     }
 
-    public static SPNode merge(ProcedureInvocation left, ProcedureInvocation right){
+    public static SPNode merge(ProcedureInvocationSP left, ProcedureInvocationSP right){
         if (left.getProcedure().equals(right.getProcedure())) {
-            return new ProcedureInvocation(left.getProcedure());
+            return new ProcedureInvocationSP(left.getProcedure());
         } else return null;
     }
 
-    public SPNode merge(ProcedureDefinition left, ProcedureDefinition right) throws MergingException {
+    public SPNode merge(ProcedureDefinitionSP left, ProcedureDefinitionSP right) throws MergingException {
         assertCondition( left.getProcedure().equals( right.getProcedure() ), "" );
 
         Behaviour mergeBehaviour = (Behaviour) merge(left.getBehaviour(), right.getBehaviour());
         Behaviour mergeInBehaviour = (Behaviour) merge(left.getInBehaviour(), right.getInBehaviour());
-        return new ProcedureDefinition(left.getProcedure(), mergeBehaviour, mergeInBehaviour);
+        return new ProcedureDefinitionSP(left.getProcedure(), mergeBehaviour, mergeInBehaviour);
     }
 
     private static void assertCondition( boolean condition, String message )

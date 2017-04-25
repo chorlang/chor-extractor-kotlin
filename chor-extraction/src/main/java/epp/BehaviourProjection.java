@@ -10,8 +10,7 @@ import ast.cc.interfaces.CCNode;
 import ast.cc.nodes.*;
 import ast.sp.interfaces.Behaviour;
 import ast.sp.interfaces.SPNode;
-import ast.sp.nodes.Receiving;
-import ast.sp.nodes.Sending;
+import ast.sp.nodes.*;
 
 import java.util.HashMap;
 
@@ -22,6 +21,7 @@ import java.util.HashMap;
 public class BehaviourProjection implements CCVisitor< SPNode >
 {
     private String processName;
+    private HashMap<String, SPNode> procedureList;
 
     public SPNode getSPAST(CCNode node, String processName) throws MergingException {
         this.processName = processName;
@@ -33,9 +33,9 @@ public class BehaviourProjection implements CCVisitor< SPNode >
         final SPNode retVal;
 
         if( processName.equals( n.getSender() ) ) {
-            retVal = new ast.sp.nodes.Selection( (Behaviour) continuation, n.getReceiver(), n.getLabel());
+            retVal = new SelectionSP( (Behaviour) continuation, n.getReceiver(), n.getLabel());
         } else if ( processName.equals( n.getReceiver() ) ) {
-            retVal = new ast.sp.nodes.Offering(n.getSender(), new HashMap<String, Behaviour>(){{put(n.getLabel(), (Behaviour) continuation);}});
+            retVal = new Offering(n.getSender(), new HashMap<String, Behaviour>(){{put(n.getLabel(), (Behaviour) continuation);}});
         } else {
             retVal = continuation;
         }
@@ -64,7 +64,7 @@ public class BehaviourProjection implements CCVisitor< SPNode >
         final SPNode retVal;
 
         if( processName.equals( n.getProcess() ) ) {
-            retVal = new ast.sp.nodes.Condition( n.getProcess(), n.getExpression(), (Behaviour) n.getThenChoreography().accept( this ), (Behaviour) n.getElseChoreograpy().accept( this ) );
+            retVal = new ConditionSP( n.getProcess(), n.getExpression(), (Behaviour) n.getThenChoreography().accept( this ), (Behaviour) n.getElseChoreograpy().accept( this ) );
         } else {
             Behaviour merge = null;
             try {
@@ -80,22 +80,14 @@ public class BehaviourProjection implements CCVisitor< SPNode >
 
     @Override
     public SPNode visit(Termination n) {
-        return (SPNode) new ast.sp.nodes.Termination();
+        return new TerminationSP();
     }
 
     @Override
     public SPNode visit(ProcedureDefinition n) throws MergingException {
-        final SPNode retval;
-
-        if (n.getProcesses().contains(processName)){
-            retval = new ast.sp.nodes.ProcedureDefinition(n.getProcedure(), (Behaviour) n.getChoreography().accept(this), (Behaviour) n.getInChoreography().accept(this));
-        } else {
-            retval = (SPNode) n.getInChoreography();
-            return retval;
-        }
-
-        return retval;
-
+        String procedure = n.getProcedure();
+        SPNode node =  n.getChoreography().accept(this);
+        return new ProcedureDefinitionSP(procedure, (Behaviour) node, new ProcedureInvocationSP(procedure));
     }
 
     @Override
@@ -103,7 +95,7 @@ public class BehaviourProjection implements CCVisitor< SPNode >
         final SPNode retval;
 
         if (n.getProcesses().contains(processName)){
-            retval =  new ast.sp.nodes.ProcedureInvocation(n.getProcedure());
+            retval =  new ProcedureInvocationSP(n.getProcedure());
         } else {
             retval = (SPNode) new Termination();
             return retval;
@@ -114,6 +106,14 @@ public class BehaviourProjection implements CCVisitor< SPNode >
 
     @Override
     public SPNode visit(Program n) throws MergingException {
-        return null;
+        procedureList= new HashMap<>();
+        for (CCNode procedure: n.getProcedures()) {
+            SPNode node =  procedure.accept(this);
+            procedureList.put(((ProcedureDefinitionSP) node).getProcedure(), node);
+        }
+
+        procedureList.put("main", n.getMain().accept(this));
+        ProceduresUnwrapper pu = new ProceduresUnwrapper(procedureList);
+        return pu.unwrap();
     }
 }

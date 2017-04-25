@@ -5,10 +5,10 @@ import ast.sp.interfaces.Behaviour;
 /**
  * Created by lara on 04/04/17.
  */
-public class ProcedureInvocation implements Behaviour {
+public class ProcedureInvocationSP implements Behaviour {
     public final String procedure;
 
-    public ProcedureInvocation(String procedure) {
+    public ProcedureInvocationSP(String procedure) {
         this.procedure = procedure;
     }
 

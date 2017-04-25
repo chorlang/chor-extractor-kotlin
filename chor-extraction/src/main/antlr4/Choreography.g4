@@ -3,7 +3,7 @@ import CommonLexerRules;
 
 program : procedureDefinition* main;
 
-procedureDefinition : 'def' ID '{' choreography '}';
+procedureDefinition : 'def' procedure '{' choreography '}';
 
 main : 'main {' choreography '}';
 
@@ -15,7 +15,7 @@ choreography : interaction
 
 condition : 'if' process '.' expression 'then' choreography 'else' choreography;
 
-procedureInvocation: ID;
+procedureInvocation: procedure;
 
 interaction : communication | selection;
 

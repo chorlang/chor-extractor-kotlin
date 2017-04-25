@@ -47,7 +47,7 @@ public class NetworkVisitor extends NetworkBaseVisitor<SPNode>{
 
     @Override
     public SPNode visitSelection(SelectionContext ctx) {
-        return new Selection((Behaviour) visit(ctx.behaviour()), ctx.process().getText(), ctx.label().getText());
+        return new SelectionSP((Behaviour) visit(ctx.behaviour()), ctx.process().getText(), ctx.label().getText());
     }
 
     @Override
@@ -62,21 +62,21 @@ public class NetworkVisitor extends NetworkBaseVisitor<SPNode>{
 
     @Override
     public SPNode visitCondition(ConditionContext ctx) {
-        return new Condition(ctx.process().getText(), ctx.expression().getText(), (Behaviour) visit(ctx.behaviour(0)), (Behaviour) visit(ctx.behaviour(1)));
+        return new ConditionSP(ctx.process().getText(), ctx.expression().getText(), (Behaviour) visit(ctx.behaviour(0)), (Behaviour) visit(ctx.behaviour(1)));
     }
 
     @Override
     public SPNode visitProcedureDefinition(ProcedureDefinitionContext ctx) {
-        return new ProcedureDefinition(ctx.procedure().getText(), (Behaviour) visit(ctx.behaviour(0)), (Behaviour) ctx.behaviour(1));
+        return new ProcedureDefinitionSP(ctx.procedure().getText(), (Behaviour) visit(ctx.behaviour(0)), (Behaviour) ctx.behaviour(1));
     }
 
     @Override
     public SPNode visitProcedureInvocation(ProcedureInvocationContext ctx) {
-        return new ProcedureInvocation(ctx.procedure().getText());
+        return new ProcedureInvocationSP(ctx.procedure().getText());
     }
 
     @Override
     public SPNode visitTerminal(TerminalNode node) {
-        return new Termination();
+        return new TerminationSP();
     }
 }

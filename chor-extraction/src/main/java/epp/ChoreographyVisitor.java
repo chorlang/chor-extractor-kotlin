@@ -1,17 +1,16 @@
 package epp;
 
 import antlr4.ChoreographyBaseVisitor;
-import antlr4.ChoreographyParser.CommunicationContext;
-import antlr4.ChoreographyParser.SelectionContext;
-import antlr4.ChoreographyParser.ConditionContext;
-import antlr4.ChoreographyParser.ProcedureDefinitionContext;
-import antlr4.ChoreographyParser.ProcedureInvocationContext;
+import antlr4.ChoreographyParser.*;
 import ast.cc.interfaces.CCNode;
+import ast.cc.interfaces.Choreography;
 import ast.cc.nodes.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
 
@@ -31,8 +30,8 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
 
     @Override
     public CCNode visitCommunication(CommunicationContext ctx) {
-        String sender = ctx.process().get(0).getText();
-        String receiver = ctx.process().get(1).getText();
+        String sender = ctx.process(0).getText();
+        String receiver = ctx.process(1).getText();
         String expression = ctx.expression().getText();
 
         CCNode continuation = visit(ctx.choreography());
@@ -46,8 +45,8 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
     @Override
     public CCNode visitSelection(SelectionContext ctx) {
 
-        String sender = ctx.process().get(0).getText();
-        String receiver = ctx.process().get(1).getText();
+        String sender = ctx.process(0).getText();
+        String receiver = ctx.process(1).getText();
         String expression = ctx.label().getText();
 
         CCNode continuation = visit(ctx.choreography());
@@ -71,17 +70,23 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
     }
 
     @Override
-    public CCNode visitProcedureDefinition(ProcedureDefinitionContext ctx) {
-        String procedurename = ctx.procedure().getText();
-        CCNode choreography = visit(ctx.choreography(0));
-        CCNode inchoreography = visit(ctx.choreography(1));
+    public CCNode visitProgram(ProgramContext ctx) {
+        List<CCNode> procedures = ctx.procedureDefinition().stream().map(this::visit).collect(Collectors.toList());
+        return new Program((Choreography) visit(ctx.main()), procedures);
+    }
 
-        return new ProcedureDefinition(procedurename, choreography, inchoreography, processes);
+    @Override
+    public CCNode visitProcedureDefinition(ProcedureDefinitionContext ctx) {
+        return new ProcedureDefinition(ctx.procedure().getText(), visit(ctx.choreography()), processes);
+    }
+
+    @Override
+    public CCNode visitMain(MainContext ctx) {
+        return visit(ctx.choreography());
     }
 
     @Override public CCNode visitProcedureInvocation(ProcedureInvocationContext ctx) {
         String procedureName = ctx.procedure().getText();
-
         return new ProcedureInvocation(procedureName, processes);
     }
 

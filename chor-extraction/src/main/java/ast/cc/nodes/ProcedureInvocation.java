@@ -1,7 +1,7 @@
 package ast.cc.nodes;
 
-import ast.cc.interfaces.CCNode;
 import ast.cc.CCVisitor;
+import ast.cc.interfaces.Choreography;
 import epp.MergingException;
 
 import java.util.HashSet;
@@ -9,7 +9,7 @@ import java.util.HashSet;
 /**
  * Created by lara on 04/04/17.
  */
-public class ProcedureInvocation implements CCNode{
+public class ProcedureInvocation implements Choreography{
     private final String procedure;
     private final HashSet<String> processes;
 
