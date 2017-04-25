@@ -11,11 +11,23 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  */
 public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#prog}.
+	 * Visit a parse tree produced by {@link ChoreographyParser#program}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitProg(ChoreographyParser.ProgContext ctx);
+	T visitProgram(ChoreographyParser.ProgramContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ChoreographyParser#procedureDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link ChoreographyParser#main}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMain(ChoreographyParser.MainContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#choreography}.
 	 * @param ctx the parse tree
@@ -28,12 +40,6 @@ public interface ChoreographyVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCondition(ChoreographyParser.ConditionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link ChoreographyParser#procedureDefinition}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link ChoreographyParser#procedureInvocation}.
 	 * @param ctx the parse tree

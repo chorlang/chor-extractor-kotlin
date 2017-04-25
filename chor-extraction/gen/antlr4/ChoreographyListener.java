@@ -8,15 +8,35 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  */
 public interface ChoreographyListener extends ParseTreeListener {
 	/**
-	 * Enter a parse tree produced by {@link ChoreographyParser#prog}.
+	 * Enter a parse tree produced by {@link ChoreographyParser#program}.
 	 * @param ctx the parse tree
 	 */
-	void enterProg(ChoreographyParser.ProgContext ctx);
+	void enterProgram(ChoreographyParser.ProgramContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link ChoreographyParser#prog}.
+	 * Exit a parse tree produced by {@link ChoreographyParser#program}.
 	 * @param ctx the parse tree
 	 */
-	void exitProg(ChoreographyParser.ProgContext ctx);
+	void exitProgram(ChoreographyParser.ProgramContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ChoreographyParser#procedureDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ChoreographyParser#procedureDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link ChoreographyParser#main}.
+	 * @param ctx the parse tree
+	 */
+	void enterMain(ChoreographyParser.MainContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link ChoreographyParser#main}.
+	 * @param ctx the parse tree
+	 */
+	void exitMain(ChoreographyParser.MainContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ChoreographyParser#choreography}.
 	 * @param ctx the parse tree
@@ -37,16 +57,6 @@ public interface ChoreographyListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCondition(ChoreographyParser.ConditionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link ChoreographyParser#procedureDefinition}.
-	 * @param ctx the parse tree
-	 */
-	void enterProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ChoreographyParser#procedureDefinition}.
-	 * @param ctx the parse tree
-	 */
-	void exitProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link ChoreographyParser#procedureInvocation}.
 	 * @param ctx the parse tree

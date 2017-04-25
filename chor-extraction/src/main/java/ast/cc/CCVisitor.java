@@ -14,4 +14,5 @@ public interface CCVisitor<T>
     public T visit( Termination n ) throws MergingException;
     public T visit( ProcedureDefinition n ) throws MergingException;
     public T visit( ProcedureInvocation n ) throws MergingException;
+    public T visit(Program n) throws MergingException;
 }

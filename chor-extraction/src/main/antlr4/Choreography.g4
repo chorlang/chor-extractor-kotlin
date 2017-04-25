@@ -3,9 +3,9 @@ import CommonLexerRules;
 
 program : procedureDefinition* main;
 
-procedureDefinition : 'def' ID LCURLY choreography RCURLY;
+procedureDefinition : 'def' ID '{' choreography '}';
 
-main : 'main' LCURLY choreography RCURLY;
+main : 'main {' choreography '}';
 
 choreography : interaction
     |   condition
@@ -14,8 +14,6 @@ choreography : interaction
     ;
 
 condition : 'if' process '.' expression 'then' choreography 'else' choreography;
-
-//procedureDefinition: 'def' procedure ASSIGN choreography 'in' choreography;
 
 procedureInvocation: ID;
 

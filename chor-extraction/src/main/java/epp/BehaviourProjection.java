@@ -111,4 +111,9 @@ public class BehaviourProjection implements CCVisitor< SPNode >
 
         return retval;
     }
+
+    @Override
+    public SPNode visit(Program n) throws MergingException {
+        return null;
+    }
 }

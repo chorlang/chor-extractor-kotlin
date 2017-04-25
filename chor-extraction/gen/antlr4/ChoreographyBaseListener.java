@@ -16,13 +16,37 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterProg(ChoreographyParser.ProgContext ctx) { }
+	@Override public void enterProgram(ChoreographyParser.ProgramContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitProg(ChoreographyParser.ProgContext ctx) { }
+	@Override public void exitProgram(ChoreographyParser.ProgramContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterMain(ChoreographyParser.MainContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitMain(ChoreographyParser.MainContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -47,18 +71,6 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitCondition(ChoreographyParser.ConditionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitProcedureDefinition(ChoreographyParser.ProcedureDefinitionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
