@@ -35,11 +35,11 @@ public class ChoreographyExtraction {
         return tree = this.getTree(network);
     }
 
-    public DirectedGraph<HashMap<String,SPNode>, String> extract() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void extract() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         NetworkVisitor networkVisitor = new NetworkVisitor();
         SPNode sp = networkVisitor.visit(tree);
         NetworkExtraction np = new NetworkExtraction(sp);
-        return np.getGraph();
+        np.graphToChoreograpy();
     }
 
     public static CCNode graphToChoreography( DirectedGraph<HashMap<String,SPNode>, String> graph )

@@ -1,12 +1,10 @@
 package extraction;
 
-import ast.sp.nodes.Condition;
-import ast.sp.nodes.Selection;
+import ast.sp.interfaces.ExtractionLabel;
 import ast.sp.interfaces.SPNode;
-import ast.sp.nodes.Network;
-import ast.sp.nodes.Offering;
-import ast.sp.nodes.Receiving;
-import ast.sp.nodes.Sending;
+import ast.sp.labels.Communication;
+import ast.sp.labels.Then;
+import ast.sp.nodes.*;
 import org.jgrapht.DirectedGraph;
 import org.jgrapht.graph.DefaultDirectedGraph;
 
@@ -14,20 +12,47 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 public class NetworkExtraction {
-    DirectedGraph<HashMap<String,SPNode>, String> graph;
-
-    public DirectedGraph<HashMap<String,SPNode>, String> getGraph() {
-        return graph;
-    }
+    DirectedGraph<HashMap<String,SPNode>, ExtractionLabel> graph;
 
     public NetworkExtraction(SPNode sp) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        graph = new DefaultDirectedGraph<>(String.class);
+        graph = new DefaultDirectedGraph<>(ExtractionLabel.class);
         HashMap<String, SPNode> network = ((Network) sp).getNetwork();
 
         graph.addVertex(network);
         Deque<HashMap<String, SPNode>> deque = new ArrayDeque<>();
         deque.add( network );
         extract(deque);
+    }
+
+    public DirectedGraph<HashMap<String,SPNode>, ExtractionLabel> getGraph() {
+        return graph;
+    }
+
+    public void graphToChoreograpy(){
+
+        if (findroot().isPresent()){
+
+
+        } else {
+            //asyclic graph
+        }
+
+        for (ExtractionLabel entry : graph.edgeSet()) {
+            HashMap<String, SPNode> source =  graph.getEdgeSource(entry);
+            HashMap<String, SPNode> target =  graph.getEdgeTarget(entry);
+
+        }
+
+    }
+
+    private Optional<HashMap<String,SPNode>> findroot(){
+        StringBuilder builder = new StringBuilder();
+        for (HashMap<String, SPNode> entry : graph.vertexSet()) {
+            if (graph.inDegreeOf(entry) == 0){
+                return Optional.of(entry);
+            }
+        }
+        return Optional.empty();
     }
 
     private void extract(Deque< HashMap<String, SPNode> > networks)
@@ -49,7 +74,7 @@ public class NetworkExtraction {
                         Sending sending = (Sending) node;
                         String receivingProcess = sending.getProcess();
 
-                        String label = receivingProcess + "." + sending.getExpression() + "->" + sendingProcess;
+                        ExtractionLabel label = new Communication(sendingProcess, receivingProcess, sending.getExpression());
                         HashMap<String, SPNode> nextNode = new HashMap<>(network);
 
                         nextNode.put(receivingProcess, receiving.getContinuation());
@@ -70,7 +95,7 @@ public class NetworkExtraction {
                         Receiving receiving = (Receiving) node;
                         String sendingProcess = receiving.getProcess();
 
-                        String label = receivingProcess + "." + sending.getExpression() + "->" + sendingProcess;
+                        ExtractionLabel label = new Communication(sendingProcess, receivingProcess, sending.getExpression());
                         HashMap<String, SPNode> nextNode = (HashMap<String, SPNode>) network.clone();
 
                         nextNode.put(receivingProcess, receiving.getContinuation());
@@ -91,7 +116,8 @@ public class NetworkExtraction {
                         Selection selection = (Selection) node;
                         String offeringProcess = selection.getProcess();
 
-                        String label = offeringProcess + "->" + selectionProcess + "[" + selection.getLabel() + "]";
+                        ExtractionLabel label = new ast.sp.labels.Selection(selectionProcess, offeringProcess, selection.getLabel());
+
                         HashMap<String, SPNode> nextNode = (HashMap<String, SPNode>) network.clone();
                         nextNode.put(selectionProcess, selection.getContinuation());
                         nextNode.put(offeringProcess, offering.getLabels().get(selection.getLabel()));
@@ -111,7 +137,7 @@ public class NetworkExtraction {
                         Offering offering = (Offering) node;
                         String selectionProcess = offering.getProcess();
 
-                        String label = offeringProcess + "->" + selectionProcess + "[" + selection.getLabel() + "]";
+                        ExtractionLabel label = new ast.sp.labels.Selection(selectionProcess, offeringProcess, selection.getLabel());
                         HashMap<String, SPNode> nextNode = (HashMap<String, SPNode>) network.clone();
                         nextNode.put(selectionProcess, selection.getContinuation());
                         nextNode.put(offeringProcess, offering.getLabels().get(selection.getLabel()));
@@ -124,21 +150,20 @@ public class NetworkExtraction {
                 } else if (processBehaviour instanceof Condition) {
                     Condition condition = (Condition) processBehaviour;
 
-                    String label = "if " + condition.getProcess() + "." + condition.getExpression();
+                    ExtractionLabel label = new Then(condition.getProcess(), condition.getExpression());
 
                     SPNode thennode = condition.getThenBehaviour();
-                    SPNode elsenode = condition.getElseBehaviour();
-
                     HashMap<String, SPNode> networkThen = (HashMap<String, SPNode>) network.clone();
                     networkThen.put(process.getKey(), thennode);
                     graph.addVertex(networkThen);
-                    graph.addEdge(network, networkThen, label + "then");
+                    graph.addEdge(network, networkThen, label);
                     networks.addLast(networkThen);
 
+                    SPNode elsenode = condition.getElseBehaviour();
                     HashMap<String, SPNode> networkElse = (HashMap<String, SPNode>) network.clone();
                     networkElse.put(process.getKey(), elsenode);
                     graph.addVertex(networkElse);
-                    graph.addEdge(network, networkElse, label + "else");
+                    graph.addEdge(network, networkElse, label);
 
                     networks.addLast(networkElse);
                 }

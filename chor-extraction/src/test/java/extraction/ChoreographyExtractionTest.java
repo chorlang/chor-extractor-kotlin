@@ -1,6 +1,5 @@
 package extraction;
 
-import org.jgrapht.DirectedGraph;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -21,8 +20,9 @@ public class ChoreographyExtractionTest {
 
     @Test
     public void testProject() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        np.parse("p is q!<e>; stop | q is p?; stop | r is stop");
-        DirectedGraph graph =  np.extract();
-        System.out.println( graph.toString() );
+        np.parse("p is q!<e>; q?; stop | q is p?; p!<u>; stop | r is stop");
+        //DirectedGraph graph =
+        np.extract();
+        //System.out.println( graph.toString() );
     }
 }

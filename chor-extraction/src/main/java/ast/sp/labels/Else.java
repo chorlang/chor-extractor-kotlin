@@ -1,8 +1,8 @@
 package ast.sp.labels;
 
-import ast.sp.interfaces.SPNode;
+import ast.sp.interfaces.ExtractionLabel;
 
-public class Else implements SPNode {
+public class Else implements ExtractionLabel {
     private final String process;
     private final String expression;
 
