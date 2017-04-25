@@ -6,12 +6,12 @@ import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
 
-public class ChoreographyProjectionTest {
+public class ChoreographyExtractionTest {
 
-    private ChoreographyProjection np;
+    private ChoreographyExtraction np;
     @Before
     public void setUp() throws Exception {
-        np = new ChoreographyProjection();
+        np = new ChoreographyExtraction();
     }
 
     @Test
@@ -22,7 +22,7 @@ public class ChoreographyProjectionTest {
     @Test
     public void testProject() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         np.parse("p is q!<e>; stop | q is p?; stop | r is stop");
-        DirectedGraph graph =  np.project();
-        graph.toString();
+        DirectedGraph graph =  np.extract();
+        System.out.println( graph.toString() );
     }
 }
