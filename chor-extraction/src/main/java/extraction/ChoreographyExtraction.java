@@ -2,15 +2,12 @@ package extraction;
 
 import antlr4.NetworkLexer;
 import antlr4.NetworkParser;
-import ast.cc.interfaces.CCNode;
 import ast.sp.interfaces.SPNode;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.jgrapht.DirectedGraph;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.HashMap;
 
 public class ChoreographyExtraction {
 
@@ -42,8 +39,8 @@ public class ChoreographyExtraction {
         np.graphToChoreograpy();
     }
 
-    public static CCNode graphToChoreography( DirectedGraph<HashMap<String,SPNode>, String> graph )
+    /*public static ProcedureDefinition graphToChoreography(DirectedGraph<HashMap<String,SPNode>, String> graph )
     {
         return null;
-    }
+    }*/
 }

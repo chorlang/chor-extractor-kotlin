@@ -2,25 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b207236-889c-4211-9c91-1c8854ff5c53" name="Default" comment="">
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Condition.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ConditionSP.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureDefinition.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureDefinitionSP.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureInvocation.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureInvocationSP.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Selection.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.java" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Termination.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/TerminationSP.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gen/antlr4/Choreography.tokens" afterPath="$PROJECT_DIR$/gen/antlr4/Choreography.tokens" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gen/antlr4/ChoreographyParser.java" afterPath="$PROJECT_DIR$/gen/antlr4/ChoreographyParser.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/antlr4/Choreography.g4" afterPath="$PROJECT_DIR$/src/main/antlr4/Choreography.g4" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/cc/nodes/Condition.java" afterPath="$PROJECT_DIR$/src/main/java/ast/cc/nodes/Condition.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/cc/nodes/ProcedureInvocation.java" afterPath="$PROJECT_DIR$/src/main/java/ast/cc/nodes/ProcedureInvocation.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/cc/nodes/Termination.java" afterPath="$PROJECT_DIR$/src/main/java/ast/cc/nodes/Termination.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.java" afterPath="$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/epp/ChoreographyVisitor.java" afterPath="$PROJECT_DIR$/src/main/java/epp/ChoreographyVisitor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/epp/EndPointProjection.java" afterPath="$PROJECT_DIR$/src/main/java/epp/EndPointProjection.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/epp/MergingProjection.java" afterPath="$PROJECT_DIR$/src/main/java/epp/MergingProjection.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java" afterPath="$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" afterPath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java" afterPath="$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/epp/PositiveTests.java" afterPath="$PROJECT_DIR$/src/test/java/epp/PositiveTests.java" />
     </list>
     <ignored path="chor-extraction.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -62,17 +46,30 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NetworkVisitor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java">
+      <file leaf-file-name="NetworkExtraction.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="732">
-              <caret line="69" column="101" selection-start-line="69" selection-start-column="101" selection-end-line="69" selection-end-column="101" />
+            <state relative-caret-position="1905">
+              <caret line="149" column="60" selection-start-line="149" selection-start-column="60" selection-end-line="149" selection-end-column="60" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="BehaviourProjection.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="NetworkVisitor.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="282">
+              <caret line="79" column="34" selection-start-line="79" selection-start-column="34" selection-end-line="79" selection-end-column="34" />
+              <folding>
+                <element signature="e#2623#2624#0" expanded="true" />
+                <element signature="e#2665#2666#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="BehaviourProjection.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="267">
@@ -123,9 +120,12 @@
       <file leaf-file-name="ChoreographyExtraction.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="372">
-              <caret line="41" column="21" selection-start-line="41" selection-start-column="21" selection-end-line="41" selection-end-column="21" />
-              <folding />
+            <state relative-caret-position="177">
+              <caret line="36" column="39" selection-start-line="36" selection-start-column="39" selection-end-line="36" selection-end-column="39" />
+              <folding>
+                <element signature="e#901#902#0" expanded="true" />
+                <element signature="e#952#953#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -203,10 +203,8 @@
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Selection.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Else.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Then.java" />
-        <option value="$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/cc/nodes/Communication.java" />
-        <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/cc/interfaces/Choreography.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/cc/interfaces/Interaction.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/cc/nodes/Program.java" />
@@ -220,11 +218,13 @@
         <option value="$PROJECT_DIR$/src/main/java/ast/cc/nodes/Condition.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureInvocation.java" />
         <option value="$PROJECT_DIR$/src/main/java/epp/MergingProjection.java" />
-        <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureDefinition.java" />
         <option value="$PROJECT_DIR$/src/test/java/epp/PositiveTests.java" />
         <option value="$PROJECT_DIR$/src/main/java/epp/ProceduresUnwrapper.java" />
         <option value="$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.java" />
+        <option value="$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java" />
+        <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java" />
+        <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" />
       </list>
     </option>
   </component>
@@ -409,104 +409,6 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="epp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chor-extraction" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chor-extraction" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ast" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chor-extraction" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chor-extraction" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ast" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="sp" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="nodes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chor-extraction" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="chor-extraction" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ast" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="cc" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -1014,9 +916,6 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="PositiveTests - 2017.04.25 at 23h 42m 41s.xml">
-      <configuration name="PositiveTests" configurationId="JUnit" />
-    </history-entry>
     <history-entry file="PositiveTests - 2017.04.25 at 23h 44m 34s.xml">
       <configuration name="PositiveTests" configurationId="JUnit" />
     </history-entry>
@@ -1044,6 +943,9 @@
     <history-entry file="PositiveTests - 2017.04.26 at 00h 18m 22s.xml">
       <configuration name="PositiveTests" configurationId="JUnit" />
     </history-entry>
+    <history-entry file="PositiveTests - 2017.04.26 at 00h 21m 17s.xml">
+      <configuration name="PositiveTests" configurationId="JUnit" />
+    </history-entry>
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -1056,7 +958,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="807" extended-state="0" />
-    <editor active="false" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32891566" sideWeight="0.49713877" order="6" side_tool="false" content_ui="tabs" />
@@ -1077,7 +979,7 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3986014" sideWeight="0.4828326" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3986014" sideWeight="0.4828326" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1400,16 +1302,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/antlr/antlr4-runtime/4.6/antlr4-runtime-4.6.jar!/org/antlr/v4/runtime/tree/AbstractParseTreeVisitor.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#577#578#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/gen/antlr4/ChoreographyParser.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="143">
@@ -1518,30 +1410,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="372">
-          <caret line="41" column="21" selection-start-line="41" selection-start-column="21" selection-end-line="41" selection-end-column="21" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="732">
-          <caret line="69" column="101" selection-start-line="69" selection-start-column="101" selection-end-line="69" selection-end-column="101" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/epp/PositiveTests.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="177">
@@ -1577,6 +1445,47 @@
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/antlr/antlr4-runtime/4.6/antlr4-runtime-4.6.jar!/org/antlr/v4/runtime/tree/AbstractParseTreeVisitor.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="134">
+          <caret line="17" column="13" selection-start-line="17" selection-start-column="13" selection-end-line="17" selection-end-column="13" />
+          <folding>
+            <element signature="e#537#538#0" expanded="true" />
+            <element signature="e#577#578#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="177">
+          <caret line="36" column="39" selection-start-line="36" selection-start-column="39" selection-end-line="36" selection-end-column="39" />
+          <folding>
+            <element signature="e#901#902#0" expanded="true" />
+            <element signature="e#952#953#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="282">
+          <caret line="79" column="34" selection-start-line="79" selection-start-column="34" selection-end-line="79" selection-end-column="34" />
+          <folding>
+            <element signature="e#2623#2624#0" expanded="true" />
+            <element signature="e#2665#2666#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1905">
+          <caret line="149" column="60" selection-start-line="149" selection-start-column="60" selection-end-line="149" selection-end-column="60" />
+          <folding />
         </state>
       </provider>
     </entry>

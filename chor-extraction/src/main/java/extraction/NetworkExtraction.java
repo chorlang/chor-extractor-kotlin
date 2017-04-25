@@ -56,7 +56,7 @@ public class NetworkExtraction {
     }
 
     private void extract(Deque< HashMap<String, SPNode> > networks)
-        throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
+            throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
     {
         while( !networks.isEmpty() ) {
             HashMap<String, SPNode> network = networks.removeFirst();
@@ -112,7 +112,7 @@ public class NetworkExtraction {
                     String selectionProcess = offering.getProcess();
 
                     SPNode node = network.get(offering.getProcess());
-                    if ((node != null) && (node instanceof SelectionSP ) && (((SelectionSP) node).getProcess().equals(process.getKey()))) {
+                    if ((node != null) && (node instanceof SelectionSP) && (((SelectionSP) node).getProcess().equals(process.getKey()))) {
                         SelectionSP selection = (SelectionSP) node;
                         String offeringProcess = selection.getProcess();
 
