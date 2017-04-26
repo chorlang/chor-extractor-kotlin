@@ -1,6 +1,7 @@
 package extraction;
 
 import ast.cc.interfaces.CCNode;
+import ast.cc.nodes.Condition;
 import ast.sp.interfaces.ExtractionLabel;
 import ast.sp.interfaces.SPNode;
 import ast.sp.labels.Communication;
@@ -45,43 +46,39 @@ public class NetworkExtraction {
     }
 
     private CCNode extractNodeForward(HashMap<String, SPNode> leaf){
+        CCNode retval = null;
         Set<ExtractionLabel> edges = graph.outgoingEdgesOf(leaf);
-        if (edges.size()==1){
-            ExtractionLabel edge = edges.iterator().next();
-            HashMap<String, SPNode> target =  graph.getEdgeTarget(edge);
-            if (edge instanceof Communication){
-                Communication e = (Communication) edge;
-                new ast.cc.nodes.Communication(e.getSender(), e.getReceiver(), e.getExpression(), extractNodeForward(target));
-            } else if (edge instanceof Selection) {
-                Selection e = (Selection) edge;
-                new ast.cc.nodes.Selection(e.getSender(), e.getReceiver(), e.getLabel(), extractNodeForward(target));
-            }
-        } else {
-            ArrayList<ExtractionLabel> labels = new ArrayList<>();
-            labels.addAll(edges);
-            String processName;
-            String expression;
-            SPNode elseBehavior;
-            SPNode thenBehavior;
-            for (ExtractionLabel label: labels) {
-                if (label instanceof Else){
-                    processName =  ( (Else) label ).getProcess();
-                    expression = ( (Else) label ).getExpression();
-                    elseBehavior = (SPNode) graph.getEdgeTarget(label);
-
-                } else if (label instanceof Then){
-                    processName =  ( (Then) label ).getProcess();
-                    expression = ( (Then) label ).getExpression();
-                    graph.getEdgeTarget(label);
+        switch( edges.size() ) {
+            case 1:
+                ExtractionLabel edge = edges.iterator().next();
+                HashMap<String, SPNode> target = graph.getEdgeTarget(edge);
+                if (edge instanceof Communication) {
+                    Communication e = (Communication) edge;
+                    retval = new ast.cc.nodes.Communication(e.getSender(), e.getReceiver(), e.getExpression(), extractNodeForward(target));
+                } else if (edge instanceof Selection) {
+                    Selection e = (Selection) edge;
+                    retval = new ast.cc.nodes.Selection(e.getSender(), e.getReceiver(), e.getLabel(), extractNodeForward(target));
                 }
-                
-            }
-            
+                break;
+            case 2:
+                ExtractionLabel[] labels = edges.toArray(new ExtractionLabel[2]);
+                Then thenLabel = (labels[0] instanceof Then) ? (Then) labels[0] : (Then) labels[1];
+                Else elseLabel = (labels[0] instanceof Then) ? (Else) labels[1] : (Else) labels[0];
 
-            
+                // throw exception is processName or expression is different in the two nodes
+
+                retval = new Condition(
+                        thenLabel.getProcess(),
+                        thenLabel.getExpression(),
+                        extractNodeForward(graph.getEdgeTarget(thenLabel)),
+                        extractNodeForward(graph.getEdgeTarget(elseLabel))
+                );
+                break;
             //new Communication();
+            default:
+                throw new RuntimeException("AAAAH!");
         }
-        return null;
+        return retval;
     }
 
     private boolean checkLeaveTerminate(HashMap<String,SPNode> leaf){
