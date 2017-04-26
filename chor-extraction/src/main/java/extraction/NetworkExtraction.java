@@ -59,9 +59,29 @@ public class NetworkExtraction {
         } else {
             ArrayList<ExtractionLabel> labels = new ArrayList<>();
             labels.addAll(edges);
+            String processName;
+            String expression;
+            SPNode elseBehavior;
+            SPNode thenBehavior;
+            for (ExtractionLabel label: labels) {
+                if (label instanceof Else){
+                    processName =  ( (Else) label ).getProcess();
+                    expression = ( (Else) label ).getExpression();
+                    elseBehavior = (SPNode) graph.getEdgeTarget(label);
 
-            new Communication();
+                } else if (label instanceof Then){
+                    processName =  ( (Then) label ).getProcess();
+                    expression = ( (Then) label ).getExpression();
+                    graph.getEdgeTarget(label);
+                }
+                
+            }
+            
+
+            
+            //new Communication();
         }
+        return null;
     }
 
     private boolean checkLeaveTerminate(HashMap<String,SPNode> leaf){
