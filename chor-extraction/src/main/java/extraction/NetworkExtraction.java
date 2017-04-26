@@ -1,8 +1,11 @@
 package extraction;
 
+import ast.cc.interfaces.CCNode;
 import ast.sp.interfaces.ExtractionLabel;
 import ast.sp.interfaces.SPNode;
 import ast.sp.labels.Communication;
+import ast.sp.labels.Else;
+import ast.sp.labels.Selection;
 import ast.sp.labels.Then;
 import ast.sp.nodes.*;
 import org.jgrapht.DirectedGraph;
@@ -30,23 +33,50 @@ public class NetworkExtraction {
 
     public void graphToChoreograpy(){
 
-        if (findroot().isPresent()){
-
-
-        } else {
-            //asyclic graph
+        if (findroot().isPresent()) {
+            HashMap<String, SPNode> node = findroot().get();
+            extractNodeForward(node);
+            extractNodeBackward(node);
         }
-
-        for (ExtractionLabel entry : graph.edgeSet()) {
-            HashMap<String, SPNode> source =  graph.getEdgeSource(entry);
-            HashMap<String, SPNode> target =  graph.getEdgeTarget(entry);
-
+        else {
+            //asyclic graph
         }
 
     }
 
+    private CCNode extractNodeForward(HashMap<String, SPNode> leaf){
+        Set<ExtractionLabel> edges = graph.outgoingEdgesOf(leaf);
+        if (edges.size()==1){
+            ExtractionLabel edge = edges.iterator().next();
+            HashMap<String, SPNode> target =  graph.getEdgeTarget(edge);
+            if (edge instanceof Communication){
+                Communication e = (Communication) edge;
+                new ast.cc.nodes.Communication(e.getSender(), e.getReceiver(), e.getExpression(), extractNodeForward(target));
+            } else if (edge instanceof Selection) {
+                Selection e = (Selection) edge;
+                new ast.cc.nodes.Selection(e.getSender(), e.getReceiver(), e.getLabel(), extractNodeForward(target));
+            }
+        } else {
+            ArrayList<ExtractionLabel> labels = new ArrayList<>();
+            labels.addAll(edges);
+
+            new Communication();
+        }
+    }
+
+    private boolean checkLeaveTerminate(HashMap<String,SPNode> leaf){
+        for (Map.Entry<String, SPNode> process: leaf.entrySet()) {
+            if (!(process.getValue() instanceof TerminationSP))
+                return false;
+        }
+        return true;
+    }
+
+    private CCNode extractNodeBackward(HashMap<String,SPNode> leaf){
+        return null;
+    }
+
     private Optional<HashMap<String,SPNode>> findroot(){
-        StringBuilder builder = new StringBuilder();
         for (HashMap<String, SPNode> entry : graph.vertexSet()) {
             if (graph.inDegreeOf(entry) == 0){
                 return Optional.of(entry);
@@ -54,6 +84,17 @@ public class NetworkExtraction {
         }
         return Optional.empty();
     }
+
+    private HashMap<String,SPNode> findleaves(){
+        HashMap<String, SPNode> leaves = new HashMap<>();
+        for (HashMap<String, SPNode> entry : graph.vertexSet()) {
+            if (graph.outDegreeOf(entry) == 0){
+                leaves.putAll(entry);
+            }
+        }
+        return leaves;
+    }
+
 
     private void extract(Deque< HashMap<String, SPNode> > networks)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException
