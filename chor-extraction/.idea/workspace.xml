@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b207236-889c-4211-9c91-1c8854ff5c53" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" afterPath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/antlr4/Network.g4" afterPath="$PROJECT_DIR$/src/main/antlr4/Network.g4" />
     </list>
     <ignored path="chor-extraction.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -53,11 +53,41 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NetworkExtraction.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="NetworkExtraction.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="84">
               <caret line="48" column="28" lean-forward="false" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="28" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Network.g4" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/antlr4/Network.g4">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="304">
+              <caret line="16" column="23" lean-forward="true" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Choreography.g4" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/antlr4/Choreography.g4">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="95">
+              <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="59" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CommonLexerRules.g4" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/antlr4/CommonLexerRules.g4">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="410">
+              <caret line="245" column="0" lean-forward="true" selection-start-line="245" selection-start-column="0" selection-end-line="245" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -118,6 +148,7 @@
       <find>visitSend</find>
       <find>visitCommunicat</find>
       <find>visit</find>
+      <find>process</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -160,7 +191,6 @@
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkParser.java" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/NetworkProjectionTest.java" />
-        <option value="$PROJECT_DIR$/src/main/antlr4/Network.g4" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Network.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/ChoreographyProjection.java" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/ChoreographyProjectionTest.java" />
@@ -193,6 +223,7 @@
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/cc/nodes/Communication.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" />
+        <option value="$PROJECT_DIR$/src/main/antlr4/Network.g4" />
       </list>
     </option>
   </component>
@@ -951,7 +982,6 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1011" extended-state="6" />
-    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32891566" sideWeight="0.49713877" order="6" side_tool="false" content_ui="tabs" />
@@ -1102,13 +1132,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkProjection.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/antlr4/Network.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="390">
-          <caret line="26" column="71" lean-forward="false" selection-start-line="26" selection-start-column="71" selection-end-line="26" selection-end-column="71" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/Else.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
@@ -1134,13 +1157,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="11" column="17" lean-forward="false" selection-start-line="11" selection-start-column="17" selection-end-line="11" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/antlr4/CommonLexerRules.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-3520">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1212,13 +1228,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="143">
           <caret line="133" column="0" lean-forward="false" selection-start-line="133" selection-start-column="0" selection-end-line="133" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/antlr4/Choreography.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="30" lean-forward="false" selection-start-line="17" selection-start-column="30" selection-end-line="17" selection-end-column="30" />
         </state>
       </provider>
     </entry>
@@ -1410,6 +1419,30 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="84">
           <caret line="48" column="28" lean-forward="false" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="28" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/antlr4/CommonLexerRules.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="410">
+          <caret line="245" column="0" lean-forward="true" selection-start-line="245" selection-start-column="0" selection-end-line="245" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/antlr4/Choreography.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="95">
+          <caret line="5" column="0" lean-forward="false" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="59" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/antlr4/Network.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="304">
+          <caret line="16" column="23" lean-forward="true" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
           <folding />
         </state>
       </provider>
