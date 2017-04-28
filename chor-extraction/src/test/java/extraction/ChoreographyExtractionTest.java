@@ -1,5 +1,6 @@
 package extraction;
 
+import ast.cc.interfaces.CCNode;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,9 +21,10 @@ public class ChoreographyExtractionTest {
 
     @Test
     public void testProject() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        np.parse("p is q!<e>; q?; stop | q is p?; p!<u>; stop | r is stop");
+        np.parse("p { main {q!<e>; stop}} | q { main {p?; stop}} | r { main {stop}}");
         //DirectedGraph graph =
-        np.extract();
+        CCNode node = np.extract();
+        node.toString();
         //System.out.println( graph.toString() );
     }
 }

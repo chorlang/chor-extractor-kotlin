@@ -12,6 +12,7 @@ import ast.sp.interfaces.Behaviour;
 import ast.sp.interfaces.SPNode;
 import ast.sp.nodes.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -21,7 +22,6 @@ import java.util.HashMap;
 public class BehaviourProjection implements CCVisitor< SPNode >
 {
     private String processName;
-    private HashMap<String, SPNode> procedureList;
 
     public SPNode getSPAST(CCNode node, String processName) throws MergingException {
         this.processName = processName;
@@ -87,7 +87,7 @@ public class BehaviourProjection implements CCVisitor< SPNode >
     public SPNode visit(ProcedureDefinition n) throws MergingException {
         String procedure = n.getProcedure();
         SPNode node =  n.getChoreography().accept(this);
-        return new ProcedureDefinitionSP(procedure, (Behaviour) node, new ProcedureInvocationSP(procedure));
+        return new ProcedureDefinitionSP(procedure, (Behaviour) node);
     }
 
     @Override
@@ -106,14 +106,10 @@ public class BehaviourProjection implements CCVisitor< SPNode >
 
     @Override
     public SPNode visit(Program n) throws MergingException {
-        procedureList= new HashMap<>();
+        ArrayList<ProcedureDefinitionSP> procedureList = new ArrayList<>();
         for (CCNode procedure: n.getProcedures()) {
-            SPNode node =  procedure.accept(this);
-            procedureList.put(((ProcedureDefinitionSP) node).getProcedure(), node);
+            procedureList.add((ProcedureDefinitionSP) procedure.accept(this));
         }
-
-        procedureList.put("main", n.getMain().accept(this));
-        ProceduresUnwrapper pu = new ProceduresUnwrapper(procedureList);
-        return pu.unwrap();
+        return new ProcessBehaviour(processName, procedureList, (Behaviour) n.getMain().accept(this));
     }
 }

@@ -1,9 +1,5 @@
 package extraction;
 
-/**
- * Created by lara on 28/03/17.
- */
-
 import antlr4.NetworkBaseVisitor;
 import antlr4.NetworkParser.*;
 import ast.sp.interfaces.Behaviour;
@@ -11,28 +7,29 @@ import ast.sp.interfaces.SPNode;
 import ast.sp.nodes.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class NetworkVisitor extends NetworkBaseVisitor<SPNode>{
-    private Network network;
-
     @Override
     public SPNode visitNetwork(NetworkContext ctx) {
-        network = new Network(new HashMap<>());
-        List<ProcessBehaviourContext> pb =  ctx.processBehaviour();
-        for (ProcessBehaviourContext pbc: pb) {
-            Network sp = (Network) visit(pbc);
-            network.addProcess(sp);
+        ArrayList<ProcessBehaviour> network = new ArrayList<>();
+        for (ProcessBehaviourContext pbc: ctx.processBehaviour()) {
+            network.add((ProcessBehaviour) visit(pbc));
         }
-
-        return network;
+        return new Network(network);
     }
 
     @Override
     public SPNode visitProcessBehaviour(ProcessBehaviourContext ctx) {
-        return new Network(new HashMap<String, SPNode>(){{put((ctx.process().getText()), visit(ctx.behaviour()));}});
+        ArrayList<ProcedureDefinitionSP> procedures = ctx.procedureDefinition().
+                stream().
+                map(procedure -> (ProcedureDefinitionSP) visit(procedure)).
+                collect(Collectors.toCollection(ArrayList::new));
+
+        return new ProcessBehaviour(ctx.process().getText(), procedures, (Behaviour) visit(ctx.behaviour()));
     }
 
     @Override
@@ -67,7 +64,7 @@ public class NetworkVisitor extends NetworkBaseVisitor<SPNode>{
 
     @Override
     public SPNode visitProcedureDefinition(ProcedureDefinitionContext ctx) {
-        return new ProcedureDefinitionSP(ctx.procedure().getText(), (Behaviour) visit(ctx.behaviour(0)), (Behaviour) ctx.behaviour(1));
+        return new ProcedureDefinitionSP(ctx.procedure().getText(), (Behaviour) visit(ctx.behaviour()));
     }
 
     @Override

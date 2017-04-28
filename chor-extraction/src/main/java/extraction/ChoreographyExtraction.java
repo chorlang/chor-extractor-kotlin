@@ -2,6 +2,7 @@ package extraction;
 
 import antlr4.NetworkLexer;
 import antlr4.NetworkParser;
+import ast.cc.interfaces.CCNode;
 import ast.sp.interfaces.SPNode;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
@@ -32,11 +33,12 @@ public class ChoreographyExtraction {
         return tree = this.getTree(network);
     }
 
-    public void extract() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public CCNode extract() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
         NetworkVisitor networkVisitor = new NetworkVisitor();
         SPNode sp = networkVisitor.visit(tree);
         NetworkExtraction np = new NetworkExtraction(sp);
-        np.graphToChoreograpy();
+
+        return np.graphToChoreograpy();
     }
 
     /*public static ProcedureDefinition graphToChoreography(DirectedGraph<HashMap<String,SPNode>, String> graph )

@@ -3,13 +3,13 @@ package epp;
 import antlr4.ChoreographyLexer;
 import antlr4.ChoreographyParser;
 import ast.cc.interfaces.CCNode;
-import ast.sp.interfaces.SPNode;
 import ast.sp.nodes.Network;
+import ast.sp.nodes.ProcessBehaviour;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.HashSet;
 
 public class EndPointProjection {
@@ -33,19 +33,18 @@ public class EndPointProjection {
 
     public Network project(String choreography) throws MergingException {
         ParseTree tree = this.getTree(choreography);
-        HashMap<String, SPNode> projectionNodes = new HashMap<>();
+        ArrayList<ProcessBehaviour> network = new ArrayList<>();
+
         if (tree!=null) {
             ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor();
             CCNode ccast = choreographyVisitor.getCCAST(tree);
             HashSet<String> processes = choreographyVisitor.getProcesses();
 
             BehaviourProjection behaviourProjection = new BehaviourProjection();
-
             for (String process: processes) {
-                SPNode ssast = behaviourProjection.getSPAST(ccast, process);
-                projectionNodes.put(process, ssast);
+                network.add ((ProcessBehaviour) behaviourProjection.getSPAST(ccast, process));
             }
         }
-        return new Network (projectionNodes);
+        return new Network (network);
     }
 }

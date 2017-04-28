@@ -23,6 +23,12 @@ public interface NetworkVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProcessBehaviour(NetworkParser.ProcessBehaviourContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link NetworkParser#procedureDefinition}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitProcedureDefinition(NetworkParser.ProcedureDefinitionContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link NetworkParser#behaviour}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -70,12 +76,6 @@ public interface NetworkVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitCondition(NetworkParser.ConditionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link NetworkParser#procedureDefinition}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitProcedureDefinition(NetworkParser.ProcedureDefinitionContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NetworkParser#procedureInvocation}.
 	 * @param ctx the parse tree

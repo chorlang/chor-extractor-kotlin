@@ -28,6 +28,16 @@ public interface NetworkListener extends ParseTreeListener {
 	 */
 	void exitProcessBehaviour(NetworkParser.ProcessBehaviourContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link NetworkParser#procedureDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void enterProcedureDefinition(NetworkParser.ProcedureDefinitionContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#procedureDefinition}.
+	 * @param ctx the parse tree
+	 */
+	void exitProcedureDefinition(NetworkParser.ProcedureDefinitionContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link NetworkParser#behaviour}.
 	 * @param ctx the parse tree
 	 */
@@ -107,16 +117,6 @@ public interface NetworkListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitCondition(NetworkParser.ConditionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NetworkParser#procedureDefinition}.
-	 * @param ctx the parse tree
-	 */
-	void enterProcedureDefinition(NetworkParser.ProcedureDefinitionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NetworkParser#procedureDefinition}.
-	 * @param ctx the parse tree
-	 */
-	void exitProcedureDefinition(NetworkParser.ProcedureDefinitionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NetworkParser#procedureInvocation}.
 	 * @param ctx the parse tree

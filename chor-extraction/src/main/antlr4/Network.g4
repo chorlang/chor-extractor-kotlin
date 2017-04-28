@@ -6,10 +6,7 @@ network: processBehaviour (Parallel processBehaviour)*;
 // p { def X { q?;stop } main { q?; X } } | q { main { p!1; p!2; stop } }
 
 processBehaviour : TERMINATE
-    |   process LCURLY
-        procedureDefinition*
-        'main' LCURLY behaviour RCURLY
-        RCURLY
+    |   process '{' procedureDefinition* 'main' '{' behaviour '}' '}'
     ;
 
 procedureDefinition : 'def' procedure '{' behaviour '}';
@@ -17,7 +14,6 @@ procedureDefinition : 'def' procedure '{' behaviour '}';
 behaviour : interaction
     |   offering
     |   condition
-    |   procedureDefinition
     |   procedureInvocation
     |   TERMINATE
     ;
@@ -35,7 +31,7 @@ offering: process '&' LBRACE (labeledBehaviour) (',' labeledBehaviour)* RBRACE;
 labeledBehaviour: label COLON behaviour;
 
 condition: 'if' process '.' expression 'then' behaviour 'else' behaviour;
-procedureDefinition: 'def' procedure ASSIGN behaviour 'in' behaviour;
+
 procedureInvocation: procedure;
 
 expression : Identifier

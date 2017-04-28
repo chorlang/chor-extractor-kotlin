@@ -88,8 +88,7 @@ public class MergingProjection {
         assertCondition( left.getProcedure().equals( right.getProcedure() ), "" );
 
         Behaviour mergeBehaviour = (Behaviour) merge(left.getBehaviour(), right.getBehaviour());
-        Behaviour mergeInBehaviour = (Behaviour) merge(left.getInBehaviour(), right.getInBehaviour());
-        return new ProcedureDefinitionSP(left.getProcedure(), mergeBehaviour, mergeInBehaviour);
+        return new ProcedureDefinitionSP(left.getProcedure(), mergeBehaviour);
     }
 
     private static void assertCondition( boolean condition, String message )
