@@ -41,4 +41,8 @@ public class Communication implements Interaction
     public String getExpression() {
         return expression;
     }
+
+    public String toString(){
+        return sender + "." + expression + "->" + receiver + "; " + continuation.toString();
+    }
 }

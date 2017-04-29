@@ -43,4 +43,8 @@ public class Selection implements Interaction
         return continuation;
     }
 
+    public String toString(){
+        return sender + "->" + receiver + "[" + label + "]; " + continuation.toString();
+    }
+
 }

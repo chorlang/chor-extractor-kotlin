@@ -42,4 +42,8 @@ public class Condition implements Choreography{
     public <T> T accept(CCVisitor<T> visitor) throws MergingException {
         return visitor.visit(this);
     }
+
+    public String toString(){
+        return "if " + process + "." + expression + " then " + thenChoreography.toString() + " else " + elseChoreograpy.toString();
+    }
 }

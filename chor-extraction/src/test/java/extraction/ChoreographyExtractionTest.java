@@ -21,10 +21,12 @@ public class ChoreographyExtractionTest {
 
     @Test
     public void testProject() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
-        np.parse("p { main {q!<e>; stop}} | q { main {p?; stop}} | r { main {stop}}");
+        //np.parse("p { main {q!<e>; q?; stop}} | q { main {p?; p!<u>; stop}} | r { main {stop}}");
+        //np.parse("p { main {q+R; q!<e>; q?; stop}} | q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | r { main {stop}}");
+        np.parse("p { main {if p.e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop}} | q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | r { main {stop}}");
         //DirectedGraph graph =
         CCNode node = np.extract();
-        node.toString();
+        System.out.println(node.toString());
         //System.out.println( graph.toString() );
     }
 }
