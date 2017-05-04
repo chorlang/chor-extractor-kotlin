@@ -40,7 +40,7 @@ public class NetworkExtraction {
         }
         else {
             return null;
-            //asyclic graph
+            //cyclic graph
         }
 
     }
@@ -110,17 +110,6 @@ public class NetworkExtraction {
         }
         return Optional.empty();
     }
-
-    /*private Network findleaves(){
-        HashMap<String, SPNode> leaves = new HashMap<>();
-        for (Network entry : graph.vertexSet()) {
-            if (graph.outDegreeOf(entry) == 0){
-                leaves.putAll(entry);
-            }
-        }
-        return leaves;
-    }*/
-
 
     private void extract(Deque<Network> networks)
             throws NoSuchMethodException, InvocationTargetException, IllegalAccessException

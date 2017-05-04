@@ -17,20 +17,17 @@ public class ChoreographyExtraction {
     private NetworkParser parser;
     private ParseTree tree;
 
-    private ParseTree getTree(String grammar) {
+    public ParseTree parse(String grammar) {
         try {
             stream = new ANTLRInputStream(grammar);
             lexer = new NetworkLexer(stream);
             parser = new NetworkParser(new CommonTokenStream(lexer));
             tree = parser.network();
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-        return tree;
-    }
 
-    public ParseTree parse(String network)  {
-        return tree = this.getTree(network);
+        return tree;
     }
 
     public CCNode extract() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
@@ -40,9 +37,4 @@ public class ChoreographyExtraction {
 
         return np.graphToChoreograpy();
     }
-
-    /*public static ProcedureDefinition graphToChoreography(DirectedGraph<HashMap<String,SPNode>, String> graph )
-    {
-        return null;
-    }*/
 }

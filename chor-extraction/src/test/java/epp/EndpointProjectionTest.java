@@ -7,7 +7,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)
-public class PositiveTests extends Assert {
+public class EndpointProjectionTest extends Assert {
 
     private EndPointProjection epp;
 
@@ -18,7 +18,7 @@ public class PositiveTests extends Assert {
 
     @DataPoints
     public static Object[][] data = new Object[][] {
-            { " def X {Y} def Y { p.e->q; stop } main {q.e->p;X}", "" },                                             //termination
+            { " def X {Y} def Y { p.e->q; stop } main {q.e->p;X}", "p{def X =Ydef Y =q!<e>; stopmain {q?; X}} | q{def X =Ydef Y =p?; stopmain {p!<e>; X}}" },                                             //termination
             /*/ { "main { stop }", "" },                                             //termination
             // { "def X { p.e->q;stop } main { X }", "p is def X =q!<e>; stop in X | q is def X =p?; stop in X" }, //procedure definition/invocation
             //{ "stop", "" },                                             //termination

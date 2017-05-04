@@ -19,7 +19,7 @@ public class EndPointProjection {
     private ParseTree tree;
 
 
-    private ParseTree getTree(String grammar) {
+    private ParseTree parse(String grammar) {
         try {
             stream = new ANTLRInputStream(grammar);
             lexer = new ChoreographyLexer(stream);
@@ -32,7 +32,7 @@ public class EndPointProjection {
     }
 
     public Network project(String choreography) throws MergingException {
-        ParseTree tree = this.getTree(choreography);
+        ParseTree tree = this.parse(choreography);
         ArrayList<ProcessBehaviour> network = new ArrayList<>();
 
         if (tree!=null) {
