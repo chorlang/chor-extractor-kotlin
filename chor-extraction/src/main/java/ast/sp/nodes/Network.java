@@ -6,13 +6,23 @@ import java.util.List;
 
 public class Network implements SPNode{
     private final List<ProcessBehaviour> network;
+    private boolean projectable;
 
     public Network(List<ProcessBehaviour> network) {
         this.network = network;
+        projectable = true;
     }
 
     public List<ProcessBehaviour> getNetwork() {
         return network;
+    }
+
+    public boolean isProjectable() {
+        return projectable;
+    }
+
+    public void setProjectable(boolean projectable) {
+        this.projectable = projectable;
     }
 
     public String toString(){

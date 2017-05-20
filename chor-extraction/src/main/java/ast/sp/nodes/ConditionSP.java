@@ -2,9 +2,6 @@ package ast.sp.nodes;
 
 import ast.sp.interfaces.Behaviour;
 
-/**
- * Created by lara on 04/04/17.
- */
 public class ConditionSP implements Behaviour{
     private final String process;
     private final String expression;
@@ -36,5 +33,10 @@ public class ConditionSP implements Behaviour{
 
     public String toString() {
         return "if " + process + "." + expression + " then " + thenBehaviour.toString() + " else " + elseBehaviour.toString();
+    }
+
+    @Override
+    public boolean findRecProcCall(String procname) {
+        return thenBehaviour.findRecProcCall(procname) || elseBehaviour.findRecProcCall(procname);
     }
 }

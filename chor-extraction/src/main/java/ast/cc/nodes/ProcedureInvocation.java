@@ -6,9 +6,6 @@ import epp.MergingException;
 
 import java.util.HashSet;
 
-/**
- * Created by lara on 04/04/17.
- */
 public class ProcedureInvocation implements Choreography{
     private final String procedure;
     private final HashSet<String> processes;
@@ -30,4 +27,5 @@ public class ProcedureInvocation implements Choreography{
     public HashSet<String> getProcesses() {
         return processes;
     }
+
 }

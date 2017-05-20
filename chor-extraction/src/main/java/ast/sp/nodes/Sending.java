@@ -33,4 +33,20 @@ public class Sending implements Interaction {
     public String toString() {
         return process + "!<" + expression + ">; " + continuation.toString();
     }
+
+    @Override
+    public boolean equals(Object ss){
+        if (ss instanceof Sending) {
+            Sending s = (Sending) ss;
+            return this.getProcess().equals(s.getProcess()) &&
+                    this.getExpression().equals(s.getExpression()) &&
+                    this.getContinuation().equals(s.getContinuation());
+        }
+        return false;
+    }
+
+    @Override
+    public boolean findRecProcCall(String procname) {
+        return continuation.findRecProcCall(procname);
+    }
 }

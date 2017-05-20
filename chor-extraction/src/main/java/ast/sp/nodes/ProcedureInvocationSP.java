@@ -2,11 +2,11 @@ package ast.sp.nodes;
 
 import ast.sp.interfaces.Behaviour;
 
-/**
- * Created by lara on 04/04/17.
- */
 public class ProcedureInvocationSP implements Behaviour {
-    public final String procedure;
+    private final String procedure;
+
+    private ProcedureDefinitionSP procedureDefinition;
+
 
     public ProcedureInvocationSP(String procedure) {
         this.procedure = procedure;
@@ -18,5 +18,18 @@ public class ProcedureInvocationSP implements Behaviour {
 
     public String toString() {
         return procedure;
+    }
+
+    public ProcedureDefinitionSP getProcedureDefinition() {
+        return procedureDefinition;
+    }
+
+    public void setProcedureDefinition(ProcedureDefinitionSP procedureDefinition) {
+        this.procedureDefinition = procedureDefinition;
+    }
+
+    @Override
+    public boolean findRecProcCall(String procname) {
+        return procedure.equals(procname);
     }
 }

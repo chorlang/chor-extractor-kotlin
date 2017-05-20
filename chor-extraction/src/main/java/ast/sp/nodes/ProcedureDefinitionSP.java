@@ -22,4 +22,9 @@ public class ProcedureDefinitionSP implements Behaviour {
     public String toString() {
         return "def " + procedure + " =" + behaviour.toString();
     }
+
+    @Override
+    public boolean findRecProcCall(String procname) {
+        return behaviour.findRecProcCall(procname);
+    }
 }

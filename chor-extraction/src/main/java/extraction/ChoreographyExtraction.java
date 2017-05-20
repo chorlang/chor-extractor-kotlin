@@ -8,8 +8,6 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.lang.reflect.InvocationTargetException;
-
 public class ChoreographyExtraction {
 
     private ANTLRInputStream stream;
@@ -30,7 +28,7 @@ public class ChoreographyExtraction {
         return tree;
     }
 
-    public CCNode extract() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public CCNode extract() throws Exception {
         NetworkVisitor networkVisitor = new NetworkVisitor();
         SPNode sp = networkVisitor.visit(tree);
         NetworkExtraction np = new NetworkExtraction(sp);

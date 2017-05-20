@@ -1,15 +1,17 @@
 package ast.sp.nodes;
 
 import ast.sp.interfaces.Behaviour;
-import ast.sp.interfaces.SPNode;
 
-/**
- * Created by lara on 04/04/17.
- */
-public class TerminationSP implements Behaviour, SPNode {
+public class TerminationSP implements Behaviour {
     private final String termination = "stop";
 
+    @Override
     public String toString() {
         return "stop";
+    }
+
+    @Override
+    public boolean findRecProcCall(String procname) {
+        return false;
     }
 }

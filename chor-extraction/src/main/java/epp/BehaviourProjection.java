@@ -14,6 +14,8 @@ import ast.sp.nodes.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -22,9 +24,11 @@ import java.util.HashMap;
 public class BehaviourProjection implements CCVisitor< SPNode >
 {
     private String processName;
+    private List<ProcedureDefinitionSP> procedures;
 
     public SPNode getSPAST(CCNode node, String processName) throws MergingException {
         this.processName = processName;
+        procedures = new ArrayList<>();
         return node.accept(this);
     }
 
@@ -87,7 +91,9 @@ public class BehaviourProjection implements CCVisitor< SPNode >
     public SPNode visit(ProcedureDefinition n) throws MergingException {
         String procedure = n.getProcedure();
         SPNode node =  n.getChoreography().accept(this);
-        return new ProcedureDefinitionSP(procedure, (Behaviour) node);
+        ProcedureDefinitionSP pd = new ProcedureDefinitionSP(procedure, (Behaviour) node);
+        procedures.add(pd);
+        return pd;
     }
 
     @Override
@@ -96,6 +102,10 @@ public class BehaviourProjection implements CCVisitor< SPNode >
 
         if (n.getProcesses().contains(processName)){
             retval =  new ProcedureInvocationSP(n.getProcedure());
+            Optional<ProcedureDefinitionSP> first = procedures.stream().filter(i -> i.getProcedure().equals(n.getProcedure())).findFirst();
+            if (first.isPresent()){
+                ((ProcedureInvocationSP) retval).setProcedureDefinition(first.get());
+            }
         } else {
             retval = (SPNode) new Termination();
             return retval;

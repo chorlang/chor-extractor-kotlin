@@ -3,9 +3,6 @@ package ast.sp.nodes;
 import ast.sp.interfaces.Behaviour;
 import ast.sp.interfaces.Interaction;
 
-/**
- * Created by lara on 04/04/17.
- */
 public class Receiving implements Interaction {
     private final Behaviour continuation;
     private final String process;
@@ -25,5 +22,10 @@ public class Receiving implements Interaction {
 
     public String toString() {
         return process + "?; " + continuation.toString();
+    }
+
+    @Override
+    public boolean findRecProcCall(String procname) {
+        return continuation.findRecProcCall(procname);
     }
 }

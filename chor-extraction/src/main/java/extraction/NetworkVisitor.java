@@ -15,10 +15,7 @@ import java.util.stream.Collectors;
 public class NetworkVisitor extends NetworkBaseVisitor<SPNode>{
     @Override
     public SPNode visitNetwork(NetworkContext ctx) {
-        ArrayList<ProcessBehaviour> network = new ArrayList<>();
-        for (ProcessBehaviourContext pbc: ctx.processBehaviour()) {
-            network.add((ProcessBehaviour) visit(pbc));
-        }
+        ArrayList<ProcessBehaviour> network = ctx.processBehaviour().stream().map(pbc -> (ProcessBehaviour) visit(pbc)).collect(Collectors.toCollection(ArrayList::new));
         return new Network(network);
     }
 

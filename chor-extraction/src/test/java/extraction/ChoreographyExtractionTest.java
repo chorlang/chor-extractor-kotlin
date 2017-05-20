@@ -8,8 +8,6 @@ import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
-import java.lang.reflect.InvocationTargetException;
-
 @RunWith(Theories.class)
 public class ChoreographyExtractionTest extends Assert{
 
@@ -22,7 +20,7 @@ public class ChoreographyExtractionTest extends Assert{
 
     @DataPoints
     public static Object[][] data = new Object[][]{
-            {
+            /*{
                     "p { main {q!<e>; q?; stop}} " +
                     "| q { main {p?; p!<u>; stop}} " +
                     "| r { main {stop}}",
@@ -39,15 +37,35 @@ public class ChoreographyExtractionTest extends Assert{
                     "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
                     "r { main {stop}}",
                     "if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop"
+            },
+            {
+                    "p { def X {q!<e>; stop} main {X}} " +
+                            "| q { def X {p?; stop} main {X}} " +
+                            "| r { main {stop}}",
+                    "p.e->q; stop"
+            },
+            {
+                    "p {main{stop}}", "stop"
+            },
+            {
+                    "p {main{stop}} | q {main{stop}}", "stop"
+            },
+            {
+                    "p {main{stop}} | q {def X {stop} main{X}}", "stop"
+            },
+            {
+                    "p {main{q?;stop}} | q {main{p!<e>;stop}}", "q.e->p; stop"
+            }*/
+            {
+                    "p {main{q?;stop}} | q { def X {p!<e>;stop} main{X}}", "q.e->p; stop"
             }
-
     };
 
     @Theory
-    public void testProject(final Object... testData) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    public void testProject(final Object... testData) throws Exception {
         np.parse((String) testData[0]);
         CCNode graph = np.extract();
         assertEquals(testData[1], graph.toString());
-        System.out.println("Network: " + testData[0] +"\n Graph: " + graph.toString());
+        System.out.println("Network: " + testData[0] +"\nGraph: " + graph.toString());
     }
 }
