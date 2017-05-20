@@ -9,7 +9,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)
-public class ChoreographyExtractionTest extends Assert{
+public class ChoreographyExtractionTest extends Assert {
 
     private ChoreographyExtraction np;
 
@@ -20,7 +20,7 @@ public class ChoreographyExtractionTest extends Assert{
 
     @DataPoints
     public static Object[][] data = new Object[][]{
-            /*{
+            {
                     "p { main {q!<e>; q?; stop}} " +
                     "| q { main {p?; p!<u>; stop}} " +
                     "| r { main {stop}}",
@@ -55,10 +55,17 @@ public class ChoreographyExtractionTest extends Assert{
             },
             {
                     "p {main{q?;stop}} | q {main{p!<e>;stop}}", "q.e->p; stop"
-            }*/
+            },
             {
                     "p {main{q?;stop}} | q { def X {p!<e>;stop} main{X}}", "q.e->p; stop"
+            },
+            {
+                    "p {main{q!<e>;stop}} | q { def X {p?;stop} main{X}}", "p.e->q; stop"
+            },
+            {
+                    "p { def X {q!<e>;X} main{X} | q { def X {p?;X} main{X}}", "p.e->q; stop"
             }
+
     };
 
     @Theory
@@ -66,6 +73,6 @@ public class ChoreographyExtractionTest extends Assert{
         np.parse((String) testData[0]);
         CCNode graph = np.extract();
         assertEquals(testData[1], graph.toString());
-        System.out.println("Network: " + testData[0] +"\nGraph: " + graph.toString());
+        System.out.println("Network: " + testData[0] + "\nGraph: " + graph.toString());
     }
 }

@@ -22,7 +22,7 @@ public class NetworkExtraction {
     private DirectedGraph<Network, ExtractionLabel> graph;
     private Deque<Network> networks;
     private Network root;
-    Network current;
+    private Network current;
 
     public NetworkExtraction(SPNode network) throws Exception {
         graph = new DefaultDirectedGraph<>(ExtractionLabel.class);
@@ -179,7 +179,7 @@ public class NetworkExtraction {
 
             networks.addLast(nextNode);
             graph.addVertex(nextNode);
-            return graph.addEdge(network, nextNode, label);
+            return graph.addEdge(current, nextNode, label);
         } else return false;
 
     }
@@ -207,7 +207,7 @@ public class NetworkExtraction {
 
             networks.addLast(nextNode);
             graph.addVertex(nextNode);
-            return graph.addEdge(network, nextNode, label);
+            return graph.addEdge(current, nextNode, label);
         } else return false;
     }
 
@@ -238,7 +238,7 @@ public class NetworkExtraction {
 
             graph.addVertex(nextNode);
             networks.addLast(nextNode);
-            return graph.addEdge(network, nextNode, label);
+            return graph.addEdge(current, nextNode, label);
         } else return false;
 
     }
@@ -269,7 +269,7 @@ public class NetworkExtraction {
 
             networks.addLast(nextNode);
             graph.addVertex(nextNode);
-            return graph.addEdge(network, nextNode, label);
+            return graph.addEdge(current, nextNode, label);
         } else return false;
     }
 
@@ -300,8 +300,8 @@ public class NetworkExtraction {
         networks.addLast(networkThen);
         networks.addLast(networkElse);
 
-        graph.addEdge(network, networkThen, labelThen);
-        return graph.addEdge(network, networkElse, labelElse);
+        graph.addEdge(current, networkThen, labelThen);
+        return graph.addEdge(current, networkElse, labelElse);
     }
 
     private boolean process(ProcedureInvocationSP process, ProcessBehaviour processBehaviour, Network network) {
