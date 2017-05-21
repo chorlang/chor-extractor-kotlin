@@ -2,6 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b207236-889c-4211-9c91-1c8854ff5c53" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" afterPath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java" afterPath="$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java" />
     </list>
@@ -38,22 +40,20 @@
       <file leaf-file-name="NetworkExtraction.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="157">
-              <caret line="189" column="0" selection-start-line="189" selection-start-column="0" selection-end-line="189" selection-end-column="0" />
+            <state relative-caret-position="253">
+              <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
+                <element signature="method#NetworkExtraction#0;class#NetworkExtraction#0" expanded="false" />
+                <element signature="method#createGraph#0;class#NetworkExtraction#0" expanded="false" />
                 <element signature="method#processMainWithoutProcInvoc#0;class#NetworkExtraction#0" expanded="false" />
                 <element signature="docComment;method#unfold#0;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#unfold#0;class#NetworkExtraction#0" expanded="false" />
                 <element signature="method#findProcedureInvocation#0;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#process#0;class#NetworkExtraction#0" expanded="false" />
+                <element signature="method#compareNetworkNodes#0;class#NetworkExtraction#0" expanded="false" />
                 <element signature="method#process#1;class#NetworkExtraction#0" expanded="false" />
                 <element signature="method#process#3;class#NetworkExtraction#0" expanded="false" />
                 <element signature="method#process#4;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#process#5;class#NetworkExtraction#0" expanded="false" />
                 <element signature="method#process#6;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#graphToChoreograpy#0;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#extractNodeForward#0;class#NetworkExtraction#0" expanded="false" />
               </folding>
             </state>
           </provider>
@@ -62,8 +62,8 @@
       <file leaf-file-name="ChoreographyExtractionTest.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="262">
-              <caret line="65" column="66" selection-start-line="65" selection-start-column="66" selection-end-line="65" selection-end-column="66" />
+            <state relative-caret-position="240">
+              <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
               <folding />
             </state>
           </provider>
@@ -156,9 +156,7 @@
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Sending.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/TerminationSP.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Receiving.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Recursion.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java" />
         <option value="$PROJECT_DIR$/src/main/java/epp/MergingProjection.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NE.java" />
@@ -167,6 +165,8 @@
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Network.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureInvocationSP.java" />
         <option value="$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Recursion.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java" />
       </list>
@@ -236,6 +236,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
@@ -631,13 +632,12 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="last_opened_file_path" value="$PROJECT_DIR$/../../chocho/gen" />
-    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.selected.configurable" value="Errors" />
     <property name="project.structure.last.edited" value="Modules" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.2" />
@@ -655,6 +655,7 @@
     <property name="$PROJECT_DIR$/src/main/antlr4/CommonLexerRules.g4::/gen-visitor" value="false" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.defaultLibrary" value="JUnit4" />
     <property name="com.intellij.testIntegration.createTest.CreateTestDialog.includeInheritedMembers" value="true" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
   </component>
   <component name="RecentsManager">
     <key name="CreateTestDialog.RecentsKey">
@@ -1134,34 +1135,34 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 20h 05m 54s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 03m 45s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 20h 22m 35s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 10m 06s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 23h 19m 54s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 10m 41s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 23h 19m 58s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 11m 30s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 23h 20m 42s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 11m 35s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 23h 22m 31s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 13m 16s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 23h 24m 05s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 20m 32s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 23h 24m 27s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 24m 48s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 23h 28m 00s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 24m 57s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.20 at 23h 34m 06s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 25m 16s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
   </component>
@@ -1184,22 +1185,20 @@
       <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32384825" sideWeight="0.48855507" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32249323" sideWeight="0.5159722" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32249323" sideWeight="0.52152777" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19098713" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39972898" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32249323" sideWeight="0.48402777" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32249323" sideWeight="0.47847223" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24236111" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3272727" sideWeight="0.4914163" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23055555" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="ANTLR Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32771084" sideWeight="0.49713877" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24947916" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.38482386" sideWeight="0.48426324" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44579947" sideWeight="0.48125" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1208,7 +1207,9 @@
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Module Dependencies" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39972898" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3272727" sideWeight="0.4914163" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -1273,37 +1274,57 @@
           <option name="timeStamp" value="105" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java</url>
-          <line>74</line>
+          <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java</url>
+          <line>214</line>
           <properties />
-          <option name="timeStamp" value="158" />
+          <option name="timeStamp" value="206" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java</url>
-          <line>33</line>
+          <url>file://$PROJECT_DIR$/src/main/java/ast/cc/nodes/Communication.java</url>
+          <line>45</line>
           <properties />
-          <option name="timeStamp" value="176" />
+          <option name="timeStamp" value="211" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java</url>
-          <line>155</line>
+          <line>350</line>
           <properties />
-          <option name="timeStamp" value="189" />
+          <option name="timeStamp" value="212" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java</url>
-          <line>179</line>
+          <line>361</line>
           <properties />
-          <option name="timeStamp" value="190" />
+          <option name="timeStamp" value="213" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java</url>
-          <line>38</line>
+          <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java</url>
+          <line>277</line>
           <properties />
-          <option name="timeStamp" value="191" />
+          <option name="timeStamp" value="214" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java</url>
+          <line>311</line>
+          <properties />
+          <option name="timeStamp" value="217" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java</url>
+          <line>81</line>
+          <properties />
+          <option name="timeStamp" value="218" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java</url>
+          <line>123</line>
+          <properties>
+            <option name="lambda-ordinal" value="-1" />
+          </properties>
+          <option name="timeStamp" value="219" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="193" />
+      <option name="time" value="220" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="JUnit">
@@ -1319,21 +1340,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/test/java/epp/EndpointProjectionTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-173">
-          <caret line="20" column="153" selection-start-line="20" selection-start-column="153" selection-end-line="20" selection-end-column="153" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/antlr4/Choreography.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="17" selection-start-line="10" selection-start-column="17" selection-end-line="10" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/antlr4/Network.g4">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
@@ -1345,20 +1351,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
           <caret line="368" column="0" selection-start-line="368" selection-start-column="0" selection-end-line="368" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/runners/BlockJUnit4ClassRunner.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/runner/JUnitCore.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="217">
-          <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
         </state>
       </provider>
     </entry>
@@ -1382,9 +1374,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="150">
           <caret line="10" column="44" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1410,7 +1399,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1490,26 +1478,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/Recursion.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="51" selection-start-line="4" selection-start-column="51" selection-end-line="4" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/Communication.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="18" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-          <folding>
-            <element signature="e#675#676#0" expanded="false" />
-            <element signature="e#708#709#0" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1525,7 +1493,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="375">
           <caret line="48" column="6" selection-start-line="48" selection-start-column="6" selection-end-line="48" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1537,31 +1504,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/OLDNetworkExtraction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="92" column="5" selection-start-line="49" selection-start-column="4" selection-end-line="92" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/jgrapht/jgrapht-core/1.0.1/jgrapht-core-1.0.1.jar!/org/jgrapht/alg/util/Pair.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-          <folding>
-            <element signature="e#482#483#0" expanded="true" />
-            <element signature="e#515#516#0" expanded="true" />
-            <element signature="e#577#578#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/OLDNetworkExtraction.java" />
     <entry file="jar://$MAVEN_REPOSITORY$/io/javaslang/javaslang/2.0.6/javaslang-2.0.6.jar!/javaslang/Predicates.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
           <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1573,57 +1520,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="495">
-          <caret line="43" column="24" selection-start-line="43" selection-start-column="24" selection-end-line="43" selection-end-column="24" />
-          <folding>
-            <element signature="e#1214#1215#0" expanded="false" />
-            <element signature="e#1254#1255#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Network.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="25" column="5" selection-start-line="25" selection-start-column="5" selection-end-line="25" selection-end-column="5" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#440#441#0" expanded="true" />
-            <element signature="e#474#475#0" expanded="true" />
-            <element signature="e#529#530#0" expanded="true" />
-            <element signature="e#575#576#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureInvocationSP.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="360">
           <caret line="28" column="5" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
           <folding>
-            <element signature="e#405#406#0" expanded="true" />
-            <element signature="e#437#438#0" expanded="true" />
-            <element signature="e#498#499#0" expanded="true" />
-            <element signature="e#540#541#0" expanded="true" />
+            <element signature="e#405#406#0" expanded="false" />
+            <element signature="e#437#438#0" expanded="false" />
+            <element signature="e#498#499#0" expanded="false" />
+            <element signature="e#540#541#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/epp/ProceduresUnwrapper.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="11" column="13" selection-start-line="11" selection-start-column="13" selection-end-line="11" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/epp/ProceduresUnwrapper.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
           <caret line="93" column="57" selection-start-line="93" selection-start-column="57" selection-end-line="93" selection-end-column="57" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1660,15 +1574,50 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="157">
           <caret line="67" column="0" selection-start-line="67" selection-start-column="0" selection-end-line="67" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/antlr/antlr4-runtime/4.6/antlr4-runtime-4.6.jar!/org/antlr/v4/runtime/ParserRuleContext.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="142">
+          <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/gen/antlr4/NetworkParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="142">
+          <caret line="562" column="0" selection-start-line="562" selection-start-column="0" selection-end-line="562" selection-end-column="0" />
+          <folding>
+            <element signature="e#17695#17696#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/antlr/antlr4-runtime/4.6/antlr4-runtime-4.6.jar!/org/antlr/v4/runtime/tree/AbstractParseTreeVisitor.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="352">
+          <caret line="51" column="9" selection-start-line="51" selection-start-column="9" selection-end-line="51" selection-end-column="9" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/io/javaslang/javaslang/2.0.6/javaslang-2.0.6.jar!/javaslang/control/Option.class">
+    <entry file="jar://$MAVEN_REPOSITORY$/org/jgrapht/jgrapht-core/1.0.1/jgrapht-core-1.0.1.jar!/org/jgrapht/alg/util/Pair.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="129" column="0" selection-start-line="129" selection-start-column="0" selection-end-line="129" selection-end-column="0" />
-          <folding />
+        <state relative-caret-position="315">
+          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding>
+            <element signature="e#482#483#0" expanded="true" />
+            <element signature="e#515#516#0" expanded="true" />
+            <element signature="e#577#578#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -1683,55 +1632,34 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/runners/BlockJUnit4ClassRunner.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="261">
-          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+        <state relative-caret-position="315">
+          <caret line="50" column="0" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/antlr/antlr4-runtime/4.6/antlr4-runtime-4.6.jar!/org/antlr/v4/runtime/ParserRuleContext.class">
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/runner/JUnitCore.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="186" column="0" selection-start-line="186" selection-start-column="0" selection-end-line="186" selection-end-column="0" />
+        <state relative-caret-position="217">
+          <caret line="81" column="0" selection-start-line="81" selection-start-column="0" selection-end-line="81" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/gen/antlr4/NetworkParser.java">
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/runners/ParentRunner.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="142">
-          <caret line="562" column="0" selection-start-line="562" selection-start-column="0" selection-end-line="562" selection-end-column="0" />
+        <state relative-caret-position="343">
+          <caret line="240" column="0" selection-start-line="240" selection-start-column="0" selection-end-line="240" selection-end-column="0" />
           <folding>
-            <element signature="e#17695#17696#0" expanded="true" />
+            <element signature="e#2137#2138#0" expanded="true" />
+            <element signature="e#2181#2182#0" expanded="true" />
+            <element signature="e#5891#6026#0" expanded="true" />
+            <element signature="e#6025#6026#0" expanded="true" />
+            <element signature="e#6429#6593#0" expanded="true" />
+            <element signature="e#6592#6593#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="157">
-          <caret line="38" column="0" selection-start-line="38" selection-start-column="0" selection-end-line="38" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/antlr/antlr4-runtime/4.6/antlr4-runtime-4.6.jar!/org/antlr/v4/runtime/tree/AbstractParseTreeVisitor.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="157">
-          <caret line="18" column="0" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-          <folding>
-            <element signature="e#577#578#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1743,40 +1671,133 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/runners/ParentRunner.class">
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="366">
-          <caret line="203" column="0" selection-start-line="203" selection-start-column="0" selection-end-line="203" selection-end-column="0" />
+        <state relative-caret-position="210">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Network.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="15" column="34" selection-start-line="15" selection-start-column="34" selection-end-line="15" selection-end-column="34" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="method#Network#0;class#Network#0" expanded="false" />
+            <element signature="e#372#373#0" expanded="true" />
+            <element signature="e#402#403#0" expanded="true" />
+            <element signature="method#toString#0;class#Network#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="322">
+          <caret line="51" column="39" selection-start-line="51" selection-start-column="39" selection-end-line="51" selection-end-column="39" />
+          <folding>
+            <element signature="e#1307#1308#0" expanded="true" />
+            <element signature="e#1350#1351#0" expanded="true" />
+            <element signature="e#1394#1395#0" expanded="true" />
+            <element signature="e#1435#1436#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_74.jdk/Contents/Home/src.zip!/java/lang/Object.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="276">
+          <caret line="99" column="28" selection-start-line="99" selection-start-column="28" selection-end-line="99" selection-end-column="28" />
+          <folding>
+            <element signature="initializer##0;class#Object#0" expanded="false" />
+            <element signature="docComment;method#getClass#0;class#Object#0" expanded="false" />
+            <element signature="docComment;method#hashCode#0;class#Object#0" expanded="false" />
+            <element signature="docComment;method#equals#0;class#Object#0" expanded="false" />
+            <element signature="e#5748#5749#0" expanded="true" />
+            <element signature="e#5784#5785#0" expanded="true" />
+            <element signature="docComment;method#clone#0;class#Object#0" expanded="false" />
+            <element signature="docComment;method#toString#0;class#Object#0" expanded="false" />
+            <element signature="docComment;method#notify#0;class#Object#0" expanded="false" />
+            <element signature="docComment;method#notifyAll#0;class#Object#0" expanded="false" />
+            <element signature="docComment;method#wait#0;class#Object#0" expanded="false" />
+            <element signature="docComment;method#wait#1;class#Object#0" expanded="false" />
+            <element signature="method#wait#1;class#Object#0" expanded="false" />
+            <element signature="docComment;method#wait#2;class#Object#0" expanded="false" />
+            <element signature="method#wait#2;class#Object#0" expanded="false" />
+            <element signature="docComment;method#finalize#0;class#Object#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/cc/nodes/Communication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="510">
+          <caret line="45" column="70" selection-start-line="45" selection-start-column="70" selection-end-line="45" selection-end-column="70" />
+          <folding>
+            <element signature="e#1055#1056#0" expanded="true" />
+            <element signature="e#1154#1155#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/Recursion.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="51" selection-start-line="4" selection-start-column="51" selection-end-line="4" selection-end-column="51" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/Communication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="225">
+          <caret line="17" column="5" selection-start-line="15" selection-start-column="4" selection-end-line="17" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/io/javaslang/javaslang/2.0.6/javaslang-2.0.6.jar!/javaslang/control/Option.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="133">
+          <caret line="129" column="0" selection-start-line="129" selection-start-column="0" selection-end-line="129" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="157">
-          <caret line="189" column="0" selection-start-line="189" selection-start-column="0" selection-end-line="189" selection-end-column="0" />
+        <state relative-caret-position="253">
+          <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
+            <element signature="method#NetworkExtraction#0;class#NetworkExtraction#0" expanded="false" />
+            <element signature="method#createGraph#0;class#NetworkExtraction#0" expanded="false" />
             <element signature="method#processMainWithoutProcInvoc#0;class#NetworkExtraction#0" expanded="false" />
             <element signature="docComment;method#unfold#0;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#unfold#0;class#NetworkExtraction#0" expanded="false" />
             <element signature="method#findProcedureInvocation#0;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#process#0;class#NetworkExtraction#0" expanded="false" />
+            <element signature="method#compareNetworkNodes#0;class#NetworkExtraction#0" expanded="false" />
             <element signature="method#process#1;class#NetworkExtraction#0" expanded="false" />
             <element signature="method#process#3;class#NetworkExtraction#0" expanded="false" />
             <element signature="method#process#4;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#process#5;class#NetworkExtraction#0" expanded="false" />
             <element signature="method#process#6;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#graphToChoreograpy#0;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#extractNodeForward#0;class#NetworkExtraction#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="262">
-          <caret line="65" column="66" selection-start-line="65" selection-start-column="66" selection-end-line="65" selection-end-column="66" />
+        <state relative-caret-position="240">
+          <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
           <folding />
         </state>
       </provider>

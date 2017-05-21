@@ -22,20 +22,20 @@ public class ChoreographyExtractionTest extends Assert {
     public static Object[][] data = new Object[][]{
             {
                     "p { main {q!<e>; q?; stop}} " +
-                    "| q { main {p?; p!<u>; stop}} " +
-                    "| r { main {stop}}",
+                            "| q { main {p?; p!<u>; stop}} " +
+                            "| r { main {stop}}",
                     "p.e->q; q.u->p; stop"
             },
             {
                     "p { main {q+R; q!<e>; q?; stop}} | " +
-                    "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
-                    "r { main {stop}}",
+                            "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
+                            "r { main {stop}}",
                     "p->q[R]; p.e->q; q.u1->p; stop"
             },
             {
                     "p { main {if p.e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop}} | " +
-                    "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
-                    "r { main {stop}}",
+                            "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
+                            "r { main {stop}}",
                     "if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop"
             },
             {
@@ -63,7 +63,20 @@ public class ChoreographyExtractionTest extends Assert {
                     "p {main{q!<e>;stop}} | q { def X {p?;stop} main{X}}", "p.e->q; stop"
             },
             {
-                    "p { def X {q!<e>;X} main{X} | q { def X {p?;X} main{X}}", "p.e->q; stop"
+                    "p { def X {q!<e>;X} main{X}} | q { def X {p?;X} main{X}}", "p.e->q; stop"
+            },
+            {
+                    "p { def X {q?;X} main{X}} | q { def X {p!<e>;X} main{X}}", "q.e->p; stop"
+            }
+            ,
+            {
+                    "p { def X {q+R; q!<e>; q?;X} main{X}} | q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>;X}} main{X}}", "p->q[R]; p.e->q; q.u1->p; stop"
+            },
+            {
+                    "p { def X {if p.e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop} main {X}} | " +
+                            "q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | " +
+                            "r { main {stop}}",
+                    "if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop"
             }
 
     };

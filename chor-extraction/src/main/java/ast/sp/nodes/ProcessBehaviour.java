@@ -48,4 +48,8 @@ public class ProcessBehaviour implements SPNode {
     public void setVisitedProcedures(String proc) {
         visitedProcedures.add(proc);
     }
+
+    public void clearVisitedProcedures() {
+        visitedProcedures.clear();
+    }
 }

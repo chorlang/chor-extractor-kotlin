@@ -52,7 +52,7 @@ public class NetworkExtraction {
             //process nodes in deque of processes without Procedure invocation. If processing completes without issues go to next network processng via create graph fun
             // else take the next node from processes without Procedure invocation and try to process it
             processMainWithoutProcInvoc(network, mainWithProcInvoc, mainWithoutProcInvoc);
-        } else if (!mainWithProcInvoc.isEmpty()){
+        } else if (!mainWithProcInvoc.isEmpty()) {
             //find all unvisited procedures
             Deque<ProcessBehaviour> unvisitedproc = new ArrayDeque<>();
             mainWithProcInvoc.stream().filter(i -> !i.getVisitedProcedures().contains(( (ProcedureInvocationSP) i.getMain() ).getProcedure())).forEach(unvisitedproc::add);
@@ -60,11 +60,22 @@ public class NetworkExtraction {
             // if there is only visited procedures
             if (unvisitedproc.isEmpty()) {
                 //compare current network node with every else in the graph.
-                Optional<Network> first = networks.stream().filter(i -> i.equals(network)).findFirst();
+
+                Network n = new Network(network.getNetwork());
+                n.getNetwork().stream().forEach(i -> i.clearVisitedProcedures());
+
+                networks.add(current);
+
                 // if it equals to one of them - we are done. make the edge to this node
+                boolean c = graph.addEdge(network, current, new Recursion());
+                networks.remove(current);
+
+                /*
+                Optional<Network> first = networks.stream().filter(i -> i.equals(n)).findFirst();
                 if (first.isPresent()) {
                     graph.addEdge(network, first.get(), new Recursion());
-                } else throw new Exception(); // if it is not throw exception
+
+                } else throw new Exception("somethig bad happen"); // if it is not throw exception*/
 
             } else {//if there is some unvisited procedures
                 //unfold one of the procedure and add it to the list of the procedures with or without process invocation
@@ -75,7 +86,13 @@ public class NetworkExtraction {
                 network.getNetwork().forEach(i -> {
                     if (!( i.getProcess().equals(pb.getProcess()) )) newproclist.add(i);
                 });
-                newproclist.add(unfold(pb));
+                //find the invoked procedure name in main
+                String procname = ( (ProcedureInvocationSP) pb.getMain() ).getProcedure();
+
+                ProcessBehaviour unfold = unfold(pb, procname);
+                unfold.setVisitedProcedures(procname);
+                newproclist.add(unfold);
+
                 Network tempnetwork = new Network(newproclist);
 
                 //process the process behaviours again to find out new distribution of processe with or without process invocation
@@ -84,9 +101,8 @@ public class NetworkExtraction {
                 //recursivly run the function on the new tempnetwork
                 processNetworkNode(tempnetwork, pair.getFirst(), pair.getSecond());
             }
-        }else if (!network.getNetwork().stream().anyMatch(i -> !(i.getMain() instanceof TerminationSP))) {
-            System.out.println("we are done");
-        } else throw new Exception();
+        } else if (!network.getNetwork().stream().anyMatch(i -> !( i.getMain() instanceof TerminationSP ))) {
+        } else throw new Exception("No possible moves, but not all nodes terminated");
     }
 
     private void processMainWithoutProcInvoc(Network network, Deque<ProcessBehaviour> withProcInvoc, Deque<ProcessBehaviour> noProcInvoc) throws Exception {
@@ -103,10 +119,7 @@ public class NetworkExtraction {
      * @return process behaviour of the same process with unfolded procedure
      * @throws Exception if there is no corresponding procedure definition in procedures definitons for the one invoked in main
      */
-    private ProcessBehaviour unfold(ProcessBehaviour pb) throws Exception {
-        //find the invoked procedure name in main
-        String procname = ( (ProcedureInvocationSP) pb.getMain() ).getProcedure();
-
+    private ProcessBehaviour unfold(ProcessBehaviour pb, String procname) throws Exception {
         //find the corresponding procedure in the list of procedure definitions
         Optional<ProcedureDefinitionSP> sp = pb.getProcedures().stream().filter(i -> i.getProcedure().equals(procname)).findAny();
         if (sp.isPresent()) { //if such procedure exist
@@ -173,8 +186,14 @@ public class NetworkExtraction {
             List<ProcessBehaviour> nextNodeBehaviours = new ArrayList<>(processBehaviours);
             nextNodeBehaviours.remove(processBehaviour);
             nextNodeBehaviours.remove(node);
-            nextNodeBehaviours.add(new ProcessBehaviour(processBehaviour.getProcess(), processBehaviour.getProcedures(), receivingBehaviour));
-            nextNodeBehaviours.add(new ProcessBehaviour(node.getProcess(), node.getProcedures(), sendingBehaviour));
+
+            ProcessBehaviour pbr = new ProcessBehaviour(processBehaviour.getProcess(), processBehaviour.getProcedures(), receivingBehaviour);
+            ProcessBehaviour pbs = new ProcessBehaviour(node.getProcess(), node.getProcedures(), sendingBehaviour);
+            processBehaviour.getVisitedProcedures().stream().forEach(i -> pbr.setVisitedProcedures(i));
+            node.getVisitedProcedures().stream().forEach(i -> pbs.setVisitedProcedures(i));
+
+            nextNodeBehaviours.add(pbr);
+            nextNodeBehaviours.add(pbs);
             Network nextNode = new Network(nextNodeBehaviours);
 
             networks.addLast(nextNode);
@@ -201,8 +220,15 @@ public class NetworkExtraction {
             List<ProcessBehaviour> nextNodeBehaviours = new ArrayList<>(processBehaviours);
             nextNodeBehaviours.remove(processBehaviour);
             nextNodeBehaviours.remove(node);
-            nextNodeBehaviours.add(new ProcessBehaviour(processBehaviour.getProcess(), processBehaviour.getProcedures(), sendingBehaviour));
-            nextNodeBehaviours.add(new ProcessBehaviour(node.getProcess(), node.getProcedures(), receivingBehaviour));
+            ProcessBehaviour pbs = new ProcessBehaviour(processBehaviour.getProcess(), processBehaviour.getProcedures(), sendingBehaviour);
+            ProcessBehaviour pbr = new ProcessBehaviour(node.getProcess(), node.getProcedures(), receivingBehaviour);
+
+            //copy visited procedures
+            processBehaviour.getVisitedProcedures().stream().forEach(i -> pbs.setVisitedProcedures(i));
+            node.getVisitedProcedures().stream().forEach(i -> pbr.setVisitedProcedures(i));
+
+            nextNodeBehaviours.add(pbs);
+            nextNodeBehaviours.add(pbr);
             Network nextNode = new Network(nextNodeBehaviours);
 
             networks.addLast(nextNode);
@@ -230,10 +256,15 @@ public class NetworkExtraction {
             List<ProcessBehaviour> nextNodeBehaviours = new ArrayList<>(processBehaviours);
             nextNodeBehaviours.remove(processBehaviour);
             nextNodeBehaviours.remove(node);
-            nextNodeBehaviours.add(new ProcessBehaviour
-                    (processBehaviour.getProcess(), processBehaviour.getProcedures(), offeringBehaviour));
-            nextNodeBehaviours.add(new ProcessBehaviour
-                    (node.getProcess(), node.getProcedures(), selectionBehaviour));
+
+            ProcessBehaviour pbo = new ProcessBehaviour(processBehaviour.getProcess(), processBehaviour.getProcedures(), offeringBehaviour);
+            ProcessBehaviour pbc = new ProcessBehaviour(node.getProcess(), node.getProcedures(), selectionBehaviour);
+
+            processBehaviour.getVisitedProcedures().stream().forEach(i -> pbo.setVisitedProcedures(i));
+            node.getVisitedProcedures().stream().forEach(i -> pbc.setVisitedProcedures(i));
+
+            nextNodeBehaviours.add(pbo);
+            nextNodeBehaviours.add(pbc);
             Network nextNode = new Network(nextNodeBehaviours);
 
             graph.addVertex(nextNode);
@@ -261,10 +292,14 @@ public class NetworkExtraction {
             List<ProcessBehaviour> nextNodeBehaviours = new ArrayList<>(processBehaviours);
             nextNodeBehaviours.remove(processBehaviour);
             nextNodeBehaviours.remove(node);
-            nextNodeBehaviours.add(new ProcessBehaviour
-                    (processBehaviour.getProcess(), processBehaviour.getProcedures(), selectionBehaviour));
-            nextNodeBehaviours.add(new ProcessBehaviour
-                    (node.getProcess(), node.getProcedures(), offeringBehaviour));
+
+            ProcessBehaviour pbc = new ProcessBehaviour(processBehaviour.getProcess(), processBehaviour.getProcedures(), selectionBehaviour);
+            ProcessBehaviour pbo = new ProcessBehaviour(node.getProcess(), node.getProcedures(), offeringBehaviour);
+            processBehaviour.getVisitedProcedures().stream().forEach(i -> pbc.setVisitedProcedures(i));
+            node.getVisitedProcedures().stream().forEach(i -> pbo.setVisitedProcedures(i));
+
+            nextNodeBehaviours.add(pbc);
+            nextNodeBehaviours.add(pbo);
             Network nextNode = new Network(nextNodeBehaviours);
 
             networks.addLast(nextNode);
@@ -286,10 +321,12 @@ public class NetworkExtraction {
         thenNodeBehaviours.remove(processBehaviour);
         elseNodeBehaviours.remove(processBehaviour);
 
-        thenNodeBehaviours.add(new ProcessBehaviour
-                (processBehaviour.getProcess(), processBehaviour.getProcedures(), thenBehaviour));
-        elseNodeBehaviours.add(new ProcessBehaviour
-                (processBehaviour.getProcess(), processBehaviour.getProcedures(), elseBehaviour));
+        ProcessBehaviour pbt = new ProcessBehaviour(processBehaviour.getProcess(), processBehaviour.getProcedures(), thenBehaviour);
+        ProcessBehaviour pbe = new ProcessBehaviour(processBehaviour.getProcess(), processBehaviour.getProcedures(), elseBehaviour);
+        processBehaviour.getVisitedProcedures().stream().forEach(i -> {pbt.setVisitedProcedures(i); pbe.setVisitedProcedures(i);});
+
+        thenNodeBehaviours.add(pbt);
+        elseNodeBehaviours.add(pbe);
 
         Network networkThen = new Network(thenNodeBehaviours);
         Network networkElse = new Network(elseNodeBehaviours);
@@ -309,24 +346,23 @@ public class NetworkExtraction {
         return def.isPresent() && process((ProcessBehaviour) def.get().getBehaviour(), network);
     }
 
-    public CCNode graphToChoreograpy(){
+    public CCNode graphToChoreograpy() {
 
         if (graph.incomingEdgesOf(root).size() == 0) {
             return extractNodeForward(root);
-        }
-        else {
+        } else {
             return null;
             //cyclic graph
         }
 
     }
 
-    private CCNode extractNodeForward(Network leaf){
+    private CCNode extractNodeForward(Network leaf) {
         CCNode retval = null;
         Set<ExtractionLabel> edges = graph.outgoingEdgesOf(leaf);
-        switch( edges.size() ) {
+        switch (edges.size()) {
             case 0:
-                if (leaf.isProjectable()){
+                if (leaf.isProjectable()) {
                     retval = new Termination();
                 }
                 break;
@@ -341,12 +377,14 @@ public class NetworkExtraction {
                 } else if (edge instanceof Selection) {
                     Selection e = (Selection) edge;
                     retval = new ast.cc.nodes.Selection(e.getSender(), e.getReceiver(), e.getLabel(), extractNodeForward(target));
+                } else if (edge instanceof Recursion) {
+                    retval = new Termination();
                 }
                 break;
             case 2:
                 ExtractionLabel[] labels = edges.toArray(new ExtractionLabel[2]);
-                Then thenLabel = (labels[0] instanceof Then) ? (Then) labels[0] : (Then) labels[1];
-                Else elseLabel = (labels[0] instanceof Then) ? (Else) labels[1] : (Else) labels[0];
+                Then thenLabel = ( labels[0] instanceof Then ) ? (Then) labels[0] : (Then) labels[1];
+                Else elseLabel = ( labels[0] instanceof Then ) ? (Else) labels[1] : (Else) labels[0];
 
                 // throw exception is processName or expression is different in the two nodes
 
@@ -363,5 +401,11 @@ public class NetworkExtraction {
         }
         return retval;
     }
+
+    /*private Network cleanNetwork(Network network){
+        Network n = new Network(network.getNetwork());
+        n.getNetwork().stream().forEach(i -> i.clearVisitedProcedures());
+        return n;
+    }*/
 
 }
