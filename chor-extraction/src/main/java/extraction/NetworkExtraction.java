@@ -46,12 +46,20 @@ public class NetworkExtraction {
         }
     }
 
+    private void processMain(Network network, Deque<ProcessBehaviour> withProcInvoc, Deque<ProcessBehaviour> noProcInvoc) throws Exception {
+        ProcessBehaviour pb = noProcInvoc.removeFirst();
+        if (process(pb, network)) {
+            createGraph();
+        } else {
+            processNetworkNode(network, withProcInvoc, noProcInvoc);
+        }
+    }
 
     private void processNetworkNode(Network network, Deque<ProcessBehaviour> mainWithProcInvoc, Deque<ProcessBehaviour> mainWithoutProcInvoc) throws Exception {
         if (!mainWithoutProcInvoc.isEmpty()) {
             //process nodes in deque of processes without Procedure invocation. If processing completes without issues go to next network processng via create graph fun
             // else take the next node from processes without Procedure invocation and try to process it
-            processMainWithoutProcInvoc(network, mainWithProcInvoc, mainWithoutProcInvoc);
+            processMain(network, mainWithProcInvoc, mainWithoutProcInvoc);
         } else if (!mainWithProcInvoc.isEmpty()) {
             //find all unvisited procedures
             Deque<ProcessBehaviour> unvisitedproc = new ArrayDeque<>();
@@ -63,15 +71,11 @@ public class NetworkExtraction {
 
                 Network n = new Network(network.getNetwork());
                 n.getNetwork().stream().forEach(i -> i.clearVisitedProcedures());
+                // if it equals to one of them - we are done. make the edge to this node
 
                 networks.add(current);
-
-                // if it equals to one of them - we are done. make the edge to this node
-                boolean c = graph.addEdge(network, current, new Recursion());
+                Optional<Network> first = networks.stream().filter(i -> i.toString().equals(network.toString())).findFirst();
                 networks.remove(current);
-
-                /*
-                Optional<Network> first = networks.stream().filter(i -> i.equals(n)).findFirst();
                 if (first.isPresent()) {
                     graph.addEdge(network, first.get(), new Recursion());
 
@@ -105,15 +109,6 @@ public class NetworkExtraction {
         } else throw new Exception("No possible moves, but not all nodes terminated");
     }
 
-    private void processMainWithoutProcInvoc(Network network, Deque<ProcessBehaviour> withProcInvoc, Deque<ProcessBehaviour> noProcInvoc) throws Exception {
-        ProcessBehaviour pb = noProcInvoc.removeFirst();
-        if (process(pb, network)) {
-            createGraph();
-        } else {
-            processNetworkNode(network, withProcInvoc, noProcInvoc);
-        }
-    }
-
     /**
      * @param pb - process behaviour with the Procedure Invocation as the main entry node
      * @return process behaviour of the same process with unfolded procedure
@@ -142,13 +137,6 @@ public class NetworkExtraction {
             else noProcInvoc.add(i);
         });
         return new Pair<>(withProcInvoc, noProcInvoc);
-    }
-
-    private Optional<Network> compareNetworkNodes(Network network) {
-        Optional<Network> first = networks.stream().filter(i -> i.equals(network)).findFirst();
-        if (first.isPresent()) {
-            return first;
-        } else return Optional.empty();
     }
 
     private boolean process(ProcessBehaviour processBehaviour, Network network) {
@@ -401,11 +389,4 @@ public class NetworkExtraction {
         }
         return retval;
     }
-
-    /*private Network cleanNetwork(Network network){
-        Network n = new Network(network.getNetwork());
-        n.getNetwork().stream().forEach(i -> i.clearVisitedProcedures());
-        return n;
-    }*/
-
 }
