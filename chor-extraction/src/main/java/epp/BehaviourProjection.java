@@ -122,4 +122,9 @@ public class BehaviourProjection implements CCVisitor< SPNode >
         }
         return new ProcessBehaviour(processName, procedureList, (Behaviour) n.getMain().accept(this));
     }
+
+    @Override
+    public SPNode visit(BadTermination n) {
+        return new TerminationSP();
+    }
 }

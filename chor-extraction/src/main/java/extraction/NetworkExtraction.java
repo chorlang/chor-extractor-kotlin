@@ -8,9 +8,8 @@ import ast.sp.interfaces.ExtractionLabel;
 import ast.sp.interfaces.SPNode;
 import ast.sp.labels.*;
 import ast.sp.nodes.*;
-import org.jgrapht.DirectedGraph;
 import org.jgrapht.alg.util.Pair;
-import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.ListenableDirectedGraph;
 
 import java.util.*;
 
@@ -19,13 +18,22 @@ import static javaslang.API.Match;
 import static javaslang.Predicates.instanceOf;
 
 public class NetworkExtraction {
-    private DirectedGraph<Network, ExtractionLabel> graph;
+    public ListenableDirectedGraph<Network, ExtractionLabel> getGraph() {
+        return graph;
+    }
+
+    private ListenableDirectedGraph<Network, ExtractionLabel> graph;
     private Deque<Network> networks;
+
+    public Network getRoot() {
+        return root;
+    }
+
     private Network root;
     private Network current;
 
     public NetworkExtraction(SPNode network) throws Exception {
-        graph = new DefaultDirectedGraph<>(ExtractionLabel.class);
+        graph = new ListenableDirectedGraph<>(ExtractionLabel.class);
         graph.addVertex((Network) network);
 
         root = (Network) network;
@@ -74,12 +82,12 @@ public class NetworkExtraction {
                 // if it equals to one of them - we are done. make the edge to this node
 
                 networks.add(current);
-                Optional<Network> first = networks.stream().filter(i -> i.toString().equals(network.toString())).findFirst();
+                Optional<Network> first = networks.stream().filter(i -> (i.toString()).equals(n.toString())).findFirst();
                 networks.remove(current);
                 if (first.isPresent()) {
                     graph.addEdge(network, first.get(), new Recursion());
 
-                } else throw new Exception("somethig bad happen"); // if it is not throw exception*/
+                } //else throw new Exception("somethig bad happen"); // if it is not throw exception*/
 
             } else {//if there is some unvisited procedures
                 //unfold one of the procedure and add it to the list of the procedures with or without process invocation
@@ -106,7 +114,8 @@ public class NetworkExtraction {
                 processNetworkNode(tempnetwork, pair.getFirst(), pair.getSecond());
             }
         } else if (!network.getNetwork().stream().anyMatch(i -> !( i.getMain() instanceof TerminationSP ))) {
-        } else throw new Exception("No possible moves, but not all nodes terminated");
+        } else
+            throw new Exception("No possible moves, but not all nodes terminated");
     }
 
     /**

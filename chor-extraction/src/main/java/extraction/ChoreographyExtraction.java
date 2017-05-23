@@ -14,25 +14,26 @@ public class ChoreographyExtraction {
     private NetworkLexer lexer;
     private NetworkParser parser;
     private ParseTree tree;
+    private NetworkVisitor networkVisitor;
 
-    public ParseTree parse(String grammar) {
+    public ChoreographyExtraction(String grammar) {
         try {
             stream = new ANTLRInputStream(grammar);
             lexer = new NetworkLexer(stream);
             parser = new NetworkParser(new CommonTokenStream(lexer));
             tree = parser.network();
+            networkVisitor = new NetworkVisitor();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
-
-        return tree;
     }
 
     public CCNode extract() throws Exception {
-        NetworkVisitor networkVisitor = new NetworkVisitor();
-        SPNode sp = networkVisitor.visit(tree);
-        NetworkExtraction np = new NetworkExtraction(sp);
+        NetworkExtraction networkExtraction = new NetworkExtraction(networkVisitor.visit(tree));
+        return networkExtraction.graphToChoreograpy();
+    }
 
-        return np.graphToChoreograpy();
+    public SPNode getNetwork(){
+        return networkVisitor.visit(tree);
     }
 }

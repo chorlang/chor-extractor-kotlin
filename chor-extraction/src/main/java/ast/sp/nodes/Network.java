@@ -2,6 +2,7 @@ package ast.sp.nodes;
 
 import ast.sp.interfaces.SPNode;
 
+import java.util.Collections;
 import java.util.List;
 
 public class Network implements SPNode{
@@ -27,6 +28,7 @@ public class Network implements SPNode{
 
     public String toString(){
         StringBuilder builder = new StringBuilder();
+        Collections.sort(network, (pb1, pb2) -> pb1.getProcess().compareTo(pb2.getProcess()));
 
         for (ProcessBehaviour entry : network) {
             builder.append(entry.toString()).append(" | ");
