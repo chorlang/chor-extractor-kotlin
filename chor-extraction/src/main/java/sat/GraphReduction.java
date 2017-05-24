@@ -19,10 +19,7 @@ import extraction.NetworkExtraction;
 import org.jgrapht.graph.ListenableDirectedGraph;
 
 import javax.swing.*;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 public class GraphReduction {
     private ChoreographyExtraction np;
@@ -43,12 +40,13 @@ public class GraphReduction {
         GraphVisualization gv = new GraphVisualization();
         gv.init(graph);
 
-        Multimap<String, Boolean> varset = HashMultimap.create();
-        System.out.println(parseGraph(ne.getRoot(), varset));
+        Multimap<String, Boolean> choice = HashMultimap.create();
+        List<String> var = new ArrayList<>();
+        System.out.println(parseGraph(ne.getRoot(), var, choice));
 
     }
 
-    private CCNode parseGraph(Network leaf, Multimap<String, Boolean> varset) throws Exception {
+    private CCNode parseGraph(Network leaf, List<String> var, Multimap<String, Boolean> choice) throws Exception {
         CCNode retval = null;
         Set<ExtractionLabel> edges = graph.outgoingEdgesOf(leaf);
         switch (edges.size()) {
@@ -59,18 +57,18 @@ public class GraphReduction {
                 }
                 break;
             case 1:
-                if ( checkSat(varset) ) {
+                if ( checkSat(choice) ) {
                     ExtractionLabel edge = edges.iterator().next();
                     Network target = graph.getEdgeTarget(edge);
 
                     if (edge instanceof Communication) {
                         Communication e = (Communication) edge;
-                        varset.put(e.getExpression(), true);
-                        CCNode continuation = parseGraph(target, varset);
+                        if (!var.contains(e.getExpression())) {var.add(e.getExpression());}
+                        CCNode continuation = parseGraph(target, var, choice);
                         retval = new ast.cc.nodes.Communication(e.getSender(), e.getReceiver(), e.getExpression(), continuation);
                     } else if (edge instanceof Selection) {
                         Selection e = (Selection) edge;
-                        retval = new ast.cc.nodes.Selection(e.getSender(), e.getReceiver(), e.getLabel(), parseGraph(target, varset));
+                        retval = new ast.cc.nodes.Selection(e.getSender(), e.getReceiver(), e.getLabel(), parseGraph(target, var, choice));
                     } else if (edge instanceof Recursion) {
                         retval = new Termination();
                     }
@@ -79,7 +77,7 @@ public class GraphReduction {
                 }
                 break;
             case 2:
-                if ( checkSat(varset) ) {
+                if ( checkSat(choice) ) {
 
                     ExtractionLabel[] labels = edges.toArray(new ExtractionLabel[2]);
                     Then thenLabel = ( labels[0] instanceof Then ) ? (Then) labels[0] : (Then) labels[1];
@@ -87,22 +85,24 @@ public class GraphReduction {
 
                     // throw exception is processName or expression is different in the two nodes
 
-                    HashMultimap<String, Boolean> elseset = HashMultimap.create(varset);
+                    HashMultimap<String, Boolean> elsechoice = HashMultimap.create(choice);
                     String expr = thenLabel.getExpression();
-                    Optional<Boolean> first = varset.get(expr).stream().findFirst();
+                    Optional<Boolean> first = choice.get(expr).stream().findFirst();
                     if (!first.isPresent()) {
-                        varset.put(expr, true);
-                        elseset.put(expr, false);
-
+                        Optional<String> s = var.stream().filter(i -> i.equals(expr)).findFirst();
+                        if (s.isPresent()){
+                            choice.put(expr, true);
+                            elsechoice.put(expr, false);
+                        } else throw new Exception("Checking condition on unknown variable");
                     } else {
-                        elseset.put(expr, !first.get());
+                         elsechoice.put(expr, !first.get());
                     }
 
                     retval = new Condition(
                             thenLabel.getProcess(),
                             expr,
-                            parseGraph(graph.getEdgeTarget(thenLabel), varset),
-                            parseGraph(graph.getEdgeTarget(elseLabel), elseset)
+                            parseGraph(graph.getEdgeTarget(thenLabel), var, choice),
+                            parseGraph(graph.getEdgeTarget(elseLabel), var, elsechoice)
                     );
                 } else {
                     retval = new BadTermination();
@@ -148,8 +148,12 @@ public class GraphReduction {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 try {
-                    String s = "p {def X {q!<e1>; q&{L: q!<e2>;X, R: stop}} main {q!<e3>; X}} | q {def Y {p?;p?; if q.e1 then p+L;Y else p+R;stop} main {Y}}";
-                    GraphReduction gr = new GraphReduction(s);
+                    String s1 = "p {def X {q!<e1>; q&{L: q!<e2>;X, R: stop}} main {q!<e3>; X}} | q {def Y {p?;p?; if q.e1 then p+L;Y else p+R;stop} main {Y}}";
+                    String s2 =
+                            "p {def X {q!<e1>; q&{L: q!<e2>;X, R: q!<e4>;X}} main {q!<e3>; X}} | " +
+                            "q {def Y {p?;p?; if q.e1 then p+L;Y else p+R; p?; if q.e4 then if q.e1 then s!<v1>;Y else s!<v2>;Y else Y} main {Y}} | " +
+                            "s {def X{q?;X} main {X}}";
+                    GraphReduction gr = new GraphReduction(s2);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
