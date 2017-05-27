@@ -21,7 +21,7 @@ import static javaslang.Predicates.instanceOf;
 public class NetworkExtraction {
     private DirectedGraph<Network, ExtractionLabel> graph;
     private Deque<Network> networks;
-    private Network root;
+    //private Network root;
     private Network current;
 
     public NetworkExtraction(SPNode network) throws Exception {
@@ -68,18 +68,8 @@ public class NetworkExtraction {
             // if there is only visited procedures
             if (unvisitedproc.isEmpty()) {
                 //compare current network node with every else in the graph.
-
-                Network n = new Network(network.getNetwork());
-                n.getNetwork().stream().forEach(i -> i.clearVisitedProcedures());
-                // if it equals to one of them - we are done. make the edge to this node
-
-                networks.add(current);
-                Optional<Network> first = networks.stream().filter(i -> i.toString().equals(network.toString())).findFirst();
-                networks.remove(current);
-                if (first.isPresent()) {
-                    graph.addEdge(network, first.get(), new Recursion());
-
-                } else throw new Exception("somethig bad happen"); // if it is not throw exception*/
+                //Network n = new Network(network.getNetwork());
+                //n.getNetwork().stream().forEach(i -> i.clearVisitedProcedures());
 
             } else {//if there is some unvisited procedures
                 //unfold one of the procedure and add it to the list of the procedures with or without process invocation
@@ -184,11 +174,15 @@ public class NetworkExtraction {
             nextNodeBehaviours.add(pbs);
             Network nextNode = new Network(nextNodeBehaviours);
 
-            networks.addLast(nextNode);
-            graph.addVertex(nextNode);
-            return graph.addEdge(current, nextNode, label);
+            Optional<Network> sameNode = findSameNode(nextNode);
+            if (sameNode.isPresent()){
+                return graph.addEdge(nextNode, sameNode.get(), label);
+            } else {
+                networks.addLast(nextNode);
+                graph.addVertex(nextNode);
+                return graph.addEdge(current, nextNode, label);
+            }
         } else return false;
-
     }
 
     private boolean process(Sending sending, ProcessBehaviour processBehaviour, Network network) {
@@ -388,5 +382,9 @@ public class NetworkExtraction {
             //throw new RuntimeException("AAAAH!");
         }
         return retval;
+    }
+
+    private Optional<Network> findSameNode(Network net){
+        return graph.vertexSet().stream().filter(i -> i.toString().hashCode() == net.toString().hashCode()).findFirst();
     }
 }
