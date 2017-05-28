@@ -1,14 +1,15 @@
 package ast.sp.nodes;
 
 import ast.sp.interfaces.Behaviour;
+import ast.sp.nodes.expr.BooleanExpression;
 
 public class ConditionSP implements Behaviour{
     private final String process;
-    private final String expression;
+    private final BooleanExpression expression;
     private final Behaviour thenBehaviour;
     private final Behaviour elseBehaviour;
 
-    public ConditionSP(String process, String expression, Behaviour thenBehaviour, Behaviour elseBehaviour) {
+    public ConditionSP(String process, BooleanExpression expression, Behaviour thenBehaviour, Behaviour elseBehaviour) {
         this.process = process;
         this.expression = expression;
         this.thenBehaviour = thenBehaviour;
@@ -19,7 +20,7 @@ public class ConditionSP implements Behaviour{
         return process;
     }
 
-    public String getExpression() {
+    public BooleanExpression getExpression() {
         return expression;
     }
 

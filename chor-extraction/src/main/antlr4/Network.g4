@@ -23,22 +23,29 @@ interaction : sending
     |   selection
     ;
 
-sending: process BANG LT expression GT ';' behaviour;
+sending: process BANG LT expr GT ';' behaviour;
 receiving: process QUESTION ';' behaviour;
 selection: process ADD label ';' behaviour;
 
 offering: process '&' LBRACE (labeledBehaviour) (',' labeledBehaviour)* RBRACE;
 labeledBehaviour: label COLON behaviour;
 
-condition: 'if' process '.' expression 'then' behaviour 'else' behaviour;
+condition: 'if' process '.' ( expr | expression) 'then' behaviour 'else' behaviour;
 
 procedureInvocation: procedure;
 
-expression : Identifier
-    |   BooleanLiteral
-    |   Wildcard
-    |   INT
-    ;
+expr: Identifier ASSIGN expression;
 
-INT     : [0-9]+ ;
-TERMINATE : 'stop';
+expression
+        :	'(' expression ')'                          #parExpr
+        |   NOT expression                              #notExpr
+    	|   left=expression operand right=expression    #opExpr
+    	|   BooleanLiteral                              #atomExpr
+    	|   Identifier                                  #refExpr
+    	;
+
+operand: AND | OR | EQUAL | NOTEQUAL;
+
+NOT         : '~';
+INT         : [0-9]+ ;
+TERMINATE   : 'stop';

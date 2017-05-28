@@ -1,19 +1,14 @@
 package sat;
 
 import ast.cc.interfaces.CCNode;
-import ast.cc.nodes.BadTermination;
 import ast.cc.nodes.Condition;
 import ast.cc.nodes.Termination;
 import ast.sp.interfaces.ExtractionLabel;
 import ast.sp.interfaces.SPNode;
 import ast.sp.labels.*;
 import ast.sp.nodes.Network;
-import com.google.appengine.labs.repackaged.com.google.common.collect.HashMultimap;
-import com.google.appengine.labs.repackaged.com.google.common.collect.Multimap;
-import com.microsoft.z3.Context;
-import com.microsoft.z3.Model;
-import com.microsoft.z3.Solver;
-import com.microsoft.z3.Status;
+import ast.sp.nodes.expr.*;
+import com.microsoft.z3.*;
 import extraction.ChoreographyExtraction;
 import extraction.NetworkExtraction;
 import org.jgrapht.graph.ListenableDirectedGraph;
@@ -23,9 +18,16 @@ import java.util.*;
 
 public class GraphReduction {
     private ChoreographyExtraction np;
-    CCNode chor;
-    ListenableDirectedGraph<Network, ExtractionLabel> graph;
+    private CCNode chor;
+    private ListenableDirectedGraph<Network, ExtractionLabel> graph;
+    private HashMap<String, List<BooleanExpression>> var;
+
+    public CCNode getReductedGraph() {
+        return reductedGraph;
+    }
+
     //DirectedGraph<Network, ExtractionLabel> graph;
+    private CCNode reductedGraph;
 
 
     public GraphReduction(String grammar) throws Exception {
@@ -37,76 +39,57 @@ public class GraphReduction {
         NetworkExtraction ne = new NetworkExtraction(network);
         graph = ne.getGraph();
 
-        GraphVisualization gv = new GraphVisualization();
-        gv.init(graph);
-
-        Multimap<String, Boolean> choice = HashMultimap.create();
-        List<String> var = new ArrayList<>();
-        System.out.println(parseGraph(ne.getRoot(), var, choice));
-
+        var = new HashMap<>();
+        reductedGraph = parseGraph(ne.getRoot());
+        //System.out.println(reductedGraph);
+        //GraphVisualization gv = new GraphVisualization();
+        //gv.init(graph);
     }
 
-    private CCNode parseGraph(Network leaf, List<String> var, Multimap<String, Boolean> choice) throws Exception {
+    private CCNode parseGraph(Network leaf) throws Exception {
         CCNode retval = null;
         Set<ExtractionLabel> edges = graph.outgoingEdgesOf(leaf);
         switch (edges.size()) {
             case 0:
-                //assert ( checkSat(varset) );
                 if (leaf.isProjectable()) {
                     retval = new Termination();
                 }
                 break;
             case 1:
-                if ( checkSat(choice) ) {
-                    ExtractionLabel edge = edges.iterator().next();
-                    Network target = graph.getEdgeTarget(edge);
+                ExtractionLabel edge = edges.iterator().next();
+                Network target = graph.getEdgeTarget(edge);
 
-                    if (edge instanceof Communication) {
-                        Communication e = (Communication) edge;
-                        if (!var.contains(e.getExpression())) {var.add(e.getExpression());}
-                        CCNode continuation = parseGraph(target, var, choice);
-                        retval = new ast.cc.nodes.Communication(e.getSender(), e.getReceiver(), e.getExpression(), continuation);
-                    } else if (edge instanceof Selection) {
-                        Selection e = (Selection) edge;
-                        retval = new ast.cc.nodes.Selection(e.getSender(), e.getReceiver(), e.getLabel(), parseGraph(target, var, choice));
-                    } else if (edge instanceof Recursion) {
-                        retval = new Termination();
-                    }
-                } else {
-                    retval = new BadTermination();
+                if (edge instanceof Communication) {
+                    Communication e = (Communication) edge;
+                    updateVarSet(e.getReceiver(), e.getExpression(), var);
+                    CCNode continuation = parseGraph(target);
+                    retval = new ast.cc.nodes.Communication(e.getSender(), e.getReceiver(), e.getExpression(), continuation);
+                } else if (edge instanceof Selection) {
+                    Selection e = (Selection) edge;
+                    retval = new ast.cc.nodes.Selection(e.getSender(), e.getReceiver(), e.getLabel(), parseGraph(target));
+                } else if (edge instanceof Recursion) {
+                    retval = new Termination();
                 }
                 break;
-            case 2:
-                if ( checkSat(choice) ) {
+            case 2: //condition
+                ExtractionLabel[] labels = edges.toArray(new ExtractionLabel[2]);
+                Then thenLabel = ( labels[0] instanceof Then ) ? (Then) labels[0] : (Then) labels[1];
+                Else elseLabel = ( labels[0] instanceof Then ) ? (Else) labels[1] : (Else) labels[0];
 
-                    ExtractionLabel[] labels = edges.toArray(new ExtractionLabel[2]);
-                    Then thenLabel = ( labels[0] instanceof Then ) ? (Then) labels[0] : (Then) labels[1];
-                    Else elseLabel = ( labels[0] instanceof Then ) ? (Else) labels[1] : (Else) labels[0];
+                // throw exception is processName or expression is different in the two nodes
 
-                    // throw exception is processName or expression is different in the two nodes
+                boolean thenBranch = checkBranch(thenLabel.getProcess(), thenLabel.getExpression(), var);
+                boolean elseBranch = checkBranch(elseLabel.getProcess(), new NegatedBooleanExpression(thenLabel.getExpression()), var);
 
-                    HashMultimap<String, Boolean> elsechoice = HashMultimap.create(choice);
-                    String expr = thenLabel.getExpression();
-                    Optional<Boolean> first = choice.get(expr).stream().findFirst();
-                    if (!first.isPresent()) {
-                        Optional<String> s = var.stream().filter(i -> i.equals(expr)).findFirst();
-                        if (s.isPresent()){
-                            choice.put(expr, true);
-                            elsechoice.put(expr, false);
-                        } else throw new Exception("Checking condition on unknown variable");
-                    } else {
-                         elsechoice.put(expr, !first.get());
-                    }
+                CCNode thenChor = thenBranch ? parseGraph(graph.getEdgeTarget(thenLabel)) : new Termination();
+                CCNode elseChor = elseBranch ? parseGraph(graph.getEdgeTarget(elseLabel)) : new Termination();
 
-                    retval = new Condition(
-                            thenLabel.getProcess(),
-                            expr,
-                            parseGraph(graph.getEdgeTarget(thenLabel), var, choice),
-                            parseGraph(graph.getEdgeTarget(elseLabel), var, elsechoice)
-                    );
-                } else {
-                    retval = new BadTermination();
-                }
+                retval = new Condition(
+                        thenLabel.getProcess(),
+                        thenLabel.getExpression(),
+                        thenChor,
+                        elseChor
+                );
                 break;
             default:
                 break;
@@ -115,48 +98,103 @@ public class GraphReduction {
         return retval;
     }
 
-    private boolean checkSat(Multimap<String, Boolean> varset) {
+    private HashMap<String, List<BooleanExpression>> updateVarSet(String process, BooleanExpression expression, HashMap<String, List<BooleanExpression>> var){
+        if (var.containsKey(process)){
+            List<BooleanExpression> bes = var.get(process);
+            Optional<BooleanExpression> first = bes.stream().filter(i -> i.getName().equals(expression.getName())).findFirst();
+            if (first.isPresent()){
+                bes.remove(first.get());
+            }
+            bes.add(expression);
+        } else {
+            var.put(process, new ArrayList<BooleanExpression>(){{add(expression);}});
+        }
 
+        return var;
+    }
+
+    private boolean checkBranch(String process, BooleanExpression expression, HashMap<String, List<BooleanExpression>> var) throws Exception {
+        //set up z3
         HashMap<String, String> cfg = new HashMap<String, String>();
         cfg.put("model", "true");
         Context ctx = new Context(cfg);
-        Solver solver = ctx.mkSolver();
+        Solver solver = ctx.mkSolver();;
 
-        if (varset.isEmpty()) {
+        if (var.containsKey(process)){
+            List<BooleanExpression> bes = var.get(process);
+            solver.add(process(expression, ctx, bes));
+        } else throw new Exception("No such process");
+
+        //check sat
+        Status check = solver.check();
+
+        if (check.equals(Status.SATISFIABLE)) {
+            System.out.println("Expression " + expression + " is SAT");
+            Model model = solver.getModel();
+            //System.out.println(model);
+
             return true;
         } else {
-            for (Map.Entry<String, Boolean> entry : varset.entries()) {
-                String key = entry.getKey();
-                if (entry.getValue().equals(true)) {
-                    solver.add(ctx.mkBoolConst(key));
-                } else {
-                    solver.add(ctx.mkNot(ctx.mkBoolConst(key)));
-                }
-            }
-            Status check = solver.check();
-            System.out.println("Result:" + check.toString());
-            if (check.equals(Status.SATISFIABLE)){
-                Model model = solver.getModel();
-                System.out.println("Model:" + model.toString());
-                return true;
-            }
+            System.out.println("Expression " + expression + " is UNSAT");
+            return false;
         }
-        return false;
     }
 
+    private BoolExpr process(BooleanExpression be, Context ctx, List<BooleanExpression> bes) throws Exception {
+        BoolExpr expr = null;
+
+        if (be instanceof AtomBooleanExpression){
+            AtomBooleanExpression b = (AtomBooleanExpression) be;
+            Boolean e = b.getExpression();
+            expr = ctx.mkBool(e);
+        } else if (be instanceof BinaryBooleanExpression){
+            Operand operand = ( (BinaryBooleanExpression) be ).getOperand();
+            switch (operand) {
+                case AND:
+                    expr =  ctx.mkAnd(
+                            process(( (BinaryBooleanExpression) be ).getLeft(), ctx, bes),
+                            process(( (BinaryBooleanExpression) be ).getRight(), ctx, bes) );
+                    break;
+                case OR:
+                    expr = ctx.mkOr(
+                            process(( (BinaryBooleanExpression) be ).getLeft(), ctx, bes),
+                            process(( (BinaryBooleanExpression) be ).getRight(), ctx, bes) );
+                    break;
+                case EQUAL:
+                    expr = ctx.mkEq(
+                            process(( (BinaryBooleanExpression) be ).getLeft(), ctx, bes),
+                            process(( (BinaryBooleanExpression) be ).getRight(), ctx, bes) );
+                    break;
+                case NOTEQUAL:
+                    expr = ctx.mkNot(ctx.mkEq(
+                            process(( (BinaryBooleanExpression) be ).getLeft(), ctx, bes),
+                            process(( (BinaryBooleanExpression) be ).getRight(), ctx, bes) ));
+                    break;
+            }
+        } else if (be instanceof NegatedBooleanExpression){
+            expr = ctx.mkNot(process(( (NegatedBooleanExpression) be ).getExpr(), ctx, bes));
+        } else {
+            String name = be.getName();
+            Optional<BooleanExpression> first = bes.stream().filter(i -> i.getName().equals(name)).findFirst();
+            if (first.isPresent()){
+                expr = process(first.get(), ctx, bes);
+            } else throw new Exception("process reference not found");
+        }
+        return expr;
+    }
+
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                try {
-                    String s1 = "p {def X {q!<e1>; q&{L: q!<e2>;X, R: stop}} main {q!<e3>; X}} | q {def Y {p?;p?; if q.e1 then p+L;Y else p+R;stop} main {Y}}";
-                    String s2 =
-                            "p {def X {q!<e1>; q&{L: q!<e2>;X, R: q!<e4>;X}} main {q!<e3>; X}} | " +
-                            "q {def Y {p?;p?; if q.e1 then p+L;Y else p+R; p?; if q.e4 then if q.e1 then s!<v1>;Y else s!<v2>;Y else Y} main {Y}} | " +
-                            "s {def X{q?;X} main {X}}";
-                    GraphReduction gr = new GraphReduction(s2);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+        SwingUtilities.invokeLater(() -> {
+            try {
+                String s =
+                        "p { main {q!<e1 = true>; q!<e2=false && ( false || e1 )>; q?; stop}} | " +
+                        "q { main {p?; p?; if q.e1!=e2 then p!<e3=true>; stop else p!<e3=false>; stop}} | " +
+                        "r { main {stop}}";
+                GraphReduction gr = new GraphReduction(s);
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
     }

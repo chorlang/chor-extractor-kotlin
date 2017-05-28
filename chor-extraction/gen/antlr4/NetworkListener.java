@@ -128,15 +128,85 @@ public interface NetworkListener extends ParseTreeListener {
 	 */
 	void exitProcedureInvocation(NetworkParser.ProcedureInvocationContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link NetworkParser#expression}.
+	 * Enter a parse tree produced by {@link NetworkParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void enterExpression(NetworkParser.ExpressionContext ctx);
+	void enterExpr(NetworkParser.ExprContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link NetworkParser#expression}.
+	 * Exit a parse tree produced by {@link NetworkParser#expr}.
 	 * @param ctx the parse tree
 	 */
-	void exitExpression(NetworkParser.ExpressionContext ctx);
+	void exitExpr(NetworkParser.ExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code parExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterParExpr(NetworkParser.ParExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code parExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitParExpr(NetworkParser.ParExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code notExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterNotExpr(NetworkParser.NotExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code notExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitNotExpr(NetworkParser.NotExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code opExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterOpExpr(NetworkParser.OpExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code opExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitOpExpr(NetworkParser.OpExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code refExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterRefExpr(NetworkParser.RefExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code refExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitRefExpr(NetworkParser.RefExprContext ctx);
+	/**
+	 * Enter a parse tree produced by the {@code atomExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void enterAtomExpr(NetworkParser.AtomExprContext ctx);
+	/**
+	 * Exit a parse tree produced by the {@code atomExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 */
+	void exitAtomExpr(NetworkParser.AtomExprContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#operand}.
+	 * @param ctx the parse tree
+	 */
+	void enterOperand(NetworkParser.OperandContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#operand}.
+	 * @param ctx the parse tree
+	 */
+	void exitOperand(NetworkParser.OperandContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NetworkParser#process}.
 	 * @param ctx the parse tree

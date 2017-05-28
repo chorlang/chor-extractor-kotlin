@@ -77,10 +77,16 @@ public class ChoreographyExtractionTest extends Assert {
                             "q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | " +
                             "r { main {stop}}",
                     "if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop"
-            },*/
+            },
             {
                     "p {def X {q!<e1>; q&{L: q!<e2>;X, R: stop}} main {q!<e3>; X}} | q {def Y {p?;p?; if q.e1 then p+L;Y else p+R;stop} main {Y}}",
                     "p.e3->q; p.e1->q; if q.e1 then q->p[L]; stop else q->p[R]; stop"
+            },*/
+            {
+                    "p { main {q!<true==false>; q?; stop}} " +
+                            "| q { main {p?; p!<false&&(true||true)&&false>; stop}} " +
+                            "| r { main {stop}}",
+                    "p.e->q; q.u->p; stop"
             }
 
     };

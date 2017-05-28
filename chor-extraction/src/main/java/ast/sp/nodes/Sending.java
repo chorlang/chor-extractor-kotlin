@@ -2,6 +2,7 @@ package ast.sp.nodes;
 
 import ast.sp.interfaces.Behaviour;
 import ast.sp.interfaces.Interaction;
+import ast.sp.nodes.expr.BooleanExpression;
 
 /**
  * Created by fmontesi on 03/04/17.
@@ -9,10 +10,10 @@ import ast.sp.interfaces.Interaction;
 public class Sending implements Interaction {
     private final Behaviour continuation;
     private final String process;
-    private final String expression;
+    private final BooleanExpression expression;
 
 
-    public Sending(Behaviour continuation, String process, String expression) {
+    public Sending(Behaviour continuation, String process, BooleanExpression expression) {
         this.continuation = continuation;
         this.process = process;
         this.expression = expression;
@@ -26,12 +27,12 @@ public class Sending implements Interaction {
         return process;
     }
 
-    public String getExpression() {
+    public BooleanExpression getExpression() {
         return expression;
     }
 
     public String toString() {
-        return process + "!<" + expression + ">; " + continuation.toString();
+        return process + "!<" + expression.toString() + ">; " + continuation.toString();
     }
 
     @Override

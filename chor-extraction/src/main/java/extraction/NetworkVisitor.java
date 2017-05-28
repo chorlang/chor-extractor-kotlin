@@ -5,6 +5,7 @@ import antlr4.NetworkParser.*;
 import ast.sp.interfaces.Behaviour;
 import ast.sp.interfaces.SPNode;
 import ast.sp.nodes.*;
+import ast.sp.nodes.expr.*;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import java.util.ArrayList;
@@ -31,7 +32,9 @@ public class NetworkVisitor extends NetworkBaseVisitor<SPNode>{
 
     @Override
     public SPNode visitSending(SendingContext ctx) {
-        return new Sending((Behaviour) visit(ctx.behaviour()), ctx.process().getText(), ctx.expression().getText());
+        BooleanExpression expr = (BooleanExpression) visit(ctx.expr().expression());
+        expr.setName(ctx.expr().Identifier().getText());
+        return new Sending((Behaviour) visit(ctx.behaviour()), ctx.process().getText(), expr);
     }
 
     @Override
@@ -56,7 +59,8 @@ public class NetworkVisitor extends NetworkBaseVisitor<SPNode>{
 
     @Override
     public SPNode visitCondition(ConditionContext ctx) {
-        return new ConditionSP(ctx.process().getText(), ctx.expression().getText(), (Behaviour) visit(ctx.behaviour(0)), (Behaviour) visit(ctx.behaviour(1)));
+        BooleanExpression expr = (BooleanExpression) visit(ctx.expression());
+        return new ConditionSP(ctx.process().getText(), expr, (Behaviour) visit(ctx.behaviour(0)), (Behaviour) visit(ctx.behaviour(1)));
     }
 
     @Override
@@ -67,6 +71,44 @@ public class NetworkVisitor extends NetworkBaseVisitor<SPNode>{
     @Override
     public SPNode visitProcedureInvocation(ProcedureInvocationContext ctx) {
         return new ProcedureInvocationSP(ctx.procedure().getText());
+    }
+
+    @Override
+    public SPNode visitExpr(ExprContext ctx) {
+        BooleanExpression expression = (BooleanExpression) visit(ctx.expression());
+        expression.setName(ctx.Identifier().getText());
+
+        return expression;
+    }
+
+    @Override
+    public SPNode visitParExpr(ParExprContext ctx) {
+        return visit(ctx.expression());
+    }
+
+    @Override
+    public SPNode visitNotExpr(NotExprContext ctx) {
+        return new NegatedBooleanExpression((BooleanExpression) visit(ctx.expression()));
+    }
+
+    @Override
+    public SPNode visitOpExpr(OpExprContext ctx) {
+        return new BinaryBooleanExpression(
+                (BooleanExpression) visit(ctx.left),
+                (BooleanExpression) visit(ctx.right),
+                Operand.fromString(ctx.operand().getText()));
+    }
+
+    @Override
+    public SPNode visitRefExpr(RefExprContext ctx) {
+        BooleanExpression be = new BooleanExpression() {};
+        be.setName(ctx.Identifier().getText());
+        return be;
+    }
+
+    @Override
+    public SPNode visitAtomExpr(AtomExprContext ctx) {
+        return new AtomBooleanExpression(Boolean.valueOf(ctx.BooleanLiteral().getText()));
     }
 
     @Override

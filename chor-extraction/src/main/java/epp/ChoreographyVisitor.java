@@ -5,6 +5,7 @@ import antlr4.ChoreographyParser.*;
 import ast.cc.interfaces.CCNode;
 import ast.cc.interfaces.Choreography;
 import ast.cc.nodes.*;
+import ast.sp.nodes.expr.BooleanExpression;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -24,7 +25,7 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
         processes = new HashSet<>();
     }
 
-    public CCNode getCCAST(ParseTree parseTree){
+    public CCNode getCCAST(ParseTree parseTree) {
         return this.visit(parseTree);
     }
 
@@ -32,14 +33,13 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
     public CCNode visitCommunication(CommunicationContext ctx) {
         String sender = ctx.process(0).getText();
         String receiver = ctx.process(1).getText();
-        String expression = ctx.expression().getText();
 
         CCNode continuation = visit(ctx.choreography());
 
         processes.add(sender);
         processes.add(receiver);
 
-        return new Communication(sender,receiver,expression, continuation);
+        return new Communication(sender, receiver, ( BooleanExpression) visit(ctx.expression()), continuation);
     }
 
     @Override
@@ -54,13 +54,13 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
         processes.add(sender);
         processes.add(receiver);
 
-        return new Selection(sender,receiver,expression, continuation);
+        return new Selection(sender, receiver, expression, continuation);
     }
 
     @Override
     public CCNode visitCondition(ConditionContext ctx) {
         String process = ctx.process().getText();
-        String expression = ctx.expression().getText();
+        BooleanExpression expression = new BooleanExpression() {{setName(ctx.expression().getText());}};
         CCNode thenChoreography = visit(ctx.choreography(0));
         CCNode elseChoreography = visit(ctx.choreography(1));
 
@@ -85,7 +85,8 @@ public class ChoreographyVisitor extends ChoreographyBaseVisitor<CCNode> {
         return visit(ctx.choreography());
     }
 
-    @Override public CCNode visitProcedureInvocation(ProcedureInvocationContext ctx) {
+    @Override
+    public CCNode visitProcedureInvocation(ProcedureInvocationContext ctx) {
         String procedureName = ctx.procedure().getText();
         return new ProcedureInvocation(procedureName, processes);
     }

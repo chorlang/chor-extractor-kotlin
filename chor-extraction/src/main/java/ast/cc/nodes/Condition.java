@@ -3,6 +3,7 @@ package ast.cc.nodes;
 import ast.cc.CCVisitor;
 import ast.cc.interfaces.CCNode;
 import ast.cc.interfaces.Choreography;
+import ast.sp.nodes.expr.BooleanExpression;
 import epp.MergingException;
 
 /**
@@ -10,11 +11,11 @@ import epp.MergingException;
  */
 public class Condition implements Choreography{
     private final String process;
-    private final String expression;
+    private final BooleanExpression expression;
     private final CCNode thenChoreography;
     private final CCNode elseChoreograpy;
 
-    public Condition(String process, String expression, CCNode thenChoreography, CCNode elseChoreograpy) {
+    public Condition(String process, BooleanExpression expression, CCNode thenChoreography, CCNode elseChoreograpy) {
         this.process = process;
         this.expression = expression;
         this.thenChoreography = thenChoreography;
@@ -25,7 +26,7 @@ public class Condition implements Choreography{
         return process;
     }
 
-    public String getExpression() {
+    public BooleanExpression getExpression() {
         return expression;
     }
 

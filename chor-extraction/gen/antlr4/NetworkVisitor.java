@@ -83,11 +83,52 @@ public interface NetworkVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitProcedureInvocation(NetworkParser.ProcedureInvocationContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link NetworkParser#expression}.
+	 * Visit a parse tree produced by {@link NetworkParser#expr}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitExpression(NetworkParser.ExpressionContext ctx);
+	T visitExpr(NetworkParser.ExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code parExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitParExpr(NetworkParser.ParExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code notExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitNotExpr(NetworkParser.NotExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code opExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOpExpr(NetworkParser.OpExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code refExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitRefExpr(NetworkParser.RefExprContext ctx);
+	/**
+	 * Visit a parse tree produced by the {@code atomExpr}
+	 * labeled alternative in {@link NetworkParser#expression}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitAtomExpr(NetworkParser.AtomExprContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link NetworkParser#operand}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitOperand(NetworkParser.OperandContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NetworkParser#process}.
 	 * @param ctx the parse tree

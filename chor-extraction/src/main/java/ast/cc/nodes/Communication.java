@@ -3,6 +3,7 @@ package ast.cc.nodes;
 import ast.cc.CCVisitor;
 import ast.cc.interfaces.CCNode;
 import ast.cc.interfaces.Interaction;
+import ast.sp.nodes.expr.BooleanExpression;
 import epp.MergingException;
 
 /**
@@ -12,14 +13,14 @@ public class Communication implements Interaction
 {
     private final String sender;
     private final String receiver;
-    private final String expression;
+    private final BooleanExpression expression;
     private final CCNode continuation;
 
     public CCNode getContinuation() {
         return continuation;
     }
 
-    public Communication(String sender, String receiver, String expression, CCNode continuation) {
+    public Communication(String sender, String receiver, BooleanExpression expression, CCNode continuation) {
         this.sender = sender;
         this.receiver = receiver;
         this.expression = expression;
@@ -38,7 +39,7 @@ public class Communication implements Interaction
         return receiver;
     }
 
-    public String getExpression() {
+    public BooleanExpression getExpression() {
         return expression;
     }
 

@@ -1,12 +1,13 @@
 package ast.sp.labels;
 
 import ast.sp.interfaces.ExtractionLabel;
+import ast.sp.nodes.expr.BooleanExpression;
 
 public class Then implements ExtractionLabel {
     private final String process;
-    private final String expression;
+    private final BooleanExpression expression;
 
-    public Then(String process, String expression) {
+    public Then(String process, BooleanExpression expression) {
         this.process = process;
         this.expression = expression;
     }
@@ -16,7 +17,7 @@ public class Then implements ExtractionLabel {
         return process;
     }
 
-    public String getExpression() {
+    public BooleanExpression getExpression() {
         return expression;
     }
 

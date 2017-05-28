@@ -13,6 +13,13 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="build" level="project" />
+    <orderEntry type="library" name="Maven: ca.jimr:gae-mini-profiler-parent:2.0.2" level="project" />
+    <orderEntry type="library" name="Maven: org.sosy-lab:javasmt-solver-z3:z3-4.4.1-1558-gf96cfea" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.sosy-lab:javasmt-solver-z3-native:z3-4.4.1-788-g8df145d" level="project" />
+    <orderEntry type="library" name="Maven: org.sonatype.sisu:sisu-guava:0.9.9" level="project" />
+    <orderEntry type="library" name="Maven: jgraph:jgraph:5.13.0.0" level="project" />
+    <orderEntry type="library" name="Maven: org.jgrapht:jgrapht-ext:0.9.1" level="project" />
+    <orderEntry type="library" name="Maven: org.tinyjee.jgraphx:jgraphx:2.0.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:antlr4:4.6" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:antlr4-runtime:4.6" level="project" />
     <orderEntry type="library" name="Maven: org.antlr:antlr-runtime:3.5.2" level="project" />

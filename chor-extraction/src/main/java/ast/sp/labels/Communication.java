@@ -1,13 +1,14 @@
 package ast.sp.labels;
 
 import ast.sp.interfaces.ExtractionLabel;
+import ast.sp.nodes.expr.BooleanExpression;
 
 public class Communication implements ExtractionLabel {
     private final String sender;
     private final String receiver;
-    private final String expression;
+    private final BooleanExpression expression;
 
-    public Communication(String sender, String receiver, String expression) {
+    public Communication(String sender, String receiver, BooleanExpression expression) {
         this.sender = sender;
         this.receiver = receiver;
         this.expression = expression;
@@ -25,7 +26,7 @@ public class Communication implements ExtractionLabel {
         return receiver;
     }
 
-    public String getExpression() {
+    public BooleanExpression getExpression() {
         return expression;
     }
 }
