@@ -6,12 +6,12 @@ import ast.sp.interfaces.Interaction;
 public class SelectionSP implements Interaction {
     private final Behaviour continuation;
     private final String process;
-    private final String label;
+    private final String expression;
 
-    public SelectionSP(Behaviour continuation, String process, String label) {
+    public SelectionSP(Behaviour continuation, String process, String expression) {
         this.continuation = continuation;
         this.process = process;
-        this.label = label;
+        this.expression = expression;
     }
 
     public Behaviour getContinuation() {
@@ -22,12 +22,12 @@ public class SelectionSP implements Interaction {
         return process;
     }
 
-    public String getLabel() {
-        return label;
+    public String getExpression() {
+        return expression;
     }
 
     public String toString() {
-        return process + " + " + label + "; " + continuation.toString();
+        return process + " + " + expression + "; " + continuation.toString();
     }
 
     @Override

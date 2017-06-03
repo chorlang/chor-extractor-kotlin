@@ -262,7 +262,7 @@ process : Identifier; // previously 'a'..'z';
 
 procedure : Identifier; // previously 'A'..'Z';
 
-label : Identifier;
+expression : Identifier;
 
 value : INT
     |   CharacterLiteral

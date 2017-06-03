@@ -32,7 +32,8 @@ public class ChoreographyExtraction {
         NetworkVisitor networkVisitor = new NetworkVisitor();
         SPNode sp = networkVisitor.visit(tree);
         NetworkExtraction np = new NetworkExtraction(sp);
+        System.out.println(np);
 
-        return np.graphToChoreograpy();
+        return null; //np.graphToChoreograpy();
     }
 }

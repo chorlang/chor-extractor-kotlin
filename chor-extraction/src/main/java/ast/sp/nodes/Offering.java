@@ -1,11 +1,12 @@
 package ast.sp.nodes;
 
 import ast.sp.interfaces.Behaviour;
+import ast.sp.interfaces.Interaction;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class Offering implements Behaviour {
+public class Offering implements Interaction {
     private final String process;
     private final HashMap<String, Behaviour> labels;
 

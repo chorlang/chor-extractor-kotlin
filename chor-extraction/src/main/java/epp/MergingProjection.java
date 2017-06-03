@@ -40,10 +40,10 @@ public class MergingProjection {
 
     public static SPNode merge(SelectionSP left, SelectionSP right) throws MergingException {
         assertCondition ((left.getProcess().equals(right.getProcess())));
-        assertCondition ((left.getLabel().equals(right.getLabel())));
+        assertCondition ((left.getExpression().equals(right.getExpression())));
 
         Behaviour continuation = (Behaviour) merge(left.getContinuation(), right.getContinuation());
-        return new SelectionSP(continuation, left.getProcess(), left.getLabel());
+        return new SelectionSP(continuation, left.getProcess(), left.getExpression());
     }
 
     public static SPNode merge(Offering left, Offering right) throws MergingException {

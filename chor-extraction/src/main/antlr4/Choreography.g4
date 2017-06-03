@@ -20,7 +20,7 @@ procedureInvocation: procedure;
 interaction : communication | selection;
 
 communication: process DOT expression Arrow process ';' choreography;
-selection: process Arrow process LBRACK label RBRACK ';' choreography;
+selection: process Arrow process LBRACK expression RBRACK ';' choreography;
 
 expression : Identifier
     |   BooleanLiteral

@@ -37,7 +37,7 @@ public class ChoreographyParser extends Parser {
 		RULE_procedure = 11, RULE_label = 12, RULE_value = 13;
 	public static final String[] ruleNames = {
 		"program", "procedureDefinition", "main", "choreography", "condition", 
-		"procedureInvocation", "interaction", "communication", "selection", "expression", 
+		"procedureInvocation", "interaction", "communication", "selection", "expression",
 		"process", "procedure", "label", "value"
 	};
 

@@ -25,10 +25,10 @@ interaction : sending
 
 sending: process BANG LT expression GT ';' behaviour;
 receiving: process QUESTION ';' behaviour;
-selection: process ADD label ';' behaviour;
+selection: process ADD expression ';' behaviour;
 
 offering: process '&' LBRACE (labeledBehaviour) (',' labeledBehaviour)* RBRACE;
-labeledBehaviour: label COLON behaviour;
+labeledBehaviour: expression COLON behaviour;
 
 condition: 'if' process '.' expression 'then' behaviour 'else' behaviour;
 

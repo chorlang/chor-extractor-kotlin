@@ -2,9 +2,22 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b207236-889c-4211-9c91-1c8854ff5c53" name="Default" comment="">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chor-extraction.iml" afterPath="$PROJECT_DIR$/chor-extraction.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gen/antlr4/ChoreographyParser.java" afterPath="$PROJECT_DIR$/gen/antlr4/ChoreographyParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/gen/antlr4/NetworkParser.java" afterPath="$PROJECT_DIR$/gen/antlr4/NetworkParser.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/antlr4/Choreography.g4" afterPath="$PROJECT_DIR$/src/main/antlr4/Choreography.g4" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/antlr4/CommonLexerRules.g4" afterPath="$PROJECT_DIR$/src/main/antlr4/CommonLexerRules.g4" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/antlr4/Network.g4" afterPath="$PROJECT_DIR$/src/main/antlr4/Network.g4" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Network.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Network.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" afterPath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.java" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/epp/MergingProjection.java" afterPath="$PROJECT_DIR$/src/main/java/epp/MergingProjection.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java" afterPath="$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java" afterPath="$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java" />
     </list>
     <ignored path="chor-extraction.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -36,31 +49,33 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="NetworkExtraction.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java">
+      <file leaf-file-name="NetworkExtraction.kt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-300">
-              <caret line="73" column="23" selection-start-line="73" selection-start-column="23" selection-end-line="73" selection-end-column="23" />
+            <state relative-caret-position="119">
+              <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
               <folding>
-                <element signature="method#NetworkExtraction#0;class#NetworkExtraction#0" expanded="false" />
-                <element signature="docComment;method#unfold#0;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#findProcedureInvocation#0;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#process#2;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#process#3;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#process#4;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#process#5;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#graphToChoreograpy#0;class#NetworkExtraction#0" expanded="false" />
-                <element signature="method#extractNodeForward#0;class#NetworkExtraction#0" expanded="false" />
+                <element signature="e#20#365#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChoreographyExtractionTest.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ChoreographyExtraction.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="321">
+              <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ChoreographyExtractionTest.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="240">
-              <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
+            <state relative-caret-position="105">
+              <caret line="39" column="16" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -110,13 +125,10 @@
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java" root0="SKIP_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" root0="SKIP_INSPECTION" />
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/extraction/ChoreographyProjection.java" />
-        <option value="$PROJECT_DIR$/src/test/java/extraction/ChoreographyProjectionTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkProjection.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/interfaces/ExtractionLabel.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Selcetion.java" />
@@ -143,29 +155,31 @@
         <option value="$PROJECT_DIR$/src/main/java/ast/cc/nodes/Condition.java" />
         <option value="$PROJECT_DIR$/src/main/java/epp/EndPointProjection.java" />
         <option value="$PROJECT_DIR$/src/test/java/epp/EndpointProjectionTest.java" />
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction1.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/cc/nodes/ProcedureInvocation.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/interfaces/Behaviour.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ConditionSP.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureDefinitionSP.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Sending.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/TerminationSP.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Receiving.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java" />
         <option value="$PROJECT_DIR$/src/main/java/epp/MergingProjection.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NE.java" />
-        <option value="$PROJECT_DIR$/src/main/java/extraction/OLDNetworkExtraction.java" />
-        <option value="$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureInvocationSP.java" />
         <option value="$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.java" />
-        <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Recursion.java" />
-        <option value="$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Network.java" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java" />
+        <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java" />
+        <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.java" />
+        <option value="$PROJECT_DIR$/src/main/java/extraction/OLDNetworkExtraction.java" />
+        <option value="$PROJECT_DIR$/src/main/java/extraction/OLDNetworkExtraction.kt" />
+        <option value="$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java" />
+        <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.kt" />
+        <option value="$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java" />
       </list>
     </option>
   </component>
@@ -233,7 +247,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
@@ -298,6 +311,10 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="epp" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -453,6 +470,74 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="nodes" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chor-extraction" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chor-extraction" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ast" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="labels" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chor-extraction" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="chor-extraction" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="main" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="java" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ast" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sp" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="interfaces" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -507,6 +592,7 @@
           </PATH>
         </subPane>
       </pane>
+      <pane id="Scope" />
       <pane id="Scratches" />
     </panes>
   </component>
@@ -1010,34 +1096,34 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 11m 35s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 20m 43s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 13m 16s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 21m 54s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 20m 32s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 26m 44s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 24m 48s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 28m 42s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 24m 57s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 37m 02s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 16h 25m 16s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 38m 37s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 20h 34m 07s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 40m 19s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 20h 35m 51s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 41m 31s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 20h 38m 15s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 41m 56s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="ChoreographyExtractionTest - 2017.05.21 at 20h 40m 10s.xml">
+    <history-entry file="ChoreographyExtractionTest - 2017.06.04 at 01h 43m 13s.xml">
       <configuration name="ChoreographyExtractionTest" configurationId="JUnit" />
     </history-entry>
   </component>
@@ -1052,25 +1138,30 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="807" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
+      <window_info id="PlantUML" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32891566" sideWeight="0.49713877" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Tool Output" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32587412" sideWeight="0.49427754" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32384825" sideWeight="0.48855507" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Palette&#9;" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32249323" sideWeight="0.52152777" order="8" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.19098713" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32249323" sideWeight="0.47847223" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="11" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23055555" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32655826" sideWeight="0.4914163" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="ANTLR Preview" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32771084" sideWeight="0.49713877" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24947916" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.44579947" sideWeight="0.48125" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Nl-Palette" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1078,13 +1169,9 @@
       <window_info id="Properties" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24964234" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Module Dependencies" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44579947" sideWeight="0.48125" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32384825" sideWeight="0.48855507" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Image Layers" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.39972898" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32249323" sideWeight="0.47847223" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Coverage" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3297568" sideWeight="0.5" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3272727" sideWeight="0.4914163" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Theme Preview" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
     </layout>
     <layout-to-restore>
@@ -1155,19 +1242,13 @@
           <option name="timeStamp" value="211" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java</url>
-          <line>250</line>
+          <url>file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java</url>
+          <line>34</line>
           <properties />
-          <option name="timeStamp" value="214" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java</url>
-          <line>284</line>
-          <properties />
-          <option name="timeStamp" value="217" />
+          <option name="timeStamp" value="221" />
         </line-breakpoint>
       </breakpoints>
-      <option name="time" value="220" />
+      <option name="time" value="228" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="JUnit">
@@ -1183,13 +1264,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_74.jdk/Contents/Home/src.zip!/java/util/function/Predicate.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="157">
-          <caret line="48" column="12" selection-start-line="48" selection-start-column="12" selection-end-line="48" selection-end-column="12" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction1.java" />
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_74.jdk/Contents/Home/src.zip!/java/util/Optional.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -1219,75 +1293,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/interfaces/Interaction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/interfaces/Behaviour.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="3" column="52" selection-start-line="3" selection-start-column="52" selection-end-line="3" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/TerminationSP.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="16" column="1" selection-start-line="16" selection-start-column="1" selection-end-line="16" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ConditionSP.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="465">
-          <caret line="39" column="98" selection-start-line="39" selection-start-column="98" selection-end-line="39" selection-end-column="98" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="405">
-          <caret line="34" column="54" selection-start-line="34" selection-start-column="54" selection-end-line="34" selection-end-column="54" />
-          <folding>
-            <element signature="e#675#676#0" expanded="false" />
-            <element signature="e#754#755#0" expanded="false" />
-            <element signature="e#823#824#0" expanded="false" />
-            <element signature="e#884#885#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="39" column="28" selection-start-line="39" selection-start-column="28" selection-end-line="39" selection-end-column="28" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureDefinitionSP.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="27" column="49" selection-start-line="27" selection-start-column="49" selection-end-line="27" selection-end-column="49" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/interfaces/ExtractionLabel.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Receiving.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1298,15 +1307,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="515">
-          <caret line="44" column="37" selection-start-line="44" selection-start-column="37" selection-end-line="44" selection-end-column="37" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/OLDNetworkExtraction.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/OLDNetworkExtraction.kt" />
     <entry file="jar://$MAVEN_REPOSITORY$/io/javaslang/javaslang/2.0.6/javaslang-2.0.6.jar!/javaslang/Predicates.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="180">
@@ -1318,13 +1319,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="127">
           <caret line="954" column="16" selection-start-line="954" selection-start-column="16" selection-end-line="954" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureInvocationSP.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="28" column="5" selection-start-line="28" selection-start-column="5" selection-end-line="28" selection-end-column="5" />
         </state>
       </provider>
     </entry>
@@ -1385,13 +1379,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="352">
-          <caret line="51" column="9" selection-start-line="51" selection-start-column="9" selection-end-line="51" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/jgrapht/jgrapht-core/1.0.1/jgrapht-core-1.0.1.jar!/org/jgrapht/alg/util/Pair.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="315">
@@ -1434,26 +1421,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="322">
-          <caret line="51" column="39" selection-start-line="51" selection-start-column="39" selection-end-line="51" selection-end-column="39" />
-          <folding>
-            <element signature="e#1307#1308#0" expanded="false" />
-            <element signature="e#1350#1351#0" expanded="false" />
-            <element signature="e#1394#1395#0" expanded="false" />
-            <element signature="e#1435#1436#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_74.jdk/Contents/Home/src.zip!/java/lang/Object.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="276">
@@ -1479,20 +1446,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/Communication.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="17" column="5" selection-start-line="15" selection-start-column="4" selection-end-line="17" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
-          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/io/javaslang/javaslang/2.0.6/javaslang-2.0.6.jar!/javaslang/control/Option.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="133">
@@ -1507,36 +1460,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Sending.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="575">
-          <caret line="49" column="52" selection-start-line="49" selection-start-column="52" selection-end-line="49" selection-end-column="52" />
-          <folding>
-            <element signature="e#1266#1267#0" expanded="false" />
-            <element signature="e#1327#1328#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="22" column="12" selection-start-line="22" selection-start-column="12" selection-end-line="22" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Network.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="315">
-          <caret line="28" column="18" selection-start-line="28" selection-start-column="18" selection-end-line="28" selection-end-column="18" />
-          <folding>
-            <element signature="e#559#560#0" expanded="true" />
-            <element signature="e#605#606#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_74.jdk/Contents/Home/src.zip!/java/lang/String.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="236">
@@ -1544,21 +1467,177 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.java">
+    <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-300">
-          <caret line="73" column="23" selection-start-line="73" selection-start-column="23" selection-end-line="73" selection-end-column="23" />
+        <state relative-caret-position="491">
+          <caret line="117" column="32" selection-start-line="117" selection-start-column="32" selection-end-line="117" selection-end-column="32" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/TerminationSP.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureInvocationSP.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="13" selection-start-line="4" selection-start-column="13" selection-end-line="4" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Network.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="16" column="23" selection-start-line="16" selection-start-column="23" selection-end-line="16" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/Communication.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" column="5" selection-start-line="15" selection-start-column="4" selection-end-line="17" selection-end-column="5" />
           <folding>
-            <element signature="method#NetworkExtraction#0;class#NetworkExtraction#0" expanded="false" />
-            <element signature="docComment;method#unfold#0;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#findProcedureInvocation#0;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#process#2;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#process#3;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#process#4;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#process#5;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#graphToChoreograpy#0;class#NetworkExtraction#0" expanded="false" />
-            <element signature="method#extractNodeForward#0;class#NetworkExtraction#0" expanded="false" />
+            <element signature="e#444#445#0" expanded="true" />
+            <element signature="e#510#511#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/interfaces/Interaction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Sending.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+          <folding>
+            <element signature="e#1266#1267#0" expanded="true" />
+            <element signature="e#1327#1328#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Receiving.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/interfaces/Behaviour.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="30">
+          <caret line="2" column="17" selection-start-line="2" selection-start-column="17" selection-end-line="2" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ConditionSP.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="7" column="23" selection-start-line="7" selection-start-column="23" selection-end-line="7" selection-end-column="23" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureDefinitionSP.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="27" column="49" selection-start-line="27" selection-start-column="49" selection-end-line="27" selection-end-column="49" />
+          <folding>
+            <element signature="e#655#656#0" expanded="true" />
+            <element signature="e#713#714#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="47" column="16" selection-start-line="47" selection-start-column="16" selection-end-line="47" selection-end-column="16" />
+          <folding>
+            <element signature="e#1313#1314#0" expanded="true" />
+            <element signature="e#1356#1357#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="290">
+          <caret line="51" column="9" selection-start-line="51" selection-start-column="9" selection-end-line="51" selection-end-column="9" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/OLDNetworkExtraction.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="44" column="47" selection-start-line="44" selection-start-column="47" selection-end-line="44" selection-end-column="47" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/internal/runners/model/ReflectiveCallable.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="8" column="13" selection-start-line="8" selection-start-column="13" selection-end-line="8" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="5" column="13" selection-start-line="5" selection-start-column="13" selection-end-line="5" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="119">
+          <caret line="84" column="0" selection-start-line="84" selection-start-column="0" selection-end-line="84" selection-end-column="0" />
+          <folding>
+            <element signature="e#20#365#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="321">
+          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="105">
+          <caret line="39" column="16" selection-start-line="39" selection-start-column="16" selection-end-line="39" selection-end-column="16" />
+          <folding />
         </state>
       </provider>
     </entry>

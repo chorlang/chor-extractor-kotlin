@@ -28,7 +28,7 @@ public class Network implements SPNode{
 
     public String toString(){
         StringBuilder builder = new StringBuilder();
-        Collections.sort(network, (pb1, pb2) -> pb1.getProcess().compareTo(pb2.getProcess()));
+        Collections.sort(network, (pb1, pb2) -> pb1.getActiveProcess().compareTo(pb2.getActiveProcess()));
 
         for (ProcessBehaviour entry : network) {
             builder.append(entry.toString()).append(" | ");

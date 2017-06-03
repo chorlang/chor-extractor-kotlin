@@ -20,7 +20,7 @@ public class ChoreographyExtractionTest extends Assert {
 
     @DataPoints
     public static Object[][] data = new Object[][]{
-            {
+            /*{
                     "p { main {q!<e>; q?; stop}} " +
                             "| q { main {p?; p!<u>; stop}} " +
                             "| r { main {stop}}",
@@ -37,7 +37,7 @@ public class ChoreographyExtractionTest extends Assert {
                             "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
                             "r { main {stop}}",
                     "if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop"
-            },
+            },*/
             {
                     "p { def X {q!<e>; stop} main {X}} " +
                             "| q { def X {p?; stop} main {X}} " +

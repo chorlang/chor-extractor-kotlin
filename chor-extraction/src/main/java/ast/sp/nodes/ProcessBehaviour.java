@@ -20,7 +20,7 @@ public class ProcessBehaviour implements SPNode {
         this.visitedProcedures = new ArrayList<>();
     }
 
-    public String getProcess() {
+    public String getActiveProcess() {
         return process;
     }
 
