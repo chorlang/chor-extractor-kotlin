@@ -4,6 +4,7 @@ import antlr4.NetworkLexer;
 import antlr4.NetworkParser;
 import ast.cc.interfaces.CCNode;
 import ast.sp.interfaces.SPNode;
+import ast.sp.nodes.Network;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -31,7 +32,7 @@ public class ChoreographyExtraction {
     public CCNode extract() throws Exception {
         NetworkVisitor networkVisitor = new NetworkVisitor();
         SPNode sp = networkVisitor.visit(tree);
-        NetworkExtraction np = new NetworkExtraction(sp);
+        NetworkExtraction np = new NetworkExtraction((Network) sp);
         System.out.println(np);
 
         return null; //np.graphToChoreograpy();

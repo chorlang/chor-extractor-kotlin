@@ -1,7 +1,6 @@
 package extraction
 
 import ast.sp.interfaces.ExtractionLabel
-import ast.sp.interfaces.SPNode
 import ast.sp.labels.Communication
 import ast.sp.labels.Else
 import ast.sp.labels.Selection
@@ -11,39 +10,41 @@ import org.jgrapht.DirectedGraph
 import org.jgrapht.graph.DefaultDirectedGraph
 import java.util.*
 import java.util.stream.Collectors
+import kotlin.collections.ArrayList
 
 
 class NetworkExtraction @Throws(Exception::class)
-constructor(network: SPNode) {
+constructor(network: Network) {
     private val graph: DirectedGraph<Network, ExtractionLabel>
-    private val root: Network
-
 
     init {
         graph = DefaultDirectedGraph<Network, ExtractionLabel>(ExtractionLabel::class.java)
-        root = network as Network
+        graph.addVertex(network)
 
-        graph.addVertex(root)
+        val root = Network(ArrayList<ProcessBehaviour>())
+        val tmp = Network(ArrayList<ProcessBehaviour>())
+        root.network.addAll(network.network)
+        tmp.network.addAll(network.network)
 
-        buildGraph(root, root)
+        buildGraph(root, tmp)
     }
 
 
     private fun buildGraph(n: Network, tmp: Network) {
-        val findComm = findCommunication(n)
+        val findComm = findCommunication(tmp)
         if (findComm.sending.isPresent || findComm.selection.isPresent) {
             val (tmp, lbl) = getCommunication(tmp, findComm)
             commit(n, lbl, tmp)
 
-        } else if (findCondition(n)) {
-            val (tmp1, lbl1, tmp2, lbl2) = getCondition(n)
+        } else if (findCondition(tmp)) {
+            val (tmp1, lbl1, tmp2, lbl2) = getCondition(tmp)
             commit(n, lbl1, tmp1)
             commit(n, lbl2, tmp2)
 
-        } else if (canUnfold (n)){
-            buildGraph(n, wash(unfold(n)))
+        } else if (canUnfold (tmp)){
+            buildGraph(n, wash(unfold(tmp)))
 
-        } else if (notTerminated(n)) {
+        } else if (notTerminated(tmp)) {
             throw Exception("Deadlocked!");
         }
     }
@@ -67,10 +68,8 @@ constructor(network: SPNode) {
         if (findComm.sending.isPresent){
             val sending = findComm.sending.get()
             val sendingMain = sending.main as Sending
-            val receiving = n.network.stream().
-                    filter { i -> i.main is Receiving && n.network.stream().
-                            filter { i.activeProcess == sendingMain.process }.findFirst().isPresent}.
-                    findFirst().get()
+            val receivingList = n.network.stream().filter { i -> i.main is Receiving && n.network.stream().filter { i.activeProcess == sendingMain.process }.findFirst().isPresent }
+            val receiving = receivingList.findAny().get()
 
             val pbl: MutableList<ProcessBehaviour> = n.network.stream().filter { i -> i != sending && i != receiving }.collect(Collectors.toList())
             pbl.add(ProcessBehaviour(sending.activeProcess, sending.procedures, sendingMain.continuation))
@@ -128,31 +127,37 @@ constructor(network: SPNode) {
     data class ResultCondition(val tmp1: Network, val lb1: ExtractionLabel, val tmp2: Network, val lbl2: ExtractionLabel)
 
     private fun commit(n1: Network, label: ExtractionLabel, n2: Network){
-        if (!graph.containsVertex(n2)){
+        val source = graph.vertexSet().stream().filter { i -> i.toString() == n1.toString() }.findAny()
+        val target = graph.vertexSet().stream().filter { i -> i.toString() == n2.toString() }.findAny()
+
+        if (!target.isPresent){
             graph.addVertex(n2);
+            graph.addEdge(source.get(), n2, label);
+            buildGraph(n2, Network(object : ArrayList<ProcessBehaviour>() {init { addAll(n2.network) } }))
+        } else {
+            graph.addEdge(source.get(), target.get(), label);
         }
-        graph.addEdge(n1, n2, label);
-        buildGraph(n2, n2)
     }
 
     private fun unfold(n: Network): Network {
-        val listOfPBWithPI = n.network.stream().filter { i -> i.main is ProcedureInvocationSP }.collect(Collectors.toList())
-        n.network.removeAll(listOfPBWithPI)
-        val new = ArrayList<ProcessBehaviour>()
-        listOfPBWithPI.forEach { i ->  val findFirst = i.procedures.stream().filter { j -> j.procedure == (i.main as ProcedureInvocationSP).procedure }
-                .findFirst()?.get()
-                new.add(ProcessBehaviour(i.activeProcess, i.procedures, findFirst?.behaviour))
-                i.setVisitedProcedures(findFirst?.procedure)
+        val list = n.network.stream().filter { i -> i.main is ProcedureInvocationSP }.collect(Collectors.toList())
+        n.network.removeAll(list)
 
+        list.forEach { i ->  run {
+            val findFirst = i.procedures.stream().filter { j -> j.procedure == (i.main as ProcedureInvocationSP).procedure }
+                .findFirst()?.get()
+            val pb = ProcessBehaviour(i.activeProcess, i.procedures, findFirst?.behaviour)
+            pb.setVisitedProcedures(findFirst?.procedure)
+            n.network.add(pb)}
         }
-        n.network.addAll(new)
+
         return n
     }
 
     private fun wash(n: Network): Network {
-        val numberOfUnfolfedPD = n.network.stream().filter { i -> i.main is ProcedureInvocationSP && i.visitedProcedures.contains((i.main as ProcedureInvocationSP).procedure) }.count()
-        if (n.network.size.equals(numberOfUnfolfedPD)){
-            n.network.stream().filter { i -> i.main is ProcedureInvocationSP }.forEach { i -> i.clearVisitedProcedures() }
+        val numberOfUnfolfedPD = n.network.stream().filter { i -> i.visitedProcedures.size == i.procedures.size }.count()
+        if (n.network.size.equals(numberOfUnfolfedPD.toInt())){
+            n.network.stream().forEach { i -> i.clearVisitedProcedures() }
         }
         return n
     }
