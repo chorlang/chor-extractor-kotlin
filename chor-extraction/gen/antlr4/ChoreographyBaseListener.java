@@ -160,18 +160,6 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLabel(ChoreographyParser.LabelContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitLabel(ChoreographyParser.LabelContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterValue(ChoreographyParser.ValueContext ctx) { }
 	/**
 	 * {@inheritDoc}

@@ -128,16 +128,6 @@ public interface ChoreographyListener extends ParseTreeListener {
 	 */
 	void exitProcedure(ChoreographyParser.ProcedureContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link ChoreographyParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void enterLabel(ChoreographyParser.LabelContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link ChoreographyParser#label}.
-	 * @param ctx the parse tree
-	 */
-	void exitLabel(ChoreographyParser.LabelContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link ChoreographyParser#value}.
 	 * @param ctx the parse tree
 	 */

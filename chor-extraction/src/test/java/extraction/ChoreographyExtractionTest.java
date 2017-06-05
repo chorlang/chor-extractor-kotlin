@@ -83,7 +83,7 @@ public class ChoreographyExtractionTest extends Assert {
     @Theory
     public void testProject(final Object... testData) throws Exception {
         np.parse((String) testData[0]);
-        CCNode graph = np.extract();
+        CCNode graph = np.extractChoreography();
         //assertEquals(testData[1], graph.toString());
         System.out.println("Network: " + testData[0] + "\nGraph: ");
     }

@@ -23,7 +23,7 @@ public class EndpointProjectionTest extends Assert {
             // { "def X { p.e->q;stop } main { X }", "p is def X =q!<e>; stop in X | q is def X =p?; stop in X" }, //procedure definition/invocation
             //{ "stop", "" },                                             //termination
             //{ "p.e->q;stop", "p is q!<e>; stop | q is p?; stop" },      //communication
-            //{ "p->q[l];stop", "p is q + l; stop | q is p&{l: stop}" },  //selection
+            //{ "p->q[l];stop", "p is q + l; stop | q is p&{l: stop}" },  //selectoffer
             { "def X = p.e->q;stop in X", "p is def X =q!<e>; stop in X | q is def X =p?; stop in X" }, //procedure definition/invocation
             /{ "if p.e then p.e->q;stop else p.e->q;stop", "p is if p.e then q!<e>; stop else q!<e>; stop | q is p?; stop" }, //condition
             //{ "if p.e then " +

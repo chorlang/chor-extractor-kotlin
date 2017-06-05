@@ -1,40 +1,43 @@
 package extraction
 
+import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.ExtractionLabel
 import ast.sp.labels.Communication
 import ast.sp.labels.Else
-import ast.sp.labels.Selection
 import ast.sp.labels.Then
 import ast.sp.nodes.*
 import org.jgrapht.DirectedGraph
 import org.jgrapht.graph.DefaultDirectedGraph
 import java.util.*
-import java.util.stream.Collectors
-import kotlin.collections.ArrayList
+import kotlin.collections.HashSet
 
 
 class NetworkExtraction @Throws(Exception::class)
 constructor(network: Network) {
     private val graph: DirectedGraph<Network, ExtractionLabel>
+    private val root: Network
+    val pnames = HashSet<String>()
 
     init {
         graph = DefaultDirectedGraph<Network, ExtractionLabel>(ExtractionLabel::class.java)
         graph.addVertex(network)
+        root = network.copy()
 
-        val root = Network(ArrayList<ProcessBehaviour>())
-        val tmp = Network(ArrayList<ProcessBehaviour>())
-        root.network.addAll(network.network)
-        tmp.network.addAll(network.network)
-
-        buildGraph(root, tmp)
+        extract(network)
     }
 
+    private fun extract(network: Network){
+        val tmp = network.copy()
+        buildGraph(root, tmp)
+        unroll()
+        buildChoreography()
+    }
 
     private fun buildGraph(n: Network, tmp: Network) {
         val findComm = findCommunication(tmp)
-        if (findComm.sending.isPresent || findComm.selection.isPresent) {
-            val (tmp, lbl) = getCommunication(tmp, findComm)
-            commit(n, lbl, tmp)
+        if (findComm.sendreceive.isPresent || findComm.selectoffer.isPresent) {
+            val (tmp0, lbl) = getCommunication(tmp, findComm)
+            commit(n, lbl, tmp0)
 
         } else if (findCondition(tmp)) {
             val (tmp1, lbl1, tmp2, lbl2) = getCondition(tmp)
@@ -49,50 +52,71 @@ constructor(network: Network) {
         }
     }
 
-    data class GetCommunication(val sending: Optional<ProcessBehaviour>, val selection: Optional<ProcessBehaviour>)
+    data class GetCommunication(val sendreceive: (Optional<Pair<ProcessBehaviour, ProcessBehaviour>>), val selectoffer: (Optional<Pair<ProcessBehaviour, ProcessBehaviour>>))
 
     private fun findCommunication(n: Network): GetCommunication {
-        val sendreceive = n.network.stream().filter { i -> i.main is Sending &&
-                n.network.stream().filter { j -> j.main is Receiving && i.activeProcess == (j.main as Receiving).process}.findFirst().isPresent}.
-                findAny()
+        var communication: Optional<Pair<ProcessBehaviour, ProcessBehaviour>>
+        communication = Optional.empty()
 
-        val offerselect = n.network.stream().filter { i -> i.main is SelectionSP &&
-                n.network.stream().filter { j -> j.main is Offering && i.activeProcess == (j.main as Offering).process}.findFirst().isPresent}.
-                findAny()
+        n.network.forEach { t, u -> run {
+            if (u.main is Sending) {
+                val receiving = n.network.values.stream().filter { j -> j.main is Receiving && t == j.main.process}.findFirst()
+                if (receiving.isPresent){
+                    communication = Optional.of(Pair(u, receiving.get()))
+                    return@forEach
+                }
+            }
+        }}
 
-        return  GetCommunication(sendreceive, offerselect)
+        if (communication.isPresent){
+            return GetCommunication(communication, Optional.empty())
+        } else {
+            n.network.forEach { t, u -> run {
+                if (u.main is SelectionSP) {
+                    val offering = n.network.values.stream().filter { j -> j.main is Offering && t == j.main.process}.findFirst()
+                    if (offering.isPresent){
+                        communication = Optional.of(Pair(u, offering.get()))
+                        return@forEach
+                    }
 
+                }
+            }}
+            return GetCommunication(Optional.empty(), communication)
+        }
     }
 
     private fun getCommunication(n: Network, findComm: GetCommunication): Pair<Network, ExtractionLabel> {
-        if (findComm.sending.isPresent){
-            val sending = findComm.sending.get()
-            val sendingMain = sending.main as Sending
-            val receivingList = n.network.stream().filter { i -> i.main is Receiving && n.network.stream().filter { i.activeProcess == sendingMain.process }.findFirst().isPresent }
-            val receiving = receivingList.findAny().get()
+        if (findComm.sendreceive.isPresent){
+            val sending = findComm.sendreceive.get().first
+            val receiving = findComm.sendreceive.get().second
 
-            val pbl: MutableList<ProcessBehaviour> = n.network.stream().filter { i -> i != sending && i != receiving }.collect(Collectors.toList())
-            pbl.add(ProcessBehaviour(sending.activeProcess, sending.procedures, sendingMain.continuation))
-            pbl.add(ProcessBehaviour(receiving.activeProcess, receiving.procedures, (receiving.main as Receiving).continuation))
+            val pbl = TreeMap<String, ProcessBehaviour>(n.network)
 
-            val label = Communication(sending.activeProcess, receiving.activeProcess, sendingMain.expression)
+            val receivingProcess = (sending.main as Sending).process
+            val sendingProcess = (receiving.main as Receiving).process
+
+            pbl.replace(receivingProcess, ProcessBehaviour(receiving.procedures, receiving.main.continuation))
+            pbl.replace(sendingProcess, ProcessBehaviour(sending.procedures, sending.main.continuation))
+
+            val label = Communication(sendingProcess, receivingProcess, sending.main.expression)
 
             return Pair(Network(pbl), label)
 
-        } else if (findComm.selection.isPresent) {
-            val selection = findComm.selection.get()
-            val selectionMain = selection.main as SelectionSP
-            val offering = n.network.stream().
-                    filter { i -> i.main is Offering && n.network.stream().
-                            filter { i.activeProcess == selectionMain.process }.findFirst().isPresent}.
-                    findFirst().get()
+        } else if (findComm.selectoffer.isPresent) {
+            val selection = findComm.selectoffer.get().first
+            val offering = findComm.selectoffer.get().second
 
-            val pbl: MutableList<ProcessBehaviour> = n.network.stream().filter { n -> n != selection && n != offering }.collect(Collectors.toList())
-            val offeringMain = offering.main as Offering
-            pbl.add(ProcessBehaviour(offering.activeProcess, offering.procedures, offeringMain.labels.get(selectionMain.expression)))
-            pbl.add(ProcessBehaviour(selection.activeProcess, selection.procedures, selectionMain.continuation))
+            val pbl = TreeMap<String, ProcessBehaviour>(n.network)
 
-            val label = Selection(offering.activeProcess, offering.activeProcess, selectionMain.expression)
+            val selectionProcess = (offering.main as Offering).process
+            val offeringProcess = (selection.main as SelectionSP).process
+
+            val offeringBehavior = offering.main.labels.get(selection.main.expression) ?: throw Exception("Trying to select the labal that wasn't offered")
+
+            pbl.replace(offeringProcess, ProcessBehaviour(offering.procedures, offeringBehavior))
+            pbl.replace(selectionProcess, ProcessBehaviour(selection.procedures, selection.main.continuation))
+
+            val label = Communication(offeringProcess, selectionProcess, selection.main.expression)
 
             return Pair(Network(pbl), label)
 
@@ -100,28 +124,28 @@ constructor(network: Network) {
     }
 
     private fun findCondition(n: Network): Boolean {
-        return n.network.stream().filter { i -> i.main is ConditionSP }.findFirst().isPresent
+        return !n.network.values.filter { i -> i.main is ConditionSP}.isEmpty()
     }
 
     private fun getCondition(n: Network):ResultCondition {
-        val conditionPB = n.network.stream().filter { i -> i.main is ConditionSP }.findFirst().get()
+        val conditionPB = n.network.entries.stream().filter { i -> i.value.main is ConditionSP }.findFirst().get().value
         val conditionMain = conditionPB.main as ConditionSP
 
-        val listOfPBT: MutableList<ProcessBehaviour> = n.network.stream().filter { n -> n != conditionPB }.collect(Collectors.toList())
-        val listOfPBE = ArrayList<ProcessBehaviour>(listOfPBT);
+        val pbelsemap = TreeMap<String, ProcessBehaviour>(n.network)
+        val pbthenmap = TreeMap<String, ProcessBehaviour>(n.network)
 
-        listOfPBT.add(ProcessBehaviour(conditionPB.activeProcess, conditionPB.procedures, conditionMain.thenBehaviour))
-        listOfPBE.add(ProcessBehaviour(conditionPB.activeProcess, conditionPB.procedures, conditionMain.elseBehaviour))
+        pbelsemap.replace(conditionMain.process, ProcessBehaviour(conditionPB.procedures ,conditionMain.elseBehaviour))
+        pbthenmap.replace(conditionMain.process, ProcessBehaviour(conditionPB.procedures ,conditionMain.thenBehaviour))
 
-        return ResultCondition(Network(listOfPBT), Then(conditionMain.process, conditionMain.expression), Network(listOfPBE), Else(conditionMain.process, conditionMain.expression))
+        return ResultCondition(Network(pbelsemap), Then(conditionMain.process, conditionMain.expression), Network(pbthenmap), Else(conditionMain.process, conditionMain.expression))
     }
 
     private fun canUnfold(n: Network): Boolean {
-        return n.network.stream().filter { i -> i.main is ProcedureInvocationSP}.findFirst().isPresent
+        return n.network.entries.stream().filter { i -> i.value.main is ProcedureInvocationSP}.findFirst().isPresent
     }
 
     private fun notTerminated(n: Network): Boolean {
-        return n.network.stream().filter { i -> i.main !is TerminationSP}.findFirst().isPresent
+        return n.network.entries.stream().filter { i -> i.value.main !is TerminationSP}.findFirst().isPresent
     }
 
     data class ResultCondition(val tmp1: Network, val lb1: ExtractionLabel, val tmp2: Network, val lbl2: ExtractionLabel)
@@ -133,32 +157,50 @@ constructor(network: Network) {
         if (!target.isPresent){
             graph.addVertex(n2);
             graph.addEdge(source.get(), n2, label);
-            buildGraph(n2, Network(object : ArrayList<ProcessBehaviour>() {init { addAll(n2.network) } }))
+            buildGraph(n2, Network(TreeMap<String,ProcessBehaviour>(n2.network)))
         } else {
             graph.addEdge(source.get(), target.get(), label);
         }
     }
 
     private fun unfold(n: Network): Network {
-        val list = n.network.stream().filter { i -> i.main is ProcedureInvocationSP }.collect(Collectors.toList())
-        n.network.removeAll(list)
-
-        list.forEach { i ->  run {
-            val findFirst = i.procedures.stream().filter { j -> j.procedure == (i.main as ProcedureInvocationSP).procedure }
-                .findFirst()?.get()
-            val pb = ProcessBehaviour(i.activeProcess, i.procedures, findFirst?.behaviour)
-            pb.setVisitedProcedures(findFirst?.procedure)
-            n.network.add(pb)}
-        }
+        n.network.forEach { t, u -> if (u.main is ProcedureInvocationSP) run {
+            val behaviour = u.procedures.get(u.main.procedure)?.behaviour ?: throw Exception("No procedure definition with the invoking name")
+            markprocedures(behaviour)
+            n.network.replace(t, ProcessBehaviour(u.procedures, behaviour))
+        } }
 
         return n
     }
 
+    private fun markprocedures(behaviour: Behaviour) {
+
+    }
+
     private fun wash(n: Network): Network {
-        val numberOfUnfolfedPD = n.network.stream().filter { i -> i.visitedProcedures.size == i.procedures.size }.count()
-        if (n.network.size.equals(numberOfUnfolfedPD.toInt())){
-            n.network.stream().forEach { i -> i.clearVisitedProcedures() }
-        }
         return n
+    }
+
+    private fun unroll(){
+        graph.vertexSet().filter { i -> (i == root && graph.incomingEdgesOf(root).size > 1) || graph.incomingEdgesOf(i).size > 2 }.forEach { i -> kotlin.run {
+
+        } }
+    }
+
+    private fun randomName(): String{
+        val a = "RSTUVWXYZ"
+        val b = "0123456789"
+        val rnd = Random()
+
+        val s = a.get(rnd.nextInt(a.length)).toString() + b.get(rnd.nextInt(b.length)).toString()
+        if (pnames.contains(s)) {
+            return randomName()
+        } else {
+            return s
+        }
+    }
+
+    private fun buildChoreography(){
+
     }
 }

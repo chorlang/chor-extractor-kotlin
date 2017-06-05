@@ -9,8 +9,8 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.TreeMap;
 
 public class EndPointProjection {
     private ANTLRInputStream stream;
@@ -33,7 +33,7 @@ public class EndPointProjection {
 
     public Network project(String choreography) throws MergingException {
         ParseTree tree = this.parse(choreography);
-        ArrayList<ProcessBehaviour> network = new ArrayList<>();
+        TreeMap<String, ProcessBehaviour> network = new TreeMap();
 
         if (tree!=null) {
             ChoreographyVisitor choreographyVisitor = new ChoreographyVisitor();
@@ -42,7 +42,7 @@ public class EndPointProjection {
 
             BehaviourProjection behaviourProjection = new BehaviourProjection();
             for (String process: processes) {
-                network.add ((ProcessBehaviour) behaviourProjection.getSPAST(ccast, process));
+                network.put (process, (ProcessBehaviour) behaviourProjection.getSPAST(ccast, process));
             }
         }
         return new Network (network);

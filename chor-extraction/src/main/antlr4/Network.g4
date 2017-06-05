@@ -1,15 +1,15 @@
 grammar Network;
 import CommonLexerRules;
 
-network: processBehaviour (Parallel processBehaviour)*;
+network: process processBehaviour (Parallel process processBehaviour)*;
 
 // p { def X { q?;stop } main { q?; X } } | q { main { p!1; p!2; stop } }
 
 processBehaviour : TERMINATE
-    |   process '{' procedureDefinition* 'main' '{' behaviour '}' '}'
+    |   '{' ('def' procedure procedureDefinition)* 'main' '{' behaviour '}' '}'
     ;
 
-procedureDefinition : 'def' procedure '{' behaviour '}';
+procedureDefinition : '{' behaviour '}';
 
 behaviour : interaction
     |   offering
