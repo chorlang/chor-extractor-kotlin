@@ -1,3 +1,3 @@
 package ast.sp.interfaces
 
-interface ExtractionLabel : SPNode
+open class ExtractionLabel : SPNode
