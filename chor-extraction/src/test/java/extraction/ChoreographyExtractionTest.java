@@ -20,12 +20,13 @@ public class ChoreographyExtractionTest extends Assert {
 
     @DataPoints
     public static Object[][] data = new Object[][]{
-            /*{
+            {
                     "p { main {q!<e>; q?; stop}} " +
                             "| q { main {p?; p!<u>; stop}} " +
                             "| r { main {stop}}",
                     "p.e->q; q.u->p; stop"
-            },
+            }
+            /*,
             {
                     "p { main {q+R; q!<e>; q?; stop}} | " +
                             "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
@@ -70,20 +71,19 @@ public class ChoreographyExtractionTest extends Assert {
             },
             {
                     "p { def X {q+R; q!<e>; q?;X} main{X}} | q { def X {p&{R: p?; p!<u1>; X, L: p?; p!<u2>;X}} main{X}}", "p->q[R]; p.e->q; q.u1->p; stop"
-            },*/
+            },
             {
                     "p { def X {if p.e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop} main {X}} | " +
                             "q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | " +
                             "r { main {stop}}",
                     "if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop"
-            }
+            }*/
 
     };
 
     @Theory
     public void testProject(final Object... testData) throws Exception {
-        np.parse((String) testData[0]);
-        CCNode graph = np.extractChoreography();
+        CCNode graph = np.extractChoreography((String) testData[0]);
         //assertEquals(testData[1], graph.toString());
         System.out.println("Network: " + testData[0] + "\nGraph: ");
     }

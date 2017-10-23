@@ -1,7 +1,5 @@
 package extraction
 
-import ast.cc.interfaces.CCNode
-import ast.cc.nodes.Termination
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.ExtractionLabel
 import ast.sp.interfaces.SPNode
@@ -10,16 +8,15 @@ import ast.sp.nodes.*
 import org.jgrapht.DirectedGraph
 import org.jgrapht.graph.DefaultDirectedGraph
 import java.util.*
-import kotlin.collections.HashSet
+import kotlin.collections.ArrayList
 
 
 class NetworkExtraction @Throws(Exception::class)
 constructor(network: Network) {
     private val graph: DirectedGraph<Network, ExtractionLabel>
     private val root: Network
-    val pnames = HashSet<String>()
 
-    init {
+    init{
         graph = DefaultDirectedGraph<Network, ExtractionLabel>(ExtractionLabel::class.java)
         graph.addVertex(network)
         root = network.copy()
@@ -28,64 +25,92 @@ constructor(network: Network) {
     }
 
     private fun extract(network: Network){
-        val tmp = network.copy()
-        buildGraph(root, tmp)
-        buildChoreography(unroll())
+        //val tmp = network.copy()
+        buildGraph(root)
+        graph.vertexSet().stream().forEach { i -> println(i.network) }
+        //unroll(graph)
+        //buildChoreography()
     }
 
-    private fun buildGraph(n: Network, tmp: Network) {
-        val findComm = findCommunication(tmp)
-        if (findComm.sendreceive.isPresent || findComm.selectoffer.isPresent) {
-            val (tmp0, lbl) = getCommunication(tmp, findComm)
-            commit(n, lbl, tmp0)
+    private fun buildGraph(n: Network) {
+        val r = ArrayList<CommCond>()
+        val stack = Stack<Network>()
+        stack.push(n)
+        while (!stack.empty()) {
+            val network =  stack.pop()
+            for (p in network.network) {
+                var tmp = network
 
-        } else if (findCondition(tmp)) {
-            val (tmp1, lbl1, tmp2, lbl2) = getCondition(tmp)
-            commit(n, lbl1, tmp1)
-            commit(n, lbl2, tmp2)
+                if (canUnfold(p, tmp)) {
+                    tmp = unfold(p, tmp)
+                }
 
-        } else if (canUnfold (tmp)){
-            buildGraph(n, wash(unfold(tmp)))
-
-        } else if (notTerminated(tmp)) {
-            throw Exception("Deadlocked!");
+                val findComm = findCommunication(p, tmp)
+                if (findComm.sendreceive.isPresent || findComm.selectoffer.isPresent) {
+                    var (tgt, lbl) = getCommunication(tmp, findComm)
+                    val b = isAllProceduresVisited(tgt)
+                    if (b) {
+                        wash(tgt) //are we marking ALL processes in the network???
+                    }
+                    val ok = checkLoop(n, tgt, b)
+                    if (ok) {
+                        r.add(Comm(tgt, lbl))
+                    }
+                } else if (findCondition(tmp)) {
+                    var (tgt1, lbl1, tgt2, lbl2) = getCondition(tmp)
+                    val b1 = isAllProceduresVisited(tgt1)
+                    if (b1) {
+                        wash(tgt1) //are we marking ALL processes in the network???
+                    }
+                    val b2 = isAllProceduresVisited(tgt1)
+                    if (b2) {
+                        wash(tgt2) //are we marking ALL processes in the network???
+                    }
+                    val ok = checkLoop(n, tgt1, b1) && checkLoop(n, tgt2, b2)
+                    if (ok) {
+                        r.add(Cond(tgt1, lbl1, tgt2, lbl2))
+                    }
+                }
+            }
+            if (!r.isEmpty()) {
+                val c = choose(r) //Need to implement choose
+                if (c is Comm) {
+                    commit(n, c.lbl, c.node)
+                } else if (c is Cond) {
+                    commit(n, c.lbl1, c.node1)
+                    commit(n, c.lbl2, c.node2)
+                }
+            }
         }
     }
 
     data class GetCommunication(val sendreceive: (Optional<Pair<ProcessBehaviour, ProcessBehaviour>>), val selectoffer: (Optional<Pair<ProcessBehaviour, ProcessBehaviour>>))
 
-    private fun findCommunication(n: Network): GetCommunication {
+    private fun findCommunication(p: MutableMap.MutableEntry<String, ProcessBehaviour>, n: Network): GetCommunication {
         var communication: Optional<Pair<ProcessBehaviour, ProcessBehaviour>>
         communication = Optional.empty()
 
-        n.network.forEach { t, u -> run {
-            if (u.main is Sending) {
-                val receiving = n.network.values.stream().filter { j -> j.main is Receiving && t == j.main.process}.findFirst()
-                if (receiving.isPresent){
-                    communication = Optional.of(Pair(u, receiving.get()))
-                    return@forEach
-                }
+        if (p.value.main is Sending){
+            val receiving = n.network.values.stream().filter { j -> j.main is Receiving && p.key == j.main.process}.findFirst()
+            if (receiving.isPresent) {
+                communication = Optional.of(Pair(p.value, receiving.get()))
             }
-        }}
+        }
 
         if (communication.isPresent){
             return GetCommunication(communication, Optional.empty())
         } else {
-            n.network.forEach { t, u -> run {
-                if (u.main is SelectionSP) {
-                    val offering = n.network.values.stream().filter { j -> j.main is Offering && t == j.main.process}.findFirst()
+                if (p.value.main is SelectionSP) {
+                    val offering = n.network.values.stream().filter { j -> j.main is Offering && p.key == j.main.process}.findFirst()
                     if (offering.isPresent){
-                        communication = Optional.of(Pair(u, offering.get()))
-                        return@forEach
+                        communication = Optional.of(Pair(p.value, offering.get()))
                     }
-
                 }
-            }}
-            return GetCommunication(Optional.empty(), communication)
+            }
+        return GetCommunication(Optional.empty(), communication)
         }
-    }
 
-    private fun getCommunication(n: Network, findComm: GetCommunication): Pair<Network, ExtractionLabel> {
+    private fun getCommunication(n: Network, findComm: NetworkExtraction.GetCommunication): Pair<Network, ExtractionLabel> {
         if (findComm.sendreceive.isPresent){
             val sending = findComm.sendreceive.get().first
             val receiving = findComm.sendreceive.get().second
@@ -142,12 +167,27 @@ constructor(network: Network) {
         return ResultCondition(Network(pbelsemap), Then(conditionMain.process, conditionMain.expression), Network(pbthenmap), Else(conditionMain.process, conditionMain.expression))
     }
 
-    private fun canUnfold(n: Network): Boolean {
-        return n.network.entries.stream().filter { i -> i.value.main is ProcedureInvocationSP}.findFirst().isPresent
+    private fun canUnfold(p: MutableMap.MutableEntry<String, ProcessBehaviour>, n: Network): Boolean {
+        return n.network.get(p.key)?.main is ProcedureInvocationSP
+
+        //return n.network.entries.stream().filter{i -> i.equals(p) && i.value.main is ProcedureInvocationSP}.findFirst().isPresent
+        //return n.network.entries.stream().filter { i -> i.value.main is ProcedureInvocationSP}.findFirst().isPresent
     }
 
-    private fun notTerminated(n: Network): Boolean {
-        return n.network.entries.stream().filter { i -> i.value.main !is TerminationSP}.findFirst().isPresent
+    private fun unfold(p: MutableMap.MutableEntry<String, ProcessBehaviour>, n: Network): Network {
+        val procedureName = (p.value.main as ProcedureInvocationSP).procedure
+        val behaviour = p.value.procedures.get(procedureName)?.behaviour ?: throw Exception("No procedure definition with the invoking name")
+        markprocedures(behaviour,true)
+        n.network.replace(p.key, p.value, ProcessBehaviour(p.value.procedures, behaviour)) //!!!note if procedures were muted
+
+        //n.network.replace(p, p)
+        /*n.network.forEach { t, u -> if (u.main is ProcedureInvocationSP) run {
+            val behaviour = u.procedures.get(u.main.procedure)?.behaviour ?: throw Exception("No procedure definition with the invoking name")
+            markprocedures(behaviour, true)
+            n.network.replace(t, ProcessBehaviour(u.procedures, behaviour))
+        } }*/
+
+        return n
     }
 
     private fun commit(n1: Network, label: ExtractionLabel, n2: Network){
@@ -157,20 +197,10 @@ constructor(network: Network) {
         if (!target.isPresent){
             graph.addVertex(n2);
             graph.addEdge(source.get(), n2, label);
-            buildGraph(n2, Network(TreeMap<String,ProcessBehaviour>(n2.network)))
+            buildGraph(n2)//, Network(TreeMap<String,ProcessBehaviour>(n2.network)))
         } else {
             graph.addEdge(source.get(), target.get(), label);
         }
-    }
-
-    private fun unfold(n: Network): Network {
-        n.network.forEach { t, u -> if (u.main is ProcedureInvocationSP) run {
-            val behaviour = u.procedures.get(u.main.procedure)?.behaviour ?: throw Exception("No procedure definition with the invoking name")
-            markprocedures(behaviour, true)
-            n.network.replace(t, ProcessBehaviour(u.procedures, behaviour))
-        } }
-
-        return n
     }
 
     private fun markprocedures(b: Behaviour, s: Boolean) {
@@ -198,9 +228,13 @@ constructor(network: Network) {
 
     }
 
+    private fun checkLoop(n: Network, tgt: Network, b: Boolean): Boolean{
+        return true
+    }
+
     private fun isAllProceduresVisited(n: Network): Boolean {
         n.network.values.forEach { i -> run {
-            if (isProcedureVisited(i.main) == false){
+            if (isProcedureVisited(i.main) == true){
                 return false
             }
 
@@ -214,7 +248,6 @@ constructor(network: Network) {
                 if (b.isVisited == false){
                     return false
                 }
-
             }
             is ConditionSP -> {
                 isProcedureVisited(b.elseBehaviour)
@@ -243,7 +276,11 @@ constructor(network: Network) {
         return n
     }
 
-    private fun unroll(): DefaultDirectedGraph<SPNode, ExtractionLabel>{
+    private fun choose(r: ArrayList<CommCond>): CommCond{
+        return r.get(0)
+    }
+
+    /*private fun unroll(): DefaultDirectedGraph<SPNode, ExtractionLabel>{
         val g = DefaultDirectedGraph<SPNode, ExtractionLabel>(ExtractionLabel::class.java)
         graph.vertexSet().stream().forEach { i -> g.vertexSet().add(i.copy()) }
         graph.edgeSet().stream().forEach { i -> run {
@@ -277,9 +314,8 @@ constructor(network: Network) {
         } }
 
         return g
-    }
-
-    private fun randomName(): String{
+    }*/
+    /*private fun randomName(): String{
         val a = "RSTUVWXYZ"
         val b = "0123456789"
         val rnd = Random()
@@ -290,35 +326,11 @@ constructor(network: Network) {
         } else {
             return s
         }
-    }
-
-    private fun buildChoreography(g: DefaultDirectedGraph<SPNode, ExtractionLabel>){
-        val get = g.vertexSet().stream().filter { it == root }.findFirst().get()
-        when(g.incomingEdgesOf(get).size){
-            0 -> {
-                 Termination ()
-            }
-            1 -> {
-                val edge = g.incomingEdgesOf(get).iterator().next()
-                if (edge is Communication) {
-                    ast.cc.nodes.Communication (edge.sender, edge.receiver, edge.expression, buildChoreography (g.getEdgeTarget()));
-                } else if (edge is Selection) {
-                    ast.cc.nodes.Selection (edge.sender, edge.receiver, edge.label, buildChoreography(g.getEdgeTarget()));
-            }
-            2 -> {
-                /*val labels = g.incomingEdgesOf(get).to(that = Array<ExtractionLabel>)
-                val thenLabel =(labels[0] instanceof Then) ? (Then) labels[0] : (Then) labels[1];
-                val elseLabel =(labels[0] instanceof Then) ? (Else) labels[1] : (Else) labels[0];
-
-                // throw exception is processName or expression is different in the two nodes
-
-                retval = new Condition (
-                        thenLabel.getProcess(),
-                thenLabel.getExpression(),
-                extractNodeForward(graph.getEdgeTarget(thenLabel)),
-                extractNodeForward(graph.getEdgeTarget(elseLabel))
-                );*/
-            }
-        }
-    }
+    }*/
+    /* private fun markAllProcedures(tgt: Network, b: Boolean){
+        tgt.network.forEach { t, u -> markprocedures(u.main, b) }
+    }*/
+    /*private fun notTerminated(n: Network): Boolean {
+        return n.network.entries.stream().filter { i -> i.value.main !is TerminationSP}.findFirst().isPresent
+    }*/
 }

@@ -14,7 +14,7 @@ class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     override fun visitNetwork(ctx: NetworkContext): SPNode {
         val network = TreeMap<String, ProcessBehaviour>()
         for (i in 0..ctx.processBehaviour().size - 1) {
-            network.put(ctx.process(i).toString(), visit(ctx.processBehaviour(i)) as ProcessBehaviour)
+            network.put(ctx.process(i).text, visit(ctx.processBehaviour(i)) as ProcessBehaviour)
         }
         return Network(network)
     }
