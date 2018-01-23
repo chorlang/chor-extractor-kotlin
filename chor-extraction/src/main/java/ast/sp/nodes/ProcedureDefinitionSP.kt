@@ -11,4 +11,8 @@ data class ProcedureDefinitionSP(val behaviour: Behaviour) : Behaviour {
     override fun findRecProcCall(procname: String): Boolean {
         return behaviour.findRecProcCall(procname)
     }
+
+    override fun copy(): ProcedureDefinitionSP {
+        return ProcedureDefinitionSP(behaviour.copy())
+    }
 }

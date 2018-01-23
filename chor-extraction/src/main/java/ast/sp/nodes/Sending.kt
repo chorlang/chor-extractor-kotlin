@@ -25,4 +25,8 @@ data class Sending(val continuation: Behaviour, val process: String, val express
     override fun findRecProcCall(procname: String): Boolean {
         return continuation.findRecProcCall(procname)
     }
+
+    override fun copy(): Interaction {
+        return Sending(continuation.copy(), process, expression)
+    }
 }

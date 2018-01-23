@@ -12,4 +12,8 @@ data class Receiving(val continuation: Behaviour, val process: String) : Interac
     override fun findRecProcCall(procname: String): Boolean {
         return continuation.findRecProcCall(procname)
     }
+
+    override fun copy(): Interaction {
+        return Receiving(continuation.copy(), process)
+    }
 }

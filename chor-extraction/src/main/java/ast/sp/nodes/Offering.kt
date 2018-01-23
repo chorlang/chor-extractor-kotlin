@@ -25,4 +25,10 @@ data class Offering(val process: String, val labels: HashMap<String, Behaviour>)
         }
         return false
     }
+
+    override fun copy(): Interaction {
+        val tempmap = mutableMapOf<String, Behaviour>()
+        labels.forEach { str, bhv -> tempmap.put(str, bhv.copy())  }
+        return Offering(process, tempmap as HashMap<String, Behaviour>)
+    }
 }

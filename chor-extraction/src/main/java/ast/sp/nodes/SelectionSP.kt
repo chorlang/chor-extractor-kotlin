@@ -12,4 +12,8 @@ data class SelectionSP(val continuation: Behaviour, val process: String, val exp
     override fun findRecProcCall(procname: String): Boolean {
         return continuation.findRecProcCall(procname)
     }
+
+    override fun copy(): Interaction {
+        return SelectionSP(continuation.copy(), process, expression)
+    }
 }

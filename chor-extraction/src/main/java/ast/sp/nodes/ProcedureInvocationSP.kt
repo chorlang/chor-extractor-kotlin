@@ -19,4 +19,10 @@ data class ProcedureInvocationSP(val procedure: String) : Behaviour {
         else
             return ""
     }
+
+    override fun copy(): Behaviour {
+        val prin = ProcedureInvocationSP(procedure)
+        prin.isVisited = this.isVisited
+        return prin
+    }
 }

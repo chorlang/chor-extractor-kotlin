@@ -13,20 +13,20 @@ import kotlin.collections.ArrayList
 
 class NetworkExtraction @Throws(Exception::class)
 constructor(network: Network) {
-    private val graph: DirectedGraph<Network, ExtractionLabel>
-    private val root: Network
+    private var graph: DirectedGraph<Network, ExtractionLabel>
+    //private val root: Network
 
     init{
         graph = DefaultDirectedGraph<Network, ExtractionLabel>(ExtractionLabel::class.java)
         graph.addVertex(network)
-        root = network.copy()
+        //root = network.copy()
 
         extract(network)
     }
 
     private fun extract(network: Network){
         //val tmp = network.copy()
-        buildGraph(root)
+        buildGraph(network)
         graph.vertexSet().stream().forEach { i -> println(i.network) }
         //unroll(graph)
         //buildChoreography()
@@ -38,14 +38,15 @@ constructor(network: Network) {
         stack.push(n)
         while (!stack.empty()) {
             val network =  stack.pop()
-            for (p in network.network) {
-                var tmp = network
-
+            var tmp = network
+            for (p in tmp.network) {
+                var ptmp = Pair(p, tmp)
                 if (canUnfold(p, tmp)) {
-                    tmp = unfold(p, tmp)
+                    ptmp = unfold(p, tmp)
+                    tmp = ptmp.second
                 }
 
-                val findComm = findCommunication(p, tmp)
+                val findComm = findCommunication(ptmp.first, ptmp.second)
                 if (findComm.sendreceive.isPresent || findComm.selectoffer.isPresent) {
                     var (tgt, lbl) = getCommunication(tmp, findComm)
                     val b = isAllProceduresVisited(tgt)
@@ -56,7 +57,7 @@ constructor(network: Network) {
                     if (ok) {
                         r.add(Comm(tgt, lbl))
                     }
-                } else if (findCondition(tmp)) {
+                } else if (findCondition(ptmp.second)) {
                     var (tgt1, lbl1, tgt2, lbl2) = getCondition(tmp)
                     val b1 = isAllProceduresVisited(tgt1)
                     if (b1) {
@@ -95,6 +96,11 @@ constructor(network: Network) {
             if (receiving.isPresent) {
                 communication = Optional.of(Pair(p.value, receiving.get()))
             }
+        } else if (p.value.main is Receiving) {
+            val sending = n.network.values.stream().filter { j -> j.main is Sending && p.key == j.main.process }.findFirst()
+            if (sending.isPresent) {
+                communication = Optional.of(Pair(sending.get(), p.value))
+            }
         }
 
         if (communication.isPresent){
@@ -104,6 +110,11 @@ constructor(network: Network) {
                     val offering = n.network.values.stream().filter { j -> j.main is Offering && p.key == j.main.process}.findFirst()
                     if (offering.isPresent){
                         communication = Optional.of(Pair(p.value, offering.get()))
+                    }
+                } else if (p.value.main is Offering) {
+                    val selection = n.network.values.stream().filter { j -> j.main is SelectionSP && p.key == j.main.process}.findFirst()
+                    if (selection.isPresent){
+                        communication = Optional.of(Pair(selection.get(), p.value))
                     }
                 }
             }
@@ -174,32 +185,29 @@ constructor(network: Network) {
         //return n.network.entries.stream().filter { i -> i.value.main is ProcedureInvocationSP}.findFirst().isPresent
     }
 
-    private fun unfold(p: MutableMap.MutableEntry<String, ProcessBehaviour>, n: Network): Network {
-        val procedureName = (p.value.main as ProcedureInvocationSP).procedure
-        val behaviour = p.value.procedures.get(procedureName)?.behaviour ?: throw Exception("No procedure definition with the invoking name")
+    private fun unfold(p: MutableMap.MutableEntry<String, ProcessBehaviour>, n: Network): Pair<MutableMap.MutableEntry<String, ProcessBehaviour>, Network> {
+        val tempNetwork = n.copy()
+        val tempProcess = tempNetwork.network.get(p.key)
+        val procedureName = ((tempProcess as ProcessBehaviour).main as ProcedureInvocationSP).procedure
+        val behaviour = tempProcess.procedures.get(procedureName)?.behaviour ?: throw Exception("No procedure definition with the invoking name")
+
+        tempNetwork.network.replace(p.key, tempProcess, ProcessBehaviour(tempProcess.procedures, behaviour))
+
         markprocedures(behaviour,true)
-        n.network.replace(p.key, p.value, ProcessBehaviour(p.value.procedures, behaviour)) //!!!note if procedures were muted
 
-        //n.network.replace(p, p)
-        /*n.network.forEach { t, u -> if (u.main is ProcedureInvocationSP) run {
-            val behaviour = u.procedures.get(u.main.procedure)?.behaviour ?: throw Exception("No procedure definition with the invoking name")
-            markprocedures(behaviour, true)
-            n.network.replace(t, ProcessBehaviour(u.procedures, behaviour))
-        } }*/
-
-        return n
+        return Pair(tempNetwork.network.entries.find { i -> i.key == p.key }!!, tempNetwork)
     }
 
     private fun commit(n1: Network, label: ExtractionLabel, n2: Network){
-        val source = graph.vertexSet().stream().filter { i -> i.toString() == n1.toString() }.findAny()
+        val source = graph.vertexSet().find { i -> i.equals(n1)}
         val target = graph.vertexSet().stream().filter { i -> i.toString() == n2.toString() }.findAny()
 
         if (!target.isPresent){
             graph.addVertex(n2);
-            graph.addEdge(source.get(), n2, label);
+            graph.addEdge(source, n2, label);
             buildGraph(n2)//, Network(TreeMap<String,ProcessBehaviour>(n2.network)))
         } else {
-            graph.addEdge(source.get(), target.get(), label);
+            graph.addEdge(source, target.get(), label);
         }
     }
 
@@ -234,7 +242,7 @@ constructor(network: Network) {
 
     private fun isAllProceduresVisited(n: Network): Boolean {
         n.network.values.forEach { i -> run {
-            if (isProcedureVisited(i.main) == true){
+            if (isProcedureVisited(i.main) == false){
                 return false
             }
 
@@ -272,6 +280,7 @@ constructor(network: Network) {
     private fun wash(n: Network): Network {
         if (isAllProceduresVisited(n)){
             n.network.values.forEach { b -> markprocedures(b.main, false) }
+            n.network.values.forEach { b -> b.procedures.forEach{pr -> markprocedures(pr.component2(), false)}}
         }
         return n
     }

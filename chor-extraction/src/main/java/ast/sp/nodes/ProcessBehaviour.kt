@@ -13,4 +13,10 @@ class ProcessBehaviour(val procedures: Map<String, ProcedureDefinitionSP>, val m
 
         return builder.toString()
     }
+
+    fun copy(): ProcessBehaviour{
+        val tempmap = mutableMapOf<String, ProcedureDefinitionSP>()
+        procedures.forEach { str, prdef -> tempmap.put(str,prdef.copy())  }
+        return ProcessBehaviour(tempmap, main.copy())
+    }
 }
