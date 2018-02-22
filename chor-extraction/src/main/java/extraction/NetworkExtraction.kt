@@ -1,8 +1,6 @@
 package extraction
 
-import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.ExtractionLabel
-import ast.sp.interfaces.SPNode
 import ast.sp.labels.*
 import ast.sp.nodes.*
 import org.jgrapht.DirectedGraph
@@ -13,59 +11,53 @@ import kotlin.collections.ArrayList
 
 class NetworkExtraction @Throws(Exception::class)
 constructor(network: Network) {
-    private var graph: DirectedGraph<Network, ExtractionLabel>
-    //private val root: Network
+    private val graph: DirectedGraph<Network, ExtractionLabel>
+    private val network = network
 
     init{
         graph = DefaultDirectedGraph<Network, ExtractionLabel>(ExtractionLabel::class.java)
         graph.addVertex(network)
-        //root = network.copy()
-
-        extract(network)
     }
 
-    private fun extract(network: Network){
-        //val tmp = network.copy()
+    fun extract(){
         buildGraph(network)
-        graph.vertexSet().stream().forEach { i -> println(i.network) }
+        graph.vertexSet().stream().forEach { i -> println(i.network.toString()) }
         //unroll(graph)
         //buildChoreography()
     }
 
     private fun buildGraph(n: Network) {
-        val r = ArrayList<CommCond>()
         val stack = Stack<Network>()
+        val r = ArrayList<CommCond>()
         stack.push(n)
-        while (!stack.empty()) {
-            val network =  stack.pop()
-            var tmp = network
-            for (p in tmp.network) {
-                var ptmp = Pair(p, tmp)
-                if (canUnfold(p, tmp)) {
-                    ptmp = unfold(p, tmp)
-                    tmp = ptmp.second
-                }
+        while (!stack.empty()){
+            val node = stack.pop()
+            var tmp = node.copy()
 
-                val findComm = findCommunication(ptmp.first, ptmp.second)
+            for (p in node.network){
+                if (canUnfold(p, tmp))
+                    unfold(p.key, tmp)
+
+                val findComm = findCommunication(p.key, tmp)
                 if (findComm.sendreceive.isPresent || findComm.selectoffer.isPresent) {
-                    var (tgt, lbl) = getCommunication(tmp, findComm)
+                    val (tgt, lbl) = getCommunication(tmp, findComm)
                     val b = isAllProceduresVisited(tgt)
                     if (b) {
-                        wash(tgt) //are we marking ALL processes in the network???
+                        wash(tgt)
                     }
                     val ok = checkLoop(n, tgt, b)
                     if (ok) {
                         r.add(Comm(tgt, lbl))
                     }
-                } else if (findCondition(ptmp.second)) {
-                    var (tgt1, lbl1, tgt2, lbl2) = getCondition(tmp)
+                } else if (findCondition(tmp)) {
+                    val (tgt1, lbl1, tgt2, lbl2) = getCondition(tmp)
                     val b1 = isAllProceduresVisited(tgt1)
                     if (b1) {
-                        wash(tgt1) //are we marking ALL processes in the network???
+                        wash(tgt1)
                     }
-                    val b2 = isAllProceduresVisited(tgt1)
+                    val b2 = isAllProceduresVisited(tgt2)
                     if (b2) {
-                        wash(tgt2) //are we marking ALL processes in the network???
+                        wash(tgt2)
                     }
                     val ok = checkLoop(n, tgt1, b1) && checkLoop(n, tgt2, b2)
                     if (ok) {
@@ -87,34 +79,36 @@ constructor(network: Network) {
 
     data class GetCommunication(val sendreceive: (Optional<Pair<ProcessBehaviour, ProcessBehaviour>>), val selectoffer: (Optional<Pair<ProcessBehaviour, ProcessBehaviour>>))
 
-    private fun findCommunication(p: MutableMap.MutableEntry<String, ProcessBehaviour>, n: Network): GetCommunication {
+    private fun findCommunication(p: String, n: Network): GetCommunication {
         var communication: Optional<Pair<ProcessBehaviour, ProcessBehaviour>>
         communication = Optional.empty()
 
-        if (p.value.main is Sending){
-            val receiving = n.network.values.stream().filter { j -> j.main is Receiving && p.key == j.main.process}.findFirst()
+        val pb = n.network.get(p)
+
+        if (pb?.main is Sending){
+            val receiving = n.network.values.stream().filter { j -> j.main is Receiving && p == (j.main as Receiving).process}.findFirst()
             if (receiving.isPresent) {
-                communication = Optional.of(Pair(p.value, receiving.get()))
+                communication = Optional.of(Pair(pb, receiving.get()))
             }
-        } else if (p.value.main is Receiving) {
-            val sending = n.network.values.stream().filter { j -> j.main is Sending && p.key == j.main.process }.findFirst()
+        } else if (pb?.main is Receiving) {
+            val sending = n.network.values.stream().filter { j -> j.main is Sending && p == (j.main as Sending).process }.findFirst()
             if (sending.isPresent) {
-                communication = Optional.of(Pair(sending.get(), p.value))
+                communication = Optional.of(Pair(sending.get(), pb))
             }
         }
 
         if (communication.isPresent){
             return GetCommunication(communication, Optional.empty())
         } else {
-                if (p.value.main is SelectionSP) {
-                    val offering = n.network.values.stream().filter { j -> j.main is Offering && p.key == j.main.process}.findFirst()
+                if (pb?.main is SelectionSP) {
+                    val offering = n.network.values.stream().filter { j -> j.main is Offering && p == (j.main as Offering).process}.findFirst()
                     if (offering.isPresent){
-                        communication = Optional.of(Pair(p.value, offering.get()))
+                        communication = Optional.of(Pair(pb, offering.get()))
                     }
-                } else if (p.value.main is Offering) {
-                    val selection = n.network.values.stream().filter { j -> j.main is SelectionSP && p.key == j.main.process}.findFirst()
+                } else if (pb?.main is Offering) {
+                    val selection = n.network.values.stream().filter { j -> j.main is SelectionSP && p == (j.main as SelectionSP).process}.findFirst()
                     if (selection.isPresent){
-                        communication = Optional.of(Pair(selection.get(), p.value))
+                        communication = Optional.of(Pair(selection.get(), pb))
                     }
                 }
             }
@@ -131,10 +125,10 @@ constructor(network: Network) {
             val receivingProcess = (sending.main as Sending).process
             val sendingProcess = (receiving.main as Receiving).process
 
-            pbl.replace(receivingProcess, ProcessBehaviour(receiving.procedures, receiving.main.continuation))
-            pbl.replace(sendingProcess, ProcessBehaviour(sending.procedures, sending.main.continuation))
+            pbl.replace(receivingProcess, ProcessBehaviour(receiving.procedures, (receiving.main as Receiving).continuation))
+            pbl.replace(sendingProcess, ProcessBehaviour(sending.procedures, (sending.main as Sending).continuation))
 
-            val label = Communication(sendingProcess, receivingProcess, sending.main.expression)
+            val label = Communication(sendingProcess, receivingProcess, (sending.main as Sending).expression)
 
             return Pair(Network(pbl), label)
 
@@ -147,12 +141,12 @@ constructor(network: Network) {
             val selectionProcess = (offering.main as Offering).process
             val offeringProcess = (selection.main as SelectionSP).process
 
-            val offeringBehavior = offering.main.labels.get(selection.main.expression) ?: throw Exception("Trying to select the labal that wasn't offered")
+            val offeringBehavior = (offering.main as Offering).labels.get((selection.main as SelectionSP).expression) ?: throw Exception("Trying to select the labal that wasn't offered")
 
             pbl.replace(offeringProcess, ProcessBehaviour(offering.procedures, offeringBehavior))
-            pbl.replace(selectionProcess, ProcessBehaviour(selection.procedures, selection.main.continuation))
+            pbl.replace(selectionProcess, ProcessBehaviour(selection.procedures, (selection.main as SelectionSP).continuation))
 
-            val label = Communication(offeringProcess, selectionProcess, selection.main.expression)
+            val label = Communication(offeringProcess, selectionProcess, (selection.main as SelectionSP).expression)
 
             return Pair(Network(pbl), label)
 
@@ -180,22 +174,14 @@ constructor(network: Network) {
 
     private fun canUnfold(p: MutableMap.MutableEntry<String, ProcessBehaviour>, n: Network): Boolean {
         return n.network.get(p.key)?.main is ProcedureInvocationSP
-
-        //return n.network.entries.stream().filter{i -> i.equals(p) && i.value.main is ProcedureInvocationSP}.findFirst().isPresent
-        //return n.network.entries.stream().filter { i -> i.value.main is ProcedureInvocationSP}.findFirst().isPresent
     }
 
-    private fun unfold(p: MutableMap.MutableEntry<String, ProcessBehaviour>, n: Network): Pair<MutableMap.MutableEntry<String, ProcessBehaviour>, Network> {
-        val tempNetwork = n.copy()
-        val tempProcess = tempNetwork.network.get(p.key)
-        val procedureName = ((tempProcess as ProcessBehaviour).main as ProcedureInvocationSP).procedure
-        val behaviour = tempProcess.procedures.get(procedureName)?.behaviour ?: throw Exception("No procedure definition with the invoking name")
-
-        tempNetwork.network.replace(p.key, tempProcess, ProcessBehaviour(tempProcess.procedures, behaviour))
-
-        markprocedures(behaviour,true)
-
-        return Pair(tempNetwork.network.entries.find { i -> i.key == p.key }!!, tempNetwork)
+    private fun unfold(p: String, n: Network){
+        val pb = n.network.get(p)
+        val pi = (pb?.main as ProcedureInvocationSP).procedure  //add casting exception
+        val pd = pb.procedures.get(pi)
+        pb.main = pd?.behaviour?.copy() ?: throw Exception("No procedure definition with the invoking name")
+        pd.visited = true
     }
 
     private fun commit(n1: Network, label: ExtractionLabel, n2: Network){
@@ -211,29 +197,8 @@ constructor(network: Network) {
         }
     }
 
-    private fun markprocedures(b: Behaviour, s: Boolean) {
-        when(b){
-            is ProcedureInvocationSP -> {
-                b.isVisited = s
-            }
-            is ConditionSP -> {
-                markprocedures(b.elseBehaviour, s)
-                markprocedures(b.thenBehaviour, s)
-            }
-            is Sending ->{
-                markprocedures(b.continuation, s)
-            }
-            is Receiving -> {
-                markprocedures(b.continuation, s)
-            }
-            is Offering -> {
-                b.labels.values.forEach { b -> markprocedures(b, s) }
-            }
-            is SelectionSP -> {
-                markprocedures(b.continuation, s)
-            }
-        }
-
+    private fun markprocedures(pname: String, pb: ProcessBehaviour, s: Boolean) {
+        (pb.procedures.get(pname) as ProcedureDefinitionSP).visited = s
     }
 
     private fun checkLoop(n: Network, tgt: Network, b: Boolean): Boolean{
@@ -241,52 +206,24 @@ constructor(network: Network) {
     }
 
     private fun isAllProceduresVisited(n: Network): Boolean {
-        n.network.values.forEach { i -> run {
-            if (isProcedureVisited(i.main) == false){
-                return false
-            }
-
-        } }
+        n.network.values.forEach { pr -> run {
+                pr.procedures.forEach { procdef -> run {
+                    if (!procdef.value.visited) return false }
+                } } }
         return true
     }
 
-    private fun isProcedureVisited(b: Behaviour):Boolean{
-        when(b){
-            is ProcedureInvocationSP -> {
-                if (b.isVisited == false){
-                    return false
-                }
-            }
-            is ConditionSP -> {
-                isProcedureVisited(b.elseBehaviour)
-                isProcedureVisited(b.thenBehaviour)
-            }
-            is Sending ->{
-                isProcedureVisited(b.continuation)
-            }
-            is Receiving -> {
-                isProcedureVisited(b.continuation)
-            }
-            is Offering -> {
-                b.labels.values.forEach { b -> isProcedureVisited(b) }
-            }
-            is SelectionSP -> {
-                isProcedureVisited(b.continuation)
-            }
+    private fun wash(n: Network) {
+        if (isAllProceduresVisited(n)) {
+            n.network.values.forEach { pr -> run {
+                pr.procedures.forEach { procdef -> run {
+                    procdef.value.visited = true }
+                } } }
         }
-        return true
-    }
-
-    private fun wash(n: Network): Network {
-        if (isAllProceduresVisited(n)){
-            n.network.values.forEach { b -> markprocedures(b.main, false) }
-            n.network.values.forEach { b -> b.procedures.forEach{pr -> markprocedures(pr.component2(), false)}}
-        }
-        return n
     }
 
     private fun choose(r: ArrayList<CommCond>): CommCond{
-        return r.get(0)
+        return r.first()
     }
 
     /*private fun unroll(): DefaultDirectedGraph<SPNode, ExtractionLabel>{

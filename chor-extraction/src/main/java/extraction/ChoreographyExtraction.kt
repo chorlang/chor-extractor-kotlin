@@ -18,9 +18,8 @@ class ChoreographyExtraction {
             val parser = NetworkParser(CommonTokenStream(lexer))
             val tree = parser.network()
             val networkVisitor = NetworkVisitor()
-            val sp = networkVisitor.visit(tree)
-            val np = NetworkExtraction(sp as Network)
-            println(np)
+            val sp = networkVisitor.visit(tree) as Network
+            val np = NetworkExtraction(sp).extract()
         } catch (e: Exception) {
             println(e.message)
         }

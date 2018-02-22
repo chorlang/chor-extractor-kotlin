@@ -21,13 +21,19 @@ public class ChoreographyExtractionTest extends Assert {
     @DataPoints
     public static Object[][] data = new Object[][]{
             {
+                    "p { main {if p.e then q!<e1>; stop else q!<e2>; stop}} " +
+                            "| q { main {p?; stop}} " +
+                            "| r { main {stop}}",
+                    "p.e->q; q.u->p; stop"
+            },
+            {
                     "p {def X {q!<e>; q?; X} main {X}} " +
                             "| q {def Y{p?; p!<u>; Y} main {Y}} " +
                             "| r { main {stop}}",
                     "p.e->q; q.u->p; stop"
-            }
+            },
 
-            /*{
+            {
                     "p { main {q!<e>; q?; stop}} " +
                             "| q { main {p?; p!<u>; stop}} " +
                             "| r { main {stop}}",
@@ -39,13 +45,22 @@ public class ChoreographyExtractionTest extends Assert {
                             "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
                             "r { main {stop}}",
                     "p->q[R]; p.e->q; q.u1->p; stop"
-            },
+            }
+            ,
+            {
+                    "p { main {q+L; q!<e>; q?; stop}} | " +
+                            "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
+                            "r { main {stop}}",
+                    "p->q[R]; p.e->q; q.u1->p; stop"
+            }
+            ,
             {
                     "p { main {if p.e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop}} | " +
                             "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
                             "r { main {stop}}",
                     "if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop"
-            },
+            }
+            ,
             {
                     "p { def X {q!<e>; stop} main {X}} " +
                             "| q { def X {p?; stop} main {X}} " +
@@ -84,14 +99,15 @@ public class ChoreographyExtractionTest extends Assert {
                             "q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | " +
                             "r { main {stop}}",
                     "if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop"
-            }*/
+            }
 
     };
 
     @Theory
     public void testProject(final Object... testData) throws Exception {
+        System.out.println("\n" + "Test: " + testData[0]);
         CCNode graph = np.extractChoreography((String) testData[0]);
+
         //assertEquals(testData[1], graph.toString());
-        System.out.println("Network: " + testData[0] + "\nGraph: ");
     }
 }

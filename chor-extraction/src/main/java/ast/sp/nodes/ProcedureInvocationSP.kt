@@ -4,7 +4,7 @@ import ast.sp.interfaces.Behaviour
 
 data class ProcedureInvocationSP(val procedure: String) : Behaviour {
 
-    var isVisited: Boolean = false
+    var isVisited: Boolean
     init { isVisited = false }
 
     override fun toString(): String { return procedure + ifVisited() }

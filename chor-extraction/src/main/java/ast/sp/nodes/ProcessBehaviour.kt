@@ -3,7 +3,7 @@ package ast.sp.nodes
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 
-class ProcessBehaviour(val procedures: Map<String, ProcedureDefinitionSP>, val main: Behaviour) : SPNode {
+class ProcessBehaviour(val procedures: Map<String, ProcedureDefinitionSP>, var main: Behaviour) : SPNode {
 
     override fun toString(): String {
         val builder = StringBuilder()
