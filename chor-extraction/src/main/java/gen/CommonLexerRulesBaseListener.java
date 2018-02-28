@@ -1,5 +1,5 @@
-// Generated from /Users/lara/Documents/projects/core-choreographies/chor-extraction/src/main/antlr4/CommonLexerRules.g4 by ANTLR 4.6
-package antlr4;
+// Generated from /Users/lsafina/Documents/Projects/core-choreographies/chor-extraction/src/main/antlr4/CommonLexerRules.g4 by ANTLR 4.7
+package gen;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -40,13 +40,13 @@ public class CommonLexerRulesBaseListener implements CommonLexerRulesListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterLabel(CommonLexerRulesParser.LabelContext ctx) { }
+	@Override public void enterExpression(CommonLexerRulesParser.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitLabel(CommonLexerRulesParser.LabelContext ctx) { }
+	@Override public void exitExpression(CommonLexerRulesParser.ExpressionContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

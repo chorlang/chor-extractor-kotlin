@@ -1,7 +1,7 @@
 package epp
 
-import antlr4.ChoreographyBaseVisitor
-import antlr4.ChoreographyParser.*
+import gen.ChoreographyBaseVisitor
+import gen.ChoreographyParser.*
 import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.Choreography
 import ast.cc.nodes.*

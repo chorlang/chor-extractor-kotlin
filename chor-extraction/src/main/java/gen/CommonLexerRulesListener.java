@@ -1,5 +1,5 @@
-// Generated from /Users/lara/Documents/projects/core-choreographies/chor-extraction/src/main/antlr4/CommonLexerRules.g4 by ANTLR 4.6
-package antlr4;
+// Generated from /Users/lsafina/Documents/Projects/core-choreographies/chor-extraction/src/main/antlr4/CommonLexerRules.g4 by ANTLR 4.7
+package gen;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -28,15 +28,15 @@ public interface CommonLexerRulesListener extends ParseTreeListener {
 	 */
 	void exitProcedure(CommonLexerRulesParser.ProcedureContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link CommonLexerRulesParser#label}.
+	 * Enter a parse tree produced by {@link CommonLexerRulesParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void enterLabel(CommonLexerRulesParser.LabelContext ctx);
+	void enterExpression(CommonLexerRulesParser.ExpressionContext ctx);
 	/**
-	 * Exit a parse tree produced by {@link CommonLexerRulesParser#label}.
+	 * Exit a parse tree produced by {@link CommonLexerRulesParser#expression}.
 	 * @param ctx the parse tree
 	 */
-	void exitLabel(CommonLexerRulesParser.LabelContext ctx);
+	void exitExpression(CommonLexerRulesParser.ExpressionContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link CommonLexerRulesParser#value}.
 	 * @param ctx the parse tree

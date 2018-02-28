@@ -1,11 +1,10 @@
 package extraction
 
-
-import antlr4.NetworkBaseVisitor
-import antlr4.NetworkParser.*
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
+import gen.NetworkBaseVisitor
+import gen.NetworkParser.*
 import org.antlr.v4.runtime.tree.TerminalNode
 import java.util.*
 

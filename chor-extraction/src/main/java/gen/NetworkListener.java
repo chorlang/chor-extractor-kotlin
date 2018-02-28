@@ -1,5 +1,5 @@
-// Generated from /Users/lara/Documents/projects/core-choreographies/chor-extraction/src/main/antlr4/Network.g4 by ANTLR 4.6
-package antlr4;
+// Generated from /Users/lsafina/Documents/Projects/core-choreographies/chor-extraction/src/main/antlr4/Network.g4 by ANTLR 4.7
+package gen;
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**

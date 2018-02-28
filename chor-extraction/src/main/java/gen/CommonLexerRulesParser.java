@@ -1,5 +1,5 @@
-// Generated from /Users/lara/Documents/projects/core-choreographies/chor-extraction/src/main/antlr4/CommonLexerRules.g4 by ANTLR 4.6
-package antlr4;
+// Generated from /Users/lsafina/Documents/Projects/core-choreographies/chor-extraction/src/main/antlr4/CommonLexerRules.g4 by ANTLR 4.7
+package gen;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class CommonLexerRulesParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.6", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -21,35 +21,35 @@ public class CommonLexerRulesParser extends Parser {
 		StringLiteral=5, LPAREN=6, RPAREN=7, LBRACE=8, RBRACE=9, LBRACK=10, RBRACK=11, 
 		COMMA=12, DOT=13, ASSIGN=14, GT=15, LT=16, BANG=17, TILDE=18, QUESTION=19, 
 		COLON=20, EQUAL=21, LE=22, GE=23, NOTEQUAL=24, AND=25, OR=26, INC=27, 
-		DEC=28, ADD=29, SUB=30, DIV=31, BITAND=32, CARET=33, MOD=34, ADD_ASSIGN=35, 
-		SUB_ASSIGN=36, MUL_ASSIGN=37, DIV_ASSIGN=38, AND_ASSIGN=39, OR_ASSIGN=40, 
-		XOR_ASSIGN=41, MOD_ASSIGN=42, LSHIFT_ASSIGN=43, RSHIFT_ASSIGN=44, URSHIFT_ASSIGN=45, 
-		Identifier=46, AT=47, ELLIPSIS=48, WS=49, COMMENT=50, LINE_COMMENT=51, 
-		INT=52, TERMINATE=53, Parallel=54, Wildcard=55, Arrow=56, Continue=57;
+		DEC=28, ADD=29, SUB=30, MUL=31, DIV=32, BITAND=33, CARET=34, MOD=35, ADD_ASSIGN=36, 
+		SUB_ASSIGN=37, MUL_ASSIGN=38, DIV_ASSIGN=39, AND_ASSIGN=40, OR_ASSIGN=41, 
+		XOR_ASSIGN=42, MOD_ASSIGN=43, LSHIFT_ASSIGN=44, RSHIFT_ASSIGN=45, URSHIFT_ASSIGN=46, 
+		Identifier=47, AT=48, ELLIPSIS=49, WS=50, COMMENT=51, LINE_COMMENT=52, 
+		INT=53, TERMINATE=54, Parallel=55, Wildcard=56, Arrow=57;
 	public static final int
-		RULE_process = 0, RULE_procedure = 1, RULE_label = 2, RULE_value = 3;
+		RULE_process = 0, RULE_procedure = 1, RULE_expression = 2, RULE_value = 3;
 	public static final String[] ruleNames = {
-		"process", "procedure", "label", "value"
+		"process", "procedure", "expression", "value"
 	};
 
 	private static final String[] _LITERAL_NAMES = {
 		null, null, null, null, null, null, "'('", "')'", "'{'", "'}'", "'['", 
 		"']'", "','", "'.'", "'='", "'>'", "'<'", "'!'", "'~'", "'?'", "':'", 
 		"'=='", "'<='", "'>='", "'!='", "'&&'", "'||'", "'++'", "'--'", "'+'", 
-		"'-'", "'/'", "'&'", "'^'", "'%'", "'+='", "'-='", "'*='", "'/='", "'&='", 
-		"'|='", "'^='", "'%='", "'<<='", "'>>='", "'>>>='", null, "'@'", "'...'", 
-		null, null, null, null, "'stop'", "'|'", "'this'", "'->'", "';'"
+		"'-'", "'*'", "'/'", "'&'", "'^'", "'%'", "'+='", "'-='", "'*='", "'/='", 
+		"'&='", "'|='", "'^='", "'%='", "'<<='", "'>>='", "'>>>='", null, "'@'", 
+		"'...'", null, null, null, null, "'stop'", "'|'", "'this'", "'->'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, "IntegerLiteral", "FloatingPointLiteral", "BooleanLiteral", "CharacterLiteral", 
 		"StringLiteral", "LPAREN", "RPAREN", "LBRACE", "RBRACE", "LBRACK", "RBRACK", 
 		"COMMA", "DOT", "ASSIGN", "GT", "LT", "BANG", "TILDE", "QUESTION", "COLON", 
 		"EQUAL", "LE", "GE", "NOTEQUAL", "AND", "OR", "INC", "DEC", "ADD", "SUB", 
-		"DIV", "BITAND", "CARET", "MOD", "ADD_ASSIGN", "SUB_ASSIGN", "MUL_ASSIGN", 
+		"MUL", "DIV", "BITAND", "CARET", "MOD", "ADD_ASSIGN", "SUB_ASSIGN", "MUL_ASSIGN", 
 		"DIV_ASSIGN", "AND_ASSIGN", "OR_ASSIGN", "XOR_ASSIGN", "MOD_ASSIGN", "LSHIFT_ASSIGN", 
 		"RSHIFT_ASSIGN", "URSHIFT_ASSIGN", "Identifier", "AT", "ELLIPSIS", "WS", 
 		"COMMENT", "LINE_COMMENT", "INT", "TERMINATE", "Parallel", "Wildcard", 
-		"Arrow", "Continue"
+		"Arrow"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -174,25 +174,25 @@ public class CommonLexerRulesParser extends Parser {
 		return _localctx;
 	}
 
-	public static class LabelContext extends ParserRuleContext {
+	public static class ExpressionContext extends ParserRuleContext {
 		public TerminalNode Identifier() { return getToken(CommonLexerRulesParser.Identifier, 0); }
-		public LabelContext(ParserRuleContext parent, int invokingState) {
+		public ExpressionContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
-		@Override public int getRuleIndex() { return RULE_label; }
+		@Override public int getRuleIndex() { return RULE_expression; }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof CommonLexerRulesListener ) ((CommonLexerRulesListener)listener).enterLabel(this);
+			if ( listener instanceof CommonLexerRulesListener ) ((CommonLexerRulesListener)listener).enterExpression(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof CommonLexerRulesListener ) ((CommonLexerRulesListener)listener).exitLabel(this);
+			if ( listener instanceof CommonLexerRulesListener ) ((CommonLexerRulesListener)listener).exitExpression(this);
 		}
 	}
 
-	public final LabelContext label() throws RecognitionException {
-		LabelContext _localctx = new LabelContext(_ctx, getState());
-		enterRule(_localctx, 4, RULE_label);
+	public final ExpressionContext expression() throws RecognitionException {
+		ExpressionContext _localctx = new ExpressionContext(_ctx, getState());
+		enterRule(_localctx, 4, RULE_expression);
 		try {
 			enterOuterAlt(_localctx, 1);
 			{
@@ -261,11 +261,11 @@ public class CommonLexerRulesParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3;\23\4\2\t\2\4\3\t"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3;\23\4\2\t\2\4\3\t"+
 		"\3\4\4\t\4\4\5\t\5\3\2\3\2\3\3\3\3\3\4\3\4\3\5\3\5\3\5\2\2\6\2\4\6\b\2"+
-		"\3\4\2\5\7\66\66\16\2\n\3\2\2\2\4\f\3\2\2\2\6\16\3\2\2\2\b\20\3\2\2\2"+
-		"\n\13\7\60\2\2\13\3\3\2\2\2\f\r\7\60\2\2\r\5\3\2\2\2\16\17\7\60\2\2\17"+
-		"\7\3\2\2\2\20\21\t\2\2\2\21\t\3\2\2\2\2";
+		"\3\4\2\5\7\67\67\2\16\2\n\3\2\2\2\4\f\3\2\2\2\6\16\3\2\2\2\b\20\3\2\2"+
+		"\2\n\13\7\61\2\2\13\3\3\2\2\2\f\r\7\61\2\2\r\5\3\2\2\2\16\17\7\61\2\2"+
+		"\17\7\3\2\2\2\20\21\t\2\2\2\21\t\3\2\2\2\2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

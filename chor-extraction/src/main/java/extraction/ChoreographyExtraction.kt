@@ -1,10 +1,10 @@
 package extraction
 
-import antlr4.NetworkLexer
-import antlr4.NetworkParser
 import ast.cc.interfaces.CCNode
 import ast.cc.nodes.Termination
 import ast.sp.nodes.Network
+import gen.NetworkLexer
+import gen.NetworkParser
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 
@@ -18,7 +18,7 @@ class ChoreographyExtraction {
             val parser = NetworkParser(CommonTokenStream(lexer))
             val tree = parser.network()
             val networkVisitor = NetworkVisitor()
-            val sp = networkVisitor.visit(tree) as Network
+            val sp = networkVisitor.visitNetwork(tree) as Network
             val np = NetworkExtraction(sp).extract()
         } catch (e: Exception) {
             println(e.message)

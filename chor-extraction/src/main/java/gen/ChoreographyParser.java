@@ -1,20 +1,17 @@
-// Generated from /Users/lara/Documents/projects/core-choreographies/chor-extraction/src/main/antlr4/Choreography.g4 by ANTLR 4.6
-package antlr4;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.atn.ATN;
-import org.antlr.v4.runtime.atn.ATNDeserializer;
-import org.antlr.v4.runtime.atn.ParserATNSimulator;
-import org.antlr.v4.runtime.atn.PredictionContextCache;
+// Generated from /Users/lsafina/Documents/Projects/core-choreographies/chor-extraction/src/main/antlr4/Choreography.g4 by ANTLR 4.7
+package gen;
+import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
-import org.antlr.v4.runtime.tree.ParseTreeListener;
-import org.antlr.v4.runtime.tree.ParseTreeVisitor;
-import org.antlr.v4.runtime.tree.TerminalNode;
-
+import org.antlr.v4.runtime.*;
+import org.antlr.v4.runtime.misc.*;
+import org.antlr.v4.runtime.tree.*;
 import java.util.List;
+import java.util.Iterator;
+import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ChoreographyParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.6", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -37,7 +34,7 @@ public class ChoreographyParser extends Parser {
 		RULE_procedure = 11, RULE_value = 12;
 	public static final String[] ruleNames = {
 		"program", "procedureDefinition", "main", "choreography", "condition", 
-		"procedureInvocation", "interaction", "communication", "selectoffer", "expression",
+		"procedureInvocation", "interaction", "communication", "selection", "expression", 
 		"process", "procedure", "value"
 	};
 
@@ -857,21 +854,21 @@ public class ChoreographyParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3A]\4\2\t\2\4\3\t\3"+
+		"\3\u608b\ua72a\u8133\ub9ed\u417c\u3be7\u7786\u5964\3A]\4\2\t\2\4\3\t\3"+
 		"\4\4\t\4\4\5\t\5\4\6\t\6\4\7\t\7\4\b\t\b\4\t\t\t\4\n\t\n\4\13\t\13\4\f"+
 		"\t\f\4\r\t\r\4\16\t\16\3\2\7\2\36\n\2\f\2\16\2!\13\2\3\2\3\2\3\3\3\3\3"+
 		"\3\3\3\3\3\3\3\3\4\3\4\3\4\3\4\3\5\3\5\3\5\3\5\5\5\63\n\5\3\6\3\6\3\6"+
 		"\3\6\3\6\3\6\3\6\3\6\3\6\3\7\3\7\3\b\3\b\5\bB\n\b\3\t\3\t\3\t\3\t\3\t"+
 		"\3\t\3\t\3\t\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\n\3\13\3\13\3\f\3\f\3\r"+
 		"\3\r\3\16\3\16\3\16\2\2\17\2\4\6\b\n\f\16\20\22\24\26\30\32\2\4\6\2\t"+
-		"\t\r\r99@@\4\2\t\t\r\17T\2\37\3\2\2\2\4$\3\2\2\2\6*\3\2\2\2\b\62\3\2\2"+
-		"\2\n\64\3\2\2\2\f=\3\2\2\2\16A\3\2\2\2\20C\3\2\2\2\22K\3\2\2\2\24T\3\2"+
-		"\2\2\26V\3\2\2\2\30X\3\2\2\2\32Z\3\2\2\2\34\36\5\4\3\2\35\34\3\2\2\2\36"+
-		"!\3\2\2\2\37\35\3\2\2\2\37 \3\2\2\2 \"\3\2\2\2!\37\3\2\2\2\"#\5\6\4\2"+
-		"#\3\3\2\2\2$%\7\3\2\2%&\5\30\r\2&\'\7\22\2\2\'(\5\b\5\2()\7\23\2\2)\5"+
-		"\3\2\2\2*+\7\4\2\2+,\5\b\5\2,-\7\23\2\2-\7\3\2\2\2.\63\5\16\b\2/\63\5"+
-		"\n\6\2\60\63\5\f\7\2\61\63\7\n\2\2\62.\3\2\2\2\62/\3\2\2\2\62\60\3\2\2"+
-		"\2\62\61\3\2\2\2\63\t\3\2\2\2\64\65\7\5\2\2\65\66\5\26\f\2\66\67\7\27"+
+		"\t\r\r99@@\4\2\t\t\r\17\2T\2\37\3\2\2\2\4$\3\2\2\2\6*\3\2\2\2\b\62\3\2"+
+		"\2\2\n\64\3\2\2\2\f=\3\2\2\2\16A\3\2\2\2\20C\3\2\2\2\22K\3\2\2\2\24T\3"+
+		"\2\2\2\26V\3\2\2\2\30X\3\2\2\2\32Z\3\2\2\2\34\36\5\4\3\2\35\34\3\2\2\2"+
+		"\36!\3\2\2\2\37\35\3\2\2\2\37 \3\2\2\2 \"\3\2\2\2!\37\3\2\2\2\"#\5\6\4"+
+		"\2#\3\3\2\2\2$%\7\3\2\2%&\5\30\r\2&\'\7\22\2\2\'(\5\b\5\2()\7\23\2\2)"+
+		"\5\3\2\2\2*+\7\4\2\2+,\5\b\5\2,-\7\23\2\2-\7\3\2\2\2.\63\5\16\b\2/\63"+
+		"\5\n\6\2\60\63\5\f\7\2\61\63\7\n\2\2\62.\3\2\2\2\62/\3\2\2\2\62\60\3\2"+
+		"\2\2\62\61\3\2\2\2\63\t\3\2\2\2\64\65\7\5\2\2\65\66\5\26\f\2\66\67\7\27"+
 		"\2\2\678\5\24\13\289\7\6\2\29:\5\b\5\2:;\7\7\2\2;<\5\b\5\2<\13\3\2\2\2"+
 		"=>\5\30\r\2>\r\3\2\2\2?B\5\20\t\2@B\5\22\n\2A?\3\2\2\2A@\3\2\2\2B\17\3"+
 		"\2\2\2CD\5\26\f\2DE\7\27\2\2EF\5\24\13\2FG\7A\2\2GH\5\26\f\2HI\7\b\2\2"+
