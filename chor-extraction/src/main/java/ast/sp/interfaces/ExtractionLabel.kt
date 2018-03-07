@@ -1,3 +1,3 @@
 package ast.sp.interfaces
 
-open class ExtractionLabel : SPNode
+abstract class ExtractionLabel (var flipped: Boolean)

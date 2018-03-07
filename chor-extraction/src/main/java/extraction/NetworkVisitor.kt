@@ -7,6 +7,7 @@ import gen.NetworkBaseVisitor
 import gen.NetworkParser.*
 import org.antlr.v4.runtime.tree.TerminalNode
 import java.util.*
+import kotlin.collections.HashMap
 
 
 class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
@@ -19,7 +20,7 @@ class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     }
 
     override fun visitProcessBehaviour(ctx: ProcessBehaviourContext): SPNode {
-        val procedures = TreeMap<String, ProcedureDefinitionSP>()
+        val procedures = HashMap<String, ProcedureDefinitionSP>()
         for (i in 0..ctx.procedureDefinition().size - 1) {
             procedures.put(ctx.procedure(i).text, visit(ctx.procedureDefinition(i)) as ProcedureDefinitionSP)
         }
@@ -49,7 +50,7 @@ class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     }
 
     override fun visitCondition(ctx: ConditionContext): SPNode {
-        return ConditionSP(ctx.process().text, ctx.expression().text, visit(ctx.behaviour(0)) as Behaviour, visit(ctx.behaviour(1)) as Behaviour)
+        return ConditionSP(ctx.expression().text, visit(ctx.behaviour(0)) as Behaviour, visit(ctx.behaviour(1)) as Behaviour)
     }
 
     override fun visitProcedureDefinition(ctx: ProcedureDefinitionContext): SPNode {

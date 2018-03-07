@@ -16,4 +16,11 @@ data class SelectionSP(val continuation: Behaviour, val process: String, val exp
     override fun copy(): Interaction {
         return SelectionSP(continuation.copy(), process, expression)
     }
+
+    override fun equals(b: Behaviour): Boolean {
+        return b is SelectionSP &&
+                b.process == process &&
+                b.expression == expression &&
+                b.continuation.equals(continuation)
+    }
 }

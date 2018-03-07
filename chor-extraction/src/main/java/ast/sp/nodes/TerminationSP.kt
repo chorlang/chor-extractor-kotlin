@@ -16,4 +16,8 @@ class TerminationSP : Behaviour {
     override fun copy(): Behaviour {
         return TerminationSP()
     }
+
+    override fun equals(b: Behaviour): Boolean {
+        return b is TerminationSP && b.termination == termination
+    }
 }

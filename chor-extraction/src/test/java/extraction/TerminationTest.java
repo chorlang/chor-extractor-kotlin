@@ -9,7 +9,7 @@ import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
 
 @RunWith(Theories.class)
-public class ChoreographyExtractionTest extends Assert {
+public class TerminationTest extends Assert {
 
     private ChoreographyExtraction np;
 
@@ -20,19 +20,22 @@ public class ChoreographyExtractionTest extends Assert {
 
     @DataPoints
     public static Object[][] data = new Object[][]{
-            {
-                    "p { main {q!<e>; q?; stop}} " +
-                            "| q { main {p?; p!<u>; stop}} " +
-                            "| r { main {stop}}", "p.e->q; q.u->p; stop"
-            }
 
+            /* simple termination */
+            {
+                    "p {main{stop}} | q {main{stop}}", "stop"
+            },
+
+            /* recursive termination */
+            {
+                    "p {main{stop}} | q {def X {stop} main{X}}", "stop"
+            }
     };
 
     @Theory
     public void testProject(final Object... testData) throws Exception {
         System.out.println("\n" + "Test: " + testData[0]);
-        CCNode program = np.extractChoreography((String) testData[0]);
-        System.out.println(program.toString());
+        CCNode graph = np.extractChoreography((String) testData[0]);
 
         //assertEquals(testData[1], graph.toString());
     }

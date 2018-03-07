@@ -11,4 +11,8 @@ data class ProcedureDefinition(val procedure: String, val choreography: CCNode, 
     override fun <T> accept(visitor: CCVisitor<T>): T {
         return visitor.visit(this)
     }
+
+    override fun toString(): String{
+        return "def " + procedure + " { " + choreography.toString() + " } "
+    }
 }

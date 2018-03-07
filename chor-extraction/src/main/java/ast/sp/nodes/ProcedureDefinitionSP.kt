@@ -1,23 +1,22 @@
 package ast.sp.nodes
 
 import ast.sp.interfaces.Behaviour
+import ast.sp.interfaces.SPNode
 
-data class ProcedureDefinitionSP(val behaviour: Behaviour) : Behaviour {
-
-    var visited: Boolean
-    init {
-        visited = false
-    }
-
+data class ProcedureDefinitionSP(val behaviour: Behaviour) : SPNode {
     override fun toString(): String {
         return behaviour.toString()
     }
 
-    override fun findRecProcCall(procname: String): Boolean {
+    fun findRecProcCall(procname: String): Boolean {
         return behaviour.findRecProcCall(procname)
     }
 
-    override fun copy(): ProcedureDefinitionSP {
+    fun copy(): ProcedureDefinitionSP {
         return ProcedureDefinitionSP(behaviour.copy())
+    }
+
+    fun equals(b: SPNode): Boolean {
+        return b is ProcedureDefinitionSP && behaviour.equals(b.behaviour)
     }
 }

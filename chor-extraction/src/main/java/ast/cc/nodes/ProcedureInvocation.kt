@@ -12,4 +12,8 @@ data class ProcedureInvocation(val procedure: String, val processes: HashSet<Str
         return visitor.visit(this)
     }
 
+    override fun toString(): String{
+        return procedure
+    }
+
 }

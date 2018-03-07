@@ -30,7 +30,7 @@ selection: process ADD expression ';' behaviour;
 offering: process '&' LBRACE (labeledBehaviour) (',' labeledBehaviour)* RBRACE;
 labeledBehaviour: expression COLON behaviour;
 
-condition: 'if' process '.' expression 'then' behaviour 'else' behaviour;
+condition: 'if' expression 'then' behaviour 'else' behaviour;
 
 procedureInvocation: procedure;
 

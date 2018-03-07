@@ -86,7 +86,7 @@ class MergingProjection {
             return Offering(left.process, labels)
         }
 
-        @Throws(MergingException::class)
+        /*@Throws(MergingException::class)
         fun merge(left: ConditionSP, right: ConditionSP): SPNode {
             val leftCondition = merge(left.thenBehaviour, left.thenBehaviour) as Behaviour
             val rightCondition = merge(right.elseBehaviour, right.elseBehaviour) as Behaviour
@@ -100,7 +100,7 @@ class MergingProjection {
                 return ProcedureInvocationSP(left.procedure)
             } else
                 return null
-        }
+        }*/
 
         @Throws(MergingException::class)
         private fun assertCondition(condition: Boolean) {

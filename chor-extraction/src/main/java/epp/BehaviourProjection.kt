@@ -13,6 +13,7 @@ import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
 
 import java.util.*
+import kotlin.collections.HashMap
 
 /**
 
@@ -68,7 +69,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
     @Throws(MergingException::class)
     override fun visit(n: Condition): SPNode {
         if (processName == n.process) {
-            return ConditionSP(n.process, n.expression, n.thenChoreography.accept(this) as Behaviour, n.elseChoreograpy.accept(this) as Behaviour)
+            return ConditionSP(n.expression, n.thenChoreography.accept(this) as Behaviour, n.elseChoreograpy.accept(this) as Behaviour)
         } else {
             try {
                 return MergingProjection.merge(n.thenChoreography.accept(this), n.elseChoreograpy.accept(this))
@@ -104,7 +105,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
 
     @Throws(MergingException::class)
     override fun visit(n: Program): SPNode {
-        val procedures = TreeMap<String, ProcedureDefinitionSP>()
+        val procedures = HashMap<String, ProcedureDefinitionSP>()
         for (procedure in n.procedures) {
             procedures.put(procedure.procedure, procedure.accept(this) as ProcedureDefinitionSP)
         }

@@ -5,7 +5,6 @@ import ast.sp.interfaces.Interaction
 import java.util.*
 
 data class Offering(val process: String, val labels: HashMap<String, Behaviour>) : Interaction {
-
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append(process + "&{")
@@ -27,8 +26,18 @@ data class Offering(val process: String, val labels: HashMap<String, Behaviour>)
     }
 
     override fun copy(): Interaction {
-        val tempmap = mutableMapOf<String, Behaviour>()
-        labels.forEach { str, bhv -> tempmap.put(str, bhv.copy())  }
+        val tempmap = labels.clone()
         return Offering(process, tempmap as HashMap<String, Behaviour>)
+    }
+
+    override fun equals(b: Behaviour): Boolean {
+        if (!(b is Offering) || process != b.process) return false
+        else {
+            for (label in labels) {
+                val bl = b.labels.get(label.key)
+                if (bl == null || !label.value.equals(bl)) return false
+            }
+        }
+        return true
     }
 }

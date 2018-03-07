@@ -4,8 +4,8 @@ import ast.sp.interfaces.Behaviour
 
 data class ProcedureInvocationSP(val procedure: String) : Behaviour {
 
-    var isVisited: Boolean
-    init { isVisited = false }
+    var visited: Boolean
+    init { visited = false }
 
     override fun toString(): String { return procedure + ifVisited() }
 
@@ -14,7 +14,7 @@ data class ProcedureInvocationSP(val procedure: String) : Behaviour {
     }
 
     private fun ifVisited(): String {
-        if (isVisited)
+        if (visited)
             return "*"
         else
             return ""
@@ -22,7 +22,11 @@ data class ProcedureInvocationSP(val procedure: String) : Behaviour {
 
     override fun copy(): Behaviour {
         val prin = ProcedureInvocationSP(procedure)
-        prin.isVisited = this.isVisited
+        prin.visited = this.visited
         return prin
+    }
+
+    override fun equals(b: Behaviour): Boolean {
+        return b is ProcedureInvocationSP && b.procedure == procedure
     }
 }
