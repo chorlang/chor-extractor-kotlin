@@ -16,36 +16,36 @@ import kotlin.collections.HashSet
 
 typealias network = SortedMap<String, ProcessBehaviour>
 
-class NetworkExtraction @Throws(Exception::class) constructor(n: Network) {
-    val node = Node(n, "0", HashSet())
-    private val graph: DirectedGraph<Node, ExtractionLabel>
+class NetworkExtraction {
     private var gmap = HashMap<String, ArrayList<Node>>()
 
+    interface Node {}
 
-    init {
-        graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
-        graph.addVertex(node)
-        addToGlobalMap(node)
-    }
-
-    data class Node(val nodenet: Network, val str: String, var bad: HashSet<Node>) {
-        fun copy(): Node {
+    data class ConcreteNode(val nodenet: Network, val str: String, var bad: HashSet<Node>):Node {
+        fun copy(): ConcreteNode {
             val temp = nodenet.copy()
             val set = bad.clone()
-            return Node(temp, str, set as HashSet<Node>)
+            return ConcreteNode(temp, str, set as HashSet<Node>)
         }
     }
 
-    fun extract(): Program {
-        buildGraph(node)
+    data class FakeNode(val procedureName:String):Node
+
+    fun extract(n: Network): Program {
+        val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
+        val node = ConcreteNode(n, "0", HashSet())
+        graph.addVertex(node)
+        addToGlobalMap(node)
+
+        buildGraph(node, graph as DirectedGraph<ConcreteNode,ExtractionLabel>)
         //graph.vertexSet().stream().forEach { i -> println(i.nodenet.network.toString()) }
         //graph.edgeSet().stream().forEach { i -> print(i) }
-        val map = unroll(node)
-        return buildChoreography(node, map)
+        val map = unroll(node, graph)
+        return buildChoreography(node, map, graph)
     }
 
-    private fun buildChoreography(root: Node, map: TreeMap<String, Node>): Program {
-        val main = bh(root)
+    private fun buildChoreography(root: Node, map: TreeMap<String, Node>, graph:DirectedGraph<Node,ExtractionLabel>): Program {
+        val main = bh(root, graph)
         val procedures = ArrayList<ProcedureDefinition>()
         for (procedure in map){
             procedures.add(ProcedureDefinition(procedure.key, bh(procedure.value), HashSet<String>()))
@@ -54,15 +54,23 @@ class NetworkExtraction @Throws(Exception::class) constructor(n: Network) {
         return Program(main as Choreography, procedures)
     }
 
-    private fun bh(node: Node): CCNode {
+    private fun bh(node: Node, graph: DirectedGraph<Node, ExtractionLabel>): CCNode {
         val edges = graph.outgoingEdgesOf(node)
 
         when (edges.size) {
             0 -> {
-                for (p in node.nodenet.network) {
-                    if (!(p.value.main is TerminationSP)) throw Exception("Bad graph. No more edges found, but not all processes were terminated.")
-                    else return Termination()
+                when( node ) {
+                    is ConcreteNode -> {
+                        for (p in node.nodenet.network) {
+                            if (!(p.value.main is TerminationSP)) throw Exception("Bad graph. No more edges found, but not all processes were terminated.")
+                            else return Termination()
+                        }
+                    }
+                    is FakeNode -> {
+                        //... put procedure invocation
+                    }
                 }
+
             }
             1 -> {
                 val e = edges.first()
@@ -106,11 +114,11 @@ class NetworkExtraction @Throws(Exception::class) constructor(n: Network) {
         return Termination()
     }
 
-    private fun unroll(root: Node): TreeMap<String, Node> {
+    private fun unroll(root: ConcreteNode, graph: DirectedGraph<Node, ExtractionLabel>): TreeMap<String, Node> {
         val map = TreeMap<String, Node>()
 
         first@ for (node in graph.vertexSet()) {
-            if (graph.incomingEdgesOf(node).size > 1) {
+            if (node is ConcreteNode && graph.incomingEdgesOf(node).size > 1) {
 
                 second@  for (p in node.nodenet.network){
                     if (p.value.main is ProcedureInvocationSP){
@@ -136,7 +144,7 @@ class NetworkExtraction @Throws(Exception::class) constructor(n: Network) {
         return map
     }
 
-    private fun buildGraph(nn: Node): Boolean {
+    private fun buildGraph(nn: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
         val node = nn.copy()
         val n = node.nodenet.network
 
@@ -216,7 +224,7 @@ class NetworkExtraction @Throws(Exception::class) constructor(n: Network) {
         return false
     }
 
-    private fun createNewNode(tgt: Network, lbl: ExtractionLabel, node: NetworkExtraction.Node): Node {
+    private fun createNewNode(tgt: Network, lbl: ExtractionLabel, node: NetworkExtraction.ConcreteNode): ConcreteNode {
         var str = node.str
         when (lbl) {
             is ThenLabel -> str = node.str + "0"
@@ -224,9 +232,9 @@ class NetworkExtraction @Throws(Exception::class) constructor(n: Network) {
         }
 
         if (lbl.flipped) {
-            return Node(tgt, str, HashSet())
+            return ConcreteNode(tgt, str, HashSet())
         } else {
-            val newnode = Node(tgt, str, node.bad.clone() as HashSet<Node>)
+            val newnode = ConcreteNode(tgt, str, node.bad.clone() as HashSet<Node>)
             newnode.bad.add(node)
             return newnode
         }
