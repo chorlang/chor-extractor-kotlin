@@ -21,12 +21,12 @@ data class ProcedureInvocationSP(val procedure: String) : Behaviour {
     }
 
     override fun copy(): Behaviour {
-        val prin = ProcedureInvocationSP(procedure)
+        val prin = ProcedureInvocationSP(""+procedure)
         prin.visited = this.visited
         return prin
     }
 
     override fun equals(b: Behaviour): Boolean {
-        return b is ProcedureInvocationSP && b.procedure == procedure
+        return b is ProcedureInvocationSP && b.procedure == procedure && b.visited == visited
     }
 }

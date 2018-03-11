@@ -19,7 +19,7 @@ data class Program(val main: Choreography, val procedures: List<ProcedureDefinit
             sb.append(p.toString())
         }
 
-        sb.append("main " + main.toString())
+        sb.append("main { " + main.toString() + " }")
 
         return sb.toString()
     }

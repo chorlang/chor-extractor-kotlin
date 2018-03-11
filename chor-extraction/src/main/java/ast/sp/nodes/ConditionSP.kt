@@ -12,7 +12,7 @@ data class ConditionSP(val expression: String, val thenBehaviour: Behaviour, val
     }
 
     override fun copy(): Behaviour {
-        return ConditionSP(expression, thenBehaviour.copy(), elseBehaviour.copy())
+        return ConditionSP(""+expression, thenBehaviour.copy(), elseBehaviour.copy())
     }
 
     override fun equals(b: Behaviour): Boolean {

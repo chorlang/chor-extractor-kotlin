@@ -13,7 +13,7 @@ data class Receiving(val continuation: Behaviour, val process: String) : Interac
     }
 
     override fun copy(): Interaction {
-        return Receiving(continuation.copy(), process)
+        return Receiving(continuation.copy(), ""+process)
     }
 
     override fun equals(b: Behaviour): Boolean {

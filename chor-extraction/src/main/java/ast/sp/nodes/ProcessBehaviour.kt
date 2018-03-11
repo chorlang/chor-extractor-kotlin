@@ -15,14 +15,12 @@ class ProcessBehaviour(val procedures: HashMap<String, ProcedureDefinitionSP>, v
     }
 
     fun copy(): ProcessBehaviour{
-        //val tempmap = mutableMapOf<String, ProcedureDefinitionSP>()
-        //procedures.forEach { str, prdef -> tempmap.put(str,prdef.copy())  }
+        val prcopy = HashMap<String, ProcedureDefinitionSP>()
+        for (p in procedures){
+            prcopy.put(""+p.key, p.value.copy())
+        }
 
-        val temp = procedures.clone() as HashMap<String, ProcedureDefinitionSP>
-        assert(procedures.equals(temp))
-        val maincopy = main.copy()
-        assert(main.equals(maincopy))
-        return ProcessBehaviour(temp, main.copy())
+        return ProcessBehaviour(prcopy, main.copy())
     }
 
     fun equals(pb: ProcessBehaviour): Boolean{

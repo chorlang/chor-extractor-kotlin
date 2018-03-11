@@ -5,7 +5,7 @@ import ast.cc.interfaces.Choreography
 import epp.MergingException
 
 class Termination : Choreography {
-    val termination = "stop"
+    val termination = "0"
 
     @Throws(MergingException::class)
     override fun <T> accept(visitor: CCVisitor<T>): T {

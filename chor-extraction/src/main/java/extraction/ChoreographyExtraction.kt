@@ -1,28 +1,26 @@
 package extraction
 
-import ast.cc.interfaces.CCNode
-import ast.cc.nodes.Termination
+import ast.cc.nodes.Program
 import ast.sp.nodes.Network
 import gen.NetworkLexer
 import gen.NetworkParser
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 
-class ChoreographyExtraction {
-    @Throws(Exception::class)
-    fun extractChoreography(grammar: String): CCNode? {
-        try {
-            val stream = ANTLRInputStream(grammar)
-            val lexer = NetworkLexer(stream)
-            val parser = NetworkParser(CommonTokenStream(lexer))
-            val tree = parser.network()
-            val networkVisitor = NetworkVisitor()
-            val sp = networkVisitor.visitNetwork(tree) as Network
-            val np = NetworkExtraction(sp).extract()
-            return np
-        } catch (e: Exception) {
-            println(e.message)
-        }
-        return null
+class ChoreographyExtraction @Throws(Exception::class) constructor(grammar: String) {
+    var network: Network
+
+    init {
+        val stream = ANTLRInputStream(grammar)
+        val lexer = NetworkLexer(stream)
+        val parser = NetworkParser(CommonTokenStream(lexer))
+        val tree = parser.network()
+        val networkVisitor = NetworkVisitor()
+        network = networkVisitor.visitNetwork(tree) as Network
     }
+
+    fun extractChoreography(): Program {
+        return NetworkExtraction().extract(network)
+    }
+
 }

@@ -12,8 +12,13 @@ data class Network(val network: TreeMap<String, ProcessBehaviour>) : SPNode {
     }
 
     fun copy(): Network{
-        val temp = network.clone()
-        return Network(temp as TreeMap<String, ProcessBehaviour>)
+        var temp = TreeMap<String, ProcessBehaviour>()
+        for (p in network){
+            temp.put(""+p.key, p.value.copy())
+        }
+
+        val n = Network(temp)
+        return n
     }
 
     fun equals(n: Network): Boolean{

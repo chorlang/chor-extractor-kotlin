@@ -16,7 +16,7 @@ data class Sending(val continuation: Behaviour, val process: String, val express
     }
 
     override fun copy(): Interaction {
-        return Sending(continuation.copy(), process, expression)
+        return Sending(continuation.copy(), ""+process, ""+expression)
     }
 
     override fun equals(b: Behaviour): Boolean {
