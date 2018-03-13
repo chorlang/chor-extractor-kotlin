@@ -19,6 +19,6 @@ data class Receiving(val continuation: Behaviour, val process: String) : Interac
     override fun equals(b: Behaviour): Boolean {
         return b is Receiving &&
                 b.process == process &&
-                b.continuation == continuation
+                b.continuation.equals(continuation)
     }
 }

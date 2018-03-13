@@ -22,21 +22,23 @@ class NetworkExtraction {
 
     interface Node
 
-    data class ConcreteNode(val nodenet: Network, val str: String, var bad: HashSet<ConcreteNode>) : Node {
+    data class ConcreteNode(val nodenet: Network, val str: String, val bad: Bad) : Node {
         fun copy(): ConcreteNode {
             val newnet = nodenet.copy()
             val newb = HashSet<ConcreteNode>()
-            bad.mapTo(newb) { it.copy() }
+            bad.badset.mapTo(newb) { it.copy() }
 
-            return ConcreteNode(newnet, "" + str, newb)
+            return ConcreteNode(newnet, "" + str, Bad(newb))
         }
     }
+
+    data class Bad(val badset: HashSet<ConcreteNode>)
 
     data class FakeNode(val procedureName: String) : Node
 
     fun extract(n: Network): Program {
         val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
-        val node = ConcreteNode(n, "0", HashSet())
+        val node = ConcreteNode(n, "0", Bad(HashSet()))
         graph.addVertex(node)
         addToGlobalMap(node)
 
@@ -101,7 +103,7 @@ class NetworkExtraction {
         return Termination()
     }
 
-    data class LabelSource (val lbl: ExtractionLabel, val source: Node)
+    data class LabelSource(val lbl: ExtractionLabel, val source: Node)
 
     private fun unroll(root: ConcreteNode, graph: DirectedGraph<Node, ExtractionLabel>): TreeMap<String, Node> {
         val map = TreeMap<String, Node>()
@@ -115,10 +117,10 @@ class NetworkExtraction {
                     val labels = graph.incomingEdgesOf(root)
 
                     val sources = ArrayList<LabelSource>()
-                    labels.forEach { label -> sources.add(LabelSource(label, graph.getEdgeSource(label)))}
+                    labels.forEach { label -> sources.add(LabelSource(label, graph.getEdgeSource(label))) }
 
                     graph.removeAllEdges(ArrayList<ExtractionLabel>(graph.incomingEdgesOf(root)))
-                    sources.forEach { s -> graph.addEdge(s.source, fk, s.lbl)}
+                    sources.forEach { s -> graph.addEdge(s.source, fk, s.lbl) }
                 }
             }
         }
@@ -158,17 +160,17 @@ class NetworkExtraction {
                 }
 
                 /* case1*/
-                val nodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt) && i.str == nn.str }.findAny()
-                return if (!nodeInGraph.isPresent) {
+                val nodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt) && (nn.str).startsWith(i.str) }.findAny()
+                if (!nodeInGraph.isPresent) {
                     val newnode = createNewNode(tgt, lbl, node)
                     addNewNode(nn, newnode, lbl, graph)
-                    if (buildGraph(newnode, graph)) true else continue
+                    return if (buildGraph(newnode, graph)) true else continue
                 }
                 /* case 2 */
                 else {
-                    checkLoop(node, nodeInGraph.get(), lbl, graph)
-                    addNewEdge(nn, nodeInGraph.get(), lbl, graph)
-                    true
+                    //checkLoop(node, nodeInGraph.get(), lbl, graph) //) throw Exception("Bad loop!")
+                    addNewEdge(node, nn, nodeInGraph.get(), lbl, graph)
+                    return true
                 }
 
             } else if (findCondition(n)) {
@@ -184,7 +186,7 @@ class NetworkExtraction {
 
                 /* case4 */
                 var thenNode: Node
-                val tnodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt1) && i.str == nn.str +"0"}.findAny()
+                val tnodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt1) && (nn.str + "0").startsWith(i.str) }.findAny()
                 if (!tnodeInGraph.isPresent) {
                     thenNode = createNewNode(tgt1, lbl1, node)
                     addNewNode(nn, thenNode, lbl1, graph)
@@ -193,13 +195,13 @@ class NetworkExtraction {
                 /* case 5 */
                 else {
                     thenNode = tnodeInGraph.get()
-                    checkLoop(node, thenNode, lbl1, graph)
-                    addNewEdge(nn, thenNode, lbl1, graph)
+                    //checkLoop(node, thenNode, lbl1, graph) //) throw Exception("Bad loop!")
+                    addNewEdge(node, nn, thenNode, lbl1, graph)
                 }
 
                 /* case 7 */
                 var elseNode: Node
-                val enodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt2) && i.str == nn.str +"1" }.findAny()
+                val enodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt2) && (nn.str + "1").startsWith(i.str) }.findAny()
                 if (!enodeInGraph.isPresent) {
                     elseNode = createNewNode(tgt2, lbl2, node)
                     addNewNode(nn, elseNode, lbl2, graph)
@@ -208,8 +210,8 @@ class NetworkExtraction {
                 /* case 8 */
                 else {
                     elseNode = enodeInGraph.get()
-                    checkLoop(node, elseNode, lbl2, graph)
-                    addNewEdge(nn, elseNode, lbl2, graph)
+                    //checkLoop(node, elseNode, lbl2, graph) //) throw Exception("Bad loop!")
+                    addNewEdge(node, nn, elseNode, lbl2, graph)
                 }
 
                 relabel(thenNode)
@@ -230,14 +232,14 @@ class NetworkExtraction {
         }
 
         return if (lbl.flipped) {
-            ConcreteNode(tgt, "" + str, HashSet())
+            ConcreteNode(tgt, "" + str, Bad(HashSet()))
         } else {
 
             val newb = HashSet<ConcreteNode>()
-            node.bad.mapTo(newb) { it.copy() }
+            node.bad.badset.mapTo(newb) { it.copy() }
 
-            val newnode = ConcreteNode(tgt, "" + str, newb)
-            newnode.bad.add(node)
+            val newnode = ConcreteNode(tgt, "" + str, Bad(newb))
+            newnode.bad.badset.add(node)
             newnode
         }
     }
@@ -255,16 +257,18 @@ class NetworkExtraction {
         addToGlobalMap(node)
     }
 
-    private fun addNewEdge(node: ConcreteNode, newnode: ConcreteNode, lbl: ExtractionLabel, graph: DirectedGraph<ConcreteNode, ExtractionLabel>) {
+    private fun addNewEdge(graphnode:ConcreteNode , nn: ConcreteNode, newnode: ConcreteNode, lbl: ExtractionLabel, graph: DirectedGraph<ConcreteNode, ExtractionLabel>) {
         val exstnode = checkPrefix(newnode)
         if (exstnode != null) {
-            val l = checkLoop(node, newnode, lbl, graph)
+            val l = checkLoop(graphnode, newnode, lbl, graph)
             if (l) {
-                //connect with the node
-                graph.addEdge(node, exstnode, lbl)
+                graph.addEdge(nn, exstnode, lbl)
 
-            } else throw Exception("Bad loop!")
+            } else throw BadLoopException("Bad loop!")
         }
+    }
+
+    class BadLoopException(s: String) : Throwable() {
     }
 
     private fun relabel(n: ConcreteNode) {
@@ -332,26 +336,32 @@ class NetworkExtraction {
     private fun checkLoop(snode: ConcreteNode, tnode: ConcreteNode, lbl: ExtractionLabel, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
         if (lbl.flipped) return true
 
-        return if (snode.bad.contains(tnode)) {
+        if (!tnode.bad.badset.contains(snode)) {
             val nodeset = HashSet<ConcreteNode>()
-            snode.bad.forEach { bd -> nodeset.add(bd) }
-            nodeset.add(tnode)
-            recompute(nodeset, tnode, graph)
-            true
-        } else false
+            nodeset.addAll(nodeset)
+            nodeset.add(snode)
+
+            val tomark = HashSet<ConcreteNode>()
+            tomark.addAll(calculate(tnode, graph, tomark))
+            //recompute(tomark, nodeset)
+
+            return true
+        } else return false
 
     }
 
-    private fun recompute(nodeset: HashSet<ConcreteNode>, n: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>) {
+    private fun calculate(n: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>, tomark: HashSet<ConcreteNode>): HashSet<ConcreteNode> {
         val edges = graph.outgoingEdgesOf(n)
         for (e in edges) {
             if (!e.flipped) {
                 val tn = graph.getEdgeTarget(e)
-                nodeset.forEach { node -> tn.bad.add(node) }
-                recompute(nodeset, tn, graph)
+                tomark.add(tn)
+                tomark.addAll(calculate(tn, graph, tomark))
             }
         }
+        return tomark
     }
+
 
     private fun addToGlobalMap(node: ConcreteNode) {
         val gnodes = gmap[node.str]

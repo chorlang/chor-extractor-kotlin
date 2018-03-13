@@ -57,15 +57,15 @@ class ConditionTest : Assert() {
 
                         "main { if e then p.u->q; 0 else p.o->q; 0 }"),
 
-/*
+
                 /* condition with recursive procedure */
                 arrayOf<Any>
                         ("p {def X {if e then q!<u>;X else q!<o>;X} main {X}} " +
                         "| q {def Y{p?;Y} main {Y}} " +
                         "| r { main {stop}}",
 
-                        "def X1 { X1 } main { if e then p.u->q; X1 else p.o->q; X1 }"))
-*/
+                        "def X1 { X1 } main { if e then p.u->q; X1 else p.o->q; X1 }"),
+
 
                 /* condition with selection with recursion*/
                 arrayOf<Any>("p { def X {if e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop} main {X}} | " +
