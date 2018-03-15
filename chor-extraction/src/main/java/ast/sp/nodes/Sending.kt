@@ -6,7 +6,7 @@ import ast.sp.interfaces.Interaction
 /**
  * Created by fmontesi on 03/04/17.
  */
-data class Sending(val continuation: Behaviour, val process: String, val expression: String) : Interaction {
+data class Sending(val continuation: Behaviour, val pr: String, val expression: String) : Interaction(pr) {
     override fun toString(): String {
         return process + "!<" + expression + ">; " + continuation.toString()
     }

@@ -55,12 +55,12 @@
     <orderEntry type="library" name="Maven: asm:asm-util:3.2" level="project" />
     <orderEntry type="library" name="Maven: asm:asm-analysis:3.2" level="project" />
     <orderEntry type="library" name="Maven: asm:asm-tree:3.2" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.21" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.2.21" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.2.30" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib:1.2.30" level="project" />
     <orderEntry type="library" name="Maven: org.jetbrains:annotations:13.0" level="project" />
-    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.21" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test-junit:1.2.21" level="project" />
-    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test:1.2.21" level="project" />
+    <orderEntry type="library" name="Maven: org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.2.30" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test-junit:1.2.30" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.jetbrains.kotlin:kotlin-test:1.2.30" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.openjdk.jmh:jmh-kotlin-benchmark-archetype:1.9" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.openjdk.jmh:jmh-core-benchmarks:1.5.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.openjdk.jmh:jmh-core:1.5.1" level="project" />

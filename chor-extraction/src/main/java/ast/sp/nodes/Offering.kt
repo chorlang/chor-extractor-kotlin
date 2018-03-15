@@ -5,7 +5,7 @@ import ast.sp.interfaces.Interaction
 import java.util.*
 import kotlin.collections.HashMap
 
-data class Offering(val process: String, val labels: HashMap<String, Behaviour>) : Interaction {
+data class Offering(val pr: String, val labels: HashMap<String, Behaviour>) : Interaction(pr) {
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append(process + "&{")

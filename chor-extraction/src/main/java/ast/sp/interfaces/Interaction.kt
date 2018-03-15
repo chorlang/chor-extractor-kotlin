@@ -1,3 +1,3 @@
 package ast.sp.interfaces
 
-interface Interaction : Behaviour
+abstract class Interaction(val process: String) : Behaviour

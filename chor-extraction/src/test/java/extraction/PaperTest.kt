@@ -20,18 +20,18 @@ class PaperTest : Assert() {
         Assert.assertEquals(testData[1], program.toString())
     }
 
-    @Test(expected = NetworkExtraction.BadLoopException::class)
+    /*@Test (expected = NetworkExtraction.ProcessStarvationException::class)
     fun testBadLoop() {
         val str = "p { def X {q!<e1>; q&{L: q!<e2>; X, R: stop}} main {q!<e>; X}} | " +
-                "q { def Y {p?; p?; if r then p+L; Y else p+R; stop} main {Y}} | " +
+                "q { def Y {p?; p?; r?; if r then p+L; Y else p+R; stop} main {Y}} | " +
                 "r { def Z {q!<e3>; Z} main {Z}}"
 
         println("Test Network: " + str)
 
-        println("Throws BadLoopException")
+        println("Throws ProcessStarvationException")
         ChoreographyExtraction(str).extractChoreography()
 
-    }
+    }*/
 
     companion object {
         @DataPoints
@@ -46,7 +46,7 @@ class PaperTest : Assert() {
                         "a { def X {c?; s?; if s then c+ok; s+ok; stop else c+ko; s+ko; X} main {X}} | " +
                         "s { def X {a!<s>; a&{ok: c!<t>; stop, ko:X}} main {X}}",
 
-                        "def X1 { X1 } main { c.pwd->a; s.s->a; if s then a->c[ok]; a->s[ok]; s.t->c; 0 else a->c[ko]; a->s[ko]; X1 }"),
+                        "def X1 { c.pwd->a; s.s->a; if s then a->c[ok]; a->s[ok]; s.t->c; 0 else a->c[ko]; a->s[ko]; X1 } main { X1 }"),
 
 
                 /* Example 4  - processes starvation */
@@ -57,7 +57,8 @@ class PaperTest : Assert() {
                         "r { def Z {s!<e2>; Z} main {Z}} | " +
                         "s { def W {r?; W} main {W}}",
 
-                        "def X1 { X1 } main { p.e1->q; p.e1->q; X1 }"),
+                        "def X1 { p.e1->q; r.e2->s; X1 } main { X1 }"),
+
 
                 /* Example 5 - deadlocked finite processes*/
                 arrayOf<Any>
@@ -67,7 +68,18 @@ class PaperTest : Assert() {
                         "r { main {s!<e2>; stop}} | " +
                         "s { main {r?; stop}}",
 
-                        "def X1 { X1 } main { p.e->q; X1 }")
+                        "def X1 { p.e->q; X1 } main { r.e2->s; X1 }"
+                )
+
+                /* Example 8 -2-bit protocol*/
+                /*arrayOf<Any>
+                (
+                        "a { def X {b?;b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
+                        "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}",
+
+                        ""
+                )*/
+
         )
 
     }

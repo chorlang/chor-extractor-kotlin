@@ -3,7 +3,7 @@ package ast.sp.nodes
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.Interaction
 
-data class SelectionSP(val continuation: Behaviour, val process: String, val expression: String) : Interaction {
+data class SelectionSP(val continuation: Behaviour, val pr: String, val expression: String) : Interaction(pr) {
 
     override fun toString(): String {
         return process + " + " + expression + "; " + continuation.toString()

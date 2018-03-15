@@ -64,7 +64,7 @@ class ConditionTest : Assert() {
                         "| q {def Y{p?;Y} main {Y}} " +
                         "| r { main {stop}}",
 
-                        "def X1 { X1 } main { if e then p.u->q; X1 else p.o->q; X1 }"),
+                        "def X1 { if e then p.u->q; X1 else p.o->q; X1 } main { X1 }"),
 
 
                 /* condition with selection with recursion*/

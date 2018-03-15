@@ -3,7 +3,7 @@ package ast.sp.nodes
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.Interaction
 
-data class Receiving(val continuation: Behaviour, val process: String) : Interaction {
+data class Receiving(val continuation: Behaviour, val pr: String) : Interaction(pr) {
     override fun toString(): String {
         return process + "?; " + continuation.toString()
     }

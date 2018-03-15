@@ -51,7 +51,7 @@ class InteractionTest : Assert() {
                         "| q {def Y{p?; Y} main {Y}} " +
                         "| r { main {stop}}",
 
-                        "def X1 { X1 } main { p.e->q; X1 }")
+                        "def X1 { p.e->q; X1 } main { X1 }")
         )
     }
 }

@@ -43,7 +43,7 @@ class SelectionTest : Assert() {
                         "p { def X {q+R; q!<e>; X} main{X}} | " +
                         "q { def Y {p&{R: p?; Y, L: p?; Y}} main{Y}}",
 
-                        "def X1 { X1 } main { p->q[R]; p.e->q; X1 }")
+                        "def X1 { p->q[R]; p.e->q; X1 } main { X1 }")
         )
     }
 }
