@@ -72,7 +72,18 @@ class ConditionTest : Assert() {
                         "q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | " +
                         "r { main {stop}}",
 
-                        "main { if e then p->q[R]; p.e->q; q.u1->p; 0 else p->q[L]; p.e->q; q.u2->p; 0 }"))
+                        "main { if e then p->q[R]; p.e->q; q.u1->p; 0 else p->q[L]; p.e->q; q.u2->p; 0 }"),
+
+                /* Example 5 - deadlocked finite processes*/
+                arrayOf<Any>
+                (
+                        "p { def X {q!<e>; X} main {X}} | " +
+                                "q { def Y {p?; Y} main {Y}} | " +
+                                "r { main {s!<e2>; stop}} | " +
+                                "s { main {r?; stop}}",
+
+                        "def X1 { p.e->q; X1 } main { r.e2->s; X1 }"
+                ))
 
     }
 }

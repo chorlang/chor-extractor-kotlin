@@ -38,7 +38,7 @@ class PaperTest : Assert() {
         @JvmField
 
         var data = arrayOf(
-
+/*
                 /* Example 2 */
                 arrayOf<Any>
                 (
@@ -69,6 +69,29 @@ class PaperTest : Assert() {
                         "s { main {r?; stop}}",
 
                         "def X1 { p.e->q; X1 } main { r.e2->s; X1 }"
+                ),
+*/
+                arrayOf<Any>
+                (
+                        "p { def X {q!<e>; q!<e>; q!<e>; X} main {X}} | " +
+                        "q { def Y {p?; p?; Y} main {p?; Y}} "
+                        ,
+
+                        "def X1 { p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; X1 } main { p.e->q; p.e->q; p.e->q; p.e->q; X1 }"
+                ),
+
+                //p: X {!q; Y} Y {!r; Z} Z {!q; X} main {X}
+                //q: W {?p; W} main {W}
+                //r: T {?p; T} main {T}
+
+                arrayOf<Any>
+                (
+                        "p { def X {q!<e>; Y} def Y {r!<e>; Z} def Z {q!<e>; X} main {X}} | " +
+                        "q { def W {p?; W} main {W}} | " +
+                        "r { def T {p?; T} main {T}}"
+                        ,
+
+                        "def X1 { p.e->r; p.e->q; p.e->q; X1 } main { p.e->q; X1 }"
                 )
 
                 /* Example 8 -2-bit protocol*/

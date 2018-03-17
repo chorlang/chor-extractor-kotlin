@@ -2,19 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0b207236-889c-4211-9c91-1c8854ff5c53" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/test/java/epp/EndpointProjectionTest.kt" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/test/java/epp/EndpointProjectionTest.java" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/chor-extraction.iml" afterPath="$PROJECT_DIR$/chor-extraction.iml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/interfaces/Interaction.kt" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/interfaces/Interaction.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.kt" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Receiving.kt" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Receiving.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.kt" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/SelectionSP.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Sending.kt" afterPath="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Sending.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.kt" afterPath="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.kt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.kt" afterPath="$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.kt" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt" afterPath="$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/extraction/ConditionTest.kt" afterPath="$PROJECT_DIR$/src/test/java/extraction/ConditionTest.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/extraction/InteractionTest.kt" afterPath="$PROJECT_DIR$/src/test/java/extraction/InteractionTest.kt" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/extraction/PaperTest.kt" afterPath="$PROJECT_DIR$/src/test/java/extraction/PaperTest.kt" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/extraction/SelectionTest.kt" afterPath="$PROJECT_DIR$/src/test/java/extraction/SelectionTest.kt" />
     </list>
     <ignored path="chor-extraction.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -141,8 +135,8 @@
       <file leaf-file-name="NetworkExtraction.kt" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="312" column="41" lean-forward="false" selection-start-line="312" selection-start-column="41" selection-end-line="312" selection-end-column="41" />
+            <state relative-caret-position="139">
+              <caret line="426" column="8" lean-forward="false" selection-start-line="426" selection-start-column="4" selection-end-line="426" selection-end-column="8" />
               <folding>
                 <element signature="e#20#471#0" expanded="true" />
                 <element signature="n#!!block;n#ConcreteNode#0;n#!!block;n#NetworkExtraction#0" expanded="false" />
@@ -156,34 +150,34 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ChoreographyExtraction.kt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/extraction/ChoreographyExtraction.kt">
+      <file leaf-file-name="MergingProjection.kt" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+            <state relative-caret-position="78">
+              <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ProcessBehaviour.kt" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcessBehaviour.kt">
+      <file leaf-file-name="BehaviourProjection.kt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.kt">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="5" column="6" lean-forward="false" selection-start-line="5" selection-start-column="6" selection-end-line="5" selection-end-column="6" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="PaperTest.kt" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/test/java/extraction/PaperTest.kt">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-62">
-              <caret line="40" column="0" lean-forward="true" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+            <state relative-caret-position="223">
+              <caret line="74" column="17" lean-forward="false" selection-start-line="74" selection-start-column="17" selection-end-line="74" selection-end-column="17" />
               <folding>
-                <element signature="e#19#240#0" expanded="true" />
+                <element signature="e#198#449#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="EndpointProjectionTest.kt" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/test/java/epp/EndpointProjectionTest.kt">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="369">
+              <caret line="120" column="141" lean-forward="false" selection-start-line="120" selection-start-column="141" selection-end-line="120" selection-end-column="141" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -203,8 +197,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>containske</find>
-      <find>extra</find>
       <find>bad lo</find>
       <find>Adde</find>
       <find>Bad loop!</find>
@@ -233,6 +225,8 @@
       <find>isf</find>
       <find>unroll</find>
       <find>clean</find>
+      <find>when</find>
+      <find>data</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -251,15 +245,11 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Else.kt" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Selection.kt" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/labels/Then.kt" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/ConditionRecursiveTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/InteractionTest.java" />
         <option value="$PROJECT_DIR$/src/main/antlr4/Network.g4" />
-        <option value="$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.kt" />
-        <option value="$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt" />
-        <option value="$PROJECT_DIR$/src/test/java/epp/EndpointProjectionTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/EqualityTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/base/EqualityTest.java" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/interfaces/ConditionLabel.kt" />
@@ -298,10 +288,14 @@
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Receiving.kt" />
         <option value="$PROJECT_DIR$/src/main/java/ast/sp/nodes/Offering.kt" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/InteractionTest.kt" />
-        <option value="$PROJECT_DIR$/src/test/java/extraction/ConditionTest.kt" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/SelectionTest.kt" />
         <option value="$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.kt" />
+        <option value="$PROJECT_DIR$/src/test/java/extraction/ConditionTest.kt" />
+        <option value="$PROJECT_DIR$/src/test/java/epp/EndpointProjectionTest.java" />
         <option value="$PROJECT_DIR$/src/test/java/extraction/PaperTest.kt" />
+        <option value="$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.kt" />
+        <option value="$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt" />
+        <option value="$PROJECT_DIR$/src/test/java/epp/EndpointProjectionTest.kt" />
       </list>
     </option>
   </component>
@@ -334,9 +328,8 @@
     </treeState>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="797" />
+    <option name="height" value="900" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -398,6 +391,13 @@
               <item name="chor-extraction" type="bbb3b172:PsiDirectoryNodeWrapper" />
               <item name="src" type="bbb3b172:PsiDirectoryNodeWrapper" />
               <item name="main" type="bbb3b172:PsiDirectoryNodeWrapper" />
+              <item name="antlr4" type="bbb3b172:PsiDirectoryNodeWrapper" />
+            </path>
+            <path>
+              <item name="chor-extraction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chor-extraction" type="bbb3b172:PsiDirectoryNodeWrapper" />
+              <item name="src" type="bbb3b172:PsiDirectoryNodeWrapper" />
+              <item name="main" type="bbb3b172:PsiDirectoryNodeWrapper" />
               <item name="java" type="bbb3b172:PsiDirectoryNodeWrapper" />
             </path>
             <path>
@@ -414,28 +414,7 @@
               <item name="src" type="bbb3b172:PsiDirectoryNodeWrapper" />
               <item name="main" type="bbb3b172:PsiDirectoryNodeWrapper" />
               <item name="java" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="ast" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="sp" type="bbb3b172:PsiDirectoryNodeWrapper" />
-            </path>
-            <path>
-              <item name="chor-extraction" type="b2602c69:ProjectViewProjectNode" />
-              <item name="chor-extraction" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="src" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="main" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="java" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="ast" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="sp" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="interfaces" type="bbb3b172:PsiDirectoryNodeWrapper" />
-            </path>
-            <path>
-              <item name="chor-extraction" type="b2602c69:ProjectViewProjectNode" />
-              <item name="chor-extraction" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="src" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="main" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="java" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="ast" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="sp" type="bbb3b172:PsiDirectoryNodeWrapper" />
-              <item name="nodes" type="bbb3b172:PsiDirectoryNodeWrapper" />
+              <item name="epp" type="bbb3b172:PsiDirectoryNodeWrapper" />
             </path>
             <path>
               <item name="chor-extraction" type="b2602c69:ProjectViewProjectNode" />
@@ -457,6 +436,14 @@
               <item name="src" type="bbb3b172:PsiDirectoryNodeWrapper" />
               <item name="test" type="bbb3b172:PsiDirectoryNodeWrapper" />
               <item name="java" type="bbb3b172:PsiDirectoryNodeWrapper" />
+            </path>
+            <path>
+              <item name="chor-extraction" type="b2602c69:ProjectViewProjectNode" />
+              <item name="chor-extraction" type="bbb3b172:PsiDirectoryNodeWrapper" />
+              <item name="src" type="bbb3b172:PsiDirectoryNodeWrapper" />
+              <item name="test" type="bbb3b172:PsiDirectoryNodeWrapper" />
+              <item name="java" type="bbb3b172:PsiDirectoryNodeWrapper" />
+              <item name="epp" type="bbb3b172:PsiDirectoryNodeWrapper" />
             </path>
             <path>
               <item name="chor-extraction" type="b2602c69:ProjectViewProjectNode" />
@@ -536,19 +523,19 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="JUnit.extraction in chor-extraction">
-    <configuration name="ConditionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.EndpointProjectionTest.testProjection">
+    <configuration name="EndpointProjectionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
-          <option name="PATTERN" value="extraction.*" />
+          <option name="PATTERN" value="epp.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
       <module name="chor-extraction" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="extraction" />
-      <option name="MAIN_CLASS_NAME" value="extraction.ConditionTest" />
+      <option name="PACKAGE_NAME" value="epp" />
+      <option name="MAIN_CLASS_NAME" value="epp.EndpointProjectionTest" />
       <option name="METHOD_NAME" />
       <option name="TEST_OBJECT" value="class" />
       <option name="VM_PARAMETERS" value="-ea" />
@@ -562,20 +549,20 @@
       <envs />
       <patterns />
     </configuration>
-    <configuration name="InteractionTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+    <configuration name="EndpointProjectionTest.testProjection" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <extension name="coverage" enabled="false" merge="false" sample_coverage="true" runner="idea">
         <pattern>
-          <option name="PATTERN" value="extraction.*" />
+          <option name="PATTERN" value="epp.*" />
           <option name="ENABLED" value="true" />
         </pattern>
       </extension>
       <module name="chor-extraction" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="false" />
       <option name="ALTERNATIVE_JRE_PATH" />
-      <option name="PACKAGE_NAME" value="extraction" />
-      <option name="MAIN_CLASS_NAME" value="extraction.InteractionTest" />
-      <option name="METHOD_NAME" />
-      <option name="TEST_OBJECT" value="class" />
+      <option name="PACKAGE_NAME" value="epp" />
+      <option name="MAIN_CLASS_NAME" value="epp.EndpointProjectionTest" />
+      <option name="METHOD_NAME" value="testProjection" />
+      <option name="TEST_OBJECT" value="method" />
       <option name="VM_PARAMETERS" value="-ea" />
       <option name="PARAMETERS" />
       <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
@@ -929,18 +916,18 @@
     <list size="6">
       <item index="0" class="java.lang.String" itemvalue="PIT Runner.test1" />
       <item index="1" class="java.lang.String" itemvalue="JUnit.extraction in chor-extraction" />
-      <item index="2" class="java.lang.String" itemvalue="JUnit.InteractionTest" />
-      <item index="3" class="java.lang.String" itemvalue="JUnit.ConditionTest" />
-      <item index="4" class="java.lang.String" itemvalue="JUnit.SelectionTest" />
-      <item index="5" class="java.lang.String" itemvalue="JUnit.PaperTest" />
+      <item index="2" class="java.lang.String" itemvalue="JUnit.SelectionTest" />
+      <item index="3" class="java.lang.String" itemvalue="JUnit.PaperTest" />
+      <item index="4" class="java.lang.String" itemvalue="JUnit.EndpointProjectionTest" />
+      <item index="5" class="java.lang.String" itemvalue="JUnit.EndpointProjectionTest.testProjection" />
     </list>
     <recent_temporary>
       <list size="5">
-        <item index="0" class="java.lang.String" itemvalue="JUnit.extraction in chor-extraction" />
+        <item index="0" class="java.lang.String" itemvalue="JUnit.EndpointProjectionTest.testProjection" />
         <item index="1" class="java.lang.String" itemvalue="JUnit.PaperTest" />
-        <item index="2" class="java.lang.String" itemvalue="JUnit.SelectionTest" />
-        <item index="3" class="java.lang.String" itemvalue="JUnit.ConditionTest" />
-        <item index="4" class="java.lang.String" itemvalue="JUnit.InteractionTest" />
+        <item index="2" class="java.lang.String" itemvalue="JUnit.EndpointProjectionTest" />
+        <item index="3" class="java.lang.String" itemvalue="JUnit.extraction in chor-extraction" />
+        <item index="4" class="java.lang.String" itemvalue="JUnit.SelectionTest" />
       </list>
     </recent_temporary>
   </component>
@@ -978,35 +965,35 @@
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="PaperTest - 2018.03.15 at 18h 10m 26s.xml">
-      <configuration name="PaperTest" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 33m 20s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PaperTest - 2018.03.15 at 18h 11m 03s.xml">
-      <configuration name="PaperTest" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 34m 40s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PaperTest - 2018.03.15 at 18h 12m 25s.xml">
-      <configuration name="PaperTest" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 35m 57s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PaperTest - 2018.03.15 at 18h 12m 34s.xml">
-      <configuration name="PaperTest" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 36m 07s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PaperTest - 2018.03.15 at 18h 21m 07s.xml">
-      <configuration name="PaperTest" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 36m 20s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PaperTest - 2018.03.15 at 18h 25m 48s.xml">
-      <configuration name="PaperTest" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 36m 52s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PaperTest - 2018.03.15 at 18h 28m 10s.xml">
-      <configuration name="PaperTest" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 48m 57s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PaperTest - 2018.03.15 at 18h 28m 17s.xml">
-      <configuration name="PaperTest" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 49m 43s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="PaperTest - 2018.03.15 at 18h 28m 48s.xml">
-      <configuration name="PaperTest" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 50m 26s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
-    <history-entry file="extraction_in_chor-extraction - 2018.03.15 at 18h 29m 13s.xml">
-      <configuration name="extraction in chor-extraction" configurationId="JUnit" />
+    <history-entry file="EndpointProjectionTest_testProjection - 2018.03.17 at 14h 51m 11s.xml">
+      <configuration name="EndpointProjectionTest.testProjection" configurationId="JUnit" />
     </history-entry>
   </component>
   <component name="TodoView">
@@ -1020,6 +1007,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Tool Output" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32587412" sideWeight="0.49427754" order="7" side_tool="false" content_ui="tabs" />
@@ -1169,8 +1157,68 @@
           <properties />
           <option name="timeStamp" value="527" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>27</line>
+          <properties />
+          <option name="timeStamp" value="530" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>34</line>
+          <properties />
+          <option name="timeStamp" value="531" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>43</line>
+          <properties />
+          <option name="timeStamp" value="532" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>51</line>
+          <properties />
+          <option name="timeStamp" value="533" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>53</line>
+          <properties />
+          <option name="timeStamp" value="535" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>76</line>
+          <properties />
+          <option name="timeStamp" value="538" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>85</line>
+          <properties />
+          <option name="timeStamp" value="539" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>90</line>
+          <properties />
+          <option name="timeStamp" value="540" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>21</line>
+          <properties />
+          <option name="timeStamp" value="541" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="kotlin-line">
+          <url>file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt</url>
+          <line>13</line>
+          <properties />
+          <option name="timeStamp" value="542" />
+        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="528" />
+      <option name="time" value="543" />
     </breakpoint-manager>
     <watches-manager>
       <configuration name="JUnit">
@@ -1184,155 +1232,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib/1.2.21/kotlin-stdlib-1.2.21-sources.jar!/generated/_Collections.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="149">
-          <caret line="1040" column="56" lean-forward="false" selection-start-line="1040" selection-start-column="56" selection-end-line="1040" selection-end-column="56" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/jgrapht/jgrapht-core/1.0.1/jgrapht-core-1.0.1-sources.jar!/org/jgrapht/DirectedGraph.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="35" column="17" lean-forward="false" selection-start-line="35" selection-start-column="17" selection-end-line="35" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ConditionSP.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="6" column="17" lean-forward="false" selection-start-line="6" selection-start-column="17" selection-end-line="6" selection-end-column="17" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/base/DeepCopyTest.kt" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/epp/ChoreographyVisitor.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="173">
-          <caret line="37" column="27" lean-forward="false" selection-start-line="37" selection-start-column="22" selection-end-line="37" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/jetbrains/kotlin/kotlin-stdlib/1.2.21/kotlin-stdlib-1.2.21-sources.jar!/kotlin/util/Tuples.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="19" column="36" lean-forward="false" selection-start-line="19" selection-start-column="36" selection-end-line="19" selection-end-column="36" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkVisitor.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="291">
-          <caret line="52" column="23" lean-forward="false" selection-start-line="52" selection-start-column="23" selection-end-line="52" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/cc/nodes/Selection.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/antlr4/Choreography.g4">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="21" lean-forward="false" selection-start-line="0" selection-start-column="21" selection-end-line="0" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/FakeLabel.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="6" lean-forward="false" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/util/Map.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="163" column="7" lean-forward="true" selection-start-line="163" selection-start-column="7" selection-end-line="163" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/ElseLabel.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="5" lean-forward="false" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/SelectionLabel.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="5" lean-forward="false" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/ThenLabel.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="5" lean-forward="false" selection-start-line="17" selection-start-column="5" selection-end-line="17" selection-end-column="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/labels/InteractionLabel.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="240">
-          <caret line="16" column="0" lean-forward="false" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/jgrapht/jgrapht-core/1.0.1/jgrapht-core-1.0.1-sources.jar!/org/jgrapht/graph/specifics/FastLookupDirectedSpecifics.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="119" column="0" lean-forward="false" selection-start-line="119" selection-start-column="0" selection-end-line="119" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/extraction/ChoreographyExtractionTest.kt" />
-    <entry file="file://$PROJECT_DIR$/src/test/java/benchmark/BenchmarkTest.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" column="24" lean-forward="false" selection-start-line="20" selection-start-column="24" selection-end-line="20" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/TerminationSP.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="6" lean-forward="false" selection-start-line="4" selection-start-column="6" selection-end-line="4" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureInvocationSP.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="29" column="25" lean-forward="false" selection-start-line="29" selection-start-column="25" selection-end-line="29" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/ast/sp/nodes/ProcedureDefinitionSP.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="270">
-          <caret line="19" column="0" lean-forward="false" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/jgrapht/jgrapht-core/1.0.1/jgrapht-core-1.0.1-sources.jar!/org/jgrapht/graph/AbstractGraph.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1413">
-          <caret line="126" column="18" lean-forward="false" selection-start-line="126" selection-start-column="18" selection-end-line="126" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/jgrapht/jgrapht-core/1.0.1/jgrapht-core-1.0.1-sources.jar!/org/jgrapht/graph/specifics/DirectedSpecifics.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="102" column="0" lean-forward="false" selection-start-line="102" selection-start-column="0" selection-end-line="102" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/junit/junit/4.12/junit-4.12.jar!/org/junit/experimental/theories/Theories.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="193">
@@ -1436,14 +1335,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/extraction/ConditionTest.kt">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="66" column="84" lean-forward="false" selection-start-line="66" selection-start-column="84" selection-end-line="66" selection-end-column="84" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/test/java/extraction/InteractionTest.kt">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="39">
@@ -1516,10 +1407,212 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/extraction/ConditionTest.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="18" column="8" lean-forward="false" selection-start-line="18" selection-start-column="8" selection-end-line="18" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/extraction/PaperTest.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="470">
+          <caret line="93" column="82" lean-forward="false" selection-start-line="93" selection-start-column="82" selection-end-line="93" selection-end-column="82" />
+          <folding>
+            <element signature="e#19#240#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/AbstractStringBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="68" column="0" lean-forward="false" selection-start-line="68" selection-start-column="0" selection-end-line="68" selection-end-column="0" />
+          <folding>
+            <element signature="e#1327#1328#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/StringBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="171">
+          <caret line="89" column="0" lean-forward="false" selection-start-line="89" selection-start-column="0" selection-end-line="89" selection-end-column="0" />
+          <folding>
+            <element signature="e#2871#2872#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/cc/nodes/Condition.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="12" column="0" lean-forward="false" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/cc/nodes/Communication.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/ast/cc/nodes/ProcedureDefinition.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="120">
+          <caret line="11" column="0" lean-forward="false" selection-start-line="11" selection-start-column="0" selection-end-line="11" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/antlr4/Choreography.g4">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="330">
+          <caret line="22" column="19" lean-forward="false" selection-start-line="22" selection-start-column="19" selection-end-line="22" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/util/HashMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="610" column="0" lean-forward="false" selection-start-line="610" selection-start-column="0" selection-end-line="610" selection-end-column="0" />
+          <folding>
+            <element signature="e#24363#24364#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/util/HashSet.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="218" column="0" lean-forward="false" selection-start-line="218" selection-start-column="0" selection-end-line="218" selection-end-column="0" />
+          <folding>
+            <element signature="e#8081#8082#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/util/Collections.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="2034" column="0" lean-forward="false" selection-start-line="2034" selection-start-column="0" selection-end-line="2034" selection-end-column="0" />
+          <folding>
+            <element signature="e#83250#83251#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/ref/Reference.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="259">
+          <caret line="303" column="0" lean-forward="false" selection-start-line="303" selection-start-column="0" selection-end-line="303" selection-end-column="0" />
+          <folding>
+            <element signature="e#10903#10904#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/ref/SoftReference.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="186">
+          <caret line="86" column="0" lean-forward="false" selection-start-line="86" selection-start-column="0" selection-end-line="86" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/Math.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="1335" column="0" lean-forward="false" selection-start-line="1335" selection-start-column="0" selection-end-line="1335" selection-end-column="0" />
+          <folding>
+            <element signature="e#52271#52272#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/System.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="333" column="0" lean-forward="false" selection-start-line="333" selection-start-column="0" selection-end-line="333" selection-end-column="0" />
+          <folding>
+            <element signature="e#11597#11598#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/rt.jar!/sun/misc/URLClassPath.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="156">
+          <caret line="285" column="0" lean-forward="false" selection-start-line="285" selection-start-column="0" selection-end-line="285" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/String.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="284">
+          <caret line="1474" column="0" lean-forward="false" selection-start-line="1474" selection-start-column="0" selection-end-line="1474" selection-end-column="0" />
+          <folding>
+            <element signature="e#62860#62861#0" expanded="false" />
+            <element signature="e#62916#62917#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/Object.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="195">
+          <caret line="36" column="0" lean-forward="false" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/util/concurrent/ConcurrentHashMap.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="1534" column="0" lean-forward="false" selection-start-line="1534" selection-start-column="0" selection-end-line="1534" selection-end-column="0" />
+          <folding>
+            <element signature="e#65287#65288#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/jre/lib/rt.jar!/sun/misc/Launcher.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="254" column="0" lean-forward="false" selection-start-line="254" selection-start-column="0" selection-end-line="254" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/ClassLoader.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="356" column="0" lean-forward="false" selection-start-line="356" selection-start-column="0" selection-end-line="356" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar:///Library/Java/JavaVirtualMachines/jdk1.8.0_144.jdk/Contents/Home/src.zip!/java/lang/Class.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="179">
+          <caret line="1785" column="0" lean-forward="false" selection-start-line="1785" selection-start-column="0" selection-end-line="1785" selection-end-column="0" />
+          <folding>
+            <element signature="e#104463#104464#0" expanded="false" />
+            <element signature="e#104523#104524#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/extraction/NetworkExtraction.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="312" column="41" lean-forward="false" selection-start-line="312" selection-start-column="41" selection-end-line="312" selection-end-column="41" />
+        <state relative-caret-position="139">
+          <caret line="426" column="8" lean-forward="false" selection-start-line="426" selection-start-column="4" selection-end-line="426" selection-end-column="8" />
           <folding>
             <element signature="e#20#471#0" expanded="true" />
             <element signature="n#!!block;n#ConcreteNode#0;n#!!block;n#NetworkExtraction#0" expanded="false" />
@@ -1532,13 +1625,29 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/extraction/PaperTest.kt">
+    <entry file="file://$PROJECT_DIR$/src/main/java/epp/BehaviourProjection.kt">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-62">
-          <caret line="40" column="0" lean-forward="true" selection-start-line="40" selection-start-column="0" selection-end-line="40" selection-end-column="0" />
+        <state relative-caret-position="223">
+          <caret line="74" column="17" lean-forward="false" selection-start-line="74" selection-start-column="17" selection-end-line="74" selection-end-column="17" />
           <folding>
-            <element signature="e#19#240#0" expanded="true" />
+            <element signature="e#198#449#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test/java/epp/EndpointProjectionTest.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369">
+          <caret line="120" column="141" lean-forward="false" selection-start-line="120" selection-start-column="141" selection-end-line="120" selection-end-column="141" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/epp/MergingProjection.kt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="78">
+          <caret line="13" column="0" lean-forward="false" selection-start-line="13" selection-start-column="0" selection-end-line="13" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>

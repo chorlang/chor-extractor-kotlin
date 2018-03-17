@@ -11,6 +11,7 @@ import ast.cc.nodes.*
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
+import epp.MergingProjection.*
 
 import java.util.*
 import kotlin.collections.HashMap
@@ -72,7 +73,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
             return ConditionSP(n.expression, n.thenChoreography.accept(this) as Behaviour, n.elseChoreograpy.accept(this) as Behaviour)
         } else {
             try {
-                return MergingProjection.merge(n.thenChoreography.accept(this), n.elseChoreograpy.accept(this))
+                return MergingProjection().merge(n.thenChoreography.accept(this), n.elseChoreograpy.accept(this))
             } catch (e: MergingException) {
                 e.printStackTrace()
                 throw e

@@ -8,44 +8,31 @@ import java.util.*
 
 
 class MergingProjection {
-
-    @Throws(MergingException::class)
-    fun merge(left: ProcedureDefinitionSP, right: ProcedureDefinitionSP): SPNode {
-        val mergeBehaviour = merge(left.behaviour, right.behaviour) as Behaviour
-        return ProcedureDefinitionSP(mergeBehaviour)
-    }
-
-    companion object {
         @Throws(MergingException::class)
-        fun merge(node1: SPNode, node2: SPNode): SPNode {
-            try {
-                val mp = MergingProjection::class.java
-                val m = mp.getMethod("merge", node1.javaClass, node2.javaClass)
-                return m.invoke(null, node1, node2) as SPNode
-            } catch (e: NoSuchMethodException) {
-                throw MergingException("Can't merge " + node1.javaClass + " with " + node2.javaClass, e)
-            } catch (e: InvocationTargetException) {
-                throw MergingException("Can't merge " + node1.javaClass + " with " + node2.javaClass, e)
-            } catch (e: IllegalAccessException) {
-                throw MergingException("Can't merge " + node1.javaClass + " with " + node2.javaClass, e)
+        fun merge(left: SPNode, right: SPNode): SPNode {
+            return when {
+                left is Sending && right is Sending -> merge(left, right)
+                left is Receiving && right is Receiving -> merge(left, right)
+                left is TerminationSP && right is TerminationSP -> TerminationSP()
+                left is SelectionSP && right is SelectionSP -> merge(left, right)
+                left is Offering && right is Offering -> merge(left, right)
+                left is ConditionSP && right is ConditionSP -> merge(left, right)
+                left is ProcedureDefinitionSP && right is ProcedureDefinitionSP -> merge(left, right)
+                left is ProcedureInvocationSP && right is ProcedureInvocationSP -> merge(left, right)!!
+                else -> throw MergingException("Can't merge " + left.javaClass + " with " + right.javaClass)
             }
-
-        }
-
-        fun merge(left: TerminationSP, right: TerminationSP): SPNode {
-            return TerminationSP()
         }
 
         @Throws(MergingException::class)
         fun merge(left: Sending, right: Sending): SPNode {
-            assertCondition(left.process == right.process && left.expression == right.expression)
+            if (left.process != right.process || left.expression != right.expression) throw MergingException("")
             val m = merge(left.continuation, right.continuation) as Behaviour
             return Sending(m, left.process, left.expression)
         }
 
         @Throws(MergingException::class)
         fun merge(left: Receiving, right: Receiving): SPNode {
-            assertCondition(left.process == right.process)
+            if (left.process != right.process) throw MergingException("")
 
             val m = merge(left.continuation, right.continuation) as Behaviour
             return Receiving(m, left.process)
@@ -54,8 +41,7 @@ class MergingProjection {
 
         @Throws(MergingException::class)
         fun merge(left: SelectionSP, right: SelectionSP): SPNode {
-            assertCondition(left.process == right.process)
-            assertCondition(left.expression == right.expression)
+            if (left.process != right.process ||left.expression != right.expression) throw MergingException("")
 
             val continuation = merge(left.continuation, right.continuation) as Behaviour
             return SelectionSP(continuation, left.process, left.expression)
@@ -63,7 +49,7 @@ class MergingProjection {
 
         @Throws(MergingException::class)
         fun merge(left: Offering, right: Offering): SPNode {
-            assertCondition(left.process == right.process)
+            if (left.process != right.process) throw MergingException("")
 
             val leftmap = left.labels
             val rightmap = right.labels
@@ -86,13 +72,19 @@ class MergingProjection {
             return Offering(left.process, labels)
         }
 
-        /*@Throws(MergingException::class)
+        @Throws(MergingException::class)
         fun merge(left: ConditionSP, right: ConditionSP): SPNode {
             val leftCondition = merge(left.thenBehaviour, left.thenBehaviour) as Behaviour
             val rightCondition = merge(right.elseBehaviour, right.elseBehaviour) as Behaviour
-            assertCondition(left.process == right.process)
-            assertCondition(left.expression == right.expression)
-            return ConditionSP(left.process, left.expression, leftCondition, rightCondition)
+            //assertCondition(left.process == right.process)
+            if (left.expression != right.expression) throw MergingException("")
+            return ConditionSP(left.expression, leftCondition, rightCondition)
+        }
+
+        @Throws(MergingException::class)
+        fun merge(left: ProcedureDefinitionSP, right: ProcedureDefinitionSP): SPNode {
+            val mergeBehaviour = merge(left.behaviour, right.behaviour) as Behaviour
+            return ProcedureDefinitionSP(mergeBehaviour)
         }
 
         fun merge(left: ProcedureInvocationSP, right: ProcedureInvocationSP): SPNode? {
@@ -100,13 +92,5 @@ class MergingProjection {
                 return ProcedureInvocationSP(left.procedure)
             } else
                 return null
-        }*/
-
-        @Throws(MergingException::class)
-        private fun assertCondition(condition: Boolean) {
-            if (!condition) {
-                throw MergingException("")
-            }
         }
-    }
 }
