@@ -12,7 +12,7 @@ import kotlin.collections.HashMap
 
 class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     override fun visitNetwork(ctx: NetworkContext): SPNode {
-        val network = TreeMap<String, ProcessBehaviour>()
+        val network = HashMap<String, ProcessBehaviour>()
         for (i in 0..ctx.processBehaviour().size - 1) {
             network.put(ctx.process(i).text, visit(ctx.processBehaviour(i)) as ProcessBehaviour)
         }

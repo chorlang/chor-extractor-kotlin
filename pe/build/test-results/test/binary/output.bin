@@ -1,0 +1,66 @@
+
+?Choreography: def X {Y} def Y { p.e->q; stop } main {q.e->p;X}
+SNetwork: p{X{Y} Y{q!<e>; stop} main {q?; X}} | q{X{Y} Y{p?; stop} main {p!<e>; X}}
+
+mTest Network: p { main {if e then q!<e1>; stop else q!<e2>; stop}} | q { main {p?; stop}} | r { main {stop}}
+<Choreography: main { if e then p.e1->q; 0 else p.e2->q; 0 }
+
+¡Test Network: p { main {if e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop}} | q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | r { main {stop}}
+^Choreography: main { if e then p->q[R]; p.e->q; q.u1->p; 0 else p->q[L]; p.e->q; q.u2->p; 0 }
+
+‰Test Network: p { main {if e then if u then q!<e1>; stop else q!<e2>; stop else q!<e3>; stop}} | q { main {p?; stop}} | r { main {stop}}
+VChoreography: main { if e then if u then p.e1->q; 0 else p.e2->q; 0 else p.e3->q; 0 }
+
+yTest Network: p {def X {if e then q!<u>;stop else q!<o>;stop} main {X}} | q {def Y{p?;stop} main {Y}} | r { main {stop}}
+:Choreography: main { if e then p.u->q; 0 else p.o->q; 0 }
+
+pTest Network: p {def X {if e then q!<u>;X else q!<o>;X} main {X}} | q {def Y{p?;Y} main {Y}} | r { main {stop}}
+JChoreography: def X1 { if e then p.u->q; X1 else p.o->q; X1 } main { X1 }
+
+µTest Network: p { def X {if e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop} main {X}} | q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | r { main {stop}}
+^Choreography: main { if e then p->q[R]; p.e->q; q.u1->p; 0 else p->q[L]; p.e->q; q.u2->p; 0 }
+
+}Test Network: p { def X {q!<e>; X} main {X}} | q { def Y {p?; Y} main {Y}} | r { main {s!<e2>; stop}} | s { main {r?; stop}}
+9Choreography: def X1 { p.e->q; X1 } main { r.e2->s; X1 }
+
+[Test Network: p { main {q!<e>; q?; stop}} | q { main {p?; p!<u>; stop}} | r { main {stop}}
+)Choreography: main { p.e->q; q.u->p; 0 }
+
+dTest Network: p { def X {q!<e>; stop} main {X}} | q { def X {p?; stop} main {X}} | r { main {stop}}
+!Choreography: main { p.e->q; 0 }
+
+BTest Network: p {main{q?;stop}} | q { def X {p!<e>;stop} main{X}}
+!Choreography: main { q.e->p; 0 }
+
+ZTest Network: p {def X {q!<e>;X} main {X}} | q {def Y{p?; Y} main {Y}} | r { main {stop}}
+0Choreography: def X1 { p.e->q; X1 } main { X1 }
+
+bTest Network: p { def X {q!<e>; q!<e>; q!<e>; X} main {X}} | q { def Y {p?; p?; Y} main {p?; Y}} 
+xChoreography: def X1 { p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; X1 } main { p.e->q; p.e->q; p.e->q; p.e->q; X1 }
+
+‹Test Network: p { def X {q!<e>; Y} def Y {r!<e>; Z} def Z {q!<e>; X} main {X}} | q { def W {p?; W} main {W}} | r { def T {p?; T} main {T}}
+HChoreography: def X1 { p.e->r; p.e->q; p.e->q; X1 } main { p.e->q; X1 }
+
+	
+
+	}Test Network: p { main {q+R; q!<e>; q?; stop}} | q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | r { main {stop}}
+
+	3Choreography: main { p->q[R]; p.e->q; q.u1->p; 0 }
+
+	
+
+	}Test Network: p { main {q+L; q!<e>; q?; stop}} | q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | r { main {stop}}
+
+	3Choreography: main { p->q[L]; p.e->q; q.u2->p; 0 }
+
+	
+
+	_Test Network: p { def X {q+R; q!<e>; X} main{X}} | q { def Y {p&{R: p?; Y, L: p?; Y}} main{Y}}
+
+	9Choreography: def X1 { p->q[R]; p.e->q; X1 } main { X1 }
+
+.Test Network: p {main{stop}} | q {main{stop}}
+Choreography: main { 0 }
+
+8Test Network: p {main{stop}} | q {def X {stop} main{X}}
+Choreography: main { 0 }

@@ -30,9 +30,9 @@ class NetworkProjectionTest : Assert() {
                 //finite interaction with double procedure invocation
                 arrayOf<Any>(
                         "def X {Y} def Y { p.e->q; stop } main {q.e->p;X}",
-                        "p{X{Y} Y{q!<e>; stop} main {q?; X}} | q{X{Y} Y{p?; stop} main {p!<e>; X}}"
-                )
-/*
+                        "p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}}"
+                ),
+
                 //termination
                 arrayOf<Any>(
                         "main { stop }",
@@ -42,7 +42,7 @@ class NetworkProjectionTest : Assert() {
                 //finite interaction with procedure invocation
                 arrayOf<Any>(
                         "def X { p.e->q;stop } main { X }",
-                        "p{X{q!<e>; stop} main {X}} | q{X{p?; stop} main {X}}"
+                        "p{def X{q!<e>; stop} main {X}} | q{def X{p?; stop} main {X}}"
                 ),
 
                 //finite interaction
@@ -91,9 +91,18 @@ class NetworkProjectionTest : Assert() {
                         "def Y {q.e->r; if r.e then r->q[ok]; r->p[ok]; q.e->r; stop else r->q[ko]; r->p[ko]; Y}" +
                         "main {p.e->q;X}",
 
-                        "p{X{q?; if e then q + ok; X else q + ko; Y} Y{r&{ko: Y, ok: stop}} main {q!<e>; X}} | " +
-                        "q{X{p!<e>; p&{ko: r + ko; Y, ok: r + ok; X}} Y{r!<e>; r&{ko: Y, ok: r!<e>; stop}} main {p?; X}} | " +
-                        "r{X{q&{ko: Y, ok: X}} Y{q?; if e then q + ok; p + ok; q?; stop else q + ko; p + ko; Y} main {X}}"
+                        "p{" +
+                                "def X{q?; if e then q + ok; X else q + ko; Y} " +
+                                "def Y{r&{ko: Y, ok: stop}} " +
+                                "main {q!<e>; X}} | " +
+                        "q{" +
+                                "def X{p!<e>; p&{ko: r + ko; Y, ok: r + ok; X}} " +
+                                "def Y{r!<e>; r&{ko: Y, ok: r!<e>; stop}} " +
+                                "main {p?; X}} | " +
+                        "r{" +
+                                "def X{q&{ko: Y, ok: X}} " +
+                                "def Y{q?; if e then q + ok; p + ok; q?; stop else q + ko; p + ko; Y} " +
+                                "main {X}}"
                 ),
 
                 arrayOf<Any>(
@@ -108,11 +117,28 @@ class NetworkProjectionTest : Assert() {
                         "def Z {p.e->q; Y}" +
                         "main {q.i->r; p.e->q; X}",
 
-                        "p{X{if e then q + ok; r + ok; q?; r&{ko: Y, ok: q!<e>; X} else q + ko; r + ko; q&{ko: Z, ok: q!<e>; X}} Y{q!<e>; X} Z{q!<e>; Y} main {q!<e>; X}} | " +
-                        "q{X{p&{ko: if e then p + ok; r + ok; p?; X else p + ko; r + ko; Z, ok: p!<e>; r&{ko: r?; Y, ok: p?; X}}} Y{p?; X} Z{p?; Y} main {r!<i>; p?; X}} | " +
-                        "r{X{p&{ko: q&{ko: Z, ok: X}, ok: if e then p + ok; q + ok; X else p + ko; q + ko; q!<u>; Y}} Y{X} Z{Y} main {q?; X}}"
+                        "p{" +
+                                "def X{if e then q + ok; r + ok; q?; r&{ko: Y, ok: q!<e>; X} else q + ko; r + ko; q&{ko: Z, ok: q!<e>; X}} " +
+                                "def Y{q!<e>; X} " +
+                                "def Z{q!<e>; Y} " +
+                                "main {q!<e>; X}} | " +
+                        "q{" +
+                                "def X{p&{ko: if e then p + ok; r + ok; p?; X else p + ko; r + ko; Z, ok: p!<e>; r&{ko: r?; Y, ok: p?; X}}} " +
+                                "def Y{p?; X} " +
+                                "def Z{p?; Y} " +
+                                "main {r!<i>; p?; X}} | " +
+                        "r{" +
+                                "def X{p&{ko: q&{ko: Z, ok: X}, ok: if e then p + ok; q + ok; X else p + ko; q + ko; q!<u>; Y}} " +
+                                "def Y{X} " +
+                                "def Z{Y} main {q?; X}}"
+                ),
+
+                arrayOf<Any>(
+                        "def X1 { p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } def X2 { q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X3 } def X3 { q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X3 } def X4 { q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X5 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } def X5 { q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X5 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } main {q.i->r; X1}"
+                        ,
+                        ""
                 )
-*/
+
         )
     }
 }

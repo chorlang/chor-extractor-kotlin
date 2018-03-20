@@ -4,7 +4,7 @@ import ast.cc.CCVisitor
 import ast.cc.interfaces.Choreography
 
 class Termination : Choreography {
-    val termination = "0"
+    val termination = "stop"
 
     override fun <T> accept(visitor: CCVisitor<T>): T {
         return visitor.visit(this)

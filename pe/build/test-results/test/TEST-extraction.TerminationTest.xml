@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="extraction.TerminationTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-03-19T08:12:50" hostname="Larisas-MacBook-Air.local" time="0.007">
+  <properties/>
+  <testcase name="test" classname="extraction.TerminationTest" time="0.007"/>
+  <system-out><![CDATA[
+Test Network: p {main{stop}} | q {main{stop}}
+Choreography: main { 0 }
+
+Test Network: p {main{stop}} | q {def X {stop} main{X}}
+Choreography: main { 0 }
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

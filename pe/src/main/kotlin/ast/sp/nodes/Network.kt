@@ -2,8 +2,9 @@ package ast.sp.nodes
 
 import ast.sp.interfaces.SPNode
 import java.util.*
+import kotlin.collections.HashMap
 
-data class Network(val network: TreeMap<String, ProcessBehaviour>) : SPNode {
+data class Network(val network: HashMap<String, ProcessBehaviour>) : SPNode {
     override fun toString(): String {
         val builder = StringBuilder()
         network.forEach { t, u -> builder.append(t).append(u.toString()).append(" | ")}
@@ -12,13 +13,12 @@ data class Network(val network: TreeMap<String, ProcessBehaviour>) : SPNode {
     }
 
     fun copy(): Network{
-        var temp = TreeMap<String, ProcessBehaviour>()
+        val temp = HashMap<String, ProcessBehaviour>()
         for (p in network){
-            temp.put(""+p.key, p.value.copy())
+            temp[p.key] = p.value.copy()
         }
 
-        val n = Network(temp)
-        return n
+        return Network(temp)
     }
 
     fun equals(n: Network): Boolean{

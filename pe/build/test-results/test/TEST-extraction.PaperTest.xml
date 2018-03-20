@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="extraction.PaperTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-03-19T08:12:50" hostname="Larisas-MacBook-Air.local" time="0.035">
+  <properties/>
+  <testcase name="test" classname="extraction.PaperTest" time="0.035"/>
+  <system-out><![CDATA[
+Test Network: p { def X {q!<e>; q!<e>; q!<e>; X} main {X}} | q { def Y {p?; p?; Y} main {p?; Y}} 
+Choreography: def X1 { p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; X1 } main { p.e->q; p.e->q; p.e->q; p.e->q; X1 }
+
+Test Network: p { def X {q!<e>; Y} def Y {r!<e>; Z} def Z {q!<e>; X} main {X}} | q { def W {p?; W} main {W}} | r { def T {p?; T} main {T}}
+Choreography: def X1 { p.e->r; p.e->q; p.e->q; X1 } main { p.e->q; X1 }
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

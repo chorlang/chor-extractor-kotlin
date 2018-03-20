@@ -30,9 +30,9 @@ class TerminationTest : Assert() {
         var data = arrayOf(
 
                 /* simple termination */
-                arrayOf<Any>("p {main{stop}} | q {main{stop}}", "main { 0 }"),
+                arrayOf<Any>("p {main{stop}} | q {main{stop}}", "main {stop}"),
 
                 /* recursive termination */
-                arrayOf<Any>("p {main{stop}} | q {def X {stop} main{X}}", "main { 0 }"))
+                arrayOf<Any>("p {main{stop}} | q {def X {stop} main{X}}", "main {stop}"))
     }
 }

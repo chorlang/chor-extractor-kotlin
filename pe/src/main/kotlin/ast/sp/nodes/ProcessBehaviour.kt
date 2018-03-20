@@ -8,7 +8,7 @@ class ProcessBehaviour(val procedures: HashMap<String, ProcedureDefinitionSP>, v
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append("{")
-        procedures.forEach { t, u -> builder.append(t).append("{").append(u.toString()).append("} ")}
+        procedures.forEach { t, u -> builder.append("def "+ t).append("{").append(u.toString()).append("} ")}
         builder.append("main {").append(main.toString()).append("}}")
 
         return builder.toString()

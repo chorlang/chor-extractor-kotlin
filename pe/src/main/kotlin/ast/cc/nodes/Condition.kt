@@ -10,6 +10,6 @@ data class Condition(val process: String, val expression: String, val thenChoreo
     }
 
     override fun toString(): String {
-        return "if " + expression + " then " + thenChoreography.toString() + " else " + elseChoreograpy.toString()
+        return "if " + process + "." + expression + " then " + thenChoreography.toString() + " else " + elseChoreograpy.toString()
     }
 }

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="extraction.InteractionTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-03-19T08:12:50" hostname="Larisas-MacBook-Air.local" time="0.02">
+  <properties/>
+  <testcase name="test" classname="extraction.InteractionTest" time="0.02"/>
+  <system-out><![CDATA[
+Test Network: p { main {q!<e>; q?; stop}} | q { main {p?; p!<u>; stop}} | r { main {stop}}
+Choreography: main { p.e->q; q.u->p; 0 }
+
+Test Network: p { def X {q!<e>; stop} main {X}} | q { def X {p?; stop} main {X}} | r { main {stop}}
+Choreography: main { p.e->q; 0 }
+
+Test Network: p {main{q?;stop}} | q { def X {p!<e>;stop} main{X}}
+Choreography: main { q.e->p; 0 }
+
+Test Network: p {def X {q!<e>;X} main {X}} | q {def Y{p?; Y} main {Y}} | r { main {stop}}
+Choreography: def X1 { p.e->q; X1 } main { X1 }
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
