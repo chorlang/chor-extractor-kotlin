@@ -15,10 +15,12 @@ import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.collections.HashSet
 
-typealias network = SortedMap<String, ProcessBehaviour>
+typealias network = HashMap<String, ProcessBehaviour>
 
 class NetworkExtraction {
     private var gmap = HashMap<String, ArrayList<ConcreteNode>>()
+
+    @Volatile
     private var count = 0
 
     interface Node
@@ -80,7 +82,7 @@ class NetworkExtraction {
                 val e = edges.first()
                 return when (e) {
 
-                    is InteractionLabel -> {
+                    is SendingLabel -> {
                         Communication(e.sender, e.receiver, e.expression, bh(graph.getEdgeTarget(e), graph, fklist))
                     }
 
@@ -109,21 +111,24 @@ class NetworkExtraction {
     private fun unroll(root: ConcreteNode, graph: DirectedGraph<Node, ExtractionLabel>): ArrayList<FakeNode> {
         val fklist = ArrayList<FakeNode>()
 
-        graph.vertexSet().parallelStream().forEach { node ->
+        var c = 1
+        val rnodes = HashMap<ConcreteNode, String>()
+
+
+        graph.vertexSet().forEach { node -> if (node is ConcreteNode && graph.incomingEdgesOf(node).size > 1) rnodes.put(node, c++.toString()) }
+
+        rnodes.forEach { node ->
             node.run {
-                if (node is ConcreteNode && graph.incomingEdgesOf(node).size > 1) {
-                    val fk = FakeNode(generateProcedureName(), node)
-                    graph.addVertex(fk)
-                    fklist.add(fk)
-                    val labels = graph.outgoingEdgesOf(node)
+                val fk = FakeNode("X" + node.value, node.key)
+                graph.addVertex(fk)
+                fklist.add(fk)
+                val labels = graph.outgoingEdgesOf(node.key)
 
-                    val targets = ArrayList<LabelTarget>()
-                    labels.forEach { label -> targets.add(LabelTarget(label, graph.getEdgeTarget(label))) }
+                val targets = ArrayList<LabelTarget>()
+                labels.forEach { label -> targets.add(LabelTarget(label, graph.getEdgeTarget(label))) }
 
-                    graph.removeAllEdges(ArrayList<ExtractionLabel>(graph.outgoingEdgesOf(node)))
-                    targets.forEach { s -> graph.addEdge(fk, s.target, s.lbl) }
-
-                }
+                graph.removeAllEdges(ArrayList<ExtractionLabel>(graph.outgoingEdgesOf(node.key)))
+                targets.forEach { s -> graph.addEdge(fk, s.target, s.lbl) }
             }
         }
 
@@ -148,15 +153,32 @@ class NetworkExtraction {
 
     private fun buildGraph(nn: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
         val node = nn.copy()
-        val n = node.nodenet.network
+        val n = sortProcesses(node)
+        //val n = node.nodenet.network
+
+        val unfolded = HashSet<String>()
+
 
         for (p in n) {
-            unfold(p.key, n)
+            if (unfold(p.key, n)) unfolded.add(p.key)
 
             val findComm = findCommunication(p.key, n)
-
-            if (findComm.sendreceive.isPresent || findComm.selectoffer.isPresent) {
+            if (findComm!=null) {
                 val (tgt, lbl) = getCommunication(n, findComm)
+
+                when (lbl) {
+                    is SendingLabel -> {
+                        unfolded.remove(lbl.receiver)
+                        unfolded.remove(lbl.sender)
+                    }
+                    is SelectionLabel -> {
+                        unfolded.remove(lbl.receiver)
+                        unfolded.remove(lbl.sender)
+                    }
+                }
+
+                unfolded.forEach { tgt.network[it]?.main = nn.nodenet.network[it]?.main?.copy()!! }
+
                 if (isAllProceduresVisited(tgt)) {
                     lbl.flipped = true
                     wash(tgt)
@@ -177,8 +199,7 @@ class NetworkExtraction {
                         else {
                             cleanNode(findComm, n, nn)
                         }
-                    }
-                    else {
+                    } else {
                         cleanNode(findComm, n, nn)
                     }
 
@@ -186,6 +207,16 @@ class NetworkExtraction {
 
             } else if (findCondition(n)) {
                 val (tgt1, lbl1, tgt2, lbl2) = getCondition(n)
+
+                /*unfolded.remove(lbl1.process)
+                unfolded.remove(lbl2.process)
+                unfolded.forEach { pr ->
+                    val pp1 = tgt1.network[pr.key]
+                    pp1?.main = pp1?.procedures?.get(pr.value)?.behaviour?.copy() ?: throw Exception()
+                    val pp2 = tgt2.network[pr.key]
+                    pp2?.main = pp2?.procedures?.get(pr.value)?.behaviour?.copy() ?: throw Exception()
+                }*/
+
                 if (isAllProceduresVisited(tgt1)) {
                     wash(tgt1)
                     lbl1.flipped = true
@@ -233,9 +264,22 @@ class NetworkExtraction {
         throw ProcessStarvationException("Process starvation at node" + node.toString())
     }
 
+    private fun sortProcesses(node: NetworkExtraction.ConcreteNode): HashMap<String, ProcessBehaviour> {
+        val net = node.nodenet.network
+        val copynet = LinkedHashMap<String, ProcessBehaviour>()
+
+        net.forEach { pr -> if (pr.value.main is SelectionSP || pr.value.main is Offering) copynet.put(""+pr.key, pr.value.copy()) }
+        net.forEach { pr -> copynet.put(""+pr.key, pr.value.copy()) }
+
+        return copynet
+        //return net.toSortedMap(CompareObjects)
+    }
+
+    //private fun foldUnfolded(p: String, tgt: Network, nn: ConcreteNode) {}
+
     private fun cleanNode(findComm: GetCommunication, n: network, nn: ConcreteNode) {
-        val first = if (findComm.sendreceive.isPresent) findComm.sendreceive.get().first else findComm.selectoffer.get().first
-        val second = if (findComm.sendreceive.isPresent) findComm.sendreceive.get().second else findComm.selectoffer.get().second
+        val first = if (findComm is Communication) findComm.sender else (findComm as Selection).select
+        val second = if (findComm is Communication) findComm.receiver else (findComm as Selection).offer
 
         val prk1 = (first.main as Interaction).process
         val prb1new = nn.nodenet.network.get(prk1)
@@ -288,7 +332,7 @@ class NetworkExtraction {
         }
     }
 
-    private fun allTerminated(n: SortedMap<String, ProcessBehaviour>): Boolean {
+    private fun allTerminated(n: HashMap<String, ProcessBehaviour>): Boolean {
         for (p in n) {
             if (!isterminated(p.value)) return false
         }
@@ -337,13 +381,18 @@ class NetworkExtraction {
     }
 
     fun unfold(p: String, n: network): Boolean {
-        val pb = n[p]
-        return if (pb?.main is ProcedureInvocationSP) {
-            val pi = pb.main as ProcedureInvocationSP
-            val pn = pi.procedure
-            val pd = pb.procedures[pn]
-            pb.main = pd?.behaviour?.copy() ?: throw Exception("Can't unfold the process")
-            markProcedure(pb.main, true)
+        val processbehaviour = n[p]
+        return if (processbehaviour?.main is ProcedureInvocationSP) {
+            val procedureInvocation = processbehaviour.main as ProcedureInvocationSP
+            val procedurename = procedureInvocation.procedure
+            val procedureDefinition = processbehaviour.procedures[procedurename]
+
+            processbehaviour.main = procedureDefinition?.behaviour?.copy() ?: throw Exception("Can't unfold the process")
+            markProcedure(processbehaviour.main, true)
+
+            if (procedureDefinition.behaviour is ProcedureInvocationSP){
+                unfold(p, n)
+            }
             true
         } else false
     }
@@ -423,68 +472,72 @@ class NetworkExtraction {
 
     }
 
-    data class GetCommunication(val sendreceive: (Optional<Pair<ProcessBehaviour, ProcessBehaviour>>), val selectoffer: (Optional<Pair<ProcessBehaviour, ProcessBehaviour>>))
+    interface GetCommunication
+    data class Communication (val sender: ProcessBehaviour, val receiver: ProcessBehaviour): GetCommunication
+    data class Selection (val select: ProcessBehaviour, val offer: ProcessBehaviour): GetCommunication
 
-    private fun findCommunication(p: String, n: network): GetCommunication {
-        var communication: Optional<Pair<ProcessBehaviour, ProcessBehaviour>>
-        communication = Optional.empty()
-
+    private fun findCommunication(p: String, n: network): GetCommunication? {
         val pb = n[p]
 
-        if (pb?.main is Sending) {
-            val receiving = n.values.stream().filter { j -> j.main is Receiving && p == (j.main as Receiving).process }.findFirst()
-            if (receiving.isPresent) {
-                communication = Optional.of(Pair(pb, receiving.get()))
-            }
-        } else if (pb?.main is Receiving) {
-            val sending = n.values.stream().filter { j -> j.main is Sending && p == (j.main as Sending).process }.findFirst()
-            if (sending.isPresent) {
-                communication = Optional.of(Pair(sending.get(), pb))
-            }
-        }
+        val pbm = pb?.main
+        when (pbm){
+            is Sending -> {
+                val receivpr = n[pbm.process]
+                if (receivpr != null && receivpr.main is Receiving && (receivpr.main as Receiving).pr == p) {
+                    return Communication(pb, receivpr)
 
-        if (communication.isPresent) {
-            return GetCommunication(communication, Optional.empty())
-        } else {
-            if (pb?.main is SelectionSP) {
-                val offering = n.values.stream().filter { j -> j.main is Offering && p == (j.main as Offering).process }.findFirst()
-                if (offering.isPresent) {
-                    communication = Optional.of(Pair(pb, offering.get()))
-                }
-            } else if (pb?.main is Offering) {
-                val selection = n.values.stream().filter { j -> j.main is SelectionSP && p == (j.main as SelectionSP).process }.findFirst()
-                if (selection.isPresent) {
-                    communication = Optional.of(Pair(selection.get(), pb))
                 }
             }
+
+            is Receiving -> {
+                val sendpr = n[(pb.main as Receiving).process]
+                if (sendpr!= null && sendpr.main is Sending && (sendpr.main as Sending).pr == p){
+                    return Communication(sendpr, pb)
+                }
+            }
+
+            is SelectionSP -> {
+                val offer = n[pbm.process]
+                if (offer!=null && offer.main is Offering && (offer.main as Offering).pr == p){
+                    return Selection(pb, offer)
+                }
+            }
+
+            is Offering -> {
+                val select = n[pbm.process]
+                if (select != null && select.main is SelectionSP && (select.main as SelectionSP).pr == p) {
+                    return Selection(select, pb)
+                }
+            }
+
         }
-        return GetCommunication(Optional.empty(), communication)
+        return null
     }
 
     private fun getCommunication(n: network, findComm: GetCommunication): Pair<Network, ExtractionLabel> {
-        when {
-            findComm.sendreceive.isPresent -> {
-                val sending = findComm.sendreceive.get().first
-                val receiving = findComm.sendreceive.get().second
+        when (findComm){
+            is Communication -> {
+                val pbl = HashMap<String, ProcessBehaviour>(n)
 
-                val pbl = TreeMap<String, ProcessBehaviour>(n)
+                val sendb = findComm.sender
+                val receivb = findComm.receiver
 
-                val receivingProcess = (sending.main as Sending).process
-                val sendingProcess = (receiving.main as Receiving).process
+                val receivpr = (sendb.main as Sending).pr
+                val sendpr = (receivb.main as Receiving).pr
 
-                pbl.replace(receivingProcess, ProcessBehaviour(receiving.procedures, (receiving.main as Receiving).continuation))
-                pbl.replace(sendingProcess, ProcessBehaviour(sending.procedures, (sending.main as Sending).continuation))
+                pbl.replace(receivpr, ProcessBehaviour(receivb.procedures, (receivb.main as Receiving).continuation))
+                pbl.replace(sendpr, ProcessBehaviour(sendb.procedures, (sendb.main as Sending).continuation))
 
-                val label = InteractionLabel(sendingProcess, receivingProcess, (sending.main as Sending).expression)
+                val label = SendingLabel(sendpr, receivpr, (sendb.main as Sending).expression)
 
                 return Pair(Network(pbl), label)
-
             }
-            findComm.selectoffer.isPresent -> {
-                val selection = findComm.selectoffer.get().first
-                val offering = findComm.selectoffer.get().second
 
-                val pbl = TreeMap<String, ProcessBehaviour>(n)
+            is Selection -> {
+                val pbl = HashMap<String, ProcessBehaviour>(n)
+
+                val selection = findComm.select
+                val offering = findComm.offer
 
                 val selectionProcess = (offering.main as Offering).process
                 val offeringProcess = (selection.main as SelectionSP).process
@@ -498,9 +551,9 @@ class NetworkExtraction {
                 val label = SelectionLabel(offeringProcess, selectionProcess, (selection.main as SelectionSP).expression)
 
                 return Pair(Network(pbl), label)
-
             }
-            else -> throw IllegalArgumentException("getCommunication invoked, but no communication found")
+
+            else -> throw Exception("FindComm object doesn't belong to Communication or Selection types")
         }
     }
 
@@ -516,8 +569,8 @@ class NetworkExtraction {
         val conditionPB = c.value
         val conditionMain = conditionPB.main as ConditionSP
 
-        val pbelsemap = TreeMap<String, ProcessBehaviour>(n)
-        val pbthenmap = TreeMap<String, ProcessBehaviour>(n)
+        val pbelsemap = HashMap<String, ProcessBehaviour>(n)
+        val pbthenmap = HashMap<String, ProcessBehaviour>(n)
 
         pbelsemap.replace(process, ProcessBehaviour(conditionPB.procedures, conditionMain.elseBehaviour))
         pbthenmap.replace(process, ProcessBehaviour(conditionPB.procedures, conditionMain.thenBehaviour))

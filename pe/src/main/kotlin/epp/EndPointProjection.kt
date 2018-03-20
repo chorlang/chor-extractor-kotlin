@@ -21,7 +21,7 @@ class EndPointProjection {
 
     fun project(choreography: String): Network {
         val tree = this.parse(choreography)
-        val network = TreeMap<String, ProcessBehaviour>()
+        val network = HashMap<String, ProcessBehaviour>()
 
         val choreographyVisitor = ChoreographyVisitor()
         val ccast = choreographyVisitor.getCCAST(tree)

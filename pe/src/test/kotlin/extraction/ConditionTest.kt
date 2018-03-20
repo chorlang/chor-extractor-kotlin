@@ -32,28 +32,28 @@ class ConditionTest : Assert() {
                         "| q { main {p?; stop}} " +
                         "| r { main {stop}}",
 
-                        "main { if e then p.e1->q; 0 else p.e2->q; 0 }"),
+                        "main {if p.e then p.e1->q; stop else p.e2->q; stop}"),
 
                 /* condition with selection */
                 arrayOf<Any>("p { main {if e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop}} | " +
                         "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
                         "r { main {stop}}",
 
-                        "main { if e then p->q[R]; p.e->q; q.u1->p; 0 else p->q[L]; p.e->q; q.u2->p; 0 }"),
+                        "main {if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop}"),
 
                 /* condition inside condition */
                 arrayOf<Any>("p { main {if e then if u then q!<e1>; stop else q!<e2>; stop else q!<e3>; stop}} " +
                         "| q { main {p?; stop}} " +
                         "| r { main {stop}}",
 
-                        "main { if e then if u then p.e1->q; 0 else p.e2->q; 0 else p.e3->q; 0 }"),
+                        "main {if p.e then if p.u then p.e1->q; stop else p.e2->q; stop else p.e3->q; stop}"),
 
                 /* condition with procedure */
                 arrayOf<Any>("p {def X {if e then q!<u>;stop else q!<o>;stop} main {X}} " +
                         "| q {def Y{p?;stop} main {Y}} " +
                         "| r { main {stop}}",
 
-                        "main { if e then p.u->q; 0 else p.o->q; 0 }"),
+                        "main {if p.e then p.u->q; stop else p.o->q; stop}"),
 
 
                 /* condition with recursive procedure */
@@ -62,7 +62,7 @@ class ConditionTest : Assert() {
                         "| q {def Y{p?;Y} main {Y}} " +
                         "| r { main {stop}}",
 
-                        "def X1 { if e then p.u->q; X1 else p.o->q; X1 } main { X1 }"),
+                        "def X1 { if p.e then p.u->q; X1 else p.o->q; X1 } main {X1}"),
 
 
                 /* condition with selection with recursion*/
@@ -70,7 +70,7 @@ class ConditionTest : Assert() {
                         "q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | " +
                         "r { main {stop}}",
 
-                        "main { if e then p->q[R]; p.e->q; q.u1->p; 0 else p->q[L]; p.e->q; q.u2->p; 0 }"),
+                        "main {if p.e then p->q[R]; p.e->q; q.u1->p; stop else p->q[L]; p.e->q; q.u2->p; stop}"),
 
                 /* Example 5 - deadlocked finite processes*/
                 arrayOf<Any>
@@ -80,7 +80,7 @@ class ConditionTest : Assert() {
                                 "r { main {s!<e2>; stop}} | " +
                                 "s { main {r?; stop}}",
 
-                        "def X1 { p.e->q; X1 } main { r.e2->s; X1 }"
+                        "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
                 ))
 
     }

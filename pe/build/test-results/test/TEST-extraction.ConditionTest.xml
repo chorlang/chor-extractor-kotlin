@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="extraction.ConditionTest" tests="1" skipped="0" failures="0" errors="0" timestamp="2018-03-19T08:12:49" hostname="Larisas-MacBook-Air.local" time="0.27">
+  <properties/>
+  <testcase name="test" classname="extraction.ConditionTest" time="0.27"/>
+  <system-out><![CDATA[
+Test Network: p { main {if e then q!<e1>; stop else q!<e2>; stop}} | q { main {p?; stop}} | r { main {stop}}
+Choreography: main { if e then p.e1->q; 0 else p.e2->q; 0 }
+
+Test Network: p { main {if e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop}} | q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | r { main {stop}}
+Choreography: main { if e then p->q[R]; p.e->q; q.u1->p; 0 else p->q[L]; p.e->q; q.u2->p; 0 }
+
+Test Network: p { main {if e then if u then q!<e1>; stop else q!<e2>; stop else q!<e3>; stop}} | q { main {p?; stop}} | r { main {stop}}
+Choreography: main { if e then if u then p.e1->q; 0 else p.e2->q; 0 else p.e3->q; 0 }
+
+Test Network: p {def X {if e then q!<u>;stop else q!<o>;stop} main {X}} | q {def Y{p?;stop} main {Y}} | r { main {stop}}
+Choreography: main { if e then p.u->q; 0 else p.o->q; 0 }
+
+Test Network: p {def X {if e then q!<u>;X else q!<o>;X} main {X}} | q {def Y{p?;Y} main {Y}} | r { main {stop}}
+Choreography: def X1 { if e then p.u->q; X1 else p.o->q; X1 } main { X1 }
+
+Test Network: p { def X {if e then q+R; q!<e>; q?; stop else q+L; q!<e>; q?; stop} main {X}} | q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | r { main {stop}}
+Choreography: main { if e then p->q[R]; p.e->q; q.u1->p; 0 else p->q[L]; p.e->q; q.u2->p; 0 }
+
+Test Network: p { def X {q!<e>; X} main {X}} | q { def Y {p?; Y} main {Y}} | r { main {s!<e2>; stop}} | s { main {r?; stop}}
+Choreography: def X1 { p.e->q; X1 } main { r.e2->s; X1 }
+]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

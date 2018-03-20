@@ -38,7 +38,7 @@ class PaperTest : Assert() {
         @JvmField
 
         var data = arrayOf(
-/*
+
                 /* Example 2 */
                 arrayOf<Any>
                 (
@@ -46,7 +46,7 @@ class PaperTest : Assert() {
                         "a { def X {c?; s?; if s then c+ok; s+ok; stop else c+ko; s+ko; X} main {X}} | " +
                         "s { def X {a!<s>; a&{ok: c!<t>; stop, ko:X}} main {X}}",
 
-                        "def X1 { c.pwd->a; s.s->a; if s then a->c[ok]; a->s[ok]; s.t->c; 0 else a->c[ko]; a->s[ko]; X1 } main { X1 }"),
+                        "def X1 { c.pwd->a; s.s->a; if a.s then a->c[ok]; a->s[ok]; s.t->c; stop else a->c[ko]; a->s[ko]; X1 } main {X1}"),
 
 
                 /* Example 4  - processes starvation */
@@ -57,7 +57,7 @@ class PaperTest : Assert() {
                         "r { def Z {s!<e2>; Z} main {Z}} | " +
                         "s { def W {r?; W} main {W}}",
 
-                        "def X1 { p.e1->q; r.e2->s; X1 } main { X1 }"),
+                        "def X1 { p.e1->q; r.e2->s; X1 } main {X1}"),
 
 
                 /* Example 5 - deadlocked finite processes*/
@@ -68,16 +68,16 @@ class PaperTest : Assert() {
                         "r { main {s!<e2>; stop}} | " +
                         "s { main {r?; stop}}",
 
-                        "def X1 { p.e->q; X1 } main { r.e2->s; X1 }"
+                        "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
                 ),
-*/
+
                 arrayOf<Any>
                 (
                         "p { def X {q!<e>; q!<e>; q!<e>; X} main {X}} | " +
                         "q { def Y {p?; p?; Y} main {p?; Y}} "
                         ,
 
-                        "def X1 { p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; X1 } main { p.e->q; p.e->q; p.e->q; p.e->q; X1 }"
+                        "def X1 { p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; X1 } main {p.e->q; p.e->q; p.e->q; p.e->q; X1}"
                 ),
 
                 //p: X {!q; Y} Y {!r; Z} Z {!q; X} main {X}
@@ -91,7 +91,7 @@ class PaperTest : Assert() {
                         "r { def T {p?; T} main {T}}"
                         ,
 
-                        "def X1 { p.e->r; p.e->q; p.e->q; X1 } main { p.e->q; X1 }"
+                        "def X1 { p.e->r; p.e->q; p.e->q; X1 } main {p.e->q; X1}"
                 )
 
                 /* Example 8 -2-bit protocol*/

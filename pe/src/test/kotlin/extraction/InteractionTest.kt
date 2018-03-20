@@ -32,26 +32,26 @@ class InteractionTest : Assert() {
                         "| q { main {p?; p!<u>; stop}} " +
                         "| r { main {stop}}",
 
-                        "main { p.e->q; q.u->p; 0 }"),
+                        "main {p.e->q; q.u->p; stop}"),
 
                 /* interaction with procedure */
                 arrayOf<Any>("p { def X {q!<e>; stop} main {X}} " +
                         "| q { def X {p?; stop} main {X}} " +
                         "| r { main {stop}}",
 
-                        "main { p.e->q; 0 }"),
+                        "main {p.e->q; stop}"),
 
                 /* interaction with procedure on the one of the processes */
                 arrayOf<Any>("p {main{q?;stop}} | q { def X {p!<e>;stop} main{X}}",
 
-                        "main { q.e->p; 0 }"),
+                        "main {q.e->p; stop}"),
 
                 /* interaction with recursive procedure */
                 arrayOf<Any>("p {def X {q!<e>;X} main {X}} " +
                         "| q {def Y{p?; Y} main {Y}} " +
                         "| r { main {stop}}",
 
-                        "def X1 { p.e->q; X1 } main { X1 }")
+                        "def X1 { p.e->q; X1 } main {X1}")
         )
     }
 }

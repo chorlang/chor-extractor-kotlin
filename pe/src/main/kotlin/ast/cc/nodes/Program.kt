@@ -12,12 +12,17 @@ data class Program(val main: Choreography, val procedures: List<ProcedureDefinit
 
     override fun toString(): String {
         val sb = StringBuilder()
-        for (p in procedures){
+        for (p in procedures.sortedWith(compareBy({ it.procedure })))
             sb.append(p.toString())
-        }
 
-        sb.append("main { " + main.toString() + " }")
+        sb.append("main {" + main.toString() + "}")
 
         return sb.toString()
+    }
+
+    fun <T> compareBy(vararg selectors: (T) -> Comparable<*>?): Comparator<T> {
+        return object : Comparator<T> {
+            override fun compare(a: T, b: T): Int = compareValuesBy(a, b, *selectors)
+        }
     }
 }
