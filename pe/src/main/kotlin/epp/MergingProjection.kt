@@ -1,13 +1,15 @@
 package epp
 
+import ast.cc.nodes.ProcedureDefinition
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
 import java.util.*
+import kotlin.collections.ArrayList
 
 
-class MergingProjection {
-
+class MergingProjection() {
+    class MergingException(var s: String): Exception(s)
 
         fun merge(left: SPNode, right: SPNode): SPNode {
             return when {
@@ -18,21 +20,19 @@ class MergingProjection {
                 left is Offering && right is Offering -> merge(left, right)
                 left is ConditionSP && right is ConditionSP -> merge(left, right)
                 left is ProcedureDefinitionSP && right is ProcedureDefinitionSP -> merge(left, right)
-                left is ProcedureInvocationSP && right is ProcedureInvocationSP -> merge(left, right)!!
+                left is ProcedureInvocationSP && right is ProcedureInvocationSP -> merge(left, right)
                 else -> throw MergingException("Can't merge " + left.toString() + " with " + right.toString())
             }
         }
 
-    class MergingException(s: String): Throwable()
-
     private fun merge(left: Sending, right: Sending): SPNode {
-            if (left.process != right.process || left.expression != right.expression) throw MergingException("")
+            if (left.process != right.process || left.expression != right.expression) throw MergingException("Can't merge " + left.process + " and " + right.process )
             val m = merge(left.continuation, right.continuation) as Behaviour
             return Sending(m, left.process, left.expression)
         }
 
-        private fun merge(left: Receiving, right: Receiving): SPNode {
-            if (left.process != right.process) throw MergingException("")
+    private fun merge(left: Receiving, right: Receiving): SPNode {
+            if (left.process != right.process) throw MergingException("Can't merge " + left.process + " and " + right.process )
 
             val m = merge(left.continuation, right.continuation) as Behaviour
             return Receiving(m, left.process)
@@ -40,14 +40,14 @@ class MergingProjection {
         }
 
         private fun merge(left: SelectionSP, right: SelectionSP): SPNode {
-            if (left.process != right.process ||left.expression != right.expression) throw MergingException("")
+            if (left.process != right.process ||left.expression != right.expression) throw MergingException("Can't merge " + left.process + " and " + right.process )
 
             val continuation = merge(left.continuation, right.continuation) as Behaviour
             return SelectionSP(continuation, left.process, left.expression)
         }
 
         private fun merge(left: Offering, right: Offering): SPNode {
-            if (left.process != right.process) throw MergingException("")
+            if (left.process != right.process) throw MergingException("Can't merge " + left.process + " and " + right.process )
 
             val leftmap = left.labels
             val rightmap = right.labels
@@ -73,8 +73,9 @@ class MergingProjection {
         private fun merge(left: ConditionSP, right: ConditionSP): SPNode {
             val leftCondition = merge(left.thenBehaviour, left.thenBehaviour) as Behaviour
             val rightCondition = merge(right.elseBehaviour, right.elseBehaviour) as Behaviour
-            //assertCondition(left.process == right.process)
-            if (left.expression != right.expression) throw MergingException("")
+            if (left.expression != right.expression)
+                throw MergingException("Can't merge conditions " + leftCondition.toString() + " and " + rightCondition.toString())
+
             return ConditionSP(left.expression, leftCondition, rightCondition)
         }
 
@@ -83,10 +84,10 @@ class MergingProjection {
             return ProcedureDefinitionSP(mergeBehaviour)
         }
 
-        private fun merge(left: ProcedureInvocationSP, right: ProcedureInvocationSP): SPNode? {
+        private fun merge(left: ProcedureInvocationSP, right: ProcedureInvocationSP): SPNode {
             if (left.procedure == right.procedure) {
                 return ProcedureInvocationSP(left.procedure)
             } else
-                return null
+                throw MergingException("Can't merge procedures " + left.procedure + " and " + right.procedure)
         }
 }

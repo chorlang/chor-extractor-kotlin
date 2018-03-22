@@ -46,7 +46,17 @@ class NetworkExtraction {
         addToGlobalMap(node)
 
         buildGraph(node, graph as DirectedGraph<ConcreteNode, ExtractionLabel>)
-        val fklist = unroll(node, graph as DirectedGraph<Node, ExtractionLabel>)
+
+
+        graph.edgeSet().forEach { e ->
+            println(e.toString())
+            graph.getEdgeSource(e).nodenet.network.forEach{ pr -> println(pr.key +": " + pr.value.main.toString())}
+            //graph.getEdgeTarget(e).nodenet.network.forEach{ pr -> println(pr.key + pr.value.main.toString())}
+            println('\n')
+        }
+
+
+        val fklist = unrollGraph(node, graph as DirectedGraph<Node, ExtractionLabel>)
         return buildChoreography(node, fklist, graph)
     }
 
@@ -108,7 +118,7 @@ class NetworkExtraction {
 
     data class LabelTarget(val lbl: ExtractionLabel, val target: Node)
 
-    private fun unroll(root: ConcreteNode, graph: DirectedGraph<Node, ExtractionLabel>): ArrayList<FakeNode> {
+    private fun unrollGraph(root: ConcreteNode, graph: DirectedGraph<Node, ExtractionLabel>): ArrayList<FakeNode> {
         val fklist = ArrayList<FakeNode>()
 
         var c = 1
@@ -153,11 +163,11 @@ class NetworkExtraction {
 
     private fun buildGraph(nn: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
         val node = nn.copy()
-        val n = sortProcesses(node)
-        //val n = node.nodenet.network
 
         val unfolded = HashSet<String>()
+        //for (p in node.nodenet.network) {if (unfold(p.key, node.nodenet.network)) unfolded.add(p.key) }
 
+        val n = sortProcesses(node)
 
         for (p in n) {
             if (unfold(p.key, n)) unfolded.add(p.key)

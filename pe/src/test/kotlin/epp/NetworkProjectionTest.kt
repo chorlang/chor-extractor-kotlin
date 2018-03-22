@@ -131,13 +131,13 @@ class NetworkProjectionTest : Assert() {
                                 "def X{p&{ko: q&{ko: Z, ok: X}, ok: if e then p + ok; q + ok; X else p + ko; q + ko; q!<u>; Y}} " +
                                 "def Y{X} " +
                                 "def Z{Y} main {q?; X}}"
-                ),
+                )
 
-                arrayOf<Any>(
+                /*arrayOf<Any>(
                         "def X1 { p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } def X2 { q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X3 } def X3 { q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X3 } def X4 { q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X5 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } def X5 { q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X5 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } main {q.i->r; X1}"
                         ,
                         ""
-                )
+                )*/
 
         )
     }

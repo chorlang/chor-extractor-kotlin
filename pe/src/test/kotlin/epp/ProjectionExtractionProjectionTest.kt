@@ -11,7 +11,7 @@ import org.junit.runner.RunWith
 @RunWith(Theories::class)
 class ProjectionExtractionProjectionTest : Assert() {
 
-    @Theory
+    //@Theory
     fun test(vararg testData: Any) {
         val test = testData[0] as String
         println("\n" + "Choreography: " + test)
@@ -29,7 +29,7 @@ class ProjectionExtractionProjectionTest : Assert() {
 
     }
 
-    @Test
+    //@Test
     fun testN() {
         val network
                 = "p{" +
@@ -65,14 +65,39 @@ class ProjectionExtractionProjectionTest : Assert() {
                     "def Z{Y} " +
                     "main {q?; X}}"
 
+        val n = "def X1 { " +
+                    "p.e->q; if p.e " +
+                        "then X2    " +
+                        "else X4 } " +
+                "def X2 { " +
+                    "p->q[ok]; p->r[ok]; q.e->p; if r.e " +
+                        "then r->p[ok]; r->q[ok]; X1 " +
+                        "else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e " +
+                            "then X2 else X3 } " +
+                "def X3 { p->q[ko]; p->r[ko]; if q.e " +
+                    "then q->p[ok]; q->r[ok]; X1 " +
+                    "else q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e " +
+                        "then X2 else X3 } " +
+                "def X4 { p->q[ko]; p->r[ko]; if q.e " +
+                    "then q->p[ok]; q->r[ok]; X1 " +
+                    "else q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e " +
+                        "then X5 else X4 } " +
+                "def X5 { p->q[ok]; p->r[ok]; q.e->p; if r.e " +
+                    "then r->p[ok]; r->q[ok]; X1 " +
+                    "else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e " +
+                        "then X5 else X4 } " +
+                "main {q.i->r; X1}"
+
 
 
         //"p {main {q?; stop}} | q {main {p!<e>; stop}} | r {main {s+L; stop} | s {main {r&{L:stop}}}} "
         println(network)
 
+        /* Extract choreography*/
         val program = ChoreographyExtraction(network.toString()).extractChoreography()
         println("Choreography: " + program)
 
+        /* Try to project to the network */
         val epp = EndPointProjection()
         println("Network: " + epp.project(program.toString()))
 
@@ -108,7 +133,7 @@ class ProjectionExtractionProjectionTest : Assert() {
                 ), */
 
                 arrayOf<Any>(
-                        "def X {if p.e " +
+                        /*"def X {if p.e " +
                                 "then p->q[ok]; p->r[ok]; if r.e " +
                                     "then q.e->p; r->p[ok];r->q[ok];p.e->q;X " +
                                     "else q.e->p; r->p[ko];r->q[ko];r.u->q;Y " +
@@ -150,9 +175,74 @@ class ProjectionExtractionProjectionTest : Assert() {
                                     "else p->q[ko]; if q.e " +
                                         "then p->r[ko]; q->p[ok]; q->r[ok]; X1 " +
                                         "else p->r[ko]; X4 } " +
-                        "main {q.i->r; X1}"
+                        "main {q.i->r; X1}"*/
+                "",""
                 )
         )
+    }
+    @Test
+    fun dumbTest(){
+        val t1 = "def X1 { " +
+                    "p.e->q; if p.e " +
+                        "then X2 " +
+                        "else X4 } " +
+                "def X2 { " +
+                    "p->q[ok]; p->r[ok]; q.e->p; if r.e " +
+                        "then r->p[ok]; r->q[ok]; X1 " +
+                        "else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e " +
+                            "then X2 " +
+                            "else X3 } " +
+                "def X3 { p->q[ko]; p->r[ko]; if q.e " +
+                    "then q->p[ok]; q->r[ok]; X1 " +
+                    "else q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e " +
+                        "then X2 " +
+                        "else X3 } " +
+                "def X4 { p->q[ko]; p->r[ko]; if q.e " +
+                    "then q->p[ok]; q->r[ok]; X1 " +
+                    "else q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e " +
+                        "then X5 " +
+                        "else X4 } " +
+                "def X5 { p->q[ok]; p->r[ok]; q.e->p; if r.e " +
+                    "then r->p[ok]; r->q[ok]; X1 " +
+                    "else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e " +
+                        "then X5 " +
+                        "else X4 } " +
+                "main {q.i->r; X1}"
+
+        val t2 = "def X1 { " +
+                    "p.e->q; if p.e " +
+                        "then p->q[ok]; p->r[ok]; X2 " +
+                        "else p->q[ko]; if q.e " +
+                            "then p->r[ko]; q->p[ok]; q->r[ok]; X1 " +
+                            "else p->r[ko]; X4 } " +
+                "def X2 { " +
+                    "q.e->p; if r.e " +
+                        "then r->p[ok]; r->q[ok]; X1 " +
+                        "else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e " +
+                            "then p->q[ok]; p->r[ok]; X2 " +
+                            "else p->q[ko]; if q.e " +
+                                "then p->r[ko]; q->p[ok]; q->r[ok]; X1 " +
+                                "else p->r[ko]; X3 } " +
+                "def X3 { " +
+                    "q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e " +
+                        "then p->q[ok]; p->r[ok]; X2 " +
+                        "else p->q[ko]; if q.e " +
+                            "then p->r[ko]; q->p[ok]; q->r[ok]; X1 " +
+                            "else p->r[ko]; X3 } " +
+                "def X4 { q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e " +
+                    "then p->q[ok]; p->r[ok]; X5 " +
+                    "else p->q[ko]; if q.e " +
+                        "then p->r[ko]; q->p[ok]; q->r[ok]; X1 " +
+                        "else p->r[ko]; X4 } " +
+                "def X5 { " +
+                    "q.e->p; if r.e " +
+                        "then r->p[ok]; r->q[ok]; X1 " +
+                        "else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e " +
+                            "then p->q[ok]; p->r[ok]; X5 " +
+                            "else p->q[ko]; if q.e " +
+                                "then p->r[ko]; q->p[ok]; q->r[ok]; X1 " +
+                                "else p->r[ko]; X4 } " +
+                "main {q.i->r; X1}"
     }
 }
 
