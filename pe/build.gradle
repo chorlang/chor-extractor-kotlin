@@ -1,37 +1,44 @@
-group 'com'
-version '1.0'
-
 buildscript {
     ext.kotlin_version = '1.2.30'
     ext.antlr4_version = '4.7'
     ext.jgraphtVersion = '0.9.1'
+    ext.jmh_gradle_plugin_version = '0.4.5'
+    ext.jmh_version='1.20'
+
 
     repositories {
         mavenCentral()
+
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath "me.champeau.gradle:jmh-gradle-plugin:$jmh_gradle_plugin_version"
     }
 }
 
 apply plugin: 'kotlin'
+apply plugin: 'application'
 apply plugin: 'java'
 apply plugin: "idea"
 apply plugin: 'antlr'
-
-sourceCompatibility = 1.8
+apply plugin: "me.champeau.gradle.jmh"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     antlr "org.antlr:antlr4:4.7"
     compile "org.antlr:antlr4-runtime:$antlr4_version"
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     compile "org.jgrapht:jgrapht-core:$jgraphtVersion"
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }
+
+//generate grammar
 
 generateGrammarSource {
     maxHeapSize = "64m"
@@ -49,3 +56,38 @@ idea {
         generatedSourceDirs += file("$buildDir/generated-src/antlr/main/")
     }
 }
+
+
+//generate grammar ends
+
+
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = kotlin_jvm_target
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = kotlin_jvm_target
+    }
+}
+
+mainClassName = "Hi"
+
+task singleJar(type: Jar) {
+    manifest {
+        attributes(
+                "Main-Class": mainClassName
+        )
+    }
+    from { configurations.test.collect { it.isDirectory() ? it : zipTree(it) } } with jar
+}
+
+// there are several issues with JMH plugin:
+// 1. gradle daemons should be stopped before, so execute .\gradlew.bat --stop before
+// 2. jmh plugin is unable to compile code incrementally, so execute .\gradlew.bat clean before
+// 3. jmh plugin has huge classpage, to change GRADLE_HOME folder to short path, like C:\g\
+jmh {
+    jmhVersion = jmh_version
+}
+
