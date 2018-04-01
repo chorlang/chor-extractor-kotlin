@@ -72,7 +72,7 @@ compileTestKotlin {
     }
 }
 
-mainClassName = "Hi"
+mainClassName = "Hello"
 
 task singleJar(type: Jar) {
     manifest {
