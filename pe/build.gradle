@@ -1,10 +1,6 @@
 buildscript {
-    ext.kotlin_version = '1.2.30'
     ext.antlr4_version = '4.7'
     ext.jgraphtVersion = '0.9.1'
-    ext.jmh_gradle_plugin_version = '0.4.5'
-    ext.jmh_version='1.20'
-
 
     repositories {
         mavenCentral()
@@ -66,13 +62,14 @@ compileKotlin {
         jvmTarget = kotlin_jvm_target
     }
 }
-compileTestKotlin {
+
+/*compileTestKotlin {
     kotlinOptions {
         jvmTarget = kotlin_jvm_target
     }
-}
+}*/
 
-mainClassName = "Hello"
+mainClassName = "epp.NetworkProjection"
 
 task singleJar(type: Jar) {
     manifest {

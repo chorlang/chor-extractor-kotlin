@@ -1,15 +1,9 @@
-package epp
+package np
 
 import org.junit.Assert
-import org.junit.Rule
 import org.junit.Test
-import org.junit.experimental.theories.DataPoints
 import org.junit.experimental.theories.Theories
-import org.junit.experimental.theories.Theory
-import org.junit.internal.runners.statements.ExpectException
 import org.junit.runner.RunWith
-import org.junit.rules.ExpectedException
-
 
 
 @RunWith(Theories::class)
@@ -50,7 +44,7 @@ class ExtractedProjectionTest : Assert() {
 
         println("\n" + "Choreography: " + test)
 
-        val epp = EndPointProjection()
+        val epp = NetworkProjection
         val actual = epp.project(test)
         println("Network: " + actual.toString())
         //Assert.assertEquals(test, testData[1], actual.toString())
