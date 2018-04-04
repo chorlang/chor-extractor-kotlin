@@ -1,4 +1,4 @@
-package extraction
+package ce
 
 import ast.cc.interfaces.CCNode
 import ast.sp.interfaces.Behaviour

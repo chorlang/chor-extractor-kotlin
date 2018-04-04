@@ -1,4 +1,4 @@
-package extraction
+package ce
 
 import org.junit.Assert
 import org.junit.experimental.theories.DataPoints
@@ -13,8 +13,7 @@ class ProjectedExtractionTest : Assert() {
     @Throws(Exception::class)
     fun test(vararg testData: Any) {
         println("\n" + "Test Network: " + testData[0])
-        val np = ChoreographyExtraction(testData[0] as String)
-        val program = np.extractChoreography()
+        val program = ChoreographyExtraction.extractChoreography((testData[0] as String))
         println("Choreography: " + program.toString())
 
         Assert.assertEquals(testData[1], program.toString())

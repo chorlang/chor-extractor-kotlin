@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package epp
+package np
 
 import ast.cc.CCVisitor
 import ast.cc.interfaces.CCNode
@@ -11,7 +11,7 @@ import ast.cc.nodes.*
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
-import epp.MergingProjection.*
+import np.MergingProjection.*
 
 import java.util.*
 import kotlin.collections.HashMap

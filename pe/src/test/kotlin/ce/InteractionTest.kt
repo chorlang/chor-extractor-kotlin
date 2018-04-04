@@ -1,8 +1,6 @@
-package extraction
+package ce
 
-import ast.cc.interfaces.CCNode
 import org.junit.Assert
-import org.junit.Before
 import org.junit.experimental.theories.DataPoints
 import org.junit.experimental.theories.Theories
 import org.junit.experimental.theories.Theory
@@ -14,8 +12,7 @@ class InteractionTest : Assert() {
     @Throws(Exception::class)
     fun test(vararg testData: Any) {
         println("\n" + "Test Network: " + testData[0])
-        val np = ChoreographyExtraction(testData[0] as String)
-        val program = np.extractChoreography()
+        val program = ChoreographyExtraction.extractChoreography((testData[0] as String))
         println("Choreography: " + program.toString())
 
         Assert.assertEquals(testData[1], program.toString())

@@ -1,4 +1,4 @@
-package epp
+package np
 
 import ChoreographyBaseVisitor
 import ChoreographyParser.*

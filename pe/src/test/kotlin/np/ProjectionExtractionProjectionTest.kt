@@ -1,11 +1,10 @@
-package epp
+package np
 
-import extraction.ChoreographyExtraction
+import ce.ChoreographyExtraction
 import org.junit.Assert
 import org.junit.Test
 import org.junit.experimental.theories.DataPoints
 import org.junit.experimental.theories.Theories
-import org.junit.experimental.theories.Theory
 import org.junit.runner.RunWith
 
 @RunWith(Theories::class)
@@ -16,11 +15,11 @@ class ProjectionExtractionProjectionTest : Assert() {
         val test = testData[0] as String
         println("\n" + "Choreography: " + test)
 
-        val epp = EndPointProjection()
+        val epp = NetworkProjection
         val network = epp.project(test)
         println("Network: " + network.toString())
 
-        val program = ChoreographyExtraction(network.toString()).extractChoreography()
+        val program = ChoreographyExtraction.extractChoreography(network.toString())
         println("Choreography: " + program)
 
         println("Network: " + epp.project(program.toString()))
@@ -94,11 +93,11 @@ class ProjectionExtractionProjectionTest : Assert() {
         println(network)
 
         /* Extract choreography*/
-        val program = ChoreographyExtraction(network.toString()).extractChoreography()
+        val program = ChoreographyExtraction.extractChoreography(network)
         println("Choreography: " + program)
 
         /* Try to project to the network */
-        val epp = EndPointProjection()
+        val epp = NetworkProjection
         println("Network: " + epp.project(program.toString()))
 
         Assert.assertEquals(network, program.toString())

@@ -1,4 +1,4 @@
-package epp
+package np
 
 import org.junit.Assert
 import org.junit.experimental.theories.DataPoints
@@ -14,7 +14,7 @@ class NetworkProjectionTest : Assert() {
         val test = testData[0] as String
         println("\n" + "Choreography: " + test)
 
-        val epp = EndPointProjection()
+        val epp = NetworkProjection
         val actual = epp.project(test)
         println("Network: " + actual.toString())
         Assert.assertEquals(test, testData[1], actual.toString())

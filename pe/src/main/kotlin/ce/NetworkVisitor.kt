@@ -1,4 +1,4 @@
-package extraction
+package ce
 
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
@@ -6,7 +6,6 @@ import ast.sp.nodes.*
 import NetworkBaseVisitor
 import NetworkParser.*
 import org.antlr.v4.runtime.tree.TerminalNode
-import java.util.*
 import kotlin.collections.HashMap
 
 

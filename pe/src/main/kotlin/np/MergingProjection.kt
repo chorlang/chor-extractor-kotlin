@@ -1,11 +1,9 @@
-package epp
+package np
 
-import ast.cc.nodes.ProcedureDefinition
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 class MergingProjection() {
