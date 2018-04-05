@@ -19,7 +19,7 @@ class ProjectionExtractionProjectionTest : Assert() {
         val network = epp.project(test)
         println("Network: " + network.toString())
 
-        val program = ChoreographyExtraction.extractChoreography(network.toString())
+        val program = ChoreographyExtraction.main(arrayOf("-c", network.toString()))
         println("Choreography: " + program)
 
         println("Network: " + epp.project(program.toString()))
@@ -93,7 +93,7 @@ class ProjectionExtractionProjectionTest : Assert() {
         println(network)
 
         /* Extract choreography*/
-        val program = ChoreographyExtraction.extractChoreography(network)
+        val program = ChoreographyExtraction.main(arrayOf("-c", network))
         println("Choreography: " + program)
 
         /* Try to project to the network */

@@ -13,7 +13,8 @@ class ConditionTest : Assert() {
     @Throws(Exception::class)
     fun test(vararg testData: Any) {
         println("\n" + "Test Network: " + testData[0])
-        val program = ChoreographyExtraction.extractChoreography((testData[0] as String))
+        val ce = ChoreographyExtraction
+        val program = ce.main(arrayOf("-c", testData[0] as String))
         println("Choreography: " + program.toString())
 
         Assert.assertEquals(testData[1], program.toString())

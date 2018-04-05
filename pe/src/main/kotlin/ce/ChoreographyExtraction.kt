@@ -6,20 +6,29 @@ import NetworkLexer
 import NetworkParser
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
+import org.apache.logging.log4j.LogManager
 import java.io.File
 
 object ChoreographyExtraction{
+    private val log = LogManager.getLogger();
+
     @Throws(Exception::class)
     @JvmStatic
-    fun main(args: Array<String>) {
+    fun main(args: Array<String>): String {
         val ch = parseInput(args)
+
         if (ch!=null) {
-            println(extractChoreography(ch.chor).toString())
+            val chor = extractChoreography(ch.chor)
+            log.info(chor.toString())
+
+            return chor.toString()
         }
-        else System.out.println("Malformed request")
+        else log.error("Malformed request")
+
+        return ""
     }
 
-    fun extractChoreography(grammar: String): Program {
+    private fun extractChoreography(grammar: String): Program {
         val stream = ANTLRInputStream(grammar)
         val lexer = NetworkLexer(stream)
         val parser = NetworkParser(CommonTokenStream(lexer))
@@ -65,6 +74,7 @@ object ChoreographyExtraction{
 
             }
         }
+
         if (chor == "") return null
         else return (ParsedInput(chor, str))
     }

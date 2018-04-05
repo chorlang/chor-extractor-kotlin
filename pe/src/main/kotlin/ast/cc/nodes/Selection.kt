@@ -13,7 +13,9 @@ data class Selection(val sender: String, val receiver: String, val label: String
     }
 
     override fun toString(): String {
-        return sender + "->" + receiver + "[" + label + "]; " + continuation.toString()
+        val sb = StringBuilder()
+        sb.append(sender).append("->").append(receiver).append("[").append(label).append("]; ").append(continuation.toString())
+        return sb.toString()
     }
 
 }

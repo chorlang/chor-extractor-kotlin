@@ -47,15 +47,6 @@ class NetworkExtraction {
 
         buildGraph(node, graph as DirectedGraph<ConcreteNode, ExtractionLabel>)
 
-
-        graph.edgeSet().forEach { e ->
-            println(e.toString())
-            graph.getEdgeSource(e).nodenet.network.forEach{ pr -> println(pr.key +": " + pr.value.main.toString())}
-            //graph.getEdgeTarget(e).nodenet.network.forEach{ pr -> println(pr.key + pr.value.main.toString())}
-            println('\n')
-        }
-
-
         val fklist = unrollGraph(node, graph as DirectedGraph<Node, ExtractionLabel>)
         return buildChoreography(node, fklist, graph)
     }

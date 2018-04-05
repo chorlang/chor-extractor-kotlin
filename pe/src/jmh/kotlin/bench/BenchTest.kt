@@ -1,16 +1,15 @@
 package bench
 
-import ce.ChoreographyExtraction
+import np.NetworkProjection
 import org.openjdk.jmh.annotations.*
-
 
 @BenchmarkMode(Mode.All)
 @Warmup(iterations = 1)
 @Measurement(iterations = 1, batchSize = 10)
-@Fork(1)
 open class BenchTest{
     @Benchmark
     fun tst(){
-        ChoreographyExtraction.extractChoreography("p {main{stop}} | q {main{stop}}")
+        val args = arrayOf("-g", "50", "10")
+        NetworkProjection.main(args)
     }
 }

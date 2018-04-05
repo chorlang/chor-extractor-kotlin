@@ -15,7 +15,7 @@ data class Program(val main: Choreography, val procedures: List<ProcedureDefinit
         for (p in procedures.sortedWith(compareBy({ it.procedure })))
             sb.append(p.toString())
 
-        sb.append("main {" + main.toString() + "}")
+        sb.append("main {").append(main.toString()).append("}")
 
         return sb.toString()
     }
