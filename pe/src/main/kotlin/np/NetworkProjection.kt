@@ -9,6 +9,7 @@ import ast.sp.nodes.Network
 import ast.sp.nodes.ProcessBehaviour
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
+import org.apache.logging.log4j.LogManager
 import java.util.*
 import java.io.File
 import kotlin.collections.HashSet
@@ -18,18 +19,29 @@ import kotlin.collections.ArrayList
 
 
 object NetworkProjection {
+    private val log = LogManager.getLogger();
+
     @Throws(Exception::class)
     @JvmStatic
-    fun main(args: Array<String>) {
-        val ch = parseInput(args)
-        if (!ch.equals("-1"))  {
-            println(project(ch).toString())
-        }
-        else System.out.println("Malformed request")
+    fun main(args: Array<String>): String {
 
+        log.info("parse input parameters")
+        val ch = parseInput(args)
+
+        if (!ch.equals("-1"))  {
+            File("generated_chor.txt").printWriter().use { out -> out.println(ch) }
+            val chor = project(ch)
+
+            log.info("project choreography")
+            return chor.toString()
+
+        }
+        else log.error("Malformed request")
+        return ""
     }
 
     private fun parse(grammar: String): ChoreographyParser.ProgramContext {
+
 
         val stream = ANTLRInputStream(grammar)
         val lexer = ChoreographyLexer(stream)
@@ -72,6 +84,7 @@ object NetworkProjection {
                     else throw Exception("Malformed call - choreography file name was expected.")
                 }
                 "-g" -> {
+                    log.info("generate choreography")
                     val i = iter.nextIndex()
                     if (args.size >= i + 2) {
                         val pr = args.get(i).toInt()
@@ -176,13 +189,13 @@ object NetworkProjection {
 
         val ln :Long = if (i<=source.length) 1 else 3
 
-        (1..i).forEach{
-                val pr = Random().ints(ln, 0, source.length)
+        do {
+            val pr = Random().ints(ln, 0, source.length)
                     .asSequence()
                     .map(source::get)
                     .joinToString("")
-                prset.add(pr)
-            }
+            if (!prset.contains(pr)) prset.add(pr)
+        } while (prset.size!=i)
 
         return prset
     }

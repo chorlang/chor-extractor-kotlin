@@ -10,6 +10,8 @@ data class Communication(val sender: String, val receiver: String, val expressio
     }
 
     override fun toString(): String {
-        return sender + "." + expression + "->" + receiver + "; " + continuation.toString()
+        val sb = StringBuilder()
+        sb.append(sender).append(".").append(expression).append("->").append(receiver).append("; ").append(continuation.toString())
+        return sb.toString()
     }
 }
