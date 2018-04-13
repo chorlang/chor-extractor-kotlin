@@ -8,8 +8,8 @@ package np
 import ast.cc.CCVisitor
 import ast.cc.interfaces.CCNode
 import ast.cc.nodes.*
-import ast.sp.interfaces.Behaviour
-import ast.sp.interfaces.SPNode
+import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.SPNode
 import ast.sp.nodes.*
 import np.MergingProjection.*
 
@@ -21,6 +21,10 @@ import kotlin.collections.HashMap
  * @author Fabrizio Montesi <famontesi></famontesi>@gmail.com>
  */
 class BehaviourProjection : CCVisitor<SPNode> {
+    override fun visit(n: Multicom): SPNode {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private var processName: String? = null
     private var procedures: MutableList<ProcedureDefinitionSP>? = null
 

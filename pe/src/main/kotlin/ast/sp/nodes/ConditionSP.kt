@@ -1,6 +1,6 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.Behaviour
+import ast.sp.nodes.interfaces.Behaviour
 
 data class ConditionSP(val expression: String, val thenBehaviour: Behaviour, val elseBehaviour: Behaviour) : Behaviour {
     override fun toString(): String {

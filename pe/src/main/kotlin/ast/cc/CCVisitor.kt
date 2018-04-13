@@ -19,4 +19,5 @@ interface CCVisitor<T> {
     fun visit(n: ProcedureInvocation): T
 
     fun visit(n: Program): T
+    fun visit(n: Multicom): T
 }

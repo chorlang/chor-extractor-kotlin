@@ -1,9 +1,9 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.Behaviour
-import ast.sp.interfaces.Interaction
+import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.InteractionSP
 
-data class Receiving(val continuation: Behaviour, val pr: String) : Interaction(pr) {
+data class Receiving(val continuation: Behaviour, val pr: String) : InteractionSP(pr) {
     override fun toString(): String {
         return process + "?; " + continuation.toString()
     }
@@ -12,7 +12,7 @@ data class Receiving(val continuation: Behaviour, val pr: String) : Interaction(
         return continuation.findRecProcCall(procname)
     }
 
-    override fun copy(): Interaction {
+    override fun copy(): InteractionSP {
         return Receiving(continuation.copy(), ""+process)
     }
 

@@ -1,9 +1,9 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.Behaviour
-import ast.sp.interfaces.Interaction
+import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.InteractionSP
 
-data class SelectionSP(val continuation: Behaviour, val pr: String, val expression: String) : Interaction(pr) {
+data class SelectionSP(val continuation: Behaviour, val pr: String, val expression: String) : InteractionSP(pr) {
 
     override fun toString(): String {
         return process + " + " + expression + "; " + continuation.toString()
@@ -13,7 +13,7 @@ data class SelectionSP(val continuation: Behaviour, val pr: String, val expressi
         return continuation.findRecProcCall(procname)
     }
 
-    override fun copy(): Interaction {
+    override fun copy(): InteractionSP {
         return SelectionSP(continuation.copy(), ""+process, ""+expression)
     }
 

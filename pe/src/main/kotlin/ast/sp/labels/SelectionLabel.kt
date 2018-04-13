@@ -1,9 +1,9 @@
 package ast.sp.labels
 
-import ast.sp.interfaces.ExtractionLabel
+import ast.sp.labels.interfaces.InteractionLabel
 import java.util.*
 
-data class SelectionLabel(val sender: String, val receiver: String, val label: String) : ExtractionLabel(false) {
+data class SelectionLabel(override val sender: String, override val receiver: String, val label: String) : InteractionLabel(sender, receiver, false) {
 
     override fun toString(): String {
         return "$sender->$receiver[$label]"
@@ -11,9 +11,5 @@ data class SelectionLabel(val sender: String, val receiver: String, val label: S
 
     fun equals(e: SelectionLabel): Boolean{
         return diff == e.diff
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(diff)
     }
 }

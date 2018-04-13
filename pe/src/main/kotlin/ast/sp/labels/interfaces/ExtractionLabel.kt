@@ -1,4 +1,4 @@
-package ast.sp.interfaces
+package ast.sp.labels.interfaces
 
 import java.util.*
 import java.util.Objects
