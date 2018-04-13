@@ -1,7 +1,6 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.SPNode
-import java.util.*
+import ast.sp.nodes.interfaces.SPNode
 import kotlin.collections.HashMap
 
 data class Network(val network: HashMap<String, ProcessBehaviour>) : SPNode {

@@ -1,7 +1,7 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.Behaviour
-import ast.sp.interfaces.SPNode
+import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.SPNode
 
 class ProcessBehaviour(val procedures: HashMap<String, ProcedureDefinitionSP>, var main: Behaviour) : SPNode {
 

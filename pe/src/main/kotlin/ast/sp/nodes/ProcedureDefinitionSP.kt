@@ -1,8 +1,8 @@
 
 package ast.sp.nodes
 
-import ast.sp.interfaces.Behaviour
-import ast.sp.interfaces.SPNode
+import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.SPNode
 
 data class ProcedureDefinitionSP(val behaviour: Behaviour) : SPNode {
     override fun toString(): String {

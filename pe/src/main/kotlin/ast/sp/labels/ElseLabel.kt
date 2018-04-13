@@ -1,6 +1,6 @@
 package ast.sp.labels
 
-import ast.sp.interfaces.ExtractionLabel
+import ast.sp.labels.interfaces.ExtractionLabel
 import java.util.*
 
 data class ElseLabel(val process: String, val expression: String) : ExtractionLabel(false) {

@@ -1,7 +1,7 @@
 package ce
 
-import ast.sp.interfaces.Behaviour
-import ast.sp.interfaces.SPNode
+import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.SPNode
 import ast.sp.nodes.*
 import NetworkBaseVisitor
 import NetworkParser.*

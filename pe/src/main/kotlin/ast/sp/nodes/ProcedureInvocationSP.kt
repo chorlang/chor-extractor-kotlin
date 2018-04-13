@@ -1,6 +1,6 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.Behaviour
+import ast.sp.nodes.interfaces.Behaviour
 
 data class ProcedureInvocationSP(val procedure: String) : Behaviour {
 

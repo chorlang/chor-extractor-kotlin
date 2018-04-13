@@ -1,6 +1,6 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.Behaviour
+import ast.sp.nodes.interfaces.Behaviour
 
 class TerminationSP : Behaviour {
     private val termination = "stop"

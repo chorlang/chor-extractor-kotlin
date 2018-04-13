@@ -1,13 +1,16 @@
 package ce
 
 import ast.cc.interfaces.CCNode
-import ast.sp.interfaces.Behaviour
-import ast.sp.interfaces.ExtractionLabel
+import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.labels.interfaces.ExtractionLabel
 import ast.sp.labels.*
 import ast.sp.nodes.*
 import ast.cc.interfaces.Choreography
+import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
-import ast.sp.interfaces.Interaction
+import ast.sp.nodes.interfaces.InteractionSP
+import ast.cc.nodes.Communication
+import ast.sp.labels.interfaces.InteractionLabel
 import org.jgrapht.DirectedGraph
 import org.jgrapht.graph.DefaultDirectedGraph
 import java.util.*
@@ -91,6 +94,13 @@ class NetworkExtraction {
                         Selection(e.receiver, e.sender, e.label, bh(graph.getEdgeTarget(e), graph, fklist))
                     }
 
+                    is MulticomLabel -> {
+                        val act = ArrayList<CCNode>()
+                        for (l in e.labels){
+                        }
+                        Multicom(act)
+                    }
+
                     else -> throw Exception("Unexpected label type, can't build choreography")
                 }
             }
@@ -152,20 +162,20 @@ class NetworkExtraction {
         return "X" + count.inc()
     }
 
-    private fun buildGraph(nn: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
-        val node = nn.copy()
+    private fun buildGraph(bldgrphnode: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
+        val node = bldgrphnode.copy()
 
         val unfolded = HashSet<String>()
         //for (p in node.nodenet.network) {if (unfold(p.key, node.nodenet.network)) unfolded.add(p.key) }
 
-        val n = sortProcesses(node)
+        val nodesorted = sortProcesses(node)
 
-        for (p in n) {
-            if (unfold(p.key, n)) unfolded.add(p.key)
+        for (p in nodesorted) {
+            if (unfold(p.key, nodesorted)) unfolded.add(p.key)
 
-            val findComm = findCommunication(p.key, n)
+            val findComm = findCommunication(p.key, nodesorted)
             if (findComm!=null) {
-                val (tgt, lbl) = getCommunication(n, findComm)
+                val (tgt, lbl) = getCommunication(nodesorted, findComm)
 
                 when (lbl) {
                     is SendingLabel -> {
@@ -178,7 +188,7 @@ class NetworkExtraction {
                     }
                 }
 
-                unfolded.forEach { tgt.network[it]?.main = nn.nodenet.network[it]?.main?.copy()!! }
+                unfolded.forEach { tgt.network[it]?.main = bldgrphnode.nodenet.network[it]?.main?.copy()!! }
 
                 if (isAllProceduresVisited(tgt)) {
                     lbl.flipped = true
@@ -186,28 +196,28 @@ class NetworkExtraction {
                 }
 
                 /* case1*/
-                val nodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt) && (nn.str).startsWith(i.str) }.findAny()
+                val nodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt) && (bldgrphnode.str).startsWith(i.str) }.findAny()
                 if (!nodeInGraph.isPresent) {
-                    val newnode = createNewNode(tgt, lbl, node, nn)
-                    addNewNode(nn, newnode, lbl, graph)
+                    val newnode = createNewNode(tgt, lbl, node, bldgrphnode)
+                    addNewNode(bldgrphnode, newnode, lbl, graph)
                     return if (buildGraph(newnode, graph)) true else continue
                 }
                 /* case 2 */
                 else {
-                    if (n.values.filter { pr -> isfinite(pr.main) && !isterminated(pr) }.isEmpty()) {
+                    if (nodesorted.values.filter { pr -> isfinite(pr.main) && !isterminated(pr) }.isEmpty()) {
 
-                        if (addNewEdge(nn, nodeInGraph.get(), lbl, graph)) return true
+                        if (addNewEdge(bldgrphnode, nodeInGraph.get(), lbl, graph)) return true
                         else {
-                            cleanNode(findComm, n, nn)
+                            cleanNode(findComm, nodesorted, bldgrphnode)
                         }
                     } else {
-                        cleanNode(findComm, n, nn)
+                        cleanNode(findComm, nodesorted, bldgrphnode)
                     }
 
                 }
 
-            } else if (findCondition(n)) {
-                val (tgt1, lbl1, tgt2, lbl2) = getCondition(n)
+            } else if (findCondition(nodesorted)) {
+                val (tgt1, lbl1, tgt2, lbl2) = getCondition(nodesorted)
 
                 /*unfolded.remove(lbl1.process)
                 unfolded.remove(lbl2.process)
@@ -229,40 +239,185 @@ class NetworkExtraction {
 
                 /* case4 */
                 var thenNode: Node
-                val tnodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt1) && (nn.str + "0").startsWith(i.str) }.findAny()
+                val tnodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt1) && (bldgrphnode.str + "0").startsWith(i.str) }.findAny()
                 if (!tnodeInGraph.isPresent) {
-                    thenNode = createNewNode(tgt1, lbl1, node, nn)
-                    addNewNode(nn, thenNode, lbl1, graph)
+                    thenNode = createNewNode(tgt1, lbl1, node, bldgrphnode)
+                    addNewNode(bldgrphnode, thenNode, lbl1, graph)
                     if (!buildGraph(thenNode, graph)) continue
                 }
                 /* case 5 */
                 else {
                     thenNode = tnodeInGraph.get()
-                    addNewEdge(nn, thenNode, lbl1, graph)
+                    addNewEdge(bldgrphnode, thenNode, lbl1, graph)
                 }
 
                 /* case 7 */
                 var elseNode: Node
-                val enodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt2) && (nn.str + "1").startsWith(i.str) }.findAny()
+                val enodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tgt2) && (bldgrphnode.str + "1").startsWith(i.str) }.findAny()
                 if (!enodeInGraph.isPresent) {
-                    elseNode = createNewNode(tgt2, lbl2, node, nn)
-                    addNewNode(nn, elseNode, lbl2, graph)
+                    elseNode = createNewNode(tgt2, lbl2, node, bldgrphnode)
+                    addNewNode(bldgrphnode, elseNode, lbl2, graph)
                     if (!buildGraph(elseNode, graph)) continue
                 }
                 /* case 8 */
                 else {
                     elseNode = enodeInGraph.get()
-                    addNewEdge(nn, elseNode, lbl2, graph)
+                    addNewEdge(bldgrphnode, elseNode, lbl2, graph)
                 }
 
                 relabel(thenNode)
                 relabel(elseNode)
                 return true
-            } else if (allTerminated(n)) {
+            } else if (allTerminated(nodesorted)) {
+                return true
+            } else { /* try to find multicom*/
+
+                val tmpnode = node.copy()
+                val tmpnodenet = tmpnode.nodenet.network
+
+                for (pr in nodesorted){
+
+                    val actions = ArrayList<InteractionLabel>()
+                    val waiting = ArrayList<InteractionLabel>()
+                    val b = getInteractionLabel(pr.key, nodesorted)
+                    if (b!=null) waiting.add(b)
+
+
+                    while (!waiting.isEmpty()){
+                        val f = waiting.first()
+                        waiting.remove(f)
+                        actions.add(f)
+
+                        val receiver = f.receiver
+                        val sender = f.sender
+
+                        val rcvpb = nodesorted[receiver]
+                        if (rcvpb != null) populateWaiting(sender, receiver, rcvpb)?.filterNotTo(waiting) { actions.contains(it) }
+                    }
+
+                    if (actions.size >= 2){
+
+                        val t = createMulticomNode(actions, tmpnodenet)
+                        ConcreteNode(Network(t), tmpnode.str, tmpnode.bad)
+
+                        val lbl = MulticomLabel(actions)
+                        val net = node.nodenet.network
+                        for (label in actions){
+                            label.sender
+                            label.receiver
+                            net.get(label.sender)
+                            net.get(label.receiver)
+
+                        }
+
+                        val nodeInGraph = graph.vertexSet().stream().filter { i -> i.nodenet.equals(tmpnode) && (bldgrphnode.str).startsWith(i.str) }.findAny()
+
+                        if (!nodeInGraph.isPresent) {
+                            val newnode = createNewNode(tmpnode.nodenet, lbl, node, bldgrphnode)
+                            addNewNode(bldgrphnode, newnode, lbl, graph)
+                            return if (buildGraph(newnode, graph)) true else continue
+                        }
+                        /* case 2 */
+                        else {
+                            if (nodesorted.values.filter { pr -> isfinite(pr.main) && !isterminated(pr) }.isEmpty()) {
+
+                                if (addNewEdge(bldgrphnode, nodeInGraph.get(), lbl, graph)) return true
+                                /*else {
+                                    cleanNode(findComm, nodesorted, bldgrphnode)
+                                }*/
+                            } /*else {
+                                cleanNode(findComm, nodesorted, bldgrphnode)
+                            }*/
+
+                        }
+                    } else return false
+
+                }
+
                 return true
             }
         }
+
         throw ProcessStarvationException("Process starvation at node" + node.toString())
+    }
+
+    private fun createMulticomNode(actions: ArrayList<InteractionLabel>, tmpnodenet: HashMap<String, ProcessBehaviour>) : HashMap<String, ProcessBehaviour> {
+        for (a in actions) {
+            val sndr = a.sender
+            val sndrmain = tmpnodenet.get(sndr)?.main
+            val sndrcont = (sndrmain as Sending).continuation
+
+            val rcv = a.receiver
+
+
+
+            tmpnodenet.replace(sndr, ProcessBehaviour(tmpnodenet.get(sndr)?.procedures!!, sndrcont))
+            val rcvmain = tmpnodenet.get(rcv)?.main
+            val rcvcont = when (rcvmain) {
+                is Sending -> {
+                    gotContinuation(rcvmain, sndr)
+                }
+                is SelectionSP -> {
+                    gotContinuation(rcvmain, sndr)
+                }
+                is Receiving -> gotContinuation(rcvmain, sndr)
+                else -> throw Exception("Nothing except selection and sending should be possible at this point")
+            }
+
+            tmpnodenet.replace(rcv, ProcessBehaviour(tmpnodenet.get(rcv)?.procedures!!, rcvcont))
+        }
+        return tmpnodenet
+    }
+
+    private fun gotContinuation(r: Behaviour?, sender: String): Behaviour {
+        return when (r) {
+            is Receiving -> {
+                if (r.pr.equals(sender)) r.continuation
+                else throw Exception("Nothing except selection and sending should be possible at this point")
+            }
+            is Sending -> {
+                Sending(gotContinuation(r.continuation, sender), r.pr , r.expression)
+            }
+            is SelectionSP -> {
+                SelectionSP(gotContinuation(r.continuation, sender), r.pr , r.expression)
+            }
+            else -> throw Exception("Nothing except selection and sending should be possible at this point")
+        }
+    }
+
+    private fun populateWaiting(senderpr: String, receiverpr: String, receiverprb: ProcessBehaviour): ArrayList<InteractionLabel>? {
+        val recprbmain = receiverprb.main
+        val w = ArrayList<InteractionLabel>()
+        when (recprbmain) {
+            is Sending -> {
+                w.add(SendingLabel(receiverpr, recprbmain.pr, recprbmain.expression))
+            }
+            is SelectionSP -> {
+                w.add(SendingLabel(receiverpr, recprbmain.pr, recprbmain.expression))
+            }
+            is Receiving -> {
+                return if (recprbmain.pr.equals(senderpr)) w else null
+            }
+            is ProcedureInvocationSP -> {
+                return w
+                TODO("recursive clause")
+            }
+            else -> return w
+        }
+        return w
+    }
+
+    private fun getInteractionLabel(p: String, nodesorted: HashMap<String, ProcessBehaviour>): InteractionLabel? {
+        val pmain = nodesorted.get(p)?.main
+        when (pmain) {
+            is Sending ->{
+                return SendingLabel(p, pmain.pr, pmain.expression)
+            }
+            is SelectionSP ->{
+                return SelectionLabel(p, pmain.pr, pmain.expression)
+            }
+            else -> return null
+        }
     }
 
     private fun sortProcesses(node: NetworkExtraction.ConcreteNode): HashMap<String, ProcessBehaviour> {
@@ -279,13 +434,13 @@ class NetworkExtraction {
     //private fun foldUnfolded(p: String, tgt: Network, nn: ConcreteNode) {}
 
     private fun cleanNode(findComm: GetCommunication, n: network, nn: ConcreteNode) {
-        val first = if (findComm is Communication) findComm.sender else (findComm as Selection).select
-        val second = if (findComm is Communication) findComm.receiver else (findComm as Selection).offer
+        val first = if (findComm is SendReceive) findComm.sender else (findComm as SelectOffer).select
+        val second = if (findComm is SendReceive) findComm.receiver else (findComm as SelectOffer).offer
 
-        val prk1 = (first.main as Interaction).process
+        val prk1 = (first.main as InteractionSP).process
         val prb1new = nn.nodenet.network.get(prk1)
         val prb1 = n[prk1]
-        val prk2 = (second.main as Interaction).process
+        val prk2 = (second.main as InteractionSP).process
         val prb2new = nn.nodenet.network.get(prk2)
         val prb2 = n[prk2]
 
@@ -474,8 +629,8 @@ class NetworkExtraction {
     }
 
     interface GetCommunication
-    data class Communication (val sender: ProcessBehaviour, val receiver: ProcessBehaviour): GetCommunication
-    data class Selection (val select: ProcessBehaviour, val offer: ProcessBehaviour): GetCommunication
+    data class SendReceive (val sender: ProcessBehaviour, val receiver: ProcessBehaviour): GetCommunication
+    data class SelectOffer (val select: ProcessBehaviour, val offer: ProcessBehaviour): GetCommunication
 
     private fun findCommunication(p: String, n: network): GetCommunication? {
         val pb = n[p]
@@ -485,7 +640,7 @@ class NetworkExtraction {
             is Sending -> {
                 val receivpr = n[pbm.process]
                 if (receivpr != null && receivpr.main is Receiving && (receivpr.main as Receiving).pr == p) {
-                    return Communication(pb, receivpr)
+                    return SendReceive(pb, receivpr)
 
                 }
             }
@@ -493,21 +648,21 @@ class NetworkExtraction {
             is Receiving -> {
                 val sendpr = n[(pb.main as Receiving).process]
                 if (sendpr!= null && sendpr.main is Sending && (sendpr.main as Sending).pr == p){
-                    return Communication(sendpr, pb)
+                    return SendReceive(sendpr, pb)
                 }
             }
 
             is SelectionSP -> {
                 val offer = n[pbm.process]
                 if (offer!=null && offer.main is Offering && (offer.main as Offering).pr == p){
-                    return Selection(pb, offer)
+                    return SelectOffer(pb, offer)
                 }
             }
 
             is Offering -> {
                 val select = n[pbm.process]
                 if (select != null && select.main is SelectionSP && (select.main as SelectionSP).pr == p) {
-                    return Selection(select, pb)
+                    return SelectOffer(select, pb)
                 }
             }
 
@@ -517,7 +672,7 @@ class NetworkExtraction {
 
     private fun getCommunication(n: network, findComm: GetCommunication): Pair<Network, ExtractionLabel> {
         when (findComm){
-            is Communication -> {
+            is SendReceive -> {
                 val pbl = HashMap<String, ProcessBehaviour>(n)
 
                 val sendb = findComm.sender
@@ -534,7 +689,7 @@ class NetworkExtraction {
                 return Pair(Network(pbl), label)
             }
 
-            is Selection -> {
+            is SelectOffer -> {
                 val pbl = HashMap<String, ProcessBehaviour>(n)
 
                 val selection = findComm.select
@@ -554,7 +709,7 @@ class NetworkExtraction {
                 return Pair(Network(pbl), label)
             }
 
-            else -> throw Exception("FindComm object doesn't belong to Communication or Selection types")
+            else -> throw Exception("FindComm object doesn't belong to SendReceive or SelectOffer types")
         }
     }
 

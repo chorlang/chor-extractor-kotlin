@@ -1,4 +1,4 @@
-package ast.sp.interfaces
+package ast.sp.nodes.interfaces
 
 interface Behaviour : SPNode {
     fun findRecProcCall(procname: String): Boolean
