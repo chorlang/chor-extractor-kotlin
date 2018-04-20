@@ -12,4 +12,8 @@ data class SendingLabel(override val sender: String, override val receiver: Stri
     fun equals(e: SendingLabel): Boolean{
         return diff == e.diff
     }
+
+    override fun hashCode(): Int {
+        return Objects.hash(diff)
+    }
 }

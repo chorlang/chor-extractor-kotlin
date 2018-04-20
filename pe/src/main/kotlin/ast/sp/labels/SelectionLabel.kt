@@ -12,4 +12,8 @@ data class SelectionLabel(override val sender: String, override val receiver: St
     fun equals(e: SelectionLabel): Boolean{
         return diff == e.diff
     }
+
+    override fun hashCode(): Int {
+        return Objects.hash(diff)
+    }
 }
