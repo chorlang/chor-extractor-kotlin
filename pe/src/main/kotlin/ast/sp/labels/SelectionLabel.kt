@@ -3,7 +3,7 @@ package ast.sp.labels
 import ast.sp.labels.interfaces.InteractionLabel
 import java.util.*
 
-data class SelectionLabel(override val sender: String, override val receiver: String, val label: String) : InteractionLabel(sender, receiver, false) {
+data class SelectionLabel(val sender: String, val receiver: String, val label: String) : InteractionLabel(sender, receiver, label, false) {
 
     override fun toString(): String {
         return "$sender->$receiver[$label]"

@@ -153,16 +153,16 @@ object NetworkProjection {
 
             if (visited.size == prset.size && cond == 0) {
                 if (Math.random() < 0.5)
-                    return Communication(sender, receiver, expression, Termination())
+                    return CommunicationSelection(Communication(sender, receiver, expression), Termination())
                 else
-                    return Selection(sender, receiver, expression, Termination())
+                    return CommunicationSelection(Selection(sender, receiver, expression), Termination())
             } else {
                 val continuation = generateMain(prset, visited, t_pr, cond)
 
                 if (Math.random() < 0.5)
-                    return Communication(sender, receiver, expression, continuation)
+                    return CommunicationSelection(Communication(sender, receiver, expression), continuation)
                 else
-                    return Selection(sender, receiver, expression, continuation)
+                    return CommunicationSelection(Selection(sender, receiver, expression), continuation)
             }
         }
     }

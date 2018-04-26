@@ -4,7 +4,7 @@ import ast.sp.nodes.interfaces.Behaviour
 import ast.sp.nodes.interfaces.InteractionSP
 import kotlin.collections.HashMap
 
-data class Offering(val pr: String, val labels: HashMap<String, Behaviour>) : InteractionSP(pr) {
+data class OfferingSP(val pr: String, val labels: HashMap<String, Behaviour>) : InteractionSP(pr) {
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append(process + "&{")
@@ -31,11 +31,11 @@ data class Offering(val pr: String, val labels: HashMap<String, Behaviour>) : In
             lblcopy.put(""+l.key, l.value.copy())
         }
 
-        return Offering(""+process, lblcopy)
+        return OfferingSP(""+process, lblcopy)
     }
 
     override fun equals(b: Behaviour): Boolean {
-        if (!(b is Offering) || process != b.process) return false
+        if (!(b is OfferingSP) || process != b.process) return false
         else {
             for (label in labels) {
                 val bl = b.labels.get(label.key)

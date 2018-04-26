@@ -21,6 +21,34 @@ import kotlin.collections.HashMap
  * @author Fabrizio Montesi <famontesi></famontesi>@gmail.com>
  */
 class BehaviourProjection : CCVisitor<SPNode> {
+    override fun visit(n: CommunicationSelection): SPNode {
+
+        val continuation = n.continuation.accept(this)
+        val nn = n.node
+
+        when (nn){
+            is Selection -> {
+                return when (processName) {
+                    nn.sender -> SelectionSP(continuation as Behaviour, nn.receiver, nn.label)
+                    nn.receiver -> {
+                        val labels = HashMap<String, Behaviour>()
+                        labels.put(nn.label, continuation as Behaviour)
+                        OfferingSP(nn.sender, labels)
+                    }
+                    else -> continuation
+                }
+            }
+            is Communication -> {
+                return when (processName) {
+                    nn.sender -> SendingSP(continuation as Behaviour, nn.receiver, nn.expression)
+                    nn.receiver -> ReceivingSP(continuation as Behaviour, nn.sender)
+                    else -> continuation
+                }
+            }
+            else -> throw NotImplementedError()
+        }
+    }
+
     override fun visit(n: Multicom): SPNode {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
@@ -32,40 +60,6 @@ class BehaviourProjection : CCVisitor<SPNode> {
         this.processName = processName
         procedures = ArrayList<ProcedureDefinitionSP>()
         return node.accept(this)
-    }
-
-    override fun visit(n: Selection): SPNode {
-        val continuation = n.continuation.accept(this)
-        val retVal: SPNode
-
-        if (processName == n.sender) {
-            retVal = SelectionSP(continuation as Behaviour, n.receiver, n.label)
-        } else if (processName == n.receiver) {
-            retVal = Offering(n.sender, object : HashMap<String, Behaviour>() {
-                init {
-                    put(n.label, continuation as Behaviour)
-                }
-            })
-        } else {
-            retVal = continuation
-        }
-
-        return retVal
-    }
-
-    override fun visit(n: Communication): SPNode {
-        val continuation = n.continuation.accept(this)
-
-        val retVal: SPNode
-        if (processName == n.sender) {
-            retVal = Sending(continuation as Behaviour, n.receiver, n.expression)
-        } else if (processName == n.receiver) {
-            retVal = Receiving(continuation as Behaviour, n.sender)
-        } else {
-            retVal = continuation
-        }
-
-        return retVal
     }
 
     override fun visit(n: Condition): SPNode {

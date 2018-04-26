@@ -32,7 +32,7 @@ class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
         processes.add(sender)
         processes.add(receiver)
 
-        return Communication(sender, receiver, expression, continuation)
+        return CommunicationSelection(Communication(sender, receiver, expression), continuation)
     }
 
     override fun visitSelection(ctx: SelectionContext): CCNode {
@@ -46,7 +46,7 @@ class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
         processes.add(sender)
         processes.add(receiver)
 
-        return Selection(sender, receiver, expression, continuation)
+        return CommunicationSelection(Selection(sender, receiver, expression), continuation)
     }
 
     override fun visitCondition(ctx: ConditionContext): CCNode {

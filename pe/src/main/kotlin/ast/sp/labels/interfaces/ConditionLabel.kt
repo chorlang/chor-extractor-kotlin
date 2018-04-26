@@ -2,10 +2,10 @@ package ast.sp.labels.interfaces
 
 import java.util.*
 
-abstract class InteractionLabel (val snd: String, val rcv: String, val expr: String, flipped: Boolean): ExtractionLabel(flipped) {
+abstract class ConditionLabel (open val process: String, open val expression: String, flipped: Boolean): ExtractionLabel(flipped) {
 
     override fun equals(other: Any?): Boolean {
-        if (other !is InteractionLabel) return false
+        if (other !is ConditionLabel) return false
 
         return other.diff == diff
     }

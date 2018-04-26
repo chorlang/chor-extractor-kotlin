@@ -277,8 +277,8 @@ Parallel : '|';
 Wildcard : 'this';
 Arrow : '->';
 
-//expr: expr ('*'|'/') expr
-//    |	expr ('+'|'-') expr
+//expression: expression ('*'|'/') expression
+//    |	expression ('+'|'-') expression
 //    |	INT
 //    |	'(' expr ')'
 //;
