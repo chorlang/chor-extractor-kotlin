@@ -3,9 +3,12 @@ package ast.sp.nodes
 import ast.sp.nodes.interfaces.Behaviour
 import ast.sp.nodes.interfaces.InteractionSP
 
-data class Receiving(val continuation: Behaviour, val pr: String) : InteractionSP(pr) {
+/**
+ * Created by fmontesi on 03/04/17.
+ */
+data class SendingSP(val continuation: Behaviour, val pr: String, val expression: String) : InteractionSP(pr) {
     override fun toString(): String {
-        return process + "?; " + continuation.toString()
+        return process + "!<" + expression + ">; " + continuation.toString()
     }
 
     override fun findRecProcCall(procname: String): Boolean {
@@ -13,12 +16,13 @@ data class Receiving(val continuation: Behaviour, val pr: String) : InteractionS
     }
 
     override fun copy(): InteractionSP {
-        return Receiving(continuation.copy(), ""+process)
+        return SendingSP(continuation.copy(), ""+process, ""+expression)
     }
 
     override fun equals(b: Behaviour): Boolean {
-        return b is Receiving &&
+        return b is SendingSP &&
                 b.process == process &&
+                b.expression == expression &&
                 b.continuation.equals(continuation)
     }
 }

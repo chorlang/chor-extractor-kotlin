@@ -11,11 +11,11 @@ class MergingProjection() {
 
         fun merge(left: SPNode, right: SPNode): SPNode {
             return when {
-                left is Sending && right is Sending -> merge(left, right)
-                left is Receiving && right is Receiving -> merge(left, right)
+                left is SendingSP && right is SendingSP -> merge(left, right)
+                left is ReceivingSP && right is ReceivingSP -> merge(left, right)
                 left is TerminationSP && right is TerminationSP -> TerminationSP()
                 left is SelectionSP && right is SelectionSP -> merge(left, right)
-                left is Offering && right is Offering -> merge(left, right)
+                left is OfferingSP && right is OfferingSP -> merge(left, right)
                 left is ConditionSP && right is ConditionSP -> merge(left, right)
                 left is ProcedureDefinitionSP && right is ProcedureDefinitionSP -> merge(left, right)
                 left is ProcedureInvocationSP && right is ProcedureInvocationSP -> merge(left, right)
@@ -23,17 +23,17 @@ class MergingProjection() {
             }
         }
 
-    private fun merge(left: Sending, right: Sending): SPNode {
+    private fun merge(left: SendingSP, right: SendingSP): SPNode {
             if (left.process != right.process || left.expression != right.expression) throw MergingException("Can't merge " + left.process + " and " + right.process )
             val m = merge(left.continuation, right.continuation) as Behaviour
-            return Sending(m, left.process, left.expression)
+            return SendingSP(m, left.process, left.expression)
         }
 
-    private fun merge(left: Receiving, right: Receiving): SPNode {
+    private fun merge(left: ReceivingSP, right: ReceivingSP): SPNode {
             if (left.process != right.process) throw MergingException("Can't merge " + left.process + " and " + right.process )
 
             val m = merge(left.continuation, right.continuation) as Behaviour
-            return Receiving(m, left.process)
+            return ReceivingSP(m, left.process)
 
         }
 
@@ -44,7 +44,7 @@ class MergingProjection() {
             return SelectionSP(continuation, left.process, left.expression)
         }
 
-        private fun merge(left: Offering, right: Offering): SPNode {
+        private fun merge(left: OfferingSP, right: OfferingSP): SPNode {
             if (left.process != right.process) throw MergingException("Can't merge " + left.process + " and " + right.process )
 
             val leftmap = left.labels
@@ -65,7 +65,7 @@ class MergingProjection() {
                 labels.put(rightkey, right.labels[rightkey] as Behaviour)
             }
 
-            return Offering(left.process, labels)
+            return OfferingSP(left.process, labels)
         }
 
         private fun merge(left: ConditionSP, right: ConditionSP): SPNode {

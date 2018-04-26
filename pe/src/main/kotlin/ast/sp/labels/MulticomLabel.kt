@@ -14,7 +14,6 @@ data class MulticomLabel(val labels: ArrayList<InteractionLabel>) : ExtractionLa
             sb.append(l.toString()). append(", ")
         }
         if (sb.length >= 3) { sb.delete(sb.length - 3, sb.length) }
-        if (sb.length >= 3) { sb.delete(sb.length - 3, sb.length) }
         sb.append(")")
 
         return sb.toString()

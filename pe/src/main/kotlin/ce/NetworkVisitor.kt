@@ -28,11 +28,11 @@ class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     }
 
     override fun visitSending(ctx: SendingContext): SPNode {
-        return Sending(visit(ctx.behaviour()) as Behaviour, ctx.process().text, ctx.expression().text)
+        return SendingSP(visit(ctx.behaviour()) as Behaviour, ctx.process().text, ctx.expression().text)
     }
 
     override fun visitReceiving(ctx: ReceivingContext): SPNode {
-        return Receiving(visit(ctx.behaviour()) as Behaviour, ctx.process().text)
+        return ReceivingSP(visit(ctx.behaviour()) as Behaviour, ctx.process().text)
     }
 
     override fun visitSelection(ctx: SelectionContext): SPNode {
@@ -45,7 +45,7 @@ class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
             labeledBehaviour.put(lb.expression().text, visit(lb.behaviour()) as Behaviour)
         }
 
-        return Offering(ctx.process().text, labeledBehaviour)
+        return OfferingSP(ctx.process().text, labeledBehaviour)
     }
 
     override fun visitCondition(ctx: ConditionContext): SPNode {

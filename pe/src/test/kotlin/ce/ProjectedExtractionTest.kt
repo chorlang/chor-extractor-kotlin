@@ -102,7 +102,7 @@ class ProjectedExtractionTest : Assert() {
 
                         "main {if p.e then p->q[L]; p.e->q; q->r[L1]; r.z1->q; stop " +
                                 "else p->q[R]; q->r[R1]; r.z2->q; q.u->p; stop}"
-                ),
+                ) /*,
 
                 arrayOf<Any>(
                         "p{" +
@@ -121,14 +121,15 @@ class ProjectedExtractionTest : Assert() {
                                 "def Z{Y} main {q?; X}}",
 
                         "def X1 { p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } def X2 { q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X3 } def X3 { q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X3 } def X4 { q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X5 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } def X5 { q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X5 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } main {q.i->r; X1}"
-                ),
+                )*/
+                /*,
 
                 arrayOf<Any>(
                         "p{def X{if e then q + ok; r + ok; q?; r&{ko: Y, ok: q!<e>; X} else q + ko; r + ko; q&{ko: Z, ok: q!<e>; X}} def Y{q!<e>; X} def Z{q!<e>; Y} main {q!<e>; X}} | q{def X{p&{ko: if e then p + ok; r + ok; p?; X else p + ko; r + ko; Z, ok: p!<e>; r&{ko: r?; Y, ok: p?; X}}} def Y{p?; X} def Z{p?; Y} main {r!<i>; p?; X}} | r{def X{p&{ko: q&{ko: Z, ok: X}, ok: if e then p + ok; q + ok; X else p + ko; q + ko; q!<u>; Y}} def Y{X} def Z{Y} main {q?; X}}"
                                 ,
                         "def X1 { p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } def X2 { q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X3 } def X3 { q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X2 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X3 } def X4 { q->p[ko]; q->r[ko]; p.e->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X5 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } def X5 { q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; if p.e then p->q[ok]; p->r[ok]; X5 else p->q[ko]; if q.e then p->r[ko]; q->p[ok]; q->r[ok]; X1 else p->r[ko]; X4 } main {q.i->r; X1}"
                 )
-
+*/
 /*
                 arrayOf<Any>
                 (

@@ -35,7 +35,7 @@ object ChoreographyExtraction{
         val tree = parser.network()
         val networkVisitor = NetworkVisitor()
         val network = networkVisitor.visitNetwork(tree) as Network
-        return NetworkExtraction().extract(network)
+        return NetworkExtraction().extract(network, Strategy.SelectFirst)
     }
 
     private fun parseStrategy(strategy: String): Strategy {
