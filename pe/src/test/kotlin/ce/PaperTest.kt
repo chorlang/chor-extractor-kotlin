@@ -25,17 +25,18 @@ class PaperTest : Assert() {
 
         var data = arrayOf(
 
-               /* *//* Example 2 *//*
+                /*Example 2*/
                 arrayOf<Any>
                 (
                         "c { def X {a!<pwd>; a&{ok: s?; stop, ko: X}} main {X}} | " +
                         "a { def X {c?; s?; if s then c+ok; s+ok; stop else c+ko; s+ko; X} main {X}} | " +
                         "s { def X {a!<s>; a&{ok: c!<t>; stop, ko:X}} main {X}}",
 
-                        "def X1 { c.pwd->a; s.s->a; if a.s then a->c[ok]; a->s[ok]; s.t->c; stop else a->c[ko]; a->s[ko]; X1 } main {X1}"),
+                        "def X1 { c.pwd->a; s.s->a; if a.s then a->c[ok]; a->s[ok]; s.t->c; stop else a->c[ko]; a->s[ko]; X1 } main {X1}"
+                ),
 
 
-                *//* Example 4  - processes starvation *//*
+                /* Example 4  - processes starvation*/
                 arrayOf<Any>
                 (
                         "p { def X {q!<e1>; X} main {X}} | " +
@@ -43,10 +44,11 @@ class PaperTest : Assert() {
                         "r { def Z {s!<e2>; Z} main {Z}} | " +
                         "s { def W {r?; W} main {W}}",
 
-                        "def X1 { p.e1->q; r.e2->s; X1 } main {X1}"),
+                        "def X1 { p.e1->q; r.e2->s; X1 } main {X1}"
+                ),
 
 
-                *//* Example 5 - deadlocked finite processes*//*
+                /* Example 5 - deadlocked finite processes*/
                 arrayOf<Any>
                 (
                         "p { def X {q!<e>; X} main {X}} | " +
@@ -64,7 +66,7 @@ class PaperTest : Assert() {
                         ,
 
                         "def X1 { p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; X1 } main {p.e->q; p.e->q; p.e->q; p.e->q; X1}"
-                ),*/
+                ),
 
                 arrayOf<Any>
                 (
@@ -74,16 +76,16 @@ class PaperTest : Assert() {
                         ,
 
                         "def X1 { p.e->q; p.e->q; p.e->r; X1 } main {p.e->q; p.e->r; X1}"
-                )
+                ),
 
                 /* Example 8 -2-bit protocol*/
-                /*arrayOf<Any>
+                arrayOf<Any>
                 (
                         "a { def X {b?;b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}",
 
-                        ""
-                )*/
+                        "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
+                )
 
         )
 
