@@ -11,6 +11,7 @@ import ast.cc.nodes.*
 import ast.sp.nodes.interfaces.InteractionSP
 import ast.cc.nodes.Communication
 import ast.sp.labels.interfaces.InteractionLabel
+import org.apache.logging.log4j.LogManager
 import org.jgrapht.DirectedGraph
 import org.jgrapht.graph.DefaultDirectedGraph
 import java.util.*
@@ -21,6 +22,8 @@ import kotlin.collections.HashSet
 typealias network = HashMap<String, ProcessBehaviour>
 
 class NetworkExtraction {
+    private val log = LogManager.getLogger()
+
     //region Main
     /**
      * entry point for choreography extraction algorithm:
@@ -32,7 +35,7 @@ class NetworkExtraction {
      */
     fun extract(n: Network, s: Strategy): Program {
         val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
-        val node = ConcreteNode(n, "0", Bad(HashSet()))
+        val node = ConcreteNode(n, "0", Random().nextInt(), ArrayList())
         graph.addVertex(node)
         addToGmap(node)
 
@@ -51,7 +54,7 @@ class NetworkExtraction {
         for (p in node_net_sorted) {
 
             //if the process has procedure invocation on top, try to unfold it
-            if (unfold(p.key, node_net_sorted[p.key]!!)) unfolded.add(p.key)
+            if (unfold(p.key, p.value)) unfolded.add(p.key)
 
             val findComm = findCommunication(p.key, node_net_sorted)
             if (findComm != null) {
@@ -77,19 +80,20 @@ class NetworkExtraction {
                 if (!nodeInGraph.isPresent) {
                     val newnode = createNewNode(tgt, lbl, root_node)
                     addNewNode(root_node, newnode, lbl, graph)
+                    log.debug(lbl)
                     return if (buildGraph(newnode, graph, strategy)) true else continue
                 }
                 /* case 2 */
-                else {
-                    if (node_net_sorted.values.none { pr -> isfinite(pr.main) && !isterminated(pr) }) {
+                else if (node_net_sorted.values.none { pr -> isfinite(pr.main) && !isterminated(pr) }) {
 
-                        if (addNewEdge(root_node, nodeInGraph.get(), lbl, graph)) return true
-                        else {
-                            cleanNode(findComm, node_net_sorted, root_node)
-                        }
-                    } else {
+                    if (addNewEdge(root_node, nodeInGraph.get(), lbl, graph)) return true
+                    else {
                         cleanNode(findComm, node_net_sorted, root_node)
+                        unfolded.forEach{u -> unfold(u, node_net_sorted[u]!!)}
                     }
+                } else {
+                    cleanNode(findComm, node_net_sorted, root_node)
+                    unfolded.forEach{u -> unfold(u, node_net_sorted[u]!!)}
                 }
 
             } else if (findCondition(node_net_sorted)) {
@@ -115,6 +119,7 @@ class NetworkExtraction {
                 if (!tnodeInGraph.isPresent) {
                     thenNode = createNewNode(tgt1, lbl1, root_node)
                     addNewNode(root_node, thenNode, lbl1, graph)
+                    log.debug(lbl1)
                     if (!buildGraph(thenNode, graph, strategy)) continue
                 }
                 /* case 5 */
@@ -129,6 +134,7 @@ class NetworkExtraction {
                 if (!enodeInGraph.isPresent) {
                     elseNode = createNewNode(tgt2, lbl2, root_node)
                     addNewNode(root_node, elseNode, lbl2, graph)
+                    log.debug(lbl2)
                     if (!buildGraph(elseNode, graph, strategy)) continue
                 }
                 /* case 8 */
@@ -205,6 +211,7 @@ class NetworkExtraction {
                 if (!nodeInGraph.isPresent) {
                     val newnode = createNewNode(Network(node_net_sorted), lbl, root_node)
                     addNewNode(root_node, newnode, lbl, graph)
+                    log.debug(lbl)
                     return if (buildGraph(newnode, graph, strategy)) true else continue
                 }
                 else {
@@ -384,17 +391,17 @@ class NetworkExtraction {
     //endregion
     //region Unfold
     private fun unfold(p: String, pb: ProcessBehaviour): Boolean {
-        val pbmain = pb.main
+        val pb_main = pb.main
 
-        return if (pbmain is ProcedureInvocationSP) {
+        return if (pb_main is ProcedureInvocationSP) {
 
-            val pname = pbmain.procedure
-            val pdef = pb.procedures[pname]
+            val pr = pb_main.procedure
+            val pr_def = pb.procedures[pr]
 
-            pb.main = pdef?.behaviour?.copy() ?: throw Exception("Can't unfold the process") //TODO("meaningful exception for unfold")
-            markProcedure(pb.main, pname, true)
+            pb.main = pr_def?.behaviour?.copy() ?: throw Exception("Can't unfold the process") //TODO("meaningful exception for unfold")
+            markProcedure(pb_main, pr, pb.procedures, true)
 
-            if (pdef.behaviour is ProcedureInvocationSP) {
+            if (pr_def.behaviour is ProcedureInvocationSP) {
                 unfold(p, pb)
             }
             true
@@ -405,28 +412,34 @@ class NetworkExtraction {
     }
     //endregion
     //region Procedures marking and checking
-    private fun markProcedure(bh: Behaviour, prname: String, b: Boolean) {
+    private fun markProcedure(bh: Behaviour, pr: String, pr_def_list: HashMap<String, ProcedureDefinitionSP>, b: Boolean) {
         when (bh) {
             is ProcedureInvocationSP -> {
-                if (bh.procedure.equals(prname)) bh.visited = b
+                //if (bh.procedure.equals(pr)) bh.visited = b
+                if (bh.visited != b) {
+                    bh.visited = b
+                    //mark procedures iteratively
+                    markProcedure(pr_def_list[pr]!!.behaviour, bh.procedure, pr_def_list, b)
+                }
+
             }
             is ConditionSP -> {
-                markProcedure(bh.thenBehaviour, prname, b)
-                markProcedure(bh.elseBehaviour, prname, b)
+                markProcedure(bh.thenBehaviour, pr, pr_def_list, b)
+                markProcedure(bh.elseBehaviour, pr, pr_def_list, b)
             }
             is OfferingSP -> {
                 for (l in bh.labels) {
-                    markProcedure(l.value, prname, b)
+                    markProcedure(l.value, pr, pr_def_list, b)
                 }
             }
             is SendingSP -> {
-                markProcedure(bh.continuation, prname, b)
+                markProcedure(bh.continuation, pr, pr_def_list, b)
             }
             is SelectionSP -> {
-                markProcedure(bh.continuation, prname, b)
+                markProcedure(bh.continuation, pr, pr_def_list, b)
             }
             is ReceivingSP -> {
-                markProcedure(bh.continuation, prname, b)
+                markProcedure(bh.continuation, pr, pr_def_list, b)
             }
         }
 
@@ -614,14 +627,12 @@ class NetworkExtraction {
         }
 
         return if (lbl.flipped) {
-            ConcreteNode(tgt, "" + str, Bad(HashSet()))
+            ConcreteNode(tgt, "" + str, Random().nextInt(), ArrayList())
         } else {
 
-            val newb = HashSet<ConcreteNode>()
-            node.bad.badset.mapTo(newb) { it.copy() }
-
-            val newnode = ConcreteNode(tgt, "" + str, Bad(newb))
-            newnode.bad.badset.add(node)
+            //node.bad.badset.mapTo(newb) { it.copy() }
+            val newnode = ConcreteNode(tgt, "" + str, Random().nextInt(), node.bad.clone() as ArrayList<Int>)
+            newnode.bad.add(node.id)
             newnode
         }
     }
@@ -667,7 +678,7 @@ class NetworkExtraction {
         if (target_node.equals(source_node)) return false
 
         // if (!target_node.bad.badset.contains(source_node)) {
-        if (!source_node.bad.contains(target_node)) {
+        if (!source_node.bad.contains(target_node.id)) {
             val nodeset = HashSet<ConcreteNode>()
             nodeset.addAll(nodeset)
             nodeset.add(source_node)
@@ -692,7 +703,7 @@ class NetworkExtraction {
     }
     private fun relabel(n: ConcreteNode) {
         val key = n.str.dropLast(1)
-        addToGmap(ConcreteNode(n.nodenet, key, n.bad))
+        addToGmap(ConcreteNode(n.nodenet, key, n.id, n.bad))
         removeFromGmap(n)
     }
     private fun checkPrefix(n: ConcreteNode): ConcreteNode? {
@@ -731,21 +742,23 @@ class NetworkExtraction {
     data class SendReceive(val sender: ProcessBehaviour, val receiver: ProcessBehaviour) : GetCommunication
     data class SelectOffer(val select: ProcessBehaviour, val offer: ProcessBehaviour) : GetCommunication
     interface Node
-    data class ConcreteNode(val nodenet: Network, val str: String, val bad: Bad) : Node {
+    data class ConcreteNode(val nodenet: Network, val str: String, val id: Int, val bad: ArrayList<Int>) : Node {
         fun copy(): ConcreteNode {
             val newnet = nodenet.copy()
-            val newb = HashSet<ConcreteNode>()
+            val newb = ArrayList<Int>()
 
-            bad.badset.mapTo(newb) { it.copy() }
+            bad.forEach { newb.add(it) }
 
-            return ConcreteNode(newnet, "" + str, Bad(newb))
+            return ConcreteNode(newnet, "" + str, id, newb)
         }
 
         fun equals(other: ConcreteNode): Boolean{
             return nodenet.equals(other.nodenet) && str == other.str && bad.equals(other.bad)
         }
+
+        override fun toString(): String = ""
     }
-    data class Bad(val badset: HashSet<ConcreteNode>){
+    /*data class Bad(val badset: HashSet<ConcreteNode>){
         fun copy(): Bad {
             val newb = HashSet<ConcreteNode>()
             for (b in badset){
@@ -765,7 +778,7 @@ class NetworkExtraction {
             }
             return false
         }
-    }
+    }*/
     data class GraphNode(val target: Network, val label: ExtractionLabel)
     data class FakeNode(val procedureName: String, val source: Node) : Node
     //endregion
