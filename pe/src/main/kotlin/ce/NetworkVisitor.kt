@@ -11,20 +11,20 @@ import kotlin.collections.HashMap
 
 class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     override fun visitNetwork(ctx: NetworkContext): SPNode {
-        val network = HashMap<String, ProcessBehaviour>()
+        val network = HashMap<String, ProcessTerm>()
         for (i in 0..ctx.processBehaviour().size - 1) {
-            network.put(ctx.process(i).text, visit(ctx.processBehaviour(i)) as ProcessBehaviour)
+            network.put(ctx.process(i).text, visit(ctx.processBehaviour(i)) as ProcessTerm)
         }
         return Network(network)
     }
 
     override fun visitProcessBehaviour(ctx: ProcessBehaviourContext): SPNode {
-        val procedures = HashMap<String, ProcedureDefinitionSP>()
+        val procedures = HashMap<String, Behaviour>()
         for (i in 0..ctx.procedureDefinition().size - 1) {
-            procedures.put(ctx.procedure(i).text, visit(ctx.procedureDefinition(i)) as ProcedureDefinitionSP)
+            procedures.put(ctx.procedure(i).text, visit(ctx.procedureDefinition(i)) as Behaviour)
         }
 
-        return ProcessBehaviour(procedures, visit(ctx.behaviour()) as Behaviour)
+        return ProcessTerm(procedures, visit(ctx.behaviour()) as Behaviour)
     }
 
     override fun visitSending(ctx: SendingContext): SPNode {
@@ -32,7 +32,7 @@ class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     }
 
     override fun visitReceiving(ctx: ReceivingContext): SPNode {
-        return ReceivingSP(visit(ctx.behaviour()) as Behaviour, ctx.process().text)
+        return ReceiveSP(visit(ctx.behaviour()) as Behaviour, ctx.process().text)
     }
 
     override fun visitSelection(ctx: SelectionContext): SPNode {
@@ -53,7 +53,7 @@ class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     }
 
     override fun visitProcedureDefinition(ctx: ProcedureDefinitionContext): SPNode {
-        return ProcedureDefinitionSP(visit(ctx.behaviour()) as Behaviour)
+        return visit(ctx.behaviour()) as Behaviour
     }
 
     override fun visitProcedureInvocation(ctx: ProcedureInvocationContext): SPNode {

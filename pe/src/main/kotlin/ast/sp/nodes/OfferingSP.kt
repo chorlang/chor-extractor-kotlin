@@ -1,10 +1,10 @@
 package ast.sp.nodes
 
 import ast.sp.nodes.interfaces.Behaviour
-import ast.sp.nodes.interfaces.InteractionSP
+import ast.sp.nodes.interfaces.ActionSP
 import kotlin.collections.HashMap
 
-data class OfferingSP(val pr: String, val labels: HashMap<String, Behaviour>) : InteractionSP(pr) {
+data class OfferingSP(val sender: String, val labels: HashMap<String, Behaviour>) : ActionSP(sender) {
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append(process + "&{")
@@ -25,8 +25,8 @@ data class OfferingSP(val pr: String, val labels: HashMap<String, Behaviour>) : 
         return false
     }
 
-    override fun copy(): InteractionSP {
-        val lblcopy = HashMap<String,Behaviour>()
+    override fun copy(): ActionSP {
+        val lblcopy = HashMap<String, Behaviour>()
         for (l in labels){
             lblcopy.put(""+l.key, l.value.copy())
         }

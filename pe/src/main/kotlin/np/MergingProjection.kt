@@ -12,12 +12,12 @@ class MergingProjection() {
         fun merge(left: SPNode, right: SPNode): SPNode {
             return when {
                 left is SendingSP && right is SendingSP -> merge(left, right)
-                left is ReceivingSP && right is ReceivingSP -> merge(left, right)
+                left is ReceiveSP && right is ReceiveSP -> merge(left, right)
                 left is TerminationSP && right is TerminationSP -> TerminationSP()
                 left is SelectionSP && right is SelectionSP -> merge(left, right)
                 left is OfferingSP && right is OfferingSP -> merge(left, right)
                 left is ConditionSP && right is ConditionSP -> merge(left, right)
-                left is ProcedureDefinitionSP && right is ProcedureDefinitionSP -> merge(left, right)
+                left is ast.sp.nodes.Behaviour && right is ast.sp.nodes.Behaviour -> merge(left, right)
                 left is ProcedureInvocationSP && right is ProcedureInvocationSP -> merge(left, right)
                 else -> throw MergingException("Can't merge " + left.toString() + " with " + right.toString())
             }
@@ -29,11 +29,11 @@ class MergingProjection() {
             return SendingSP(m, left.process, left.expression)
         }
 
-    private fun merge(left: ReceivingSP, right: ReceivingSP): SPNode {
+    private fun merge(left: ReceiveSP, right: ReceiveSP): SPNode {
             if (left.process != right.process) throw MergingException("Can't merge " + left.process + " and " + right.process )
 
             val m = merge(left.continuation, right.continuation) as Behaviour
-            return ReceivingSP(m, left.process)
+            return ReceiveSP(m, left.process)
 
         }
 
@@ -77,9 +77,9 @@ class MergingProjection() {
             return ConditionSP(left.expression, leftCondition, rightCondition)
         }
 
-        private fun merge(left: ProcedureDefinitionSP, right: ProcedureDefinitionSP): SPNode {
+        private fun merge(left: ast.sp.nodes.Behaviour, right: ast.sp.nodes.Behaviour): SPNode {
             val mergeBehaviour = merge(left.behaviour, right.behaviour) as Behaviour
-            return ProcedureDefinitionSP(mergeBehaviour)
+            return Behaviour(mergeBehaviour)
         }
 
         private fun merge(left: ProcedureInvocationSP, right: ProcedureInvocationSP): SPNode {

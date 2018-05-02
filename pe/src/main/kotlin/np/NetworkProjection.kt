@@ -6,7 +6,7 @@ import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.Choreography
 import ast.cc.nodes.*
 import ast.sp.nodes.Network
-import ast.sp.nodes.ProcessBehaviour
+import ast.sp.nodes.ProcessTerm
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.apache.logging.log4j.LogManager
@@ -52,7 +52,7 @@ object NetworkProjection {
 
     fun project(choreography: String): Network {
         val tree = this.parse(choreography)
-        val network = HashMap<String, ProcessBehaviour>()
+        val network = HashMap<String, ProcessTerm>()
 
         val choreographyVisitor = ChoreographyVisitor()
         val ccast = choreographyVisitor.getCCAST(tree)
@@ -60,7 +60,7 @@ object NetworkProjection {
 
         val behaviourProjection = BehaviourProjection()
         for (process in processes) {
-            network.put(process, behaviourProjection.getSPAST(ccast, process) as ProcessBehaviour)
+            network.put(process, behaviourProjection.getSPAST(ccast, process) as ProcessTerm)
         }
         return Network(network)
     }

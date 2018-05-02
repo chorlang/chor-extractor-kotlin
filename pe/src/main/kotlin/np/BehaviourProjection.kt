@@ -41,7 +41,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
             is Communication -> {
                 return when (processName) {
                     nn.sender -> SendingSP(continuation as Behaviour, nn.receiver, nn.expression)
-                    nn.receiver -> ReceivingSP(continuation as Behaviour, nn.sender)
+                    nn.receiver -> ReceiveSP(continuation as Behaviour, nn.sender)
                     else -> continuation
                 }
             }
@@ -54,11 +54,11 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     private var processName: String? = null
-    private var procedures: MutableList<ProcedureDefinitionSP>? = null
+    private var procedures: MutableList<ast.sp.nodes.Behaviour>? = null
 
     fun getSPAST(node: CCNode, processName: String): SPNode {
         this.processName = processName
-        procedures = ArrayList<ProcedureDefinitionSP>()
+        procedures = ArrayList<ast.sp.nodes.Behaviour>()
         return node.accept(this)
     }
 
@@ -82,7 +82,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
 
     override fun visit(n: ProcedureDefinition): SPNode {
         val node = n.choreography.accept(this)
-        val pd = ProcedureDefinitionSP(node as Behaviour)
+        val pd = Behaviour(node as Behaviour)
         procedures!!.add(pd)
         return pd
     }
@@ -97,10 +97,10 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     override fun visit(n: Program): SPNode {
-        val procedures = HashMap<String, ProcedureDefinitionSP>()
+        val procedures = HashMap<String, Behaviour>()
         for (procedure in n.procedures) {
-            procedures.put(procedure.procedure, procedure.accept(this) as ProcedureDefinitionSP)
+            procedures.put(procedure.procedure, procedure.accept(this) as Behaviour)
         }
-        return ProcessBehaviour(procedures, n.main.accept(this) as Behaviour)
+        return ProcessTerm(procedures, n.main.accept(this) as Behaviour)
     }
 }

@@ -35,7 +35,7 @@ object ChoreographyExtraction{
         val tree = parser.network()
         val networkVisitor = NetworkVisitor()
         val network = networkVisitor.visitNetwork(tree) as Network
-        return NetworkExtraction().extract(network, Strategy.SelectFirst)
+        return NetworkExtraction.run(network, Strategy.SelectFirst)
     }
 
     private fun parseStrategy(strategy: String): Strategy {
@@ -61,7 +61,7 @@ object ChoreographyExtraction{
                     val i = iter.nextIndex()
                     if (args.size >= i + 1)
                         chor = args.get(i)
-                    else throw Exception("Malformed call - choreography name was expected.")
+                    else throw Exception("Malformed call - choreography was expected.")
                 }
                 "-f" -> {
                     val i = iter.nextIndex()
