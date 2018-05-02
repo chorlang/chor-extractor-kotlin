@@ -48,13 +48,14 @@ class NetworkExtraction {
     private fun buildGraph(root_node: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         //val node = root_node.copy()
         val unfolded = HashSet<String>() //Storing unfolded procedures
-        val node_net_sorted = sortProcesses(root_node, strategy) //Sorting processes by the strategy passed from the outside
+        //val node_net_sorted = sortProcesses(root_node, strategy) //Sorting processes by the strategy passed from the outside
+        val node_net_sorted = root_node.nodenet.copy().network
 
         //region Try to find a single-action communication
         for (p in node_net_sorted) {
 
             //if the process has procedure invocation on top, try to unfold it
-            if (unfold(p.key, p.value)) unfolded.add(p.key)
+            if (unfold(p.key, node_net_sorted[p.key]!!)) unfolded.add(p.key)
 
             val findComm = findCommunication(p.key, node_net_sorted)
             if (findComm != null) {
@@ -399,7 +400,7 @@ class NetworkExtraction {
             val pr_def = pb.procedures[pr]
 
             pb.main = pr_def?.behaviour?.copy() ?: throw Exception("Can't unfold the process") //TODO("meaningful exception for unfold")
-            markProcedure(pb_main, pr, pb.procedures, true)
+            markProcedure(pb.main, true)
 
             if (pr_def.behaviour is ProcedureInvocationSP) {
                 unfold(p, pb)
@@ -412,34 +413,28 @@ class NetworkExtraction {
     }
     //endregion
     //region Procedures marking and checking
-    private fun markProcedure(bh: Behaviour, pr: String, pr_def_list: HashMap<String, ProcedureDefinitionSP>, b: Boolean) {
+    private fun markProcedure(bh: Behaviour, b: Boolean) {
         when (bh) {
             is ProcedureInvocationSP -> {
-                //if (bh.procedure.equals(pr)) bh.visited = b
-                if (bh.visited != b) {
-                    bh.visited = b
-                    //mark procedures iteratively
-                    markProcedure(pr_def_list[pr]!!.behaviour, bh.procedure, pr_def_list, b)
-                }
-
+                bh.visited = b
             }
             is ConditionSP -> {
-                markProcedure(bh.thenBehaviour, pr, pr_def_list, b)
-                markProcedure(bh.elseBehaviour, pr, pr_def_list, b)
+                markProcedure(bh.thenBehaviour, b)
+                markProcedure(bh.elseBehaviour, b)
             }
             is OfferingSP -> {
                 for (l in bh.labels) {
-                    markProcedure(l.value, pr, pr_def_list, b)
+                    markProcedure(l.value, b)
                 }
             }
             is SendingSP -> {
-                markProcedure(bh.continuation, pr, pr_def_list, b)
+                markProcedure(bh.continuation, b)
             }
             is SelectionSP -> {
-                markProcedure(bh.continuation, pr, pr_def_list, b)
+                markProcedure(bh.continuation, b)
             }
             is ReceivingSP -> {
-                markProcedure(bh.continuation, pr, pr_def_list, b)
+                markProcedure(bh.continuation, b)
             }
         }
 
@@ -708,7 +703,8 @@ class NetworkExtraction {
     }
     private fun checkPrefix(n: ConcreteNode): ConcreteNode? {
         for (node in gmap) {
-            if (node.key.startsWith(n.str)) return node.value.first()
+            if (node.key.startsWith(n.str))
+                return if (!node.value.isEmpty()) node.value.first() else null
         }
         return null
     }
