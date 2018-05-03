@@ -8,7 +8,7 @@ package np
 import ast.cc.CCVisitor
 import ast.cc.interfaces.CCNode
 import ast.cc.nodes.*
-import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.nodes.interfaces.SPNode
 import ast.sp.nodes.*
 import np.MergingProjection.*
@@ -29,10 +29,10 @@ class BehaviourProjection : CCVisitor<SPNode> {
         when (nn){
             is Selection -> {
                 return when (processName) {
-                    nn.sender -> SelectionSP(continuation as Behaviour, nn.receiver, nn.label)
+                    nn.sender -> SelectionSP(continuation as IBehaviour, nn.receiver, nn.label)
                     nn.receiver -> {
-                        val labels = HashMap<String, Behaviour>()
-                        labels.put(nn.label, continuation as Behaviour)
+                        val labels = HashMap<String, IBehaviour>()
+                        labels.put(nn.label, continuation as IBehaviour)
                         OfferingSP(nn.sender, labels)
                     }
                     else -> continuation
@@ -40,8 +40,8 @@ class BehaviourProjection : CCVisitor<SPNode> {
             }
             is Communication -> {
                 return when (processName) {
-                    nn.sender -> SendingSP(continuation as Behaviour, nn.receiver, nn.expression)
-                    nn.receiver -> ReceiveSP(continuation as Behaviour, nn.sender)
+                    nn.sender -> SendingSP(continuation as IBehaviour, nn.receiver, nn.expression)
+                    nn.receiver -> ReceiveSP(continuation as IBehaviour, nn.sender)
                     else -> continuation
                 }
             }
@@ -54,17 +54,17 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     private var processName: String? = null
-    private var procedures: MutableList<ast.sp.nodes.Behaviour>? = null
+    private var procedures: MutableList<Behaviour>? = null
 
     fun getSPAST(node: CCNode, processName: String): SPNode {
         this.processName = processName
-        procedures = ArrayList<ast.sp.nodes.Behaviour>()
+        procedures = ArrayList<Behaviour>()
         return node.accept(this)
     }
 
     override fun visit(n: Condition): SPNode {
         if (processName == n.process) {
-            return ConditionSP(n.expression, n.thenChoreography.accept(this) as Behaviour, n.elseChoreograpy.accept(this) as Behaviour)
+            return ConditionSP(n.expression, n.thenChoreography.accept(this) as IBehaviour, n.elseChoreograpy.accept(this) as IBehaviour)
         } else {
             try {
                 return MergingProjection().merge(n.thenChoreography.accept(this), n.elseChoreograpy.accept(this))
@@ -82,7 +82,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
 
     override fun visit(n: ProcedureDefinition): SPNode {
         val node = n.choreography.accept(this)
-        val pd = Behaviour(node as Behaviour)
+        val pd = Behaviour(node as IBehaviour)
         procedures!!.add(pd)
         return pd
     }
@@ -97,10 +97,10 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     override fun visit(n: Program): SPNode {
-        val procedures = HashMap<String, Behaviour>()
+        val procedures = HashMap<String, IBehaviour>()
         for (procedure in n.procedures) {
-            procedures.put(procedure.procedure, procedure.accept(this) as Behaviour)
+            procedures.put(procedure.procedure, procedure.accept(this) as IBehaviour)
         }
-        return ProcessTerm(procedures, n.main.accept(this) as Behaviour)
+        return ProcessTerm(procedures, n.main.accept(this) as IBehaviour)
     }
 }

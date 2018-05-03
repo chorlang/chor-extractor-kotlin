@@ -33,7 +33,7 @@ public class NetworkParser extends Parser {
 		RULE_procedureInvocation = 11, RULE_expression = 12, RULE_process = 13, 
 		RULE_procedure = 14, RULE_value = 15;
 	public static final String[] ruleNames = {
-		"processes", "processBehaviour", "procedureDefinition", "behaviour", "interaction",
+		"network", "processBehaviour", "procedureDefinition", "behaviour", "interaction", 
 		"sending", "receiving", "selection", "offering", "labeledBehaviour", "condition", 
 		"procedureInvocation", "expression", "process", "procedure", "value"
 	};
