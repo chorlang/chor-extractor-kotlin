@@ -2,11 +2,7 @@ package ce
 
 import org.junit.Assert
 import org.junit.Test
-import org.junit.experimental.theories.Theories
-import org.junit.runner.RunWith
 
-
-@RunWith(Theories::class)
 class NbTest : Assert() {
 
     @Test
@@ -40,7 +36,7 @@ class NbTest : Assert() {
                         "else a->b[lose]; c.busy->d; a->c[win]; c.lose->b; b.sig->a; c.msg->a; a.free->d; X1 " +
                 "} main {X1}"
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test

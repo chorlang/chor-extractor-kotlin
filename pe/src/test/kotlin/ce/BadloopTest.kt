@@ -2,11 +2,7 @@ package ce
 
 import org.junit.Assert
 import org.junit.Test
-import org.junit.experimental.theories.Theories
-import org.junit.runner.RunWith
 
-
-@RunWith(Theories::class)
 class BadloopTest : Assert() {
 
     @Test
@@ -22,7 +18,7 @@ class BadloopTest : Assert() {
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { a2.e->b2; b2.e->a2; a1.e->b1; b1.e->a1; X1 } main {X1}"
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -39,7 +35,7 @@ class BadloopTest : Assert() {
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { a2.e->b2; b2.e->a2; a3.e->b3; a2.e->b2; b3.e->a3; b2.e->a2; a1.e->b1; b1.e->a1; X1 } main {X1}"
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -58,7 +54,7 @@ class BadloopTest : Assert() {
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { a2.e->b2; b2.e->a2; a3.e->b3; a2.e->b2; b3.e->a3; b2.e->a2; a4.e->b4; a2.e->b2; a3.e->b3; b2.e->a2; b4.e->a4; a2.e->b2; b3.e->a3; b2.e->a2; a1.e->b1; b1.e->a1; X1 } main {X1}"
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 }
 

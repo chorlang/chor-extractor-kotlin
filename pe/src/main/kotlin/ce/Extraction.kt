@@ -174,10 +174,14 @@ class NetworkExtraction {
             if (b != null) waiting.add(b)
 
 
+            val receivers = ArrayList<String>()
             while (!waiting.isEmpty()) {
                 val lbl = waiting.first()
                 waiting.remove(lbl)
+                //multicom can't contain actions with the same receiver
+                if (receivers.contains(lbl.rcv)) throw MulticomException("multicom can't contain actions with the same receiver")
                 actions.add(lbl)
+                receivers.add(lbl.rcv)
 
                 val receiver = lbl.rcv
                 val sender = lbl.snd
@@ -740,7 +744,8 @@ class NetworkExtraction {
     }
     //endregion
     //region Exceptions
-    class ProcessStarvationException(s: String) : Throwable()
+    class ProcessStarvationException(override val message: String) : Exception(message)
+    class MulticomException(override val message: String) : Exception(message)
     //endregion
     //region Data classes and interfaces
     data class LabelTarget(val lbl: ExtractionLabel, val target: Node)
