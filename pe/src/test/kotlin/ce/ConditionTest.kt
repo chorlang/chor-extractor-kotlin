@@ -1,87 +1,113 @@
 package ce
 
 import org.junit.Assert
-import org.junit.experimental.theories.DataPoints
-import org.junit.experimental.theories.Theories
-import org.junit.experimental.theories.Theory
-import org.junit.runner.RunWith
+import org.junit.Test
 
-@RunWith(Theories::class)
 class ConditionTest : Assert() {
 
-    @Theory
-    @Throws(Exception::class)
-    fun test(vararg testData: Any) {
-        println("\n" + "Test Network: " + testData[0])
-        val ce = ChoreographyExtraction
-        val program = ce.main(arrayOf("-c", testData[0] as String))
-        println("Choreography: " + program.toString())
+    @Test
+    fun tst1(){ /* simple condition */
+        val test =
+                "p { main {if e then q!<e1>; stop else q!<e2>; stop}} " +
+                        "| q { main {p?; stop}} " +
+                        "| r { main {stop}}"
 
-        Assert.assertEquals(testData[1], program.toString())
+        val args = arrayOf("-c", test)
+
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "main {if p.e then p.e1->q; stop else p.e2->q; stop}"
+
+        assertEquals(expected, actual)
     }
 
-    companion object {
-        @DataPoints
-        @JvmField
-
-        var data = arrayOf(
-
-                /* simple condition */
-                arrayOf<Any>
-                ("p { main {if e then q!<e1>; stop else q!<e2>; stop}} " +
-                        "| q { main {p?; stop}} " +
-                        "| r { main {stop}}",
-
-                        "main {if p.e then p.e1->q; stop else p.e2->q; stop}"),
-
-                /* condition with selection */
-                arrayOf<Any>("p { main {if e then q+R; q!<e1>; q?; stop else q+L; q!<e2>; q?; stop}} | " +
+    @Test
+    fun tst2(){ /* condition with selection */
+        val test =
+                "p { main {if e then q+R; q!<e1>; q?; stop else q+L; q!<e2>; q?; stop}} | " +
                         "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
-                        "r { main {stop}}",
+                        "r { main {stop}}"
 
-                        "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"),
+        val args = arrayOf("-c", test)
 
-                /* condition inside condition */
-                arrayOf<Any>("p { main {if e then if u then q!<e1>; stop else q!<e2>; stop else q!<e3>; stop}} " +
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun tst3(){ /* condition inside condition */
+        val test =
+                "p { main {if e then if u then q!<e1>; stop else q!<e2>; stop else q!<e3>; stop}} " +
                         "| q { main {p?; stop}} " +
-                        "| r { main {stop}}",
+                        "| r { main {stop}}"
 
-                        "main {if p.e then if p.u then p.e1->q; stop else p.e2->q; stop else p.e3->q; stop}"),
+        val args = arrayOf("-c", test)
 
-                /* condition with procedure */
-                arrayOf<Any>("p {def X {if e then q!<u>;stop else q!<o>;stop} main {X}} " +
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "main {if p.e then if p.u then p.e1->q; stop else p.e2->q; stop else p.e3->q; stop}"
+
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun tst4(){ /* condition with procedure */
+        val test =
+                "p {def X {if e then q!<u>;stop else q!<o>;stop} main {X}} " +
                         "| q {def Y{p?;stop} main {Y}} " +
-                        "| r { main {stop}}",
+                        "| r { main {stop}}"
 
-                        "main {if p.e then p.u->q; stop else p.o->q; stop}"),
+        val args = arrayOf("-c", test)
 
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "main {if p.e then p.u->q; stop else p.o->q; stop}"
 
-                /* condition with recursive procedure */
-                arrayOf<Any>
-                        ("p {def X {if e then q!<u>;X else q!<o>;X} main {X}} " +
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun tst5(){ /* condition with procedure */
+        val test =
+                "p {def X {if e then q!<u>;X else q!<o>;X} main {X}} " +
                         "| q {def Y{p?;Y} main {Y}} " +
-                        "| r { main {stop}}",
+                        "| r { main {stop}}"
 
-                        "def X1 { if p.e then p.u->q; X1 else p.o->q; X1 } main {X1}"),
+        val args = arrayOf("-c", test)
 
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "def X1 { if p.e then p.u->q; X1 else p.o->q; X1 } main {X1}"
 
-                /* condition with selection with recursion*/
-                arrayOf<Any>("p { def X {if e then q+R; q!<e1>; q?; stop else q+L; q!<e2>; q?; stop} main {X}} | " +
+        assertEquals(expected, actual)
+    }
+
+    @Test
+    fun tst6(){ /* condition with selection with recursion*/
+        val test =
+                "p { def X {if e then q+R; q!<e1>; q?; stop else q+L; q!<e2>; q?; stop} main {X}} | " +
                         "q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | " +
-                        "r { main {stop}}",
+                        "r { main {stop}}"
 
-                        "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"),
+        val args = arrayOf("-c", test)
 
-                /* Example 5 - deadlocked finite processes*/
-                arrayOf<Any>
-                (
-                        "p { def X {q!<e>; X} main {X}} | " +
-                                "q { def Y {p?; Y} main {Y}} | " +
-                                "r { main {s!<e2>; stop}} | " +
-                                "s { main {r?; stop}}",
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"
 
-                        "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
-                ))
+        assertEquals(expected, actual)
+    }
 
+    @Test
+    fun tst7(){ /* condition with selection with recursion*/
+        val test =
+                "p { def X {q!<e>; X} main {X}} | " +
+                        "q { def Y {p?; Y} main {Y}} | " +
+                        "r { main {s!<e2>; stop}} | " +
+                        "s { main {r?; stop}}"
+
+        val args = arrayOf("-c", test)
+
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
+
+        assertEquals(expected, actual)
     }
 }

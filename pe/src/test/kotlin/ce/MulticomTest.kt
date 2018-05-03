@@ -1,14 +1,8 @@
 package ce
 
-import ce.ChoreographyExtraction
-import np.MergingProjection
 import org.junit.Assert
 import org.junit.Test
-import org.junit.experimental.theories.Theories
-import org.junit.runner.RunWith
 
-
-@RunWith(Theories::class)
 class MulticomTest : Assert() {
 
     @Test

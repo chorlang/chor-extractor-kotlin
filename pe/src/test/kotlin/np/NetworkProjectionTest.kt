@@ -189,12 +189,7 @@ class NetworkProjectionTest : Assert() {
                         "else X4 } " +
                         "main {q.i->r; X1}"
 
-        println("\n" + "Choreography: " + test)
-
-        val epp = NetworkProjection
-        val actual = epp.project(test)
-        println("Network: " + actual.toString())
-        //Assert.assertEquals(test, testData[1], actual.toString())
+        NetworkProjection.project(test)
 
     }
 }
