@@ -1,35 +1,29 @@
 package ce
 
 import org.junit.Assert
-import org.junit.experimental.theories.DataPoints
-import org.junit.experimental.theories.Theories
-import org.junit.experimental.theories.Theory
-import org.junit.runner.RunWith
+import org.junit.Test
 
-@RunWith(Theories::class)
 class TerminationTest : Assert() {
 
-    @Theory
-    @Throws(Exception::class)
-    fun test(vararg testData: Any) {
-        println("\n" + "Test Network: " + testData[0])
-        val program = ChoreographyExtraction.main(arrayOf("-c", testData[0] as String))
-        println("Choreography: " + program.toString())
+    @Test
+    fun tst1(){
+        val test = "p {main{stop}} | q {main{stop}}"
+        val args = arrayOf("-c", test)
 
-        Assert.assertEquals(testData[1], program.toString())
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "main {stop}"
+
+        assertEquals(expected, actual)
     }
 
-    companion object {
+    @Test
+    fun tst2(){
+        val test = "p {main{stop}} | q {def X {stop} main{X}}"
+        val args = arrayOf("-c", test)
 
-        @DataPoints
-        @JvmField
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "main {stop}"
 
-        var data = arrayOf(
-
-                /* simple termination */
-                arrayOf<Any>("p {main{stop}} | q {main{stop}}", "main {stop}"),
-
-                /* recursive termination */
-                arrayOf<Any>("p {main{stop}} | q {def X {stop} main{X}}", "main {stop}"))
+        assertEquals(expected, actual)
     }
 }
