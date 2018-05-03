@@ -1,7 +1,7 @@
 package ce
 
 import ast.cc.interfaces.CCNode
-import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.labels.interfaces.ExtractionLabel
 import ast.sp.labels.*
 import ast.sp.nodes.*
@@ -246,7 +246,7 @@ class NetworkExtraction {
         //endregion
     }
 
-    private fun fillWaiting(waiting: ArrayList<InteractionLabel>, actions: ArrayList<InteractionLabel>, lbl: InteractionLabel, rcv_pb_main: Behaviour, rcv_proc: HashMap<String, Behaviour>): Behaviour?
+    private fun fillWaiting(waiting: ArrayList<InteractionLabel>, actions: ArrayList<InteractionLabel>, lbl: InteractionLabel, rcv_pb_main: IBehaviour, rcv_proc: HashMap<String, IBehaviour>): IBehaviour?
     {
         when (rcv_pb_main){
             is SendingSP -> {
@@ -422,7 +422,7 @@ class NetworkExtraction {
     }
     //endregion
     //region Procedures marking and checking
-    private fun markProcedure(bh: Behaviour, b: Boolean) {
+    private fun markProcedure(bh: IBehaviour, b: Boolean) {
         when (bh) {
             is ProcedureInvocationSP -> {
                 bh.visited = b
@@ -448,7 +448,7 @@ class NetworkExtraction {
         }
 
     }
-    private fun unmarkProcedure(bh: Behaviour) {
+    private fun unmarkProcedure(bh: IBehaviour) {
         when (bh) {
             is ProcedureInvocationSP -> {
                 bh.visited = false
@@ -477,7 +477,7 @@ class NetworkExtraction {
     private fun isAllProceduresVisited(n: ProcessMap): Boolean {
         return n.values.all{isProcedureVisited(it.main)}
     }
-    private fun isProcedureVisited(bh: Behaviour): Boolean {
+    private fun isProcedureVisited(bh: IBehaviour): Boolean {
         return when (bh) {
             is SendingSP -> isProcedureVisited(bh.continuation)
             is ReceiveSP -> isProcedureVisited(bh.continuation)
@@ -491,7 +491,7 @@ class NetworkExtraction {
     }
     //endregion
     //region Termination checks
-    private fun isfinite(pr: Behaviour): Boolean {
+    private fun isfinite(pr: IBehaviour): Boolean {
         when (pr) {
             is ProcedureInvocationSP -> return false
             is TerminationSP -> return true
@@ -728,7 +728,15 @@ class NetworkExtraction {
         }
     }
     private fun addToChoicePathMap(node: ConcreteNode) {
-        choicePaths.putIfAbsent(node.choicePath,ArrayList<ConcreteNode>())
+        val choicePath = choicePaths[node.choicePath]
+        if (choicePath!=null){
+            choicePath.add(node)
+        } else {
+            val nodesList = ArrayList<ConcreteNode>()
+            nodesList.add(node)
+            choicePaths.put(node.choicePath, nodesList)
+        }
+
     }
     //endregion
     //region Exceptions

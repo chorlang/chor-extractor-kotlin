@@ -1,23 +1,23 @@
 
 package ast.sp.nodes
 
-import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.nodes.interfaces.SPNode
 
-data class Behaviour(val behaviour: Behaviour) : SPNode {
+data class Behaviour(val behaviour: IBehaviour) : IBehaviour {
+    override fun equals(b: IBehaviour): Boolean {
+        return b is Behaviour && behaviour.equals(b.behaviour)
+    }
+
     override fun toString(): String {
         return behaviour.toString()
     }
 
-    fun findRecProcCall(procname: String): Boolean {
-        return behaviour.findRecProcCall(procname)
-    }
-
-    fun copy(): ast.sp.nodes.Behaviour {
+    override fun copy(): Behaviour {
         return Behaviour(behaviour.copy())
     }
 
     fun equals(b: SPNode): Boolean {
-        return b is ast.sp.nodes.Behaviour && behaviour.equals(b.behaviour)
+        return b is Behaviour && behaviour.equals(b.behaviour)
     }
 }

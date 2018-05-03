@@ -1,10 +1,10 @@
 package ast.sp.nodes
 
-import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.nodes.interfaces.ActionSP
 import kotlin.collections.HashMap
 
-data class OfferingSP(val sender: String, val labels: HashMap<String, Behaviour>) : ActionSP(sender) {
+data class OfferingSP(val sender: String, val labels: HashMap<String, IBehaviour>) : ActionSP(sender) {
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append(process + "&{")
@@ -16,17 +16,8 @@ data class OfferingSP(val sender: String, val labels: HashMap<String, Behaviour>
         return builder.toString()
     }
 
-    override fun findRecProcCall(procname: String): Boolean {
-        for (value in labels.values) {
-            if (value.findRecProcCall(procname)) {
-                return true
-            }
-        }
-        return false
-    }
-
     override fun copy(): ActionSP {
-        val lblcopy = HashMap<String, Behaviour>()
+        val lblcopy = HashMap<String, IBehaviour>()
         for (l in labels){
             lblcopy.put(""+l.key, l.value.copy())
         }
@@ -34,7 +25,7 @@ data class OfferingSP(val sender: String, val labels: HashMap<String, Behaviour>
         return OfferingSP(""+process, lblcopy)
     }
 
-    override fun equals(b: Behaviour): Boolean {
+    override fun equals(b: IBehaviour): Boolean {
         if (!(b is OfferingSP) || process != b.process) return false
         else {
             for (label in labels) {

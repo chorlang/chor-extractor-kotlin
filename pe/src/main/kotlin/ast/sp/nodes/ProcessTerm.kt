@@ -1,11 +1,11 @@
 package ast.sp.nodes
 
-import ast.sp.nodes.interfaces.Behaviour
+import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.nodes.interfaces.SPNode
 
 typealias ProcedureName = String
 
-class ProcessTerm(val procedures: HashMap<ProcedureName, Behaviour>, var main: Behaviour) : SPNode {
+class ProcessTerm(val procedures: HashMap<ProcedureName, IBehaviour>, var main: IBehaviour) : SPNode {
 
     override fun toString(): String {
         val builder = StringBuilder()
@@ -17,7 +17,7 @@ class ProcessTerm(val procedures: HashMap<ProcedureName, Behaviour>, var main: B
     }
 
     fun copy(): ProcessTerm{
-        val prcopy = HashMap<String, Behaviour>()
+        val prcopy = HashMap<String, IBehaviour>()
         for (p in procedures){
             prcopy.put(""+p.key, p.value.copy())
         }
