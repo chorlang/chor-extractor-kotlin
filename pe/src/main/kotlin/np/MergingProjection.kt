@@ -47,22 +47,22 @@ class MergingProjection() {
         private fun merge(left: OfferingSP, right: OfferingSP): SPNode {
             if (left.process != right.process) throw MergingException("Can't merge " + left.process + " and " + right.process )
 
-            val leftmap = left.labels
-            val rightmap = right.labels
+            val leftmap = left.branches
+            val rightmap = right.branches
             val labels = HashMap<String, IBehaviour>()
 
             for (leftkey in leftmap.keys) {
                 if (rightmap.containsKey(leftkey)) {
-                    val b = merge(left.labels[leftkey] as IBehaviour, right.labels[leftkey] as IBehaviour) as IBehaviour
+                    val b = merge(left.branches[leftkey] as IBehaviour, right.branches[leftkey] as IBehaviour) as IBehaviour
                     labels.put(leftkey, b)
                     rightmap.remove(leftkey)
                 } else {
-                    labels.put(leftkey, left.labels[leftkey] as IBehaviour)
+                    labels.put(leftkey, left.branches[leftkey] as IBehaviour)
                 }
 
             }
             for (rightkey in rightmap.keys) {
-                labels.put(rightkey, right.labels[rightkey] as IBehaviour)
+                labels.put(rightkey, right.branches[rightkey] as IBehaviour)
             }
 
             return OfferingSP(left.process, labels)

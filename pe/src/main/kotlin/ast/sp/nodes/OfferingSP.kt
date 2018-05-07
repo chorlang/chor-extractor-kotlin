@@ -4,11 +4,11 @@ import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.nodes.interfaces.ActionSP
 import kotlin.collections.HashMap
 
-data class OfferingSP(val sender: String, val labels: HashMap<String, IBehaviour>) : ActionSP(sender) {
+data class OfferingSP(val sender: String, val branches: HashMap<String, IBehaviour>) : ActionSP(sender) {
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append(process + "&{")
-        for ((key, value) in labels) {
+        for ((key, value) in branches) {
             builder.append("$key: $value, ")
         }
         builder.delete(builder.length - 2, builder.length)
@@ -18,7 +18,7 @@ data class OfferingSP(val sender: String, val labels: HashMap<String, IBehaviour
 
     override fun copy(): ActionSP {
         val lblcopy = HashMap<String, IBehaviour>()
-        for (l in labels){
+        for (l in branches){
             lblcopy.put(""+l.key, l.value.copy())
         }
 
@@ -26,10 +26,10 @@ data class OfferingSP(val sender: String, val labels: HashMap<String, IBehaviour
     }
 
     override fun equals(b: IBehaviour): Boolean {
-        if (!(b is OfferingSP) || process != b.process) return false
+        if (b !is OfferingSP || process != b.process) return false
         else {
-            for (label in labels) {
-                val bl = b.labels.get(label.key)
+            for (label in branches) {
+                val bl = b.branches.get(label.key)
                 if (bl == null || !label.value.equals(bl)) return false
             }
         }
