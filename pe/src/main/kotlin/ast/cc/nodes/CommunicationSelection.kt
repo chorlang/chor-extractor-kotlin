@@ -6,9 +6,7 @@ import ast.cc.interfaces.Choreography
 import ast.cc.interfaces.Interaction
 
 class CommunicationSelection(val node: Interaction, val continuation: CCNode): Choreography{
-    override fun <T> accept(visitor: CCVisitor<T>): T {
-        return visitor.visit(this)
-    }
+    override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)
 
     override fun toString(): String {
         val sb = StringBuilder()

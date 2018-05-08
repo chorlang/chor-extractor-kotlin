@@ -4,13 +4,7 @@ import java.util.*
 
 abstract class InteractionLabel (val snd: String, val rcv: String, val expr: String, flipped: Boolean): ExtractionLabel(flipped) {
 
-    override fun equals(other: Any?): Boolean {
-        if (other !is InteractionLabel) return false
+    override fun equals(other: Any?) = if (other !is InteractionLabel) false else other.diff == diff
 
-        return other.diff == diff
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(diff)
-    }
+    override fun hashCode(): Int = Objects.hash(diff)
 }

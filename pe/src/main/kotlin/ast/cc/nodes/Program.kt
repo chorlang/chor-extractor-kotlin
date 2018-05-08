@@ -6,9 +6,7 @@ import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.Choreography
 
 data class Program(val main: Choreography, val procedures: List<ProcedureDefinition>) : CCNode {
-    override fun <T> accept(visitor: CCVisitor<T>): T {
-        return visitor.visit(this)
-    }
+    override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)
 
     override fun toString(): String {
         val sb = StringBuilder()

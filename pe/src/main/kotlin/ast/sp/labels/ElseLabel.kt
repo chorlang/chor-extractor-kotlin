@@ -6,15 +6,9 @@ import java.util.*
 
 data class ElseLabel(override val process: String, override val expression: String) : ConditionLabel(process, expression, false) {
 
-    override fun toString(): String {
-        return "if$process.$expression else "
-    }
+    override fun toString() = "if$process.$expression else "
 
-    fun equals(e: ElseLabel): Boolean{
-        return e.diff == diff
-    }
+    fun equals(e: ElseLabel) = e.diff == diff
 
-    override fun hashCode(): Int {
-        return Objects.hash(diff)
-    }
+    override fun hashCode(): Int = Objects.hash(diff)
 }

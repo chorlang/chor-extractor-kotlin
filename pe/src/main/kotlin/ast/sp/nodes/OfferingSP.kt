@@ -19,7 +19,7 @@ data class OfferingSP(val sender: String, val branches: HashMap<String, IBehavio
     override fun copy(): ActionSP {
         val lblcopy = HashMap<String, IBehaviour>()
         for (l in branches){
-            lblcopy.put(""+l.key, l.value.copy())
+            lblcopy.put(l.key, l.value.copy())
         }
 
         return OfferingSP(""+process, lblcopy)
