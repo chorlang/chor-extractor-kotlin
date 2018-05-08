@@ -4,13 +4,7 @@ import java.util.*
 
 abstract class ConditionLabel (open val process: String, open val expression: String, flipped: Boolean): ExtractionLabel(flipped) {
 
-    override fun equals(other: Any?): Boolean {
-        if (other !is ConditionLabel) return false
+    override fun equals(other: Any?) = if (other !is ConditionLabel) false else other.diff == diff
 
-        return other.diff == diff
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(diff)
-    }
+    override fun hashCode(): Int = Objects.hash(diff)
 }

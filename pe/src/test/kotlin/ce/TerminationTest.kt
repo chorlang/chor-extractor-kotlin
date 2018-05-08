@@ -26,4 +26,15 @@ class TerminationTest : Assert() {
 
         assertEquals(expected, actual)
     }
+
+    @Test
+    fun tst3(){
+        val test = "p { def X{stop} main{q!<e>; X}} | q {def X {stop} main{p?; X}}"
+        val args = arrayOf("-c", test)
+
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "main {stop}"
+
+        assertEquals(expected, actual)
+    }
 }

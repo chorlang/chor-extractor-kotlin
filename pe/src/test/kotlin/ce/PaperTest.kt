@@ -27,7 +27,7 @@ class PaperTest : Assert() {
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { p.e1->q; r.e2->s; X1 } main {X1}"
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -39,9 +39,9 @@ class PaperTest : Assert() {
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
+        val expected = "def X1 { p.e->q; X1 } main {p.e->q; r.e2->s; X1}"
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 
     @Test
@@ -51,7 +51,7 @@ class PaperTest : Assert() {
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; X1 } main {p.e->q; p.e->q; p.e->q; p.e->q; X1}"
+        val expected = "def X1 { p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; X1 } main {X1}"
 
         assertEquals(expected, actual)
     }
@@ -78,6 +78,6 @@ class PaperTest : Assert() {
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
 
-        assertEquals(actual, expected)
+        assertEquals(expected, actual)
     }
 }

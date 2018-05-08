@@ -181,9 +181,9 @@ class ProjectedExtractionTest : Assert() {
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected =  "def X1 { q.e->p; if p.e then p->q[ok]; q->r[ok]; X1 else p->q[ko]; q->r[ko]; X2 } " +
+        val expected =  "def X1 { if p.e then p->q[ok]; q->r[ok]; q.e->p; X1 else p->q[ko]; q->r[ko]; X2 } " +
                 "def X2 { q.e->r; if r.e then r->q[ok]; r->p[ok]; q.e->r; stop else r->q[ko]; r->p[ko]; X2 } " +
-                "main {p.e->q; X1}"
+                "main {p.e->q; q.e->p; X1}"
 
         assertEquals(expected, actual)
     }

@@ -5,15 +5,9 @@ import java.util.*
 
 data class SelectionLabel(val sender: String, val receiver: String, val label: String) : InteractionLabel(sender, receiver, label, false) {
 
-    override fun toString(): String {
-        return "$sender->$receiver[$label]"
-    }
+    override fun toString() = "$sender->$receiver[$label]"
 
-    fun equals(e: SelectionLabel): Boolean{
-        return diff == e.diff
-    }
+    fun equals(e: SelectionLabel) = diff == e.diff
 
-    override fun hashCode(): Int {
-        return Objects.hash(diff)
-    }
+    override fun hashCode(): Int = Objects.hash(diff)
 }

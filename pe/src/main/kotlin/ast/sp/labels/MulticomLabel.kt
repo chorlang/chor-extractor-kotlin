@@ -19,11 +19,7 @@ data class MulticomLabel(val labels: ArrayList<InteractionLabel>) : ExtractionLa
         return sb.toString()
     }
 
-    fun equals(e: MulticomLabel): Boolean{
-        return e.diff == diff
-    }
+    fun equals(e: MulticomLabel) = e.diff == diff
 
-    override fun hashCode(): Int {
-        return Objects.hash(diff)
-    }
+    override fun hashCode(): Int = Objects.hash(diff)
 }

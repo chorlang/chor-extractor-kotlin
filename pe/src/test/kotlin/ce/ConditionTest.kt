@@ -106,7 +106,7 @@ class ConditionTest : Assert() {
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
+        val expected = "def X1 { p.e->q; X1 } main {p.e->q; r.e2->s; X1}"
 
         assertEquals(expected, actual)
     }
