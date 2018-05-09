@@ -115,7 +115,7 @@ class NetworkExtraction {
                 if (!nodeInGraph.isPresent) {
                     val newNode = createNewNode(targetNetwork, label, currentNode, marking)
                     addNewNode(currentNode, newNode, label, graph)
-                    log.debug(label)
+                    //log.debug(label)
                     return if (buildGraph(newNode, graph, strategy)) true else continue
                 }
                 /* case 2 */
@@ -154,7 +154,7 @@ class NetworkExtraction {
                 if (!tnodeInGraph.isPresent) {
                     nodeThen = createNewNode(targetNodeThen, labelThen, currentNode, marking)
                     addNewNode(currentNode, nodeThen, labelThen, graph)
-                    log.debug(labelThen)
+                    //log.debug(labelThen)
                     if (!buildGraph(nodeThen, graph, strategy)) continue
                 }
                 /* case 5 */
@@ -169,7 +169,7 @@ class NetworkExtraction {
                 if (!enodeInGraph.isPresent) {
                     nodeElse = createNewNode(targetNodeElse, labelElse, currentNode, marking)
                     addNewNode(currentNode, nodeElse, labelElse, graph)
-                    log.debug(labelElse)
+                    //log.debug(labelElse)
                     if (!buildGraph(nodeElse, graph, strategy)) continue
                 }
                 /* case 8 */
@@ -255,7 +255,7 @@ class NetworkExtraction {
                 if (!nodeInGraph.isPresent) {
                     val newnode = createNewNode(Network(processes), label, currentNode, marking)
                     addNewNode(currentNode, newnode, label, graph)
-                    log.debug(label)
+                    //log.debug(label)
                     return if (buildGraph(newnode, graph, strategy)) true else continue
                 } else {
                     if (addNewEdge(currentNode, nodeInGraph.get(), label, graph)) return true
@@ -303,10 +303,10 @@ class NetworkExtraction {
 
             is ProcedureInvocationSP -> {
                 val new_pb = ProcessTerm(rcv_proc, rcv_pb_main)
-                if (!marking.get(lbl.rcv)!!) {
+               // if (!marking.get(lbl.rcv)!!) {
                     unfold(lbl.rcv, new_pb)
                     marking[lbl.rcv] = true
-                }
+                //}
                 return fillWaiting(waiting, actions, lbl, new_pb.main, rcv_proc, marking)
             }
         }
