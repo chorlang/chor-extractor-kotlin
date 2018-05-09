@@ -25,11 +25,14 @@ class ProcessTerm(val procedures: HashMap<ProcedureName, IBehaviour>, var main: 
         return ProcessTerm(prcopy, main.copy())
     }
 
-    fun equals(pb: ProcessTerm): Boolean{
+    override fun equals(pb: Any?): Boolean {
+        if( this === pb ) return true
+        if( pb !is ProcessTerm ) return false
+
         if (!main.equals(pb.main)) return false
         for (pr in procedures){
             val pbpr = pb.procedures.get(pr.key)
-            if (pbpr == null || !pbpr.equals(pr.value)) return false
+            if (pbpr === null || !pbpr.equals(pr.value)) return false
         }
         return true
     }
