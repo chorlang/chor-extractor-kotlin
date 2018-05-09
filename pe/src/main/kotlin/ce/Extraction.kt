@@ -21,10 +21,12 @@ import kotlin.collections.HashSet
 
 typealias ProcessMap = HashMap<String, ProcessTerm>
 typealias GraphNode = Pair<Network, InteractionLabel>
+typealias Marking = HashMap<ProcessName, Boolean>
 
 class NetworkExtraction {
     private val log = LogManager.getLogger()
     private var nodeIdCounter = 0
+    private val hashesMap = HashMap<Int,List<ConcreteNode>>()
 
     //region Main
     /**
@@ -39,7 +41,7 @@ class NetworkExtraction {
         val marking = HashMap<ProcessName, Boolean>()
 
         n.processes.forEach({ name, term ->
-            marking.put(name, term.main is TerminationSP)
+            marking[name] = term.main is TerminationSP
         })
 
         val node = ConcreteNode(n, "0", nextNodeId(), ArrayList(), marking)
@@ -49,6 +51,7 @@ class NetworkExtraction {
         buildGraph(node, graph as DirectedGraph<ConcreteNode, ExtractionLabel>, strategy)
 
         val fklist = unrollGraph(node, graph as DirectedGraph<Node, ExtractionLabel>)
+        log.debug( "Vertexes: ${graph.vertexSet().size}, Edges: ${graph.edgeSet().size}, equals: ${Network.i}" )
         return buildChoreography(node, fklist, graph)
     }
 
@@ -77,6 +80,11 @@ class NetworkExtraction {
         }
     }
 
+    private fun hash(n:Network, marking:Marking):Int
+    {
+        return Pair(n,marking).hashCode()
+    }
+
     private fun buildGraph(currentNode: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         //val node = currentNode.copy()
         val unfoldedProcesses = HashSet<String>() //Storing unfoldedProcesses processes
@@ -94,7 +102,7 @@ class NetworkExtraction {
                 val (targetNetwork, label) = getCommunication(processes, findComm)
 
                 //remove processes that were unfoldedProcesses but don't participate in the current communication
-                val marking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
+                val marking = currentNode.marking.clone() as Marking
 
                 marking.put(label.rcv, true)
                 unfoldedProcesses.remove(label.rcv)
@@ -449,9 +457,8 @@ class NetworkExtraction {
     }
 
     private fun wash(marking: HashMap<ProcessName, Boolean>, processes: ProcessMap) {
-        val keys = marking.keys
-        for (key in keys) {
-            marking.put(key, processes[key]!!.main is TerminationSP)
+        for (key in marking.keys) {
+            marking[key] = processes[key]!!.main is TerminationSP
         }
     }
 
