@@ -31,6 +31,10 @@ data class Network(val processes: HashMap<ProcessName, ProcessTerm>) : SPNode {
         return processes.equals(n.processes)
     }
 
+    override fun hashCode(): Int {
+        return processes.hashCode()
+    }
+
     companion object {
         var i = 0
     }

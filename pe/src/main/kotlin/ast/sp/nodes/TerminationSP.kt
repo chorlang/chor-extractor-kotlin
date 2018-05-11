@@ -9,5 +9,14 @@ class TerminationSP : IBehaviour {
 
     override fun copy(): IBehaviour = TerminationSP()
 
-    override fun equals(b: IBehaviour) = b is TerminationSP && b.termination == termination
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+
+        return other is TerminationSP &&
+                other.termination == termination
+    }
+
+    override fun hashCode(): Int {
+        return termination.hashCode()
+    }
 }
