@@ -8,5 +8,14 @@ data class ReceiveSP(val continuation: IBehaviour, val sender: String) : ActionS
 
     override fun copy(): ActionSP = ReceiveSP(continuation.copy(), process)
 
-    override fun equals(b: IBehaviour) = b is ReceiveSP && b.process == process && b.continuation.equals(continuation)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        return other is ReceiveSP && other.process == process && other.continuation.equals(continuation)
+    }
+
+    override fun hashCode(): Int {
+        var result = continuation.hashCode()
+        result = 31 * result + sender.hashCode()
+        return result
+    }
 }

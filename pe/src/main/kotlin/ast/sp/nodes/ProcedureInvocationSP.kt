@@ -8,5 +8,12 @@ data class ProcedureInvocationSP(val procedure: String) : IBehaviour {
 
     override fun copy(): IBehaviour = ProcedureInvocationSP(procedure)
 
-    override fun equals(b: IBehaviour) = b is ProcedureInvocationSP && b.procedure == procedure
+    override fun equals(other: Any?): Boolean {
+        if( this === other ) return true
+        return other is ProcedureInvocationSP && procedure == other.procedure
+    }
+
+    override fun hashCode(): Int {
+        return procedure.hashCode()
+    }
 }

@@ -10,30 +10,34 @@ class ProcessTerm(val procedures: HashMap<ProcedureName, IBehaviour>, var main: 
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append("{")
-        procedures.forEach { t, u -> builder.append("def "+ t).append("{").append(u.toString()).append("} ")}
-        builder.append("main {").append(main.toString()).append("}}")
+        procedures.forEach { t, u -> builder.append("def $t { $u } ")}
+        builder.append("main { $main }}")
 
         return builder.toString()
     }
 
     fun copy(): ProcessTerm{
-        val prcopy = HashMap<String, IBehaviour>()
-        for (p in procedures){
-            prcopy.put(""+p.key, p.value.copy())
-        }
-
-        return ProcessTerm(prcopy, main.copy())
+        val proceduresCopy = HashMap<String, IBehaviour>()
+        procedures.forEach{ proceduresCopy[it.key] = it.value.copy() }
+        return ProcessTerm(proceduresCopy, main.copy())
     }
 
-    override fun equals(pb: Any?): Boolean {
-        if( this === pb ) return true
-        if( pb !is ProcessTerm ) return false
+    override fun equals(other: Any?): Boolean {
+        if( this === other ) return true
+        if( other !is ProcessTerm ) return false
 
-        if (!main.equals(pb.main)) return false
-        for (pr in procedures){
-            val pbpr = pb.procedures.get(pr.key)
-            if (pbpr === null || !pbpr.equals(pr.value)) return false
+        if (main.equals(other.main)) return false
+
+        for (procedure in procedures){
+            val procedureBehaviour = other.procedures[procedure.key]
+            if (procedureBehaviour === null || procedureBehaviour.equals(procedure.value)) return false
         }
         return true
+    }
+
+    override fun hashCode(): Int {
+        var result = procedures.hashCode()
+        result = 31 * result + main.hashCode()
+        return result
     }
 }
