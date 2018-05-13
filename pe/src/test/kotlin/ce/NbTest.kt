@@ -73,24 +73,24 @@ class NbTest : Assert() {
     @Test
     fun mult2bitX2(){
         val test =
-                "a1 { def X {b1?;b1!<0>;b1?;b1!<1>;X} main {b1!<0>;b1!<1>;X}} | " +
-                "b1 { def Y {a1?;a1!<ack0>;a1?;a1!<ack1>;Y} main {Y}} | " +
-                "a2 { def X {b2?;b2!<0>;b2?;b2!<1>;X} main {b2!<0>;b2!<1>;X}} | " +
-                "b2 { def Y {a2?;a2!<ack0>;a2?;a2!<ack1>;Y} main {Y}}"
+                "a { def X {b?;b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
+                "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}} | " +
+                "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
+                "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
                 "def X1 { " +
-                        "(a1.1->b1, b1.ack0->a1); " +
-                        "(a1.0->b1, b1.ack1->a1); " +
-                        "(b2.ack0->a2, a2.1->b2); " +
-                        "(a1.0->b1, b1.ack1->a1); " +
-                        "(a1.1->b1, b1.ack0->a1); " +
-                        "(b2.ack1->a2, a2.0->b2); " +
+                        "(a.1->b, b.ack0->a); " +
+                        "(a.0->b, b.ack1->a); " +
+                        "(c.1->d, d.ack0->c); " +
+                        "(a.1->b, b.ack0->a); " +
+                        "(a.0->b, b.ack1->a); " +
+                        "(c.0->d, d.ack1->c); " +
                         "X1 } " +
-                "main {a2.0->b2; a1.0->b1; X1}"
+                "main {a.0->b; c.0->d; X1}"
 
         assertEquals(expected, actual)
     }
@@ -109,21 +109,21 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    /*@Test
+    @Test
     fun mult2bit3pX2(){
         val test =
-                "a1 { def X {b1!<0>;b1?;b1!<1>;b1?;b1!<2>;b1?;X} main {X}} | " +
-                "b1 { def Y {a1!<ack0>;a1?;a1!<ack1>;a1?;a1!<ack2>;a1?;Y} main {Y}} | " +
-                "a2 { def X {b2!<0>;b2?;b2!<1>;b2?;b2!<2>;b2?;X} main {X}} | " +
-                "b2 { def Y {a2!<ack0>;a2?;a2!<ack1>;a2?;a2!<ack2>;a2?;Y} main {Y}}"
+                "a { def X {b!<0>;b?;b!<1>;b?;b!<2>;b?;X} main {X}} | " +
+                "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {Y}} | " +
+                "c { def X {d!<0>;d?;d!<1>;d?;d!<2>;d?;X} main {X}} | " +
+                "d { def Y {c!<ack0>;c?;c!<ack1>;c?;c!<ack2>;c?;Y} main {Y}}"
 
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { (a.0->b, b.ack0->a); (a.1->b, b.ack1->a); (a.2->b, b.ack2->a); X1 } main {X1}"
+        val expected = "def X1 { (a.1->b, b.ack1->a); (a.2->b, b.ack2->a); (c.0->d, d.ack0->c); (a.0->b, b.ack0->a); (a.1->b, b.ack1->a); (a.2->b, b.ack2->a); (c.1->d, d.ack1->c); (a.0->b, b.ack0->a); (a.1->b, b.ack1->a); (a.2->b, b.ack2->a); (c.2->d, d.ack2->c); (a.0->b, b.ack0->a); X1 } main {(a.0->b, b.ack0->a); X1}"
 
         assertEquals(expected, actual)
-    }*/
+    }
 }
 
 

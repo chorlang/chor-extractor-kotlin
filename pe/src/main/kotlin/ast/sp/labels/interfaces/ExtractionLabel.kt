@@ -1,12 +1,11 @@
 package ast.sp.labels.interfaces
 
 import java.util.*
-import java.util.Objects
 
-abstract class ExtractionLabel (var flipped: Boolean){
-    val diff = Random().nextInt()
+abstract class ExtractionLabel(var flipped: Boolean) {
+    abstract override fun equals(other: Any?): Boolean
+    override fun hashCode(): Int {
+        return (Random::nextDouble).hashCode()
+    }
 
-    override fun equals(other: Any?) = if (other !is ExtractionLabel) false else diff == other.diff
-
-    override fun hashCode(): Int = Objects.hash(diff)
 }

@@ -10,8 +10,8 @@ class ProcessTerm(val procedures: HashMap<ProcedureName, IBehaviour>, var main: 
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append("{")
-        procedures.forEach { t, u -> builder.append("def $t { $u } ")}
-        builder.append("main { $main }}")
+        procedures.forEach { t, u -> builder.append("def $t{$u} ")}
+        builder.append("main {$main}}")
 
         return builder.toString()
     }
