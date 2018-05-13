@@ -95,10 +95,10 @@ class NetworkExtraction {
                 }
 
                 //check if the node with the same network and markings already exists in the graph
-                val existingNodes = hashesMap.get(hash(targetNetwork, targetMarking))
+                val existingNodes = hashesMap[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
 
                 /* case 1 */
-                if (existingNodes == null) {
+                if (existingNodes == null || existingNodes.isEmpty()) {
                     val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
                     addNodeToGraph(currentNode, newNode, label, graph)
                     //log.debug(label)
@@ -140,17 +140,17 @@ class NetworkExtraction {
 
 
                 //check if the node with the same network and markings already exists in the graph
-                val existingThenNodes = hashesMap[hash(targetNetworkThen, targetMarking)]
+                val existingThenNodes = hashesMap[hash(targetNetworkThen, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
 
                 val nodeThen: ConcreteNode
                 val nodeElse: ConcreteNode
 
                 /* case4 */
 
-                if (existingThenNodes == null) {
+                if (existingThenNodes == null || existingThenNodes.isEmpty()) {
                     nodeThen = createNewNode(targetNetworkThen, labelThen, currentNode, targetMarking)
                     addNodeToGraph(currentNode, nodeThen, labelThen, graph)
-                    //log.debug(label)
+                    //log.debug(labelThen)
                     if (!buildGraph(nodeThen, graph, strategy)) continue
                 }
                 /* case 5 */
@@ -160,12 +160,13 @@ class NetworkExtraction {
                     addEdgeToGraph(currentNode, nodeThen, labelThen, graph)
                 }
 
-                val existingElseNodes = hashesMap[hash(targetNetworkElse, targetMarking)]
+                val existingElseNodes = hashesMap[hash(targetNetworkElse, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
+
                 /* case 7 */
-                if (existingElseNodes == null) {
+                if (existingElseNodes == null || existingElseNodes.isEmpty()) {
                     nodeElse = createNewNode(targetNetworkElse, labelElse, currentNode, targetMarking)
                     addNodeToGraph(currentNode, nodeElse, labelElse, graph)
-                    //log.debug(label)
+                    //log.debug(labelElse)
                     if (!buildGraph(nodeElse, graph, strategy)) continue
                 }
                 /* case 8 */
@@ -186,13 +187,15 @@ class NetworkExtraction {
         //region Try to find a multi-action communication
 
         for (p in processes) {
+            val processesCopy = HashMap<String, ProcessTerm>()
+            processes.forEach { t, u -> processesCopy[t] = u.copy() }
 
             //val tmp_node = node.copy()
             //val tmp_node_net = tmp_node.processes.processes
 
             val actions = ArrayList<InteractionLabel>()
             val waiting = ArrayList<InteractionLabel>()
-            val b = createInteractionLabel(p.key, processes)
+            val b = createInteractionLabel(p.key, processesCopy)
             if (b != null) waiting.add(b)
 
 
@@ -208,21 +211,21 @@ class NetworkExtraction {
                 val receiver = lbl.rcv
                 val sender = lbl.snd
 
-                val rcv_pb = processes[receiver] //val rcv_pb = tmp_node_net[receiverTerm]
+                val rcv_pb = processesCopy[receiver] //val rcv_pb = tmp_node_net[receiverTerm]
 
                 val marking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
 
                 //fill the list of waiting actions with sending/selection actions from the receiverTerm process behaviour if it is in correct format
                 //return the new receiverTerm pb if success and null otherwise. waiting list is populated implicitly
-                val new_rcv_b = fillWaiting(waiting, actions, lbl, rcv_pb!!.main, processes[receiver]!!.procedures, marking)
+                val new_rcv_b = fillWaiting(waiting, actions, lbl, rcv_pb!!.main, processesCopy[receiver]!!.procedures, marking)
                 if (new_rcv_b != null) {
-                    val snd_pb = processes[sender] //val snd_pb = tmp_node_net[senderTerm]
+                    val snd_pb = processesCopy[sender] //val snd_pb = tmp_node_net[senderTerm]
                     val snd_pb_main = snd_pb!!.main
 
-                    processes.replace(receiver, ProcessTerm(rcv_pb.procedures, new_rcv_b)) // tmp_node_net.replace(receiverTerm, ProcessTerm(rcv_pb.procedures, new_rcv_b))
+                    processesCopy.replace(receiver, ProcessTerm(rcv_pb.procedures, new_rcv_b)) // tmp_node_net.replace(receiverTerm, ProcessTerm(rcv_pb.procedures, new_rcv_b))
                     val snd_cont = if (snd_pb_main is SendingSP) snd_pb_main.continuation else if (snd_pb_main is SelectionSP) snd_pb_main.continuation else throw UnsupportedOperationException()
 
-                    processes.replace(sender, ProcessTerm(snd_pb.procedures, snd_cont)) // tmp_node_net.replace(senderTerm, ProcessTerm(snd_pb.procedures, snd_cont))
+                    processesCopy.replace(sender, ProcessTerm(snd_pb.procedures, snd_cont)) // tmp_node_net.replace(senderTerm, ProcessTerm(snd_pb.procedures, snd_cont))
                 }
             }
 
@@ -230,36 +233,38 @@ class NetworkExtraction {
             if (actions.size >= 2) {
                 val label = MulticomLabel(actions)
 
-                val marking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
+                val targetMarking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
 
                 //fold back unfoldedProcesses procedures that were not participating in communication
                 label.labels.forEach {
-                    marking.put(it.rcv, true)
+                    targetMarking.put(it.rcv, true)
                     unfoldedProcesses.remove(it.rcv)
-                    marking.put(it.snd, true)
+                    targetMarking.put(it.snd, true)
                     unfoldedProcesses.remove(it.snd)
                 }
-                unfoldedProcesses.forEach { processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! } // unfoldedProcesses.forEach { tmp_node_net[it]?.main = currentNode.processes.processes[it]?.main?.copy()!! }
+                unfoldedProcesses.forEach { processesCopy[it]?.main = currentNode.network.processes[it]?.main?.copy()!! } // unfoldedProcesses.forEach { tmp_node_net[it]?.main = currentNode.processes.processes[it]?.main?.copy()!! }
 
                 //if all procedures were visited, flip all markings
-                if (marking.values.all { it }) {
+                if (targetMarking.values.all { it }) {
                     label.flipped = true
-                    wash(marking, processes)
+                    wash(targetMarking, processesCopy)
                 }
 
-                //add new edge or node to the graph
-                val nodeInGraph = graph.vertexSet().stream().filter { it.network.equals(Network(processes)) && (currentNode.choicePath).startsWith(it.choicePath) && it.marking.equals(marking) }.findAny()
-                if (!nodeInGraph.isPresent) {
-                    val newnode = createNewNode(Network(processes), label, currentNode, marking)
-                    addNodeToGraph(currentNode, newnode, label, graph)
+
+                //check if the node with the same network and markings already exists in the graph
+                val targetNetwork = Network(processesCopy)
+
+
+                val existingNodes = hashesMap[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
+                if (existingNodes == null || existingNodes.isEmpty()) {
+                    val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
+                    addNodeToGraph(currentNode, newNode, label, graph)
                     //log.debug(label)
-                    return if (buildGraph(newnode, graph, strategy)) true else continue
+                    return if (buildGraph(newNode, graph, strategy)) true else continue
                 } else {
-                    if (addEdgeToGraph(currentNode, nodeInGraph.get(), label, graph)) return true
-                    /*else {
-                        cleanNode(findComm, processes, currentNode)
-                        TODO ("replace with tmp_node")
-                    }*/
+                    //if there is several nodes with the same hash, need to find the right one by comparing via equals
+                    val existingNode = if (existingNodes.size == 1) existingNodes.first() else existingNodes.first { it.network.equals(targetNetwork) && it.marking.equals(targetMarking) }
+                    if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
                 }
             }
 
@@ -774,13 +779,13 @@ class NetworkExtraction {
 
     private fun sortProcesses(node: ConcreteNode, strategy: Strategy): HashMap<String, ProcessTerm> {
         val net = node.network.processes
-        val copynet = LinkedHashMap<String, ProcessTerm>()
+        val networkCopy = LinkedHashMap<String, ProcessTerm>()
 
         //put Selection/OfferingSP on top
-        net.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) copynet.put(process.key, process.value.copy()) }
-        net.forEach { process -> copynet.put(process.key, process.value.copy()) }
+        net.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) networkCopy.put(process.key, process.value.copy()) }
+        net.forEach { process -> networkCopy.put(process.key, process.value.copy()) }
 
-        return copynet
+        return networkCopy
     }
 
     private fun createInteractionLabel(p: String, nodesorted: HashMap<String, ProcessTerm>): InteractionLabel? {
