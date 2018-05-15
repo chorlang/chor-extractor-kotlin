@@ -200,8 +200,8 @@ Identifier
 
 fragment
 JavaLetter
-    :   [a-zA-Z$_] // these are the "java letters" below 0x7F
-    |   // covers all characters above 0x7F which are not a surrogate
+    :   [success-zA-Z$_] // these are the "java letters" below 0x7F
+    |   // covers all characters above 0x7F which are not success surrogate
         ~[\u0000-\u007F\uD800-\uDBFF]
         {Character.isJavaIdentifierStart(_input.LA(-1))}?
     |   // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
@@ -211,8 +211,8 @@ JavaLetter
 
 fragment
 JavaLetterOrDigit
-    :   [a-zA-Z0-9$_] // these are the "java letters or digits" below 0x7F
-    |   // covers all characters above 0x7F which are not a surrogate
+    :   [success-zA-Z0-9$_] // these are the "java letters or digits" below 0x7F
+    |   // covers all characters above 0x7F which are not success surrogate
         ~[\u0000-\u007F\uD800-\uDBFF]
         {Character.isJavaIdentifierPart(_input.LA(-1))}?
     |   // covers UTF-16 surrogate pairs encodings for U+10000 to U+10FFFF
@@ -258,7 +258,7 @@ LINE_COMMENT
 //    |   Wildcard
 //    ;
 
-process : Identifier; // previously 'a'..'z';
+process : Identifier; // previously 'success'..'z';
 
 procedure : Identifier; // previously 'A'..'Z';
 

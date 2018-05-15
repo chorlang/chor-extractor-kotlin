@@ -75,6 +75,8 @@ class NetworkExtraction {
 
             val findComm = findCommunication(processPair.key, processes)
             if (findComm != null) {
+                val processesCopy = processesCopy(processes)
+
                 val (targetNetwork, label) = getCommunication(processes, findComm)
 
                 //remove processes that were unfoldedProcesses but don't participate in the current communication
@@ -116,7 +118,9 @@ class NetworkExtraction {
 
                 }
             } else if (findCondition(processes)) {
-                val (targetNetworkThen, labelThen, targetNetworkElse, labelElse) = getCondition(processes)
+                val processesCopy = processesCopy(processes)
+
+                val (targetNetworkThen, labelThen, targetNetworkElse, labelElse) = getCondition(processesCopy)
 
                 val targetMarking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
 
@@ -144,12 +148,12 @@ class NetworkExtraction {
 
                 val nodeThen: ConcreteNode
                 val nodeElse: ConcreteNode
+                val cond = AddingConditionResult()
 
                 /* case4 */
-
                 if (existingThenNodes == null || existingThenNodes.isEmpty()) {
                     nodeThen = createNewNode(targetNetworkThen, labelThen, currentNode, targetMarking)
-                    addNodeToGraph(currentNode, nodeThen, labelThen, graph)
+                    cond.thenNodeAdding = addNodeToGraph(currentNode, nodeThen, labelThen, graph)
                     //log.debug(labelThen)
                     if (!buildGraph(nodeThen, graph, strategy)) continue
                 }
@@ -157,7 +161,7 @@ class NetworkExtraction {
                 else {
                     //if there is several nodes with the same hash, need to find the right one by comparing via equals
                     nodeThen = if (existingThenNodes.size == 1) existingThenNodes.first() else existingThenNodes.first { it.network.equals(targetNetworkThen) && it.marking.equals(targetMarking) }
-                    addEdgeToGraph(currentNode, nodeThen, labelThen, graph)
+                    cond.thenEdgeAdding = addEdgeToGraph(currentNode, nodeThen, labelThen, graph)
                 }
 
                 val existingElseNodes = hashesMap[hash(targetNetworkElse, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
@@ -165,7 +169,7 @@ class NetworkExtraction {
                 /* case 7 */
                 if (existingElseNodes == null || existingElseNodes.isEmpty()) {
                     nodeElse = createNewNode(targetNetworkElse, labelElse, currentNode, targetMarking)
-                    addNodeToGraph(currentNode, nodeElse, labelElse, graph)
+                    cond.elseNodeAdding = addNodeToGraph(currentNode, nodeElse, labelElse, graph)
                     //log.debug(labelElse)
                     if (!buildGraph(nodeElse, graph, strategy)) continue
                 }
@@ -173,12 +177,18 @@ class NetworkExtraction {
                 else {
                     //if there is several nodes with the same hash, need to find the right one by comparing via equals
                     nodeElse = if (existingElseNodes.size == 1) existingElseNodes.first() else existingElseNodes.first { it.network.equals(targetNetworkElse) && it.marking.equals(targetMarking) }
-                    addEdgeToGraph(currentNode, nodeElse, labelElse, graph)
+                    cond.elseEdgeAdding = addEdgeToGraph(currentNode, nodeElse, labelElse, graph)
                 }
 
-                relabel(nodeThen)
-                relabel(nodeElse)
-                return true
+                //ensure that both branches were created
+                if (cond.isResultFine()) {
+                    relabel(nodeThen)
+                    relabel(nodeElse)
+                    return true
+                } else {
+                    CleanBadConditional(cond, graph, currentNode, nodeElse, nodeThen)
+                }
+
             } else if (allTerminated(processes)) {
                 return true
             }
@@ -187,8 +197,7 @@ class NetworkExtraction {
         //region Try to find a multi-action communication
 
         for (p in processes) {
-            val processesCopy = HashMap<String, ProcessTerm>()
-            processes.forEach { t, u -> processesCopy[t] = u.copy() }
+            val processesCopy = processesCopy(processes)
 
             //val tmp_node = node.copy()
             //val tmp_node_net = tmp_node.processes.processes
@@ -250,10 +259,8 @@ class NetworkExtraction {
                     wash(targetMarking, processesCopy)
                 }
 
-
                 //check if the node with the same network and markings already exists in the graph
                 val targetNetwork = Network(processesCopy)
-
 
                 val existingNodes = hashesMap[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
                 if (existingNodes == null || existingNodes.isEmpty()) {
@@ -273,6 +280,81 @@ class NetworkExtraction {
         //region Throw exception, if there is no possible actions
         throw NoPossibleActionsException("No possible actions at node" + currentNode.toString())
         //endregion
+    }
+
+    private fun processesCopy(processes: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        val processesCopy = HashMap<String, ProcessTerm>()
+        processes.forEach { t, u -> processesCopy[t] = u.copy() }
+        return processesCopy
+    }
+
+    private fun CleanBadConditional(cond: AddingConditionResult, graph: DirectedGraph<ConcreteNode, ExtractionLabel>, currentNode: ConcreteNode, nodeElse: ConcreteNode, nodeThen: ConcreteNode) {
+        when (cond.toStringMask()) {
+        //Node for else branch was added, but then node wasn't added to the graph
+            "0n1n" -> {
+                graph.removeEdge(currentNode, nodeElse)
+                graph.removeVertex(nodeElse)
+            }
+        //Edge for else branch was added (elseNode was already in the graph), but then node wasn't added to the graph
+            "0nn1" -> {
+                graph.removeEdge(currentNode, nodeElse)
+            }
+        //Node for else branch was added, but edge for then branch (then node was already in the graph) wasn't added to the graph
+            "n01n" -> {
+                graph.removeEdge(currentNode, nodeElse)
+                graph.removeVertex(nodeElse)
+            }
+        //Edge for else branch was added (elseNode was already in the graph), but edge for then branch (then node was already in the graph) wasn't added to the graph
+            "n0n1" -> {
+                graph.removeEdge(currentNode, nodeElse)
+            }
+        //Node for then branch was added, but else node wasn't added to the graph
+            "1n0n" -> {
+                graph.removeEdge(currentNode, nodeThen)
+                graph.removeVertex(nodeThen)
+            }
+        //Node for then branch was added, but edge for else branch (else node was already in the graph) wasn't added to the graph
+            "1nn0" -> {
+                graph.removeEdge(currentNode, nodeThen)
+                graph.removeVertex(nodeThen)
+            }
+        //Edge for then branch was added (thenNode was already in the graph), but else node wasn't added to the graph
+            "n10n" -> {
+                graph.removeEdge(currentNode, nodeThen)
+            }
+        //Edge for then branch was added (thenNode was already in the graph), but edge for else branch (else node was already in the graph) wasn't added to the graph
+            "n1n0" -> {
+                graph.removeEdge(currentNode, nodeThen)
+            }
+
+            else -> {
+            }
+        }
+    }
+
+    data class AddingConditionResult(var thenNodeAdding: Boolean?, var thenEdgeAdding: Boolean?, var elseNodeAdding: Boolean?, var elseEdgeAdding: Boolean?) {
+        fun toStringMask(): String {
+            return stringify(thenNodeAdding) + stringify(thenEdgeAdding) + stringify(elseNodeAdding) + stringify(elseEdgeAdding)
+        }
+
+        private fun stringify(b: Boolean?): String = if (b == null) "n" else if (b) "1" else "0"
+
+
+        fun isResultFine(): Boolean {
+            val sm = this.toStringMask()
+            return ((sm == "1n1n") || (sm == "n11n") || (sm == "1nn1") || (sm == "n1n1"))
+        }
+
+        /*enum class FaultyResult(val result: String){
+            BadThenNodeFineElseNode("0111"),
+            BadThenNodeFineElseEdge("0111"),
+            BadThenNodeBadElseNode("0101"),
+            BadThenNodeBadElseEdge("0110"),
+            Else("")
+
+        }*/
+
+        constructor() : this(null, null, null, null)
     }
 
     private fun fillWaiting(waiting: ArrayList<InteractionLabel>, actions: ArrayList<InteractionLabel>, lbl: InteractionLabel, rcv_pb_main: IBehaviour, rcv_proc: HashMap<String, IBehaviour>, marking: HashMap<ProcessName, Boolean>): IBehaviour? {
@@ -318,13 +400,13 @@ class NetworkExtraction {
     private fun unrollGraph(root: ConcreteNode, graph: DirectedGraph<Node, ExtractionLabel>): ArrayList<FakeNode> {
         val fakeNodesList = ArrayList<FakeNode>()
 
-        var c = 1
-        val rnodes = HashMap<ConcreteNode, String>()
+        var count = 1
+        val recursiveNodes = HashMap<ConcreteNode, String>()
 
+        if (graph.incomingEdgesOf(root).size == 1) recursiveNodes[root] = count++.toString()
+        graph.vertexSet().forEach { node -> if (node is ConcreteNode && graph.incomingEdgesOf(node).size > 1) recursiveNodes[node] = count++.toString() }
 
-        graph.vertexSet().forEach { node -> if (node is ConcreteNode && graph.incomingEdgesOf(node).size > 1) rnodes.put(node, c++.toString()) }
-
-        rnodes.forEach { node ->
+        recursiveNodes.forEach { node ->
             node.run {
                 val fk = FakeNode("X" + node.value, node.key)
                 graph.addVertex(fk)
@@ -340,8 +422,8 @@ class NetworkExtraction {
         }
 
 
-        if (graph.incomingEdgesOf(root).size == 1) {
-            val fakeNode = FakeNode(generateProcedureName(), root)
+        /*if (graph.incomingEdgesOf(root).size == 1) {
+            val fakeNode = FakeNode("X" + count.inc().toString(), root)
             graph.addVertex(fakeNode)
             fakeNodesList.add(fakeNode)
             val label = graph.outgoingEdgesOf(root).first()
@@ -349,7 +431,7 @@ class NetworkExtraction {
             graph.removeEdge(label)
             graph.addEdge(fakeNode, target, label)
 
-        }
+        }*/
 
         return fakeNodesList
     }
@@ -527,6 +609,7 @@ class NetworkExtraction {
             }
 
         }
+
         return null
     }
 
@@ -630,11 +713,13 @@ class NetworkExtraction {
         })
     }
 
-    private fun addNodeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel, graph: DirectedGraph<ConcreteNode, ExtractionLabel>) {
-        graph.addVertex(newNode)
-        graph.addEdge(currentNode, newNode, label)
-        addToChoicePathMap(newNode)
-        addToHashMap(newNode)
+    private fun addNodeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
+        //check if we can add a new node and an edge
+        return if (graph.addVertex(newNode) && graph.addEdge(currentNode, newNode, label)) {
+            addToChoicePathMap(newNode)
+            addToHashMap(newNode)
+            true
+        } else false
     }
 
     private fun addEdgeToGraph(nn: ConcreteNode, newnode: ConcreteNode, lbl: ExtractionLabel, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
@@ -770,12 +855,6 @@ class NetworkExtraction {
 
     //endregion
     //region Utils
-    @Volatile
-    private var count = 0
-
-    private fun generateProcedureName(): String {
-        return "X" + count.inc()
-    }
 
     private fun sortProcesses(node: ConcreteNode, strategy: Strategy): HashMap<String, ProcessTerm> {
         val net = node.network.processes
