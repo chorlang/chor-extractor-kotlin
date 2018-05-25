@@ -31,8 +31,11 @@ class NetworkExtraction {
 
     //region Main
     companion object {
-        fun run(n: Network, s: Strategy): Program {
-            return NetworkExtraction().extract(n, s)
+        private lateinit var livelocked: ArrayList<String>
+
+        fun run(n: Network, s: Strategy, l: ArrayList<String>): Program {
+            livelocked = l
+            return NetworkExtraction().extract(n, s, livelocked)
         }
     }
 
@@ -43,11 +46,11 @@ class NetworkExtraction {
      * @param n a processes from which a choreography will be extracted
      * @return Program representation of resulted choreography
      */
-    private fun extract(n: Network, strategy: Strategy): Program {
+    private fun extract(n: Network, strategy: Strategy, livelocked: ArrayList<String>): Program {
         val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
         val marking = HashMap<ProcessName, Boolean>()
 
-        n.processes.forEach({ name, term -> marking[name] = term.main is TerminationSP })
+        n.processes.forEach({ name, term -> marking[name] = term.main is TerminationSP || livelocked.contains(name)})
 
         val node = ConcreteNode(n, "0", nextNodeId(), ArrayList(), marking)
         graph.addVertex(node)
@@ -534,7 +537,7 @@ class NetworkExtraction {
 
     private fun wash(marking: HashMap<ProcessName, Boolean>, processes: ProcessMap) {
         for (key in marking.keys) {
-            marking[key] = processes[key]!!.main is TerminationSP
+            marking[key] = processes[key]!!.main is TerminationSP || livelocked.contains(key)
         }
     }
 

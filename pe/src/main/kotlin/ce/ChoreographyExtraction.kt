@@ -15,27 +15,29 @@ object ChoreographyExtraction{
     @Throws(Exception::class)
     @JvmStatic
     fun main(args: Array<String>): String {
-        val ch = parseInput(args)
+        val parsedInput = parseInput(args)
 
-        if (ch!=null) {
-            val chor = extractChoreography(ch.chor)
+        if (parsedInput!=null) {
+            val chor = extractChoreography(parsedInput)
             log.info(chor.toString())
 
             return chor.toString()
         }
-        else log.error("Malformed request")
-
-        return ""
+        else throw Exception("Malformed call - choreography was expected.")
     }
 
-    private fun extractChoreography(grammar: String): Program {
-        val stream = ANTLRInputStream(grammar)
+    private fun extractChoreography(parsedInput: ParsedInput): Program {
+        val stream = ANTLRInputStream(parsedInput.chor)
         val lexer = NetworkLexer(stream)
         val parser = NetworkParser(CommonTokenStream(lexer))
         val tree = parser.network()
         val networkVisitor = NetworkVisitor()
         val network = networkVisitor.visitNetwork(tree) as Network
-        return NetworkExtraction.run(network, Strategy.SelectFirst)
+
+        if (parsedInput.livelocked.isEmpty() || network.processes.keys.containsAll(parsedInput.livelocked)){
+            return NetworkExtraction.run(network, parsedInput.strategy, parsedInput.livelocked)
+        }
+        else throw Exception("Malformed call - list of livelocked processes contains not existent processes")
     }
 
     private fun parseStrategy(strategy: String): Strategy {
@@ -46,6 +48,7 @@ object ChoreographyExtraction{
     private fun parseInput(args: Array<String>): ParsedInput? {
         var str = Strategy.Default
         var chor = ""
+        val livelocked = ArrayList<String>()
 
         val iter = args.toList().listIterator()
         while(iter.hasNext()) {
@@ -71,14 +74,21 @@ object ChoreographyExtraction{
                     }
                     else throw Exception("Malformed call - choreography file name was expected.")
                 }
+                "-l" -> {
+                    val i = iter.nextIndex()
+                    if (args.size >= i + 1) {
+                        val livelockProcesses = args.get(i)
+                        livelocked.addAll(livelockProcesses.replace(" ", "").split(","))
+                    }
+                }
 
             }
         }
 
         if (chor == "") return null
-        else return (ParsedInput(chor, str))
+        else return (ParsedInput(chor, str, livelocked))
     }
 
-    data class ParsedInput(val chor: String, val strategy: Strategy)
+    data class ParsedInput(val chor: String, val strategy: Strategy, val livelocked: ArrayList<String>)
 
 }
