@@ -112,9 +112,6 @@ class NetworkExtraction {
                 }
                 /* case 2 */
                 else {
-                    //if there is several nodes with the same hash, need to find the right one by comparing via equals
-                    //val existingNode = if (existingNodes.size == 1) existingNodes.first() else existingNodes.first { it.network.equals(targetNetwork) && it.marking.equals(targetMarking) }
-
                     if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
                     else {
                         cleanNode(findComm, processes, currentNode)
@@ -147,16 +144,16 @@ class NetworkExtraction {
                     wash(targetMarking, targetNetworkElse.processes)
                 }
 
-
                 //check if the node with the same network and markings already exists in the graph
                 val existingNodesThen = hashesMap[hash(targetNetworkThen, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
+                val existingNodeThen = existingNodesThen?.firstOrNull { it.network.equals(targetNetworkThen) && it.marking.equals(targetMarking) }
 
                 val nodeThen: ConcreteNode
                 val nodeElse: ConcreteNode
                 val cond = AddingConditionResult()
 
                 /* case4 */
-                if (existingNodesThen == null || existingNodesThen.isEmpty()) {
+                if (existingNodeThen == null) { // || existingNodesThen.isEmpty()) {
                     nodeThen = createNewNode(targetNetworkThen, labelThen, currentNode, targetMarking)
                     cond.thenNodeAdding = addNodeToGraph(currentNode, nodeThen, labelThen, graph)
                     //log.debug(labelThen)
@@ -164,15 +161,15 @@ class NetworkExtraction {
                 }
                 /* case 5 */
                 else {
-                    //if there is several nodes with the same hash, need to find the right one by comparing via equals
-                    nodeThen = if (existingNodesThen.size == 1) existingNodesThen.first() else existingNodesThen.first { it.network.equals(targetNetworkThen) && it.marking.equals(targetMarking) }
+                    nodeThen = existingNodeThen
                     cond.thenEdgeAdding = addEdgeToGraph(currentNode, nodeThen, labelThen, graph)
                 }
 
                 val existingNodesElse = hashesMap[hash(targetNetworkElse, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
+                val existingNodeElse = existingNodesElse?.firstOrNull { it.network.equals(targetNetworkElse) && it.marking.equals(targetMarking) }
 
                 /* case 7 */
-                if (existingNodesElse == null || existingNodesElse.isEmpty()) {
+                if (existingNodeElse == null) { // || existingNodesElse.isEmpty()) {
                     nodeElse = createNewNode(targetNetworkElse, labelElse, currentNode, targetMarking)
                     cond.elseNodeAdding = addNodeToGraph(currentNode, nodeElse, labelElse, graph)
                     //log.debug(labelElse)
@@ -180,8 +177,7 @@ class NetworkExtraction {
                 }
                 /* case 8 */
                 else {
-                    //if there is several nodes with the same hash, need to find the right one by comparing via equals
-                    nodeElse = if (existingNodesElse.size == 1) existingNodesElse.first() else existingNodesElse.first { it.network.equals(targetNetworkElse) && it.marking.equals(targetMarking) }
+                    nodeElse = existingNodeElse
                     cond.elseEdgeAdding = addEdgeToGraph(currentNode, nodeElse, labelElse, graph)
                 }
 
@@ -268,15 +264,14 @@ class NetworkExtraction {
                 val targetNetwork = Network(processesCopy)
 
                 val existingNodes = hashesMap[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
-                if (existingNodes == null || existingNodes.isEmpty()) {
+                val existingNode = existingNodes?.firstOrNull { it.network.equals(targetNetwork) && it.marking.equals(targetMarking) }
+
+                if (existingNode == null ) { //
                     val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
                     addNodeToGraph(currentNode, newNode, label, graph)
                     //log.debug(label)
                     return if (buildGraph(newNode, graph, strategy)) true else continue
                 } else {
-                    //if there is several nodes with the same hash, need to find the right one by comparing via equals
-                    val existingNode = if (existingNodes.size == 1) existingNodes.first() else existingNodes.first { it.network.equals(targetNetwork) && it.marking.equals(targetMarking) }
-
                     if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
                 }
             }
