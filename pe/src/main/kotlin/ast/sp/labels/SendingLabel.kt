@@ -8,4 +8,12 @@ data class SendingLabel(val sender: String, val receiver: String, val expression
     override fun equals(other: Any?): Boolean {
         return (this === other)
     }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + sender.hashCode()
+        result = 31 * result + receiver.hashCode()
+        result = 31 * result + expression.hashCode()
+        return result
+    }
 }

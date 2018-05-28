@@ -26,11 +26,11 @@ class ProcessTerm(val procedures: HashMap<ProcedureName, IBehaviour>, var main: 
         if( this === other ) return true
         if( other !is ProcessTerm ) return false
 
-        if (main.equals(other.main)) return false
+        if (!main.equals(other.main)) return false
 
         for (procedure in procedures){
             val procedureBehaviour = other.procedures[procedure.key]
-            if (procedureBehaviour === null || procedureBehaviour.equals(procedure.value)) return false
+            if (procedureBehaviour === null || !procedureBehaviour.equals(procedure.value)) return false
         }
         return true
     }

@@ -19,7 +19,7 @@ object ChoreographyExtraction{
 
         if (parsedInput!=null) {
             val chor = extractChoreography(parsedInput)
-            log.info(chor.toString())
+            //log.info(chor.toString())
 
             return chor.toString()
         }
