@@ -55,7 +55,7 @@ class NbTest : Assert() {
     @Test
     fun mult2bit(){
         val test =
-                "a { def X {b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
+                "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
         val args = arrayOf("-c", test)
@@ -91,10 +91,10 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
+    @Test (expected = NetworkExtraction.MulticomException::class)
     fun mult3bit(){
         val test =
-                "a { def X {b?;b!<0>;b?;b!<1>;b?;b!<2>;X} main {b!<0>;b!<1>;b!<2>; X}} | " +
+                "a { def X {b?; b!<0>;b?;b!<1>;b?;b!<2>;X} main {b!<0>;b!<1>;b!<2>; X}} | " +
                         "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {a?;Y}}"
 
         val args = arrayOf("-c", test)
@@ -239,23 +239,20 @@ class NbTest : Assert() {
     fun logistic(){
         val test =
                 "supplier {" +
-                        "def X {shipper?; Y} " +
-                        "def Y {if needToShip " +
+                    "def X {shipper?; Y} " +
+                    "def Y {if needToShip " +
                         "then shipper+item; X " +
-                        "else shipper+done; " +
-                        "retailer!<UpdatePOandDeliverySchedule>; retailer?; retailer?; retailer!<FinalizedPOandDeliverySchedule>; stop}" +
-                        "main { retailer!<PlannedOrderVariations>; retailer?; retailer?; Y}" +
-                        "} | " +
-                        "retailer {main {" +
+                        "else shipper+done; retailer!<UpdatePOandDeliverySchedule>; retailer?; retailer?; retailer!<FinalizedPOandDeliverySchedule>; stop}" +
+                    "main { retailer!<PlannedOrderVariations>; retailer?; retailer?; Y}" + "} | " +
+                "retailer {" +
+                    "main {" +
                         "supplier?; supplier!<OrderDeliveryVariations>; supplier!<DeliverCheckPointRequest>; " +
                         "supplier?; supplier!<POandDeliveryScheduleMods>; shipper!<ConfirmationofDeliverySchedule>; " +
                         "supplier!<AcceptPOandDeliverySchedule>; supplier?; stop}} |" +
-                        "shipper {" +
-                        "def X{supplier!<DeliveryItem>; Z} " +
-                        "def Z {supplier&{item: X, done: retailer?; stop}}" +
-                        "main{Z}}"
-
-
+                "shipper {" +
+                    "def X{supplier!<DeliveryItem>; Y} " +
+                    "def Y {supplier&{item: X, done: retailer?; stop}}" +
+                    "main{Y}}"
 
         val args = arrayOf("-c", test, "-l", "retailer")
 
@@ -372,7 +369,7 @@ class NbTest : Assert() {
         val test =
                 "buyer{main{seller!<quote>; seller?; if ok then seller+accept; seller?; stop else seller+reject; stop}} | " +
                         "shipper{main{seller&{" +
-                        "send: seller? seller!<t>; stop," +
+                        "send: seller?; seller!<t>; stop," +
                         "wait: stop}}} | " +
                         "seller{main{buyer?; buyer!<quote>; buyer&{" +
                         "accept: shipper+send; shipper!<deliv>; shipper?; buyer!<details>; stop, " +
@@ -391,7 +388,7 @@ class NbTest : Assert() {
         val test =
                 "buyer{def X {seller?; if ok then seller+accept; seller?; stop else seller+reject; X} main {seller!<quote>; X}} | " +
                         "shipper{def X {seller&{" +
-                        "send: seller? seller!<t>; stop," +
+                        "send: seller?; seller!<t>; stop," +
                         "wait: X}} main {X}} | " +
                         "seller{def X {buyer!<quote>; buyer&{" +
                         "accept: shipper+send; shipper!<deliv>; shipper?; buyer!<details>; stop, " +
@@ -424,7 +421,7 @@ class NbTest : Assert() {
     @Test
     fun streamingProtocol(){
         val test =
-                "kernel{def X{data? key?; consumer!<xor>; X} main{X}} | " +
+                "kernel{def X{data?; key?; consumer!<xor>; X} main{X}} | " +
                         "data{def X{kernel!<data>; X} main{X}} | " +
                         "key{def X{kernel!<data>; X} main{X}} | " +
                         "consumer{def X{kernel?; X} main{X}}"

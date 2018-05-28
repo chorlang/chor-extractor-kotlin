@@ -9,4 +9,11 @@ data class ThenLabel(override val process: String, override val expression: Stri
     override fun equals(other: Any?): Boolean {
         return (this === other)
     }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + process.hashCode()
+        result = 31 * result + expression.hashCode()
+        return result
+    }
 }

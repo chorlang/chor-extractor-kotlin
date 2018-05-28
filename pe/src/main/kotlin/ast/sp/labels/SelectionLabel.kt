@@ -9,4 +9,12 @@ data class SelectionLabel(val sender: String, val receiver: String, val label: S
     override fun equals(other: Any?): Boolean {
         return (this === other)
     }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + sender.hashCode()
+        result = 31 * result + receiver.hashCode()
+        result = 31 * result + label.hashCode()
+        return result
+    }
 }

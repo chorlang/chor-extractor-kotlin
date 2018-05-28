@@ -23,4 +23,10 @@ data class MulticomLabel(val labels: ArrayList<InteractionLabel>) : ExtractionLa
     override fun equals(other: Any?): Boolean {
         return (this === other)
     }
+
+    override fun hashCode(): Int {
+        var result = super.hashCode()
+        result = 31 * result + labels.hashCode()
+        return result
+    }
 }
