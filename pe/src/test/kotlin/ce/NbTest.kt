@@ -407,7 +407,7 @@ class NbTest : Assert() {
     fun twoBuyersProtocol(){
         val test =
                 "buyer1{def X {seller!<book>; seller?; buyer2!<quote>; X} main {X}} | " +
-                        "buyer2{def X {seller? buyer1?; if ok then seller+accept; seller!<address>; seller?; X else seller+decline; X} main {X}} | " +
+                        "buyer2{def X {seller?; buyer1?; if ok then seller+accept; seller!<address>; seller?; X else seller+decline; X} main {X}} | " +
                         "seller{def X {buyer1?; buyer1!<quote>; buyer2!<quote>; buyer2&{accept: buyer2?; buyer2!<date>; X, decline: X}} main {X}}"
 
         val args = arrayOf("-c", test)
