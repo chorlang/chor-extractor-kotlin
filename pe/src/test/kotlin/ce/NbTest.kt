@@ -168,7 +168,7 @@ class NbTest : Assert() {
         val args = arrayOf("-c", test, "-l", "as, t, es")
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { p.sendData->hs; hs.subscribed->ss; if ss.ok then ss->hs[ok]; hs->p[subscribed]; hs.account->as; as.logCreated->hs; hs.fwd->t; t.fwdOk->hs; t.helpReq->es; es.provideService->p; X1 else ss->hs[nok]; hs->p[notSubscribed]; X1 } main {X1}"
+        val expected = "def X1 { p.sendData->hs; X2 } def X2 { hs.subscribed->ss; if ss.ok then ss->hs[ok]; hs->p[subscribed]; hs.account->as; as.logCreated->hs; hs.fwd->t; t.fwdOk->hs; t.helpReq->es; es.provideService->p; p.sendData->hs; X2 else ss->hs[nok]; hs->p[notSubscribed]; X1 } main {X1}"
 
         assertEquals(expected, actual)
     }
@@ -239,20 +239,20 @@ class NbTest : Assert() {
     fun logistic(){
         val test =
                 "supplier {" +
-                    "def X {shipper?; Y} " +
-                    "def Y {if needToShip " +
+                        "def X {shipper?; Y} " +
+                        "def Y {if needToShip " +
                         "then shipper+item; X " +
                         "else shipper+done; retailer!<UpdatePOandDeliverySchedule>; retailer?; retailer?; retailer!<FinalizedPOandDeliverySchedule>; stop}" +
-                    "main { retailer!<PlannedOrderVariations>; retailer?; retailer?; Y}" + "} | " +
-                "retailer {" +
-                    "main {" +
+                        "main { retailer!<PlannedOrderVariations>; retailer?; retailer?; Y}" + "} | " +
+                        "retailer {" +
+                        "main {" +
                         "supplier?; supplier!<OrderDeliveryVariations>; supplier!<DeliverCheckPointRequest>; " +
                         "supplier?; supplier!<POandDeliveryScheduleMods>; shipper!<ConfirmationofDeliverySchedule>; " +
                         "supplier!<AcceptPOandDeliverySchedule>; supplier?; stop}} |" +
-                "shipper {" +
-                    "def X{supplier!<DeliveryItem>; Y} " +
-                    "def Y {supplier&{item: X, done: retailer?; stop}}" +
-                    "main{Y}}"
+                        "shipper {" +
+                        "def X{supplier!<DeliveryItem>; Y} " +
+                        "def Y {supplier&{item: X, done: retailer?; stop}}" +
+                        "main{Y}}"
 
         val args = arrayOf("-c", test, "-l", "retailer")
 
@@ -363,6 +363,69 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
+    @Test
+    fun sanitaryAgency2x(){
+        val test =
+                "citizen{" +
+                        "def X{" +
+                        "sanagency!<request>; sanagency?; sanagency!<provInf>; sanagency&{" +
+                        "refusal: X, " +
+                        "acceptance: coop?; bank!<paymentPrivateFee>; X}} " +
+                        "main{X}" +
+                        "} | " +
+                        "sanagency{" +
+                        "def X{" +
+                        "citizen?; citizen!<askInfo>; citizen?; if infoProved " +
+                        "then citizen+acceptance; coop!<req>; bank!<paymentPublicFee>; bank?; X " +
+                        "else citizen+refusal; X }" +
+                        "main {X}} | " +
+                        "coop{def X{" +
+                        "sanagency?; " +
+                        "if fine " +
+                        "then citizen!<provT>; bank+recMoneyPossT; bank?; X " +
+                        "else citizen!<provM>; bank+recMoneyPossM; bank?; X} " +
+                        "main{X}} | " +
+                        "bank{" +
+                        "def X{ coop&{" +
+                        "recMoneyPossT: coop!<paymentT>; Y, " +
+                        "recMoneyPossM: coop!<paymentM>; Y}} " +
+                        "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
+                        "main{X}}" +
+                        " | citizen2{" +
+                        "def X{" +
+                        "sanagency2!<request>; sanagency2?; sanagency2!<provInf>; sanagency2&{" +
+                        "refusal: X, " +
+                        "acceptance: coop2?; bank2!<paymentPrivateFee>; X}} " +
+                        "main{X}" +
+                        "} | " +
+                        "sanagency2{" +
+                        "def X{" +
+                        "citizen2?; citizen2!<askInfo>; citizen2?; if infoProved " +
+                        "then citizen2+acceptance; coop2!<req>; bank2!<paymentPublicFee>; bank2?; X " +
+                        "else citizen2+refusal; X }" +
+                        "main {X}} | " +
+                        "coop2{def X{" +
+                        "sanagency2?; " +
+                        "if fine " +
+                        "then citizen2!<provT>; bank2+recMoneyPossT; bank2?; X " +
+                        "else citizen2!<provM>; bank2+recMoneyPossM; bank2?; X} " +
+                        "main{X}} | " +
+                        "bank2{" +
+                        "def X{ coop2&{" +
+                        "recMoneyPossT: coop2!<paymentT>; Y, " +
+                        "recMoneyPossM: coop2!<paymentM>; Y}} " +
+                        "def Y{citizen2?; sanagency2?; sanagency2!<done>; X} " +
+                        "main{X}}"
+
+        val args = arrayOf("-c", test, "-l", "coop, bank, coop2, bank2")
+
+        val actual = ChoreographyExtraction.main(args)
+        val expected =
+                "def X1 { citizen.provInf->sanagency; if sanagency.infoProved then sanagency->citizen[acceptance]; sanagency.req->coop; if coop.fine then coop.provT->citizen; coop->bank[recMoneyPossT]; bank.paymentT->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop.provM->citizen; coop->bank[recMoneyPossM]; bank.paymentM->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency->citizen[refusal]; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 } main {citizen.request->sanagency; sanagency.askInfo->citizen; X1}"
+
+        assertEquals(expected, actual)
+    }
+
 
     @Test
     fun buyerSeller(){
@@ -459,8 +522,8 @@ class NbTest : Assert() {
                         "main {operator!<high>; operator&{" +
                         "ok: X," +
                         "no: stop}}} | " +
-                "operator{main{user?; if ok then user+ok; instrument+ok; stop else user+no; instrument+no; stop}} | " +
-                "instrument{def X{user&{" +
+                        "operator{main{user?; if ok then user+ok; instrument+ok; stop else user+no; instrument+no; stop}} | " +
+                        "instrument{def X{user&{" +
                         "move: X," +
                         "photo: X," +
                         "quit: stop}} main{ operator&{" +
