@@ -16,7 +16,7 @@ class BadloopTest : Assert() {
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { a2.e->b2; b2.e->a2; a1.e->b1; b1.e->a1; X1 } main {X1}"
+        val expected = "def X1 { a1.e->b1; b1.e->a1; a2.e->b2; b2.e->a2; X1 } main {a2.e->b2; b2.e->a2; X1}"
 
         assertEquals(expected, actual)
     }
@@ -33,7 +33,7 @@ class BadloopTest : Assert() {
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { a2.e->b2; b2.e->a2; a3.e->b3; a2.e->b2; b3.e->a3; b2.e->a2; a1.e->b1; b1.e->a1; X1 } main {X1}"
+        val expected = "def X1 { a1.e->b1; b1.e->a1; a2.e->b2; b2.e->a2; a3.e->b3; a2.e->b2; b2.e->a2; b3.e->a3; X1 } main {a2.e->b2; b2.e->a2; a3.e->b3; a2.e->b2; b3.e->a3; b2.e->a2; X1}"
 
         assertEquals(expected, actual)
     }
@@ -52,7 +52,7 @@ class BadloopTest : Assert() {
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { a2.e->b2; b2.e->a2; a3.e->b3; a2.e->b2; b3.e->a3; b2.e->a2; a4.e->b4; a2.e->b2; a3.e->b3; b2.e->a2; b4.e->a4; a2.e->b2; b3.e->a3; b2.e->a2; a1.e->b1; b1.e->a1; X1 } main {X1}"
+        val expected = "def X1 { a1.e->b1; b1.e->a1; a2.e->b2; b2.e->a2; a3.e->b3; a2.e->b2; b3.e->a3; b2.e->a2; a4.e->b4; a2.e->b2; b2.e->a2; a3.e->b3; a2.e->b2; b3.e->a3; b2.e->a2; b4.e->a4; X1 } main {a2.e->b2; b2.e->a2; a3.e->b3; a2.e->b2; b3.e->a3; b2.e->a2; a4.e->b4; a2.e->b2; a3.e->b3; b2.e->a2; b4.e->a4; a2.e->b2; b3.e->a3; b2.e->a2; X1}"
 
         assertEquals(expected, actual)
     }
