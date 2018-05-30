@@ -1,23 +1,18 @@
 package ce
 
 import ast.cc.interfaces.CCNode
-import ast.sp.nodes.interfaces.IBehaviour
-import ast.sp.labels.interfaces.ExtractionLabel
-import ast.sp.labels.*
-import ast.sp.nodes.*
 import ast.cc.interfaces.Choreography
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
-import ast.sp.nodes.interfaces.ActionSP
-import ast.cc.nodes.Communication
+import ast.sp.labels.*
+import ast.sp.labels.interfaces.ExtractionLabel
 import ast.sp.labels.interfaces.InteractionLabel
+import ast.sp.nodes.*
+import ast.sp.nodes.interfaces.ActionSP
+import ast.sp.nodes.interfaces.IBehaviour
 import org.apache.logging.log4j.LogManager
-import org.jgrapht.DirectedGraph
 import org.jgrapht.graph.DefaultDirectedGraph
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
-import kotlin.collections.HashSet
+
 
 typealias ProcessMap = HashMap<String, ProcessTerm>
 typealias GraphNode = Pair<Network, InteractionLabel>
@@ -57,14 +52,14 @@ class NetworkExtraction {
         addToChoicePathMap(node)
         addToHashMap(node)
 
-        buildGraph(node, graph as DirectedGraph<ConcreteNode, ExtractionLabel>, strategy)
+        buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy)
 
-        val fklist = unrollGraph(node, graph as DirectedGraph<Node, ExtractionLabel>)
+        val fklist = unrollGraph(node, graph as DefaultDirectedGraph<Node, ExtractionLabel>)
         //log.debug("Vertexes: ${graph.vertexSet().size}, Edges: ${graph.edgeSet().size}, equals: ${Network.i}")
         return buildChoreography(node, fklist, graph)
     }
 
-    private fun buildGraph(currentNode: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
+    private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         //val node = currentNode.copy()
         val unfoldedProcesses = HashSet<String>() //Storing unfoldedProcesses processes
         val processes = sortProcesses(currentNode, strategy) //Sorting processes by the strategy passed from the outside
@@ -289,7 +284,7 @@ class NetworkExtraction {
         return processesCopy
     }
 
-    private fun CleanBadConditional(cond: AddingConditionResult, graph: DirectedGraph<ConcreteNode, ExtractionLabel>, currentNode: ConcreteNode, nodeElse: ConcreteNode, nodeThen: ConcreteNode) {
+    private fun CleanBadConditional(cond: AddingConditionResult, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, currentNode: ConcreteNode, nodeElse: ConcreteNode, nodeThen: ConcreteNode) {
         when (cond.toStringMask()) {
         //Node for else branch was added, but then node wasn't added to the graph
             "0n1n" -> {
@@ -398,7 +393,7 @@ class NetworkExtraction {
         return null
     }
 
-    private fun unrollGraph(root: ConcreteNode, graph: DirectedGraph<Node, ExtractionLabel>): ArrayList<FakeNode> {
+    private fun unrollGraph(root: ConcreteNode, graph: DefaultDirectedGraph<Node, ExtractionLabel>): ArrayList<FakeNode> {
         val fakeNodesList = ArrayList<FakeNode>()
 
         var count = 1
@@ -437,7 +432,7 @@ class NetworkExtraction {
         return fakeNodesList
     }
 
-    private fun buildChoreography(root: Node, fakeNodesList: ArrayList<FakeNode>, graph: DirectedGraph<Node, ExtractionLabel>): Program {
+    private fun buildChoreography(root: Node, fakeNodesList: ArrayList<FakeNode>, graph: DefaultDirectedGraph<Node, ExtractionLabel>): Program {
         val main = bh(root, graph, fakeNodesList)
         val procedures = ArrayList<ProcedureDefinition>()
         for (fk in fakeNodesList) {
@@ -447,7 +442,7 @@ class NetworkExtraction {
         return Program(main as Choreography, procedures)
     }
 
-    private fun bh(node: Node, graph: DirectedGraph<Node, ExtractionLabel>, fklist: ArrayList<FakeNode>): CCNode {
+    private fun bh(node: Node, graph: DefaultDirectedGraph<Node, ExtractionLabel>, fklist: ArrayList<FakeNode>): CCNode {
         val edges = graph.outgoingEdgesOf(node)
 
         when (edges.size) {
@@ -714,7 +709,7 @@ class NetworkExtraction {
         })
     }
 
-    private fun addNodeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun addNodeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
         //check if we can add a new node and an edge
         return if (graph.addVertex(newNode) && graph.addEdge(currentNode, newNode, label)) {
             addToChoicePathMap(newNode)
@@ -723,7 +718,7 @@ class NetworkExtraction {
         } else false
     }
 
-    private fun addEdgeToGraph(nn: ConcreteNode, newnode: ConcreteNode, lbl: ExtractionLabel, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun addEdgeToGraph(nn: ConcreteNode, newnode: ConcreteNode, lbl: ExtractionLabel, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
         //val exstnode = checkPrefix(newnode)
         if (checkPrefix(newnode)) {
             val l = checkLoop(nn, newnode, lbl, graph)
@@ -753,7 +748,7 @@ class NetworkExtraction {
 
     //endregion
     //region Checkloop and choicePaths manipulations
-    private fun checkLoop(source_node: ConcreteNode, target_node: ConcreteNode, lbl: ExtractionLabel, graph: DirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun checkLoop(source_node: ConcreteNode, target_node: ConcreteNode, lbl: ExtractionLabel, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
         if (lbl.flipped) return true
 
         if (target_node.equals(source_node)) return false
@@ -772,7 +767,7 @@ class NetworkExtraction {
 
     }
 
-    private fun recompute(n: ConcreteNode, graph: DirectedGraph<ConcreteNode, ExtractionLabel>, tomark: HashSet<ConcreteNode>): HashSet<ConcreteNode> {
+    private fun recompute(n: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, tomark: HashSet<ConcreteNode>): HashSet<ConcreteNode> {
         val edges = graph.outgoingEdgesOf(n)
         for (e in edges) {
             if (!e.flipped) {
