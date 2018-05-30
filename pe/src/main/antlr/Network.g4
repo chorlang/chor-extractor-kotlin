@@ -3,8 +3,6 @@ import CommonLexerRules;
 
 network: process processBehaviour (Parallel process processBehaviour)*;
 
-// p { def X { q?;stop } main { q?; X } } | q { main { p!1; p!2; stop } }
-
 processBehaviour : TERMINATE
     |   '{' ('def' procedure procedureDefinition)* 'main' '{' behaviour '}' '}'
     ;

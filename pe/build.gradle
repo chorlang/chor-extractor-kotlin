@@ -1,6 +1,6 @@
 buildscript {
-    ext.antlr4_version = '4.7'
-    ext.jgraphtVersion = '0.9.1'
+    ext.antlr4_version = antlr4_version
+    ext.jgraphtVersion = jgraphtVersion
 
     repositories {
         mavenCentral()
@@ -31,14 +31,14 @@ dependencies {
 
     //compile 'org.openjdk.jmh:jmh-generator-annprocess:1.14.1'
 
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.3'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.3'
-    compile "org.apache.logging.log4j:log4j-slf4j-impl:2.3"
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '+'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '+'
+    compile "org.apache.logging.log4j:log4j-slf4j-impl:+"
 
-    antlr "org.antlr:antlr4:4.7"
+    antlr "org.antlr:antlr4:$antlr4_version"
     compile "org.antlr:antlr4-runtime:$antlr4_version"
     compile "org.jgrapht:jgrapht-core:$jgraphtVersion"
-    testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'junit', name: 'junit', version: '+'
 }
 
 //generate grammar
