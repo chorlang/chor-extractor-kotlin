@@ -5,7 +5,7 @@ import org.junit.Test
 
 class NbTest : Assert() {
     @Test
-    fun nbtst1(){
+    fun runningExample(){
         val test = "" +
                 "a {def Y {c?; d!<free>; X} " +
                 "def X " +
@@ -36,7 +36,7 @@ class NbTest : Assert() {
     }
 
     @Test
-    fun nbtst1X2(){
+    fun runnigExample2x(){
 
         val test =
                 "a1 {def X {if e then b1+win; c1+lose; b1?; c1?; d1!<free>; X else b1+lose; c1+win; b1?; c1?; d1!<free>; X} main {X}} |" +
@@ -53,7 +53,7 @@ class NbTest : Assert() {
     }
 
     @Test
-    fun mult2bit(){
+    fun twoBit(){
         val test =
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
@@ -67,7 +67,7 @@ class NbTest : Assert() {
     }
 
     @Test
-    fun mult2bitX2(){
+    fun twoBit2x(){
         val test =
                 "a { def X {b?;b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}} | " +
@@ -92,7 +92,7 @@ class NbTest : Assert() {
     }
 
     @Test (expected = NetworkExtraction.MulticomException::class)
-    fun mult3bit(){
+    fun threeBit(){
         val test =
                 "a { def X {b?; b!<0>;b?;b!<1>;b?;b!<2>;X} main {b!<0>;b!<1>;b!<2>; X}} | " +
                         "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {a?;Y}}"
@@ -106,7 +106,7 @@ class NbTest : Assert() {
     }
 
     @Test
-    fun mult2bit3pX2(){
+    fun threeBit2x(){
         val test =
                 "a { def X {b!<0>;b?;b!<1>;b?;b!<2>;b?;X} main {X}} | " +
                         "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {Y}} | " +
