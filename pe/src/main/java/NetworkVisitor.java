@@ -99,10 +99,4 @@ public interface NetworkVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitProcedure(NetworkParser.ProcedureContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link NetworkParser#value}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitValue(NetworkParser.ValueContext ctx);
 }

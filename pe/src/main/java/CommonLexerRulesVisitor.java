@@ -21,16 +21,4 @@ public interface CommonLexerRulesVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitProcedure(CommonLexerRulesParser.ProcedureContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CommonLexerRulesParser#expression}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitExpression(CommonLexerRulesParser.ExpressionContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link CommonLexerRulesParser#value}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitValue(CommonLexerRulesParser.ValueContext ctx);
 }

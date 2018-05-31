@@ -190,18 +190,6 @@ public class NetworkBaseListener implements NetworkListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitProcedure(NetworkParser.ProcedureContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterValue(NetworkParser.ValueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitValue(NetworkParser.ValueContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

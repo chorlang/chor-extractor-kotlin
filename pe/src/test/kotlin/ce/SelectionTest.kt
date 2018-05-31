@@ -33,8 +33,8 @@ class SelectionTest : Assert() {
 
     @Test
     fun tst3(){
-        val test = "p { def X {q+R; q!<e>; X} main{X}} | " +
-                "q { def Y {p&{R: p?; Y, L: p?; Y}} main{Y}}"
+        val test = "p{def X{q+R;q!<e>;X} main{X}} | " +
+                "q{def Y{p&{R: p?;Y, L: p?;Y}} main{Y}}"
         val args = arrayOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
