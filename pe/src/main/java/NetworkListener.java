@@ -156,14 +156,4 @@ public interface NetworkListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitProcedure(NetworkParser.ProcedureContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link NetworkParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void enterValue(NetworkParser.ValueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link NetworkParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void exitValue(NetworkParser.ValueContext ctx);
 }

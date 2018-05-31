@@ -1,26 +1,13 @@
 grammar CommonLexerRules;
 
-
-Identifier : [a-zA-Z1-9]+;
-
+Identifier : [a-zA-Z0-9]+;
 process : Identifier;
-
 procedure : Identifier;
-
-expression : Identifier;
-
 BooleanLiteral : 'true' | 'false';
 StringLiteral : '"' ~('\r' | '\n' | '"')* '"' ;
 
-INT : [0-9]+;
-
-value : INT
-    |   StringLiteral
-    |   BooleanLiteral
-    ;
-
-TERMINATE : 'stop';
-Parallel : '|';
 Wildcard : 'this';
-Arrow : '->';
+WS : [ \t\r\n]+ -> skip ;
+
+INT: [0-9]+ ;
 

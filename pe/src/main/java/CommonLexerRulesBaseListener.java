@@ -34,30 +34,6 @@ public class CommonLexerRulesBaseListener implements CommonLexerRulesListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitProcedure(CommonLexerRulesParser.ProcedureContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterExpression(CommonLexerRulesParser.ExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpression(CommonLexerRulesParser.ExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterValue(CommonLexerRulesParser.ValueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitValue(CommonLexerRulesParser.ValueContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

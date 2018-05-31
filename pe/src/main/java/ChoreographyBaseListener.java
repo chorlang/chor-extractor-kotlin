@@ -154,18 +154,6 @@ public class ChoreographyBaseListener implements ChoreographyListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitProcedure(ChoreographyParser.ProcedureContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterValue(ChoreographyParser.ValueContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitValue(ChoreographyParser.ValueContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

@@ -26,24 +26,4 @@ public interface CommonLexerRulesListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitProcedure(CommonLexerRulesParser.ProcedureContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CommonLexerRulesParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpression(CommonLexerRulesParser.ExpressionContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CommonLexerRulesParser#expression}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpression(CommonLexerRulesParser.ExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link CommonLexerRulesParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void enterValue(CommonLexerRulesParser.ValueContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link CommonLexerRulesParser#value}.
-	 * @param ctx the parse tree
-	 */
-	void exitValue(CommonLexerRulesParser.ValueContext ctx);
 }

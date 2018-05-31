@@ -19,8 +19,8 @@ procedureInvocation: procedure;
 
 interaction : communication | selection;
 
-communication: process DOT expression Arrow process ';' choreography;
-selection: process Arrow process LBRACK expression RBRACK ';' choreography;
+communication: process '.' expression '->' process ';' choreography;
+selection: process '->' process '[' expression '];' choreography;
 
 expression : Identifier
     |   BooleanLiteral
@@ -28,5 +28,4 @@ expression : Identifier
     |   INT
     ;
 
-INT     : [0-9]+ ;
 TERMINATE : 'stop';

@@ -1,10 +1,9 @@
 grammar Network;
 import CommonLexerRules;
 
-network: process processBehaviour (Parallel process processBehaviour)*;
+network: process processBehaviour ('|' process processBehaviour)*;
 
-processBehaviour : TERMINATE
-    |   '{' ('def' procedure procedureDefinition)* 'main' '{' behaviour '}' '}'
+processBehaviour : '{' ('def' procedure procedureDefinition)* 'main' '{' behaviour '}' '}'
     ;
 
 procedureDefinition : '{' behaviour '}';
@@ -21,12 +20,12 @@ interaction : sending
     |   selection
     ;
 
-sending: process BANG LT expression GT ';' behaviour;
-receiving: process QUESTION ';' behaviour;
-selection: process ADD expression ';' behaviour;
+sending: process '!<' expression '>;' behaviour;
+receiving: process '?;' behaviour;
+selection: process '+' expression ';' behaviour;
 
-offering: process '&' LBRACE (labeledBehaviour) (',' labeledBehaviour)* RBRACE;
-labeledBehaviour: expression COLON behaviour;
+offering: process '&{' (labeledBehaviour) (',' labeledBehaviour)* '}';
+labeledBehaviour: expression ':' behaviour;
 
 condition: 'if' expression 'then' behaviour 'else' behaviour;
 
@@ -38,5 +37,4 @@ expression : Identifier
     |   INT
     ;
 
-INT     : [0-9]+ ;
 TERMINATE : 'stop';
