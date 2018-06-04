@@ -1,0 +1,17 @@
+Benchmark                   Mode  Cnt     Score   Error  Units
+BenchTest.bargain           avgt          0.112          ms/op
+BenchTest.bargain2x         avgt          2.389          ms/op
+BenchTest.cloudSystem       avgt          0.348          ms/op
+BenchTest.cloudSystem2x     avgt         66.747          ms/op
+BenchTest.filter            avgt          0.180          ms/op
+BenchTest.filter2x          avgt       6207.477          ms/op
+BenchTest.health            avgt          2.301          ms/op
+BenchTest.health2x          avgt       1174.614          ms/op
+BenchTest.logistic          avgt          0.421          ms/op
+BenchTest.logistic2         avgt          0.545          ms/op
+BenchTest.runnigExample2x   avgt         64.619          ms/op
+BenchTest.runningExample    avgt          0.469          ms/op
+BenchTest.sanitaryAgency    avgt          0.617          ms/op
+BenchTest.sanitaryAgency2x  avgt         10.337          ms/op
+BenchTest.twoBit            avgt          0.064          ms/op
+BenchTest.twoBit2x          avgt          0.191          ms/op
