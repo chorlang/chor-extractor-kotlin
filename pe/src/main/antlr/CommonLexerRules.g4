@@ -1,6 +1,6 @@
 grammar CommonLexerRules;
 
-Identifier : [a-zA-Z0-9]+;
+Identifier : [shuffledKeys-zA-Z0-9]+;
 process : Identifier;
 procedure : Identifier;
 BooleanLiteral : 'true' | 'false';
