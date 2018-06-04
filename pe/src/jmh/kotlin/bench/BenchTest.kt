@@ -1,18 +1,11 @@
 package bench
 
 import ce.ChoreographyExtraction
-import np.NetworkProjection
 import org.openjdk.jmh.annotations.*
 import java.util.concurrent.TimeUnit
-import org.openjdk.jmh.results.format.ResultFormatType
-import org.openjdk.jmh.runner.Runner
-import org.openjdk.jmh.runner.options.OptionsBuilder
-import org.openjdk.jmh.runner.RunnerException
 
-
-
-@Warmup(iterations = 3)
-@Measurement(iterations = 3)
+@Warmup(iterations = 1)
+@Measurement(iterations = 1)
 @Fork(1)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
@@ -47,14 +40,14 @@ open class BenchTest{
     fun runnigExample2x(){
         val test =
                 "a1 {def X {if e then b1+win; c1+lose; b1?; c1?; d1!<free>; X else b1+lose; c1+win; b1?; c1?; d1!<free>; X} main {X}} |" +
-                        "b1 {def X {a1&{win: c1!<lose>; a1!<sig>; X, lose: c1?; a1!<sig>; X}} main {X}} |" +
-                        "c1 {def X {d1!<busy>; a1&{win: b1!<lose>; a1!<msg>; X, lose: b1?; a1!<msg>; X}} main {X}} |" +
-                        "d1 {def X {c1?; a1?; X} main {X}} | " +
-                        "a2 {def X {if e then b2+win; c2+lose; b2?; c2?; d2!<free>; X else b2+lose; c2+win; b2?; c2?; d2!<free>; X} main {X}} |" +
-                        "b2 {def X {a2&{win: c2!<lose>; a2!<sig>; X, lose: c2?; a2!<sig>; X}} main {X}} |" +
-                        "c2 {def X {d2!<busy>; a2&{win: b2!<lose>; a2!<msg>; X, lose: b2?; a2!<msg>; X}} main {X}} |" +
-                        "d2 {def X {c2?; a2?; X} main {X}} "
-        
+                "b1 {def X {a1&{win: a1!<sig>; X, lose: a1!<sig>; X}} main {X}} |" +
+                "c1 {def X {d1!<busy>; a1&{win: a1!<msg>; X, lose: a1!<msg>; X}} main {X}} |" +
+                "d1 {def X {c1?; a1?; X} main {X}} | " +
+                "a2 {def X {if e then b2+win; c2+lose; b2?; c2?; d2!<free>; X else b2+lose; c2+win; b2?; c2?; d2!<free>; X} main {X}} |" +
+                "b2 {def X {a2&{win: a2!<sig>; X, lose: a2!<sig>; X}} main {X}} |" +
+                "c2 {def X {d2!<busy>; a2&{win: a2!<msg>; X, lose: a2!<msg>; X}} main {X}} |" +
+                "d2 {def X {c2?; a2?; X} main {X}}"
+
         val args = arrayOf("-c", test)
         ChoreographyExtraction.main(args)
     }
@@ -76,18 +69,6 @@ open class BenchTest{
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}} | " +
                         "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
-
-        val args = arrayOf("-c", test)
-        ChoreographyExtraction.main(args)
-    }
-
-    @Benchmark
-    fun threeBit2x(){
-        val test =
-                "a { def X {b!<0>;b?;b!<1>;b?;b!<2>;b?;X} main {X}} | " +
-                        "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {Y}} | " +
-                        "c { def X {d!<0>;d?;d!<1>;d?;d!<2>;d?;X} main {X}} | " +
-                        "d { def Y {c!<ack0>;c?;c!<ack1>;c?;c!<ack2>;c?;Y} main {Y}}"
 
         val args = arrayOf("-c", test)
         ChoreographyExtraction.main(args)
@@ -132,6 +113,26 @@ open class BenchTest{
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
         val args = arrayOf("-c", test, "-l", "as, t, es")
+        ChoreographyExtraction.main(args)
+    }
+
+    @Benchmark
+    fun health2x(){
+        val test =
+                "hs1{def X{p1?; ss1!<subscribed>; ss1&{ok: p1+subscribed; as1!<account>; as1?; t1!<fwd>; t1?; X, nok: p1+notSubscribed; X}} main{X}} | " +
+                        "p1{def X{hs1!<sendData>; hs1&{subscribed: es1?; X, notSubscribed: X}} main{X}} | " +
+                        "ss1{def X{hs1?; if ok then hs1+ok; X else hs1+nok; X} main{X}} | " +
+                        "as1{def X{hs1?; hs1!<logCreated>; X} main{X}} | " +
+                        "t1{def X{hs1?; hs1!<fwdOk>; es1!<helpReq>; X} main{X}} | " +
+                        "es1{def X{t1?; p1!<provideService>; X} main{X}} | " +
+                        "hs2{def X{p2?; ss2!<subscribed>; ss2&{ok: p2+subscribed; as2!<account>; as2?; t2!<fwd>; t2?; X, nok: p2+notSubscribed; X}} main{X}} | " +
+                        "p2{def X{hs2!<sendData>; hs2&{subscribed: es2?; X, notSubscribed: X}} main{X}} | " +
+                        "ss2{def X{hs2?; if ok then hs2+ok; X else hs2+nok; X} main{X}} | " +
+                        "as2{def X{hs2?; hs2!<logCreated>; X} main{X}} | " +
+                        "t2{def X{hs2?; hs2!<fwdOk>; es2!<helpReq>; X} main{X}} | " +
+                        "es2{def X{t2?; p2!<provideService>; X} main{X}}"
+
+        val args = arrayOf("-c", test, "-l", "as1, t1, es1, as2, t2, es2")
         ChoreographyExtraction.main(args)
     }
 
@@ -261,7 +262,23 @@ open class BenchTest{
         val args = arrayOf("-c", test, "-l", "db, int")
         ChoreographyExtraction.main(args)
     }
-    
+
+    @Benchmark
+    fun cloudSystem2x(){
+        val test =
+                "cl1{def X{int1!<connect>; int1?; Y} def Y{if access then appli1+awaitcl; appli1!<access>; Y else int1!<logout>; appli1+syncLogout; appli1?; X} main {X}} | " +
+                        "appli1{def X{int1?; Y} def Y{cl1&{awaitcl: cl1?; Y, syncLogout: db1!<log>; cl1!<syncLog>; X}} main {X}} | " +
+                        "int1{def X{cl1?; appli1!<setup>; cl1!<syncAccess>; cl1?; X} main {X}} | " +
+                        "db1{def X{appli1?; X} main {X}} | " +
+                        "cl2{def X{int2!<connect>; int2?; Y} def Y{if access then appli2+awaitcl; appli2!<access>; Y else int2!<logout>; appli2+syncLogout; appli2?; X} main {X}} | " +
+                        "appli2{def X{int2?; Y} def Y{cl2&{awaitcl: cl2?; Y, syncLogout: db2!<log>; cl2!<syncLog>; X}} main {X}} | " +
+                        "int2{def X{cl2?; appli2!<setup>; cl2!<syncAccess>; cl2?; X} main {X}} | " +
+                        "db2{def X{appli2?; X} main {X}}"
+
+        val args = arrayOf("-c", test, "-l", "db1, int1, db2, int2")
+        ChoreographyExtraction.main(args)
+    }
+
     @Benchmark
     fun sanitaryAgency(){
         val test =
