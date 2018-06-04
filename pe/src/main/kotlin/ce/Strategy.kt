@@ -97,7 +97,7 @@ enum class Strategy {
     },
     Default() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
-            return ConditionFirst.sort(marking, net)
+            return SelectFirst.sort(marking, net)
         }
     };
 
