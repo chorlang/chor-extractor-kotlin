@@ -853,7 +853,9 @@ class NetworkExtraction {
     //region Utils
 
     private fun sortProcesses(node: ConcreteNode, strategy: Strategy): HashMap<String, ProcessTerm> {
-        return strategy.sort(node.marking, node.network.processes)
+        val net = HashMap<String, ProcessTerm>()
+        node.network.processes.forEach { k, v -> net.put(k,v.copy()) }
+        return strategy.sort(node.marking, net)
     }
 
     private fun createInteractionLabel(p: String, nodesorted: HashMap<String, ProcessTerm>): InteractionLabel? {

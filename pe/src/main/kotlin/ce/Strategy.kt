@@ -27,14 +27,17 @@ enum class Strategy {
     },
     UnmarkedFirst() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
-            val network = LinkedHashMap<String, ProcessTerm>()
+            val ret = LinkedHashMap<String, ProcessTerm>()
 
-            net.forEach { process ->
-                val mark = marking[process.key]
-                if (mark != null && !mark) network.put(process.key, process.value.copy())
+            marking.forEach { processName, marked ->
+                if ( !marked ) {
+                    ret[processName] = net.remove(processName)!!
+                }
             }
-            net.forEach { process -> network.put(process.key, process.value.copy()) }
-            return network
+
+            ret.putAll(net)
+
+            return ret
         }
     },
     RandomProcess() {
@@ -63,6 +66,22 @@ enum class Strategy {
     },
     UnmarkedThenSelect() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+            val ret = LinkedHashMap<String, ProcessTerm>()
+
+            val markedSelections = LinkedList<Map.Entry<ProcessName,ProcessTerm>>()
+            val unmarkedSelections = LinkedList<Map.Entry<ProcessName,ProcessTerm>>()
+
+            marking.forEach { processName, marked ->
+                if ( !marked ) {
+                    ret[processName] = net.remove(processName)!!
+                }
+            }
+
+            ret.putAll(net)
+
+            return ret
+
+
             val network = LinkedHashMap<String, ProcessTerm>()
 
             net.forEach { process ->
