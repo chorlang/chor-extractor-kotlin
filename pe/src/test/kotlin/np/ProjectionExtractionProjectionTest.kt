@@ -1,10 +1,11 @@
 package np
 
 import ce.ChoreographyExtraction
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
 
-class ProjectionExtractionProjectionTest : Assert() {
+class ProjectionExtractionProjectionTest {
     @Test
     fun tst1() {
         val test = "def X {" +
@@ -18,7 +19,7 @@ class ProjectionExtractionProjectionTest : Assert() {
                 "main {p.e->q;X}"
 
         val extraction = NetworkProjection.project(test).toString()
-        val args = arrayOf("-c", extraction)
+        val args = arrayListOf("-c", extraction, "-d")
 
         val actual = ChoreographyExtraction.main(args)
 
@@ -51,7 +52,7 @@ class ProjectionExtractionProjectionTest : Assert() {
                 "r{def X{p&{ko: q&{ko: X, ok: X}, ok: if e then p + ok; q + ok; X else p + ko; q + ko; q!<u>; X}} main {q?; X}}"
 
 
-        val args = arrayOf("-c", e)
+        val args = arrayListOf("-c", e)
 
         val actual = ChoreographyExtraction.main(args)
 

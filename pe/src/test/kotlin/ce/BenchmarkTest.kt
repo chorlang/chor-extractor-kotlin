@@ -1,32 +1,25 @@
 package ce
 
-import org.junit.Assert
-import org.junit.Test
+import Utils.Companion.resolveArgs
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertThrows
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvFileSource
 
-class NbTest : Assert() {
-    @Test
-    fun runningExample(){
-        val test = "" +
-                "a {def Y {c?; d!<free>; X} " +
-                "def X " +
-                "{if e " +
-                "then b+win; c+lose; b?; Y " +
-                "else b+lose; c+win; b?; Y} " +
-                "main {X}} |" +
-                "b {def X " +
-                "{a&{" +
-                "win: a!<sig>; X, " +
-                "lose: a!<sig>; X}} " +
-                "main {X}} |" +
-                "c {def X " +
-                "{d!<busy>; a&{" +
-                "win: a!<msg>; X, " +
-                "lose: a!<msg>; X}} " +
-                "main {X}} |" +
-                "d {def X " +
-                "{c?; a?; X} " +
-                "main {X}}"
-        val args = arrayOf("-c", test)
+class BenchmarkTest {
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 2)
+    fun runningExample(strategy: String, debugMode: Boolean) {
+        val test =
+                "a {def Y {c?; d!<free>; X} def X {if e then b+win; c+lose; b?; Y else b+lose; c+win; b?; Y} main {X}} |" +
+                        "b {def X {a&{win: a!<sig>; X, lose: a!<sig>; X}} main {X}} |" +
+                        "c {def X {d!<busy>; a&{win: a!<msg>; X, lose: a!<msg>; X}} main {X}} |" +
+                        "d {def X {c?; a?; X} main {X}}"
+
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -35,8 +28,9 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun runnigExample2x(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun runnigExample2x(strategy: String, debugMode: Boolean){
 
         val test =
                 "a1 {def X {if e then b1+win; c1+lose; b1?; c1?; d1!<free>; X else b1+lose; c1+win; b1?; c1?; d1!<free>; X} main {X}} |" +
@@ -47,18 +41,57 @@ class NbTest : Assert() {
                         "b2 {def X {a2&{win: c2!<lose>; a2!<sig>; X, lose: c2?; a2!<sig>; X}} main {X}} |" +
                         "c2 {def X {d2!<busy>; a2&{win: b2!<lose>; a2!<msg>; X, lose: b2?; a2!<msg>; X}} main {X}} |" +
                         "d2 {def X {c2?; a2?; X} main {X}} "
-        val args = arrayOf("-c", test)
 
-        ChoreographyExtraction.main(args)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
+
+        val actual = ChoreographyExtraction.main(args)
+
+        when (strategy) {
+            Strategy.SelectFirst -> {
+                val expected =
+                        "def X1 { if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; a1->c1[lose]; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a1->b1[win]; a1->c1[lose]; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a1->b1[win]; a1->c1[lose]; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; a1->b1[lose]; a1->c1[win]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; a1->c1[lose]; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a1->b1[win]; a1->c1[lose]; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a1->b1[win]; a1->c1[lose]; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; a1->b1[lose]; a1->c1[win]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; a1->c1[win]; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; a1->b1[win]; a1->c1[lose]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a1->b1[lose]; a1->c1[win]; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a1->b1[lose]; a1->c1[win]; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; a1->c1[win]; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; a1->b1[win]; a1->c1[lose]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a1->b1[lose]; a1->c1[win]; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a1->b1[lose]; a1->c1[win]; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 } main {X1}"
+
+                assertEquals(expected, actual)
+            }
+            Strategy.ConditionFirst -> {
+                //if it doesn't fail then we are happy
+            }
+            Strategy.UnmarkedFirst -> {
+                val expected =
+                        "def X1 { c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X2 } def X10 { c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X11 } def X11 { c1.lose->b1; X12 } def X12 { b2.sig->a2; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X12 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X12 else c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X11 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10 } def X2 { b1.lose->c1; X3 } def X3 { b2.sig->a2; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X2 else c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X3 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X3 } def X4 { c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X5 } def X5 { b1.lose->c1; X6 } def X6 { b2.sig->a2; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X5 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X6 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X6 } def X7 { c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X8 } def X8 { c1.lose->b1; X9 } def X9 { b2.sig->a2; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X9 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X9 else c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X8 } main {if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10}"
+
+                assertEquals(expected, actual)
+            }
+            Strategy.UnmarkedThenCondition -> {
+                val expected =
+                        "def X1 { c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X2 } def X10 { c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X11 } def X11 { c1.lose->b1; X12 } def X12 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X12 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X12 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X11 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10 } def X2 { b1.lose->c1; X3 } def X3 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X2 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X3 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X3 } def X4 { c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X5 } def X5 { b1.lose->c1; X6 } def X6 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X5 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X6 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X6 } def X7 { c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X8 } def X8 { c1.lose->b1; X9 } def X9 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X9 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X9 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X8 } main {if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10}"
+
+                assertEquals(expected, actual)
+            }
+            Strategy.UnmarkedThenSelect -> {
+                val expected =
+                        "def X1 { if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 } main {X1}"
+
+                assertEquals(expected, actual)
+            }
+
+        }
     }
 
-    @Test
-    fun twoBit(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun twoBit(strategy: String, debugMode: Boolean){
         val test =
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
-        val args = arrayOf("-c", test)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
@@ -66,69 +99,64 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun twoBit2x(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun twoBit2x(strategy: String, debugMode: Boolean){
         val test =
                 "a { def X {b?;b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}} | " +
                         "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
-        val args = arrayOf("-c", test)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected =
-                "def X1 { " +
-                        "(a.1->b, b.ack0->a); " +
-                        "(a.0->b, b.ack1->a); " +
-                        "(c.1->d, d.ack0->c); " +
-                        "(a.1->b, b.ack0->a); " +
-                        "(a.0->b, b.ack1->a); " +
-                        "(c.0->d, d.ack1->c); " +
-                        "X1 } " +
-                        "main {a.0->b; c.0->d; X1}"
 
-        assertEquals(expected, actual)
+        when (strategy) {
+            Strategy.SelectFirst, Strategy.ConditionFirst -> {
+                val expected =
+                        "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); (c.1->d, d.ack0->c); (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); (c.0->d, d.ack1->c); X1 } main {a.0->b; c.0->d; X1}"
+
+                assertEquals(expected, actual)
+            }
+
+            Strategy.UnmarkedFirst, Strategy.UnmarkedThenCondition, Strategy.UnmarkedThenSelect -> {
+                val expected =
+                        "def X1 { (a.1->b, b.ack0->a); (c.1->d, d.ack0->c); (a.0->b, b.ack1->a); (c.0->d, d.ack1->c); X1 } main {a.0->b; c.0->d; X1}"
+
+                assertEquals(expected, actual)
+            }
+
+        }
     }
 
-    @Test (expected = NetworkExtraction.MulticomException::class)
+    @Test //(expected = NetworkExtraction.MulticomException::class)
     fun threeBit(){
         val test =
                 "a { def X {b?; b!<0>;b?;b!<1>;b?;b!<2>;X} main {b!<0>;b!<1>;b!<2>; X}} | " +
-                        "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {a?;Y}}"
+                "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {a?;Y}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { (a.0->b, b.ack0->a); (a.1->b, b.ack1->a); (a.2->b, b.ack2->a); X1 } main {X1}"
-
-        assertEquals(expected, actual)
+        assertThrows(NetworkExtraction.MulticomException::class.java
+        ) { ChoreographyExtraction.main(args) }
     }
 
-    @Test
-    fun threeBit2x(){
-        val test =
-                "a { def X {b!<0>;b?;b!<1>;b?;b!<2>;b?;X} main {X}} | " +
-                        "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {Y}} | " +
-                        "c { def X {d!<0>;d?;d!<1>;d?;d!<2>;d?;X} main {X}} | " +
-                        "d { def Y {c!<ack0>;c?;c!<ack1>;c?;c!<ack2>;c?;Y} main {Y}}"
-
-        val args = arrayOf("-c", test)
-
-        val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { (a.1->b, b.ack1->a); (a.2->b, b.ack2->a); (c.0->d, d.ack0->c); (a.0->b, b.ack0->a); (a.1->b, b.ack1->a); (a.2->b, b.ack2->a); (c.1->d, d.ack1->c); (a.0->b, b.ack0->a); (a.1->b, b.ack1->a); (a.2->b, b.ack2->a); (c.2->d, d.ack2->c); (a.0->b, b.ack0->a); X1 } main {(a.0->b, b.ack0->a); X1}"
-
-        assertEquals(expected, actual)
-    }
-
-    @Test
-    fun bargain(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun bargain(strategy: String, debugMode: Boolean){
         val test =
                 "a { def X {if notok then b+hag; b?; X else b+happy; c!<info>; stop} main {X}} | " +
                         "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
                         "c { main {a?; stop}}"
 
-        val args = arrayOf("-c", test, "-l", "c")
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { if a.notok then a->b[hag]; b.price->a; X1 else a->b[happy]; a.info->c; stop } main {X1}"
@@ -136,8 +164,9 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun bargain2x(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun bargain2x(strategy: String, debugMode: Boolean){
         val test =
                 "a { def X {b!<hag>; b?; if price then b+deal; b!<happy>; c!<info>; X else b+nodeal; X} main {X}} | " +
                         "b { def Y {a?; a!<price>; a&{deal: a?; Y, nodeal: Y}} main {Y}} | " +
@@ -147,14 +176,18 @@ class NbTest : Assert() {
                         "f { def Z {d?; Z} main {Z}}"
 
 
-        val args = arrayOf("-c", test, "-l", "c, f")
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         //assertEquals(expected, actual)
     }
 
-    @Test
-    fun health(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun health(strategy: String, debugMode: Boolean){
         val test =
                 "hs{def X{p?; ss!<subscribed>; ss&{" +
                         "ok: p+subscribed; as!<account>; as?; t!<fwd>; t?; X, " +
@@ -165,7 +198,10 @@ class NbTest : Assert() {
                         "t{def X{hs?; hs!<fwdOk>; es!<helpReq>; X} main{X}} | " +
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
-        val args = arrayOf("-c", test, "-l", "as, t, es")
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { p.sendData->hs; X2 } def X2 { hs.subscribed->ss; if ss.ok then ss->hs[ok]; hs->p[subscribed]; hs.account->as; as.logCreated->hs; hs.fwd->t; t.fwdOk->hs; t.helpReq->es; es.provideService->p; p.sendData->hs; X2 else ss->hs[nok]; hs->p[notSubscribed]; X1 } main {X1}"
@@ -173,8 +209,9 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun filter(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun filter(strategy: String, debugMode: Boolean){
         val test =
                 "filter {" +
                         "def X {data!<newFilterRequest>; Y} " +
@@ -190,7 +227,10 @@ class NbTest : Assert() {
                         "main {X}}"
 
 
-        val args = arrayOf("-c", test)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -199,8 +239,9 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun filter2x(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun filter2x(strategy: String, debugMode: Boolean){
         val test =
                 "filter1 {" +
                         "def X {data1!<newFilterRequest>; Y} " +
@@ -228,15 +269,19 @@ class NbTest : Assert() {
                         "main {X}}"
 
 
-        val args = arrayOf("-c", test)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
 
         //assertEquals(expected, actual)
     }
 
-    @Test
-    fun logistic(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun logistic(strategy: String, debugMode: Boolean){
         val test =
                 "supplier {" +
                         "def X {shipper?; Y} " +
@@ -254,7 +299,10 @@ class NbTest : Assert() {
                         "def Y {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Y}}"
 
-        val args = arrayOf("-c", test, "-l", "retailer")
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -263,8 +311,9 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun logistic2(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun logistic2(strategy: String, debugMode: Boolean){
         val test =
                 "supplier {" +
                         "def X {shipper?; consignee?; Y} " +
@@ -289,7 +338,10 @@ class NbTest : Assert() {
 
 
 
-        val args = arrayOf("-c", test, "-l", "retailer")
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -298,8 +350,9 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun cloudSystem(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun cloudSystem(strategy: String, debugMode: Boolean){
         val test =
                 "cl{" +
                         "def X{int!<connect>; int?; Y} " +
@@ -316,7 +369,10 @@ class NbTest : Assert() {
                         "def X{appli?; X} " +
                         "main {X}}"
 
-        val args = arrayOf("-c", test, "-l", "db, int")
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -325,8 +381,9 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun sanitaryAgency(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun sanitaryAgency(strategy: String, debugMode: Boolean){
         val test =
                 "citizen{" +
                         "def X{" +
@@ -354,7 +411,10 @@ class NbTest : Assert() {
                         "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
                         "main{X}}"
 
-        val args = arrayOf("-c", test, "-l", "coop, bank")
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -363,8 +423,9 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun sanitaryAgency2x(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun sanitaryAgency2x(strategy: String, debugMode: Boolean){
         val test =
                 "citizen{" +
                         "def X{" +
@@ -417,7 +478,10 @@ class NbTest : Assert() {
                         "def Y{citizen2?; sanagency2?; sanagency2!<done>; X} " +
                         "main{X}}"
 
-        val args = arrayOf("-c", test, "-l", "coop, bank, coop2, bank2")
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -426,8 +490,9 @@ class NbTest : Assert() {
     }
 
 
-    @Test
-    fun buyerSeller(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun buyerSeller(strategy: String, debugMode: Boolean){
         val test =
                 "buyer{main{seller!<quote>; seller?; if ok then seller+accept; seller?; stop else seller+reject; stop}} | " +
                         "shipper{main{seller&{" +
@@ -437,7 +502,10 @@ class NbTest : Assert() {
                         "accept: shipper+send; shipper!<deliv>; shipper?; buyer!<details>; stop, " +
                         "reject: shipper+wait; stop}}}"
 
-        val args = arrayOf("-c", test)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -445,8 +513,9 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun buyerSellerRec(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun buyerSellerRec(strategy: String, debugMode: Boolean){
         val test =
                 "buyer{def X {seller?; if ok then seller+accept; seller?; stop else seller+reject; X} main {seller!<quote>; X}} | " +
                         "shipper{def X {seller&{" +
@@ -456,7 +525,10 @@ class NbTest : Assert() {
                         "accept: shipper+send; shipper!<deliv>; shipper?; buyer!<details>; stop, " +
                         "reject: shipper+wait; X}} main {buyer?; X}}"
 
-        val args = arrayOf("-c", test)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -465,14 +537,18 @@ class NbTest : Assert() {
     }
 
 
-    @Test
-    fun twoBuyersProtocol(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun twoBuyersProtocol(strategy: String, debugMode: Boolean){
         val test =
                 "buyer1{def X {seller!<book>; seller?; buyer2!<quote>; X} main {X}} | " +
                         "buyer2{def X {seller?; buyer1?; if ok then seller+accept; seller!<address>; seller?; X else seller+decline; X} main {X}} | " +
                         "seller{def X {buyer1?; buyer1!<quote>; buyer2!<quote>; buyer2&{accept: buyer2?; buyer2!<date>; X, decline: X}} main {X}}"
 
-        val args = arrayOf("-c", test)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -480,15 +556,19 @@ class NbTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test
-    fun streamingProtocol(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun streamingProtocol(strategy: String, debugMode: Boolean){
         val test =
                 "kernel{def X{data?; key?; consumer!<xor>; X} main{X}} | " +
                         "data{def X{kernel!<data>; X} main{X}} | " +
                         "key{def X{kernel!<data>; X} main{X}} | " +
                         "consumer{def X{kernel?; X} main{X}}"
 
-        val args = arrayOf("-c", test)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =
@@ -497,7 +577,7 @@ class NbTest : Assert() {
     }
 
 
-    @Test (expected = NetworkExtraction.NoPossibleActionsException::class)
+    @Test// (expected = NetworkExtraction.NoPossibleActionsException::class)
     fun InstrumentControllingFail(){
         val test =
                 "user{def X{instrument+move; instrument+photo; instrument+quit; stop} " +
@@ -510,12 +590,16 @@ class NbTest : Assert() {
                         "photo: X," +
                         "quit: stop}} main{X}}"
 
-        val args = arrayOf("-c", test)
-        ChoreographyExtraction.main(args)
+        val args = arrayListOf("-c", test)
+
+        assertThrows(NetworkExtraction.NoPossibleActionsException::class.java
+        ) { ChoreographyExtraction.main(args) }
+
     }
 
-    @Test
-    fun InstrumentControlling(){
+    @ParameterizedTest
+    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    fun InstrumentControlling(strategy: String, debugMode: Boolean){
         val test =
                 "user{def X{instrument+move; instrument+photo; instrument+quit; stop} " +
                         "main {operator!<high>; operator&{" +
@@ -529,7 +613,10 @@ class NbTest : Assert() {
                         "ok: X, " +
                         "no: stop}}}"
 
-        val args = arrayOf("-c", test)
+        val param = resolveArgs(strategy, debugMode)
+        val args = param.first
+        val strategy = param.second
+        args.add(test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected =

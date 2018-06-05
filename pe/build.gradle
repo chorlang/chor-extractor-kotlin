@@ -1,7 +1,4 @@
 buildscript {
-    ext.antlr4_version = antlr4_version
-    ext.jgraphtVersion = jgraphtVersion
-
     repositories {
         mavenCentral()
 
@@ -12,6 +9,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "me.champeau.gradle:jmh-gradle-plugin:$jmh_gradle_plugin_version"
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.0'
     }
 }
 
@@ -21,6 +19,7 @@ apply plugin: 'java'
 apply plugin: "idea"
 apply plugin: 'antlr'
 apply plugin: "me.champeau.gradle.jmh"
+apply plugin: 'org.junit.platform.gradle.plugin'
 
 repositories {
     mavenCentral()
@@ -28,8 +27,7 @@ repositories {
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
-
-    //compile 'org.openjdk.jmh:jmh-generator-annprocess:1.14.1'
+    compileKotlin.dependsOn generateGrammarSource
 
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '+'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '+'
@@ -38,21 +36,27 @@ dependencies {
     antlr "org.antlr:antlr4:$antlr4_version"
     compile "org.antlr:antlr4-runtime:$antlr4_version"
     compile "org.jgrapht:jgrapht-core:$jgraphtVersion"
-    testCompile group: 'junit', name: 'junit', version: '+'
-}
 
-//generate grammar
+    //testCompile group: 'junit', name: 'junit', version: '+'
+    testCompile(
+            'org.junit.jupiter:junit-jupiter-api:5.1.0',
+            'org.junit.jupiter:junit-jupiter-params:5.1.0'
+    )
+    testRuntime(
+            'org.junit.jupiter:junit-jupiter-engine:5.1.0',
+            'org.junit.vintage:junit-vintage-engine:5.1.0',
+            'org.junit.platform:junit-platform-launcher:1.1.0',
+            'org.junit.platform:junit-platform-runner:1.1.0'
+    )
+}
 
 generateGrammarSource {
     maxHeapSize = "64m"
     arguments += ["-visitor", "-long-messages"]
-
     outputDirectory = file( "src/main/java" )
 }
 
 sourceSets.main.java.srcDir file("$buildDir/generated-src/antlr/main/")
-
-compileKotlin.dependsOn generateGrammarSource
 
 idea {
     module {
@@ -60,23 +64,7 @@ idea {
     }
 }
 
-
-//generate grammar ends
-
-
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = kotlin_jvm_target
-    }
-}
-
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = kotlin_jvm_target
-    }
-}
-
-mainClassName = "np.NetworkProjection"
+mainClassName = "Hi!"
 
 task singleJar(type: Jar) {
     manifest {
@@ -87,6 +75,6 @@ task singleJar(type: Jar) {
     from { configurations.test.collect { it.isDirectory() ? it : zipTree(it) } } with jar
 }
 
-jmh {
-    jmhVersion = jmh_version
-}
+
+//FOR BUILDING WITHOUT RUNNING TESTS
+//check.dependsOn.remove(test)

@@ -1,9 +1,11 @@
 package np
 
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
 
-class NetworkProjectionTest : Assert() {
+class NetworkProjectionTest{
 
     @Test
     fun tst1(){
@@ -156,7 +158,7 @@ class NetworkProjectionTest : Assert() {
         assertEquals(expected, actual)
     }
 
-    @Test (expected = MergingProjection.MergingException::class)
+    @Test //(expected = MergingProjection.MergingException::class)
     fun tst12() {
         val test =
                 "def X1 { " +
@@ -189,7 +191,10 @@ class NetworkProjectionTest : Assert() {
                         "else X4 } " +
                         "main {q.i->r; X1}"
 
-        NetworkProjection.project(test)
+
+
+        Assertions.assertThrows(MergingProjection.MergingException::class.java
+        ) { NetworkProjection.project(test) }
 
     }
 }

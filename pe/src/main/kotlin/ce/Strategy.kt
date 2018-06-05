@@ -2,7 +2,8 @@ package ce
 
 import ast.sp.nodes.*
 import java.util.*
-
+import kotlin.collections.HashMap
+import kotlin.collections.LinkedHashMap
 
 enum class Strategy {
     SelectFirst {
@@ -30,90 +31,148 @@ enum class Strategy {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
             marking.forEach { processName, marked ->
-                if ( !marked ) {
+                if (!marked) {
                     ret[processName] = net.remove(processName)!!
                 }
             }
 
             ret.putAll(net)
-
             return ret
         }
     },
     RandomProcess() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
-            val network = LinkedHashMap<String, ProcessTerm>()
-            val shuffledKeys = net.keys.shuffled()
-            shuffledKeys.forEach { network.put(""+it, net[it]!!.copy()) }
-            return network
+            val ret = LinkedHashMap<String, ProcessTerm>()
+            net.keys.shuffled().forEach { ret[it] = net[it]!!.copy() }
+            return ret
         }
     },
     UnmarkedThenRandom() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
-            val network = LinkedHashMap<String, ProcessTerm>()
+            val ret = LinkedHashMap<String, ProcessTerm>()
 
-            net.forEach { process ->
-                val mark = marking[process.key]
-                if (mark != null && !mark) network.put(process.key, process.value.copy())
+            val markedList = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val unmarkedList = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+
+            marking.forEach { processName, marked ->
+                val processTerm = net[processName]!!
+                if (marked){
+                    markedList.add(AbstractMap.SimpleEntry(processName, processTerm))
+                } else {
+                    unmarkedList.add(AbstractMap.SimpleEntry(processName, processTerm))
+                }
             }
 
-            val leftKeys = net.minus(network.keys)
-            val shuffledKeys = leftKeys.keys.shuffled()
-            shuffledKeys.forEach { network.put(""+it, net[it]!!.copy()) }
+            markedList.shuffle()
+            unmarkedList.shuffle()
 
-            return network
+            unmarkedList.addAll(markedList)
+            unmarkedList.forEach { ret.put(it.key, it.value) }
+
+            return ret
         }
     },
     UnmarkedThenSelect() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
-            val markedSelections = LinkedList<Map.Entry<ProcessName,ProcessTerm>>()
-            val unmarkedSelections = LinkedList<Map.Entry<ProcessName,ProcessTerm>>()
+            val markedSelections = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val unmarkedSelections = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val markedSending = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val unmarkedSending = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val markedElse = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val unmarkedElse = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
 
             marking.forEach { processName, marked ->
-                if ( !marked ) {
-                    ret[processName] = net.remove(processName)!!
+                val processTerm = net[processName]
+                val main = processTerm!!.main
+                when (main) {
+                    is SelectionSP, is OfferingSP -> {
+                        if (!marked) {
+                            unmarkedSelections.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        } else {
+                            markedSelections.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        }
+                    }
+                    is SendingSP, is ReceiveSP -> {
+                        if (!marked) {
+                            unmarkedSending.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        } else {
+                            markedSending.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        }
+                    }
+                    else -> {
+                        if (!marked) {
+                            unmarkedElse.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        } else {
+                            markedElse.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        }
+                    }
+
                 }
             }
 
-            ret.putAll(net)
+            unmarkedSelections.forEach { ret.put(it.key, it.value) }
+            unmarkedSending.forEach { ret.put(it.key, it.value) }
+            unmarkedElse.forEach { ret.put(it.key, it.value) }
+            markedSelections.forEach { ret.put(it.key, it.value) }
+            markedSending.forEach { ret.put(it.key, it.value) }
+            markedElse.forEach { ret.put(it.key, it.value) }
 
             return ret
-
-
-            val network = LinkedHashMap<String, ProcessTerm>()
-
-            net.forEach { process ->
-                val mark = marking[process.key]
-                if (mark != null && !mark) network.put(process.key, process.value.copy())
-            }
-
-            val leftKeys = net.minus(network.keys)
-            leftKeys.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network.put(process.key, process.value.copy()) }
-            leftKeys.forEach { process -> if (process.value.main is SendingSP || process.value.main is ReceiveSP) network.put(process.key, process.value.copy()) }
-            leftKeys.forEach { process -> network.put(process.key, process.value.copy()) }
-
-            return network
         }
     },
     UnmarkedThenCondition() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
-            val network = LinkedHashMap<String, ProcessTerm>()
+            val ret = LinkedHashMap<String, ProcessTerm>()
 
-            net.forEach { process ->
-                val mark = marking[process.key]
-                if (mark != null && !mark) network.put(process.key, process.value.copy())
+            val markedSelections = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val unmarkedSelections = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val markedCondition = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val unmarkedCondition = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val markedElse = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val unmarkedElse = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+
+            marking.forEach { processName, marked ->
+                val processTerm = net[processName]
+                val main = processTerm!!.main
+                when (main) {
+                    is SelectionSP, is OfferingSP -> {
+                        if (!marked) {
+                            unmarkedSelections.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        } else {
+                            markedSelections.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        }
+                    }
+                    is ConditionSP -> {
+                        if (!marked) {
+                            unmarkedCondition.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        } else {
+                            markedCondition.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        }
+                    }
+                    else -> {
+                        if (!marked) {
+                            unmarkedElse.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        } else {
+                            markedElse.add(AbstractMap.SimpleEntry(processName, processTerm))
+                        }
+                    }
+
+                }
             }
 
-            val leftKeys = net.minus(network.keys)
-            leftKeys.forEach { process -> if (process.value.main is ConditionSP) network.put(process.key, process.value.copy()) }
-            leftKeys.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network.put(process.key, process.value.copy()) }
-            leftKeys.forEach { process -> network.put(process.key, process.value.copy()) }
+            unmarkedCondition.forEach { ret.put(it.key, it.value) }
+            unmarkedSelections.forEach { ret.put(it.key, it.value) }
+            unmarkedElse.forEach { ret.put(it.key, it.value) }
+            markedCondition.forEach { ret.put(it.key, it.value) }
+            markedSelections.forEach { ret.put(it.key, it.value) }
+            markedElse.forEach { ret.put(it.key, it.value) }
 
-            return network
+            return ret
         }
     },
+
     Default() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
             return SelectFirst.sort(marking, net)
