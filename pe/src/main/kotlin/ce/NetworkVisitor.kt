@@ -1,16 +1,15 @@
 package ce
 
+import NetworkParser.*
+import NetworkBaseVisitor
+import ast.sp.nodes.*
 import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.nodes.interfaces.SPNode
-import ast.sp.nodes.*
-import NetworkBaseVisitor
-import NetworkParser.*
 import org.antlr.v4.runtime.tree.TerminalNode
-import kotlin.collections.HashMap
 
 
 class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
-    override fun visitNetwork(ctx: NetworkContext): SPNode {
+    override fun visitNetwork(ctx: NetworkParser.NetworkContext): SPNode {
         val network = HashMap<String, ProcessTerm>()
         for (i in 0..ctx.processBehaviour().size - 1) {
             network.put(ctx.process(i).text, visit(ctx.processBehaviour(i)) as ProcessTerm)
@@ -18,7 +17,7 @@ class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
         return Network(network)
     }
 
-    override fun visitProcessBehaviour(ctx: ProcessBehaviourContext): SPNode {
+    override fun visitProcessBehaviour(ctx: NetworkParser.ProcessBehaviourContext): SPNode {
         val procedures = HashMap<String, IBehaviour>()
         for (i in 0..ctx.procedureDefinition().size - 1) {
             procedures.put(ctx.procedure(i).text, visit(ctx.procedureDefinition(i)) as IBehaviour)

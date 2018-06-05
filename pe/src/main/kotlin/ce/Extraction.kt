@@ -23,13 +23,16 @@ class NetworkExtraction {
     private val log = LogManager.getLogger()
     private var nodeIdCounter = 0
     private val hashesMap = HashMap<Hash, ArrayList<ConcreteNode>>()
+    private var badLoopCnt = 0
 
     //region Main
     companion object {
         private lateinit var livelocked: ArrayList<String>
+        private var debugMode = false
 
-        fun run(n: Network, s: Strategy, l: ArrayList<String>): Program {
+        fun run(n: Network, s: Strategy, l: ArrayList<String>, d: Boolean): Program {
             livelocked = l
+            debugMode = d
             return NetworkExtraction().extract(n, s, livelocked)
         }
     }
@@ -53,17 +56,18 @@ class NetworkExtraction {
         addToHashMap(node)
 
         buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy)
+        if (debugMode) {
+            log.debug("Graph vertexes: ${graph.vertexSet().size}")
+            log.debug("Backtracking: $badLoopCnt")
+        }
 
         val fklist = unrollGraph(node, graph as DefaultDirectedGraph<Node, ExtractionLabel>)
-        //log.debug("Vertexes: ${graph.vertexSet().size}, Edges: ${graph.edgeSet().size}, equals: ${Network.i}")
         return buildChoreography(node, fklist, graph)
     }
 
     private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
-        //val node = currentNode.copy()
         val unfoldedProcesses = HashSet<String>() //Storing unfoldedProcesses processes
         val processes = sortProcesses(currentNode, strategy) //Sorting processes by the strategy passed from the outside
-        //val processes = currentNode.network.copy().processes
 
         //region Try to find a single-action communication
         for (processPair in processes) {
@@ -728,6 +732,7 @@ class NetworkExtraction {
 
             } //else throw BadLoopException("Bad loop!")
         }
+        badLoopCnt++
         return false
     }
 

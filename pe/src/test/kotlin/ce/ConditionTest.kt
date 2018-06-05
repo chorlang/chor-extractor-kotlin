@@ -1,9 +1,10 @@
 package ce
 
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
 
-class ConditionTest : Assert() {
+class ConditionTest{
 
     @Test
     fun tst1(){ /* simple condition */
@@ -12,7 +13,7 @@ class ConditionTest : Assert() {
                         "| q { main {p?; stop}} " +
                         "| r { main {stop}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "main {if p.e then p.e1->q; stop else p.e2->q; stop}"
@@ -27,7 +28,7 @@ class ConditionTest : Assert() {
                         "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
                         "r { main {stop}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"
@@ -42,7 +43,7 @@ class ConditionTest : Assert() {
                         "| q { main {p?; stop}} " +
                         "| r { main {stop}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "main {if p.e then if p.u then p.e1->q; stop else p.e2->q; stop else p.e3->q; stop}"
@@ -57,7 +58,7 @@ class ConditionTest : Assert() {
                         "| q {def Y{p?;stop} main {Y}} " +
                         "| r { main {stop}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "main {if p.e then p.u->q; stop else p.o->q; stop}"
@@ -72,7 +73,7 @@ class ConditionTest : Assert() {
                         "| q {def Y{p?;Y} main {Y}} " +
                         "| r { main {stop}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { if p.e then p.u->q; X1 else p.o->q; X1 } main {X1}"
@@ -87,7 +88,7 @@ class ConditionTest : Assert() {
                         "q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | " +
                         "r { main {stop}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"
@@ -103,10 +104,10 @@ class ConditionTest : Assert() {
                         "r { main {s!<e2>; stop}} | " +
                         "s { main {r?; stop}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { p.e->q; X1 } main {p.e->q; r.e2->s; X1}"
+        val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
 
         assertEquals(expected, actual)
     }

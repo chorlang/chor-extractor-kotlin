@@ -32,7 +32,7 @@ open class BenchTest{
                 "d {def X " +
                     "{c?; a?; X} " +
                     "main {X}}"
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
         ChoreographyExtraction.main(args)
     }
 
@@ -48,7 +48,7 @@ open class BenchTest{
                 "c2 {def X {d2!<busy>; a2&{win: a2!<msg>; X, lose: a2!<msg>; X}} main {X}} |" +
                 "d2 {def X {c2?; a2?; X} main {X}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
         ChoreographyExtraction.main(args)
     }
 
@@ -58,7 +58,7 @@ open class BenchTest{
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
         ChoreographyExtraction.main(args)
     }
 
@@ -70,7 +70,7 @@ open class BenchTest{
                         "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
         ChoreographyExtraction.main(args)
     }
 
@@ -81,7 +81,7 @@ open class BenchTest{
                         "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
                         "c { main {a?; stop}}"
 
-        val args = arrayOf("-c", test, "-l", "c")
+        val args = arrayListOf("-c", test, "-l", "c")
         ChoreographyExtraction.main(args)
     }
 
@@ -96,7 +96,7 @@ open class BenchTest{
                         "f { def Z {d?; Z} main {Z}}"
 
 
-        val args = arrayOf("-c", test, "-l", "c, f")
+        val args = arrayListOf("-c", test, "-l", "c, f")
         ChoreographyExtraction.main(args)
     }
 
@@ -112,7 +112,7 @@ open class BenchTest{
                         "t{def X{hs?; hs!<fwdOk>; es!<helpReq>; X} main{X}} | " +
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
-        val args = arrayOf("-c", test, "-l", "as, t, es")
+        val args = arrayListOf("-c", test, "-l", "as, t, es")
         ChoreographyExtraction.main(args)
     }
 
@@ -132,7 +132,7 @@ open class BenchTest{
                         "t2{def X{hs2?; hs2!<fwdOk>; es2!<helpReq>; X} main{X}} | " +
                         "es2{def X{t2?; p2!<provideService>; X} main{X}}"
 
-        val args = arrayOf("-c", test, "-l", "as1, t1, es1, as2, t2, es2")
+        val args = arrayListOf("-c", test, "-l", "as1, t1, es1, as2, t2, es2")
         ChoreographyExtraction.main(args)
     }
 
@@ -153,7 +153,7 @@ open class BenchTest{
                         "main {X}}"
 
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
         ChoreographyExtraction.main(args)
     }
 
@@ -186,7 +186,7 @@ open class BenchTest{
                         "main {X}}"
 
 
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
         ChoreographyExtraction.main(args)
     }
 
@@ -209,7 +209,7 @@ open class BenchTest{
                         "def Y {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Y}}"
 
-        val args = arrayOf("-c", test, "-l", "retailer")
+        val args = arrayListOf("-c", test, "-l", "retailer")
         ChoreographyExtraction.main(args)
     }
 
@@ -237,7 +237,7 @@ open class BenchTest{
                         "def Z {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Z}}"
 
-        val args = arrayOf("-c", test, "-l", "retailer")
+        val args = arrayListOf("-c", test, "-l", "retailer")
         ChoreographyExtraction.main(args)
     }
 
@@ -259,7 +259,7 @@ open class BenchTest{
                         "def X{appli?; X} " +
                         "main {X}}"
 
-        val args = arrayOf("-c", test, "-l", "db, int")
+        val args = arrayListOf("-c", test, "-l", "db, int")
         ChoreographyExtraction.main(args)
     }
 
@@ -275,7 +275,7 @@ open class BenchTest{
                         "int2{def X{cl2?; appli2!<setup>; cl2!<syncAccess>; cl2?; X} main {X}} | " +
                         "db2{def X{appli2?; X} main {X}}"
 
-        val args = arrayOf("-c", test, "-l", "db1, int1, db2, int2")
+        val args = arrayListOf("-c", test, "-l", "db1, int1, db2, int2")
         ChoreographyExtraction.main(args)
     }
 
@@ -308,7 +308,7 @@ open class BenchTest{
                         "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
                         "main{X}}"
 
-        val args = arrayOf("-c", test, "-l", "coop, bank")
+        val args = arrayListOf("-c", test, "-l", "coop, bank")
         ChoreographyExtraction.main(args)
     }
 
@@ -366,7 +366,7 @@ open class BenchTest{
                         "def Y{citizen2?; sanagency2?; sanagency2!<done>; X} " +
                         "main{X}}"
 
-        val args = arrayOf("-c", test, "-l", "coop, bank, coop2, bank2")
+        val args = arrayListOf("-c", test, "-l", "coop, bank, coop2, bank2")
         ChoreographyExtraction.main(args)
     }
 }

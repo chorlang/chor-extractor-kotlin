@@ -1,9 +1,10 @@
 package ce
 
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
 
-class InteractionTest : Assert() {
+class InteractionTest{
 
     /* simple interaction */
     @Test
@@ -11,7 +12,7 @@ class InteractionTest : Assert() {
         val test = "p { main {q!<e>; q?; stop}} " +
                 "| q { main {p?; p!<u>; stop}} " +
                 "| r { main {stop}}"
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "main {p.e->q; q.u->p; stop}"
@@ -25,7 +26,7 @@ class InteractionTest : Assert() {
         val test = "p { def X {q!<e>; stop} main {X}} " +
                 "| q { def X {p?; stop} main {X}} " +
                 "| r { main {stop}}"
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "main {p.e->q; stop}"
@@ -37,7 +38,7 @@ class InteractionTest : Assert() {
     @Test
     fun tst3(){
         val test = "p {main{q?;stop}} | q { def X {p!<e>;stop} main{X}}"
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "main {q.e->p; stop}"
@@ -51,7 +52,7 @@ class InteractionTest : Assert() {
         val test = "p {def X {q!<e>;X} main {X}} " +
                 "| q {def Y{p?; Y} main {Y}} " +
                 "| r { main {stop}}"
-        val args = arrayOf("-c", test)
+        val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { p.e->q; X1 } main {X1}"

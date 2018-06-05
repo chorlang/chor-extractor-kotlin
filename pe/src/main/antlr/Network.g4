@@ -1,7 +1,7 @@
 grammar Network;
 import CommonLexerRules;
 
-ret: process processBehaviour ('|' process processBehaviour)*;
+network: process processBehaviour ('|' process processBehaviour)*;
 
 processBehaviour : '{' ('def' procedure procedureDefinition)* 'main' '{' behaviour '}' '}'
     ;
