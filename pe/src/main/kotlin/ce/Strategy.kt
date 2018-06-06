@@ -43,8 +43,14 @@ enum class Strategy {
     RandomProcess() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
-            net.keys.shuffled().forEach { ret[it] = net[it]!!.copy() }
+            net.keys.shuffled().forEach { ret[it] = net[it]!! }
             return ret
+        }
+    },
+    LengthFirst() {
+        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+            val ret = LinkedHashMap<String, ProcessTerm>()
+            //ret.entries.sortedBy
         }
     },
     UnmarkedThenRandom() {
@@ -66,8 +72,8 @@ enum class Strategy {
             markedList.shuffle()
             unmarkedList.shuffle()
 
-            unmarkedList.addAll(markedList)
-            unmarkedList.forEach { ret.put(it.key, it.value) }
+            unmarkedList.forEach { ret[it.key] = it.value }
+            markedList.forEach { ret[it.key] = it.value }
 
             return ret
         }

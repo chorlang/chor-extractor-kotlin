@@ -67,7 +67,7 @@ class NetworkExtraction {
 
     private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         val unfoldedProcesses = HashSet<String>() //Storing unfoldedProcesses processes
-        val processes = sortProcesses(currentNode, strategy) //Sorting processes by the strategy passed from the outside
+        val processes = copyAndSortProcesses(currentNode, strategy) //Sorting processes by the strategy passed from the outside
 
         //region Try to find a single-action communication
         for (processPair in processes) {
@@ -77,7 +77,7 @@ class NetworkExtraction {
 
             val findComm = findCommunication(processPair.key, processes)
             if (findComm != null) {
-                val processesCopy = processesCopy(processes)
+                //val processesCopy = processesCopy(processes)
 
                 val (targetNetwork, label) = getCommunication(processes, findComm)
 
@@ -864,7 +864,7 @@ class NetworkExtraction {
     //endregion
     //region Utils
 
-    private fun sortProcesses(node: ConcreteNode, strategy: Strategy): HashMap<String, ProcessTerm> {
+    private fun copyAndSortProcesses(node: ConcreteNode, strategy: Strategy): HashMap<String, ProcessTerm> {
         val net = HashMap<String, ProcessTerm>()
         node.network.processes.forEach { k, v -> net.put(k,v.copy()) }
         return strategy.sort(node.marking, net)
