@@ -9,7 +9,7 @@ buildscript {
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "me.champeau.gradle:jmh-gradle-plugin:$jmh_gradle_plugin_version"
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.0'
+        classpath 'org.junit.platform:junit-platform-gradle-plugin:+'
     }
 }
 
@@ -39,14 +39,14 @@ dependencies {
 
     //testCompile group: 'junit', name: 'junit', version: '+'
     testCompile(
-            'org.junit.jupiter:junit-jupiter-api:5.1.0',
-            'org.junit.jupiter:junit-jupiter-params:5.1.0'
+            'org.junit.jupiter:junit-jupiter-api:+',
+            'org.junit.jupiter:junit-jupiter-params:+'
     )
     testRuntime(
-            'org.junit.jupiter:junit-jupiter-engine:5.1.0',
-            'org.junit.vintage:junit-vintage-engine:5.1.0',
-            'org.junit.platform:junit-platform-launcher:1.1.0',
-            'org.junit.platform:junit-platform-runner:1.1.0'
+            'org.junit.jupiter:junit-jupiter-engine:+',
+            'org.junit.vintage:junit-vintage-engine:+',
+            'org.junit.platform:junit-platform-launcher:+',
+            'org.junit.platform:junit-platform-runner:+'
     )
 }
 
