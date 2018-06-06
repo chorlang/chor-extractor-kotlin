@@ -105,7 +105,7 @@ class NetworkExtraction {
                 /* case 1 */
                 if (existingNode == null) { // || existingNodes.isEmpty()) {
                     val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
-                    addNodeToGraph(currentNode, newNode, label, graph)
+                    assert(addNodeToGraph(currentNode, newNode, label, graph))
                     //log.debug(label)
                     return if (buildGraph(newNode, graph, strategy)) true else continue
                 }
@@ -267,7 +267,7 @@ class NetworkExtraction {
 
                 if (existingNode == null ) { //
                     val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
-                    addNodeToGraph(currentNode, newNode, label, graph)
+                    assert(addNodeToGraph(currentNode, newNode, label, graph))
                     //log.debug(label)
                     return if (buildGraph(newNode, graph, strategy)) true else continue
                 } else {
@@ -294,6 +294,8 @@ class NetworkExtraction {
             "0n1n" -> {
                 graph.removeEdge(currentNode, nodeElse)
                 graph.removeVertex(nodeElse)
+                removeFromHashMap(nodeElse)
+
             }
         //Edge for else branch was added (elseNode was already in the graph), but then node wasn't added to the graph
             "0nn1" -> {
@@ -303,6 +305,7 @@ class NetworkExtraction {
             "n01n" -> {
                 graph.removeEdge(currentNode, nodeElse)
                 graph.removeVertex(nodeElse)
+                removeFromHashMap(nodeElse)
             }
         //Edge for else branch was added (elseNode was already in the graph), but edge for then branch (then node was already in the graph) wasn't added to the graph
             "n0n1" -> {
@@ -312,11 +315,13 @@ class NetworkExtraction {
             "1n0n" -> {
                 graph.removeEdge(currentNode, nodeThen)
                 graph.removeVertex(nodeThen)
+                removeFromHashMap(nodeThen)
             }
         //Node for then branch was added, but edge for else branch (else node was already in the graph) wasn't added to the graph
             "1nn0" -> {
                 graph.removeEdge(currentNode, nodeThen)
                 graph.removeVertex(nodeThen)
+                removeFromHashMap(nodeThen)
             }
         //Edge for then branch was added (thenNode was already in the graph), but else node wasn't added to the graph
             "n10n" -> {
@@ -344,15 +349,6 @@ class NetworkExtraction {
             val sm = this.toStringMask()
             return ((sm == "1n1n") || (sm == "n11n") || (sm == "1nn1") || (sm == "n1n1"))
         }
-
-        /*enum class FaultyResult(val result: String){
-            BadThenNodeFineElseNode("0111"),
-            BadThenNodeFineElseEdge("0111"),
-            BadThenNodeBadElseNode("0101"),
-            BadThenNodeBadElseEdge("0110"),
-            Else("")
-
-        }*/
 
         constructor() : this(null, null, null, null)
     }
@@ -681,7 +677,6 @@ class NetworkExtraction {
     //endregion
     //region Manipulations with nodes
     private fun createNewNode(targetNetwork: Network, label: ExtractionLabel, predecessorNode: ConcreteNode, marking: HashMap<ProcessName, Boolean>): ConcreteNode {
-        5
         val str = when (label) {
             is ThenLabel -> predecessorNode.choicePath + "0"
             is ElseLabel -> predecessorNode.choicePath + "1"
@@ -709,6 +704,18 @@ class NetworkExtraction {
             } else {
                 assert(value.add(newNode))
                 value
+            }
+        })
+    }
+
+    private fun removeFromHashMap(newNode: ConcreteNode) {
+        val hash = hash(newNode.network, newNode.marking)
+        hashesMap.compute(hash, { key, value ->
+            if (value != null) {
+                assert(value.remove(newNode))
+                value
+            } else {
+                throw Exception("Vertex is in the graph but not registered in the map of hashes")
             }
         })
     }
