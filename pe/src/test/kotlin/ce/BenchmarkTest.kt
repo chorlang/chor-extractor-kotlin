@@ -42,7 +42,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun runningExample2x(strategy: String, debugMode: Boolean){
+    fun runningExample2x(strategy: String, debugMode: Boolean) {
 
         val test =
                 "a1 {def X {if e then b1+win; c1+lose; b1?; c1?; d1!<free>; X else b1+lose; c1+win; b1?; c1?; d1!<free>; X} main {X}} |" +
@@ -94,7 +94,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun twoBit(strategy: String, debugMode: Boolean){
+    fun twoBit(strategy: String, debugMode: Boolean) {
         val test =
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
@@ -108,15 +108,18 @@ class BenchmarkTest {
 
         when (strategy) {
             Strategy.UnmarkedThenRandom, Strategy.RandomProcess -> {
-                //val expected =
-                //        "def X1 { (a.1->b, b.ack0->a); (b.ack1->a, a.0->b); X1 } main {a.0->b; X1}"
-
-                //assertEquals(expected, actual)
+                //Random result, can't assert
+            }
+            Strategy.LengthFirst -> {
+                val expected = "def X1 { (b.ack0->a, a.1->b); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
+                assertEquals(expected, actual)
+            }
+            Strategy.ShortestFirst -> {
+                val expected = "def X1 { (a.1->b, b.ack0->a); (b.ack1->a, a.0->b); X1 } main {a.0->b; X1}"
+                assertEquals(expected, actual)
             }
             else -> {
-                val expected =
-                        "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
-
+                val expected = "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
                 assertEquals(expected, actual)
             }
         }
@@ -124,7 +127,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun twoBit2x(strategy: String, debugMode: Boolean){
+    fun twoBit2x(strategy: String, debugMode: Boolean) {
         val test =
                 "a { def X {b?;b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}} | " +
@@ -150,6 +153,7 @@ class BenchmarkTest {
                 val expected =
                         "def X1 { (a.1->b, b.ack0->a); (c.1->d, d.ack0->c); (a.0->b, b.ack1->a); (c.0->d, d.ack1->c); X1 } main {a.0->b; c.0->d; X1}"
 
+
                 assertEquals(expected, actual)
             }
 
@@ -157,10 +161,10 @@ class BenchmarkTest {
     }
 
     @Test //(expected = NetworkExtraction.MulticomException::class)
-    fun threeBit(){
+    fun threeBit() {
         val test =
                 "a { def X {b?; b!<0>;b?;b!<1>;b?;b!<2>;X} main {b!<0>;b!<1>;b!<2>; X}} | " +
-                "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {a?;Y}}"
+                        "b { def Y {a!<ack0>;a?;a!<ack1>;a?;a!<ack2>;a?;Y} main {a?;Y}}"
 
         val args = arrayListOf("-c", test)
 
@@ -170,11 +174,11 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun bargain(strategy: String, debugMode: Boolean){
+    fun bargain(strategy: String, debugMode: Boolean) {
         val test =
                 "a { def X {if notok then b+hag; b?; X else b+happy; c!<info>; stop} main {X}} | " +
-                        "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
-                        "c { main {a?; stop}}"
+                "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
+                "c { main {a?; stop}}"
 
         val param = resolveArgs(strategy, debugMode)
         val args = param.first
@@ -190,7 +194,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun bargain2x(strategy: String, debugMode: Boolean){
+    fun bargain2x(strategy: String, debugMode: Boolean) {
         val test =
                 "a { def X {b!<hag>; b?; if price then b+deal; b!<happy>; c!<info>; X else b+nodeal; X} main {X}} | " +
                         "b { def Y {a?; a!<price>; a&{deal: a?; Y, nodeal: Y}} main {Y}} | " +
@@ -212,7 +216,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun health(strategy: String, debugMode: Boolean){
+    fun health(strategy: String, debugMode: Boolean) {
         val test =
                 "hs{def X{p?; ss!<subscribed>; ss&{" +
                         "ok: p+subscribed; as!<account>; as?; t!<fwd>; t?; X, " +
@@ -237,7 +241,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun filter(strategy: String, debugMode: Boolean){
+    fun filter(strategy: String, debugMode: Boolean) {
         val test =
                 "filter {" +
                         "def X {data!<newFilterRequest>; Y} " +
@@ -267,7 +271,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun filter2x(strategy: String, debugMode: Boolean){
+    fun filter2x(strategy: String, debugMode: Boolean) {
         val test =
                 "filter1 {" +
                         "def X {data1!<newFilterRequest>; Y} " +
@@ -307,7 +311,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun logistic(strategy: String, debugMode: Boolean){
+    fun logistic(strategy: String, debugMode: Boolean) {
         val test =
                 "supplier {" +
                         "def X {shipper?; Y} " +
@@ -340,7 +344,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun logistic2(strategy: String, debugMode: Boolean){
+    fun logistic2(strategy: String, debugMode: Boolean) {
         val test =
                 "supplier {" +
                         "def X {shipper?; consignee?; Y} " +
@@ -364,7 +368,6 @@ class BenchmarkTest {
                         "main{Z}}"
 
 
-
         val param = resolveArgs(strategy, debugMode)
         val args = param.first
         args.addAll(arrayListOf(test, "-l", "retailer"))
@@ -379,7 +382,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun cloudSystem(strategy: String, debugMode: Boolean){
+    fun cloudSystem(strategy: String, debugMode: Boolean) {
         val test =
                 "cl{" +
                         "def X{int!<connect>; int?; Y} " +
@@ -411,7 +414,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun sanitaryAgency(strategy: String, debugMode: Boolean){
+    fun sanitaryAgency(strategy: String, debugMode: Boolean) {
         val test =
                 "citizen{" +
                         "def X{" +
@@ -454,7 +457,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun sanitaryAgency2x(strategy: String, debugMode: Boolean){
+    fun sanitaryAgency2x(strategy: String, debugMode: Boolean) {
         val test =
                 "citizen{" +
                         "def X{" +
@@ -514,9 +517,6 @@ class BenchmarkTest {
         val strategy = param.second
 
         val actual = ChoreographyExtraction.main(args)
-        /*val expected =
-                "def X1 { citizen.provInf->sanagency; if sanagency.infoProved then sanagency->citizen[acceptance]; sanagency.req->coop; if coop.fine then coop.provT->citizen; coop->bank[recMoneyPossT]; bank.paymentT->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop.provM->citizen; coop->bank[recMoneyPossM]; bank.paymentM->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency->citizen[refusal]; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 } main {citizen.request->sanagency; sanagency.askInfo->citizen; X1}"
-        assertEquals(expected, actual)*/
 
         when (strategy) {
             Strategy.SelectionFirst, Strategy.ConditionFirst -> {
