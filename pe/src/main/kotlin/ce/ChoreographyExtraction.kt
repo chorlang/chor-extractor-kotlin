@@ -42,7 +42,7 @@ object ChoreographyExtraction{
 
     fun parseStrategy(strategy: String): Strategy {
         val s = Strategy.values().find { it.name == strategy }
-        return s ?: Strategy.SelectFirst
+        return s ?: Strategy.SelectionFirst
     }
 
     private fun parseInput(args: ArrayList<String>): ParsedInput? {

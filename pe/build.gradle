@@ -77,4 +77,4 @@ task singleJar(type: Jar) {
 
 
 //FOR BUILDING WITHOUT RUNNING TESTS
-//check.dependsOn.remove(test)
+check.dependsOn.remove(test)

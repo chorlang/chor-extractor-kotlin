@@ -704,10 +704,10 @@ class NetworkExtraction {
         hashesMap.compute(hash, { key, value ->
             if (value == null) {
                 val array = ArrayList<ConcreteNode>()
-                array.add(newNode)
+                assert(array.add(newNode))
                 array
             } else {
-                value.add(newNode)
+                assert(value.add(newNode))
                 value
             }
         })

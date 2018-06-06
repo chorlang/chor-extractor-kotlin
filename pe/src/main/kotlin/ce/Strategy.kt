@@ -6,7 +6,7 @@ import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 
 enum class Strategy {
-    SelectFirst {
+    SelectionFirst {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
 
@@ -72,7 +72,7 @@ enum class Strategy {
             return ret
         }
     },
-    UnmarkedThenSelect() {
+    UnmarkedThenSelection() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
@@ -175,7 +175,7 @@ enum class Strategy {
 
     Default() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
-            return SelectFirst.sort(marking, net)
+            return SelectionFirst.sort(marking, net)
         }
     };
 
