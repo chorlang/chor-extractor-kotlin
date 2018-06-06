@@ -526,7 +526,7 @@ class BenchmarkTest {
                 assertEquals(expected, actual)
             }
 
-            Strategy.UnmarkedFirst, Strategy.UnmarkedThenSelection, Strategy.UnmarkedThenCondition -> {
+            Strategy.UnmarkedFirst, Strategy.UnmarkedThenSelection, Strategy.UnmarkedThenCondition, Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
                 //"If it doesn't fail, we are happy "
             }
         }
