@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 
 
-open class BenchTest{
+open class RandomFirst{
     @Benchmark
     fun runningExample(){
         val test = "a {def X " +
@@ -32,7 +32,7 @@ open class BenchTest{
                 "d {def X " +
                     "{c?; a?; X} " +
                     "main {X}}"
-        val args = arrayListOf("-c", test)
+        val args = arrayListOf("-c", test, "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -48,7 +48,7 @@ open class BenchTest{
                 "c2 {def X {d2!<busy>; a2&{win: a2!<msg>; X, lose: a2!<msg>; X}} main {X}} |" +
                 "d2 {def X {c2?; a2?; X} main {X}}"
 
-        val args = arrayListOf("-c", test)
+        val args = arrayListOf("-c", test, "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -58,7 +58,7 @@ open class BenchTest{
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
-        val args = arrayListOf("-c", test)
+        val args = arrayListOf("-c", test, "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -70,7 +70,7 @@ open class BenchTest{
                         "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
-        val args = arrayListOf("-c", test)
+        val args = arrayListOf("-c", test, "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -81,7 +81,7 @@ open class BenchTest{
                         "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
                         "c { main {a?; stop}}"
 
-        val args = arrayListOf("-c", test, "-l", "c")
+        val args = arrayListOf("-c", test, "-l", "c", "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -96,7 +96,7 @@ open class BenchTest{
                         "f { def Z {d?; Z} main {Z}}"
 
 
-        val args = arrayListOf("-c", test, "-l", "c, f")
+        val args = arrayListOf("-c", test, "-l", "c, f", "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -112,7 +112,7 @@ open class BenchTest{
                         "t{def X{hs?; hs!<fwdOk>; es!<helpReq>; X} main{X}} | " +
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
-        val args = arrayListOf("-c", test, "-l", "as, t, es")
+        val args = arrayListOf("-c", test, "-l", "as, t, es", "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -132,7 +132,7 @@ open class BenchTest{
                         "t2{def X{hs2?; hs2!<fwdOk>; es2!<helpReq>; X} main{X}} | " +
                         "es2{def X{t2?; p2!<provideService>; X} main{X}}"
 
-        val args = arrayListOf("-c", test, "-l", "as1, t1, es1, as2, t2, es2")
+        val args = arrayListOf("-c", test, "-l", "as1, t1, es1, as2, t2, es2", "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -153,7 +153,7 @@ open class BenchTest{
                         "main {X}}"
 
 
-        val args = arrayListOf("-c", test)
+        val args = arrayListOf("-c", test, "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -186,7 +186,7 @@ open class BenchTest{
                         "main {X}}"
 
 
-        val args = arrayListOf("-c", test)
+        val args = arrayListOf("-c", test, "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -209,7 +209,7 @@ open class BenchTest{
                         "def Y {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Y}}"
 
-        val args = arrayListOf("-c", test, "-l", "retailer")
+        val args = arrayListOf("-c", test, "-l", "retailer", "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -237,7 +237,7 @@ open class BenchTest{
                         "def Z {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Z}}"
 
-        val args = arrayListOf("-c", test, "-l", "retailer")
+        val args = arrayListOf("-c", test, "-l", "retailer", "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -259,7 +259,7 @@ open class BenchTest{
                         "def X{appli?; X} " +
                         "main {X}}"
 
-        val args = arrayListOf("-c", test, "-l", "db, int")
+        val args = arrayListOf("-c", test, "-l", "db, int", "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -275,7 +275,7 @@ open class BenchTest{
                         "int2{def X{cl2?; appli2!<setup>; cl2!<syncAccess>; cl2?; X} main {X}} | " +
                         "db2{def X{appli2?; X} main {X}}"
 
-        val args = arrayListOf("-c", test, "-l", "db1, int1, db2, int2")
+        val args = arrayListOf("-c", test, "-l", "db1, int1, db2, int2", "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 
@@ -308,65 +308,7 @@ open class BenchTest{
                         "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
                         "main{X}}"
 
-        val args = arrayListOf("-c", test, "-l", "coop, bank")
-        ChoreographyExtraction.main(args)
-    }
-
-    @Benchmark
-    fun sanitaryAgency2x(){
-        val test =
-                "citizen{" +
-                        "def X{" +
-                        "sanagency!<request>; sanagency?; sanagency!<provInf>; sanagency&{" +
-                        "refusal: X, " +
-                        "acceptance: coop?; bank!<paymentPrivateFee>; X}} " +
-                        "main{X}" +
-                        "} | " +
-                        "sanagency{" +
-                        "def X{" +
-                        "citizen?; citizen!<askInfo>; citizen?; if infoProved " +
-                        "then citizen+acceptance; coop!<req>; bank!<paymentPublicFee>; bank?; X " +
-                        "else citizen+refusal; X }" +
-                        "main {X}} | " +
-                        "coop{def X{" +
-                        "sanagency?; " +
-                        "if fine " +
-                        "then citizen!<provT>; bank+recMoneyPossT; bank?; X " +
-                        "else citizen!<provM>; bank+recMoneyPossM; bank?; X} " +
-                        "main{X}} | " +
-                        "bank{" +
-                        "def X{ coop&{" +
-                        "recMoneyPossT: coop!<paymentT>; Y, " +
-                        "recMoneyPossM: coop!<paymentM>; Y}} " +
-                        "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
-                        "main{X}}" +
-                        " | citizen2{" +
-                        "def X{" +
-                        "sanagency2!<request>; sanagency2?; sanagency2!<provInf>; sanagency2&{" +
-                        "refusal: X, " +
-                        "acceptance: coop2?; bank2!<paymentPrivateFee>; X}} " +
-                        "main{X}" +
-                        "} | " +
-                        "sanagency2{" +
-                        "def X{" +
-                        "citizen2?; citizen2!<askInfo>; citizen2?; if infoProved " +
-                        "then citizen2+acceptance; coop2!<req>; bank2!<paymentPublicFee>; bank2?; X " +
-                        "else citizen2+refusal; X }" +
-                        "main {X}} | " +
-                        "coop2{def X{" +
-                        "sanagency2?; " +
-                        "if fine " +
-                        "then citizen2!<provT>; bank2+recMoneyPossT; bank2?; X " +
-                        "else citizen2!<provM>; bank2+recMoneyPossM; bank2?; X} " +
-                        "main{X}} | " +
-                        "bank2{" +
-                        "def X{ coop2&{" +
-                        "recMoneyPossT: coop2!<paymentT>; Y, " +
-                        "recMoneyPossM: coop2!<paymentM>; Y}} " +
-                        "def Y{citizen2?; sanagency2?; sanagency2!<done>; X} " +
-                        "main{X}}"
-
-        val args = arrayListOf("-c", test, "-l", "coop, bank, coop2, bank2")
+        val args = arrayListOf("-c", test, "-l", "coop, bank", "-s", "RandomFirst")
         ChoreographyExtraction.main(args)
     }
 }

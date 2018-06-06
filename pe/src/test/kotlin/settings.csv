@@ -1,3 +1,8 @@
 Strategy, DebugMode
-
 SelectionFirst, true
+ConditionFirst, true
+UnmarkedFirst, true
+UnmarkedThenSelection, true
+UnmarkedThenCondition, true
+RandomProcess, true
+UnmarkedThenRandom, true
