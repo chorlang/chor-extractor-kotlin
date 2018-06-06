@@ -1,6 +1,7 @@
 package ce
 
 import ast.sp.nodes.*
+import java.lang.Integer.min
 import java.util.*
 import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
@@ -50,7 +51,19 @@ enum class Strategy {
     LengthFirst() {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
-            //ret.entries.sortedBy
+            val sortedProcessesist = net.entries.sortedBy { 0 - it.value.main.toString().length }
+            sortedProcessesist.forEach { ret[it.key] = it.value }
+
+            return ret
+        }
+    },
+    ShortestFirst() {
+        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+            val ret = LinkedHashMap<String, ProcessTerm>()
+            val sortedProcessesist = net.entries.sortedBy { it.value.main.toString().length }
+            sortedProcessesist.forEach { ret[it.key] = it.value }
+
+            return ret
         }
     },
     UnmarkedThenRandom() {

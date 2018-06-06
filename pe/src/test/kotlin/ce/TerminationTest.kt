@@ -28,7 +28,7 @@ class TerminationTest {
         assertEquals(expected, actual)
     }
 
-    @Test
+    /*@Test
     fun tst3(){
         val test = "p { def X{stop} main{q!<e>; X}} | q {def X {stop} main{p?; X}}"
         val args = arrayListOf("-c", test)
@@ -37,5 +37,5 @@ class TerminationTest {
         val expected = "main {stop}"
 
         assertEquals(expected, actual)
-    }
+    }*/
 }
