@@ -23,6 +23,7 @@ class NetworkExtraction {
     private val log = LogManager.getLogger()
     private var nodeIdCounter = 0
     private val hashesMap = HashMap<Hash, ArrayList<ConcreteNode>>()
+    private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processes used in bad loop calculations
     private var badLoopCnt = 0
 
     //region Main
@@ -71,14 +72,15 @@ class NetworkExtraction {
 
         //region Try to find a single-action communication
         for (processPair in processes) {
-
             //if the processPair has procedure invocation on top, try to unfold it
             if (unfold(processPair.key, processes[processPair.key]!!)) unfoldedProcesses.add(processPair.key)
 
-            //region Try to find communication or selelction
-            val findCommunication = findCommunication(processPair.key, processes)
+            val processesCopy = processesCopy(processes)
+
+            //region Try to find interaction
+            val findCommunication = getCommunication(processesCopy, processPair.key)
             if (findCommunication != null) {
-                val (targetNetwork, label) = getCommunication(processes, findCommunication)
+                val (targetNetwork, label) = findCommunication
 
                 //remove processes that were unfoldedProcesses but don't participate in the current communication
                 val targetMarking = currentNode.marking.clone() as Marking
@@ -111,7 +113,7 @@ class NetworkExtraction {
                 else {
                     if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
                     else {
-                        cleanNode(findCommunication, processes, currentNode)
+                        //cleanNode(findCommunication, processes, currentNode)
                         unfoldedProcesses.forEach { unfold(it, processes[it]!!) }
                     }
                 }
@@ -119,10 +121,9 @@ class NetworkExtraction {
             //endregion
 
             //region Try to find condition
-            val processesCopy = processesCopy(processes)
+            //val processesCopy = processesCopy(processes)
             val findCondition = getCondition(processesCopy)
             if (findCondition != null) {
-
                 val (targetNetworkThen, labelThen, targetNetworkElse, labelElse) = findCondition
                 val targetMarking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
 
@@ -157,9 +158,7 @@ class NetworkExtraction {
                     assert(addNodeToGraph(currentNode, nodeThen, labelThen, graph))
 
                     if (!buildGraph(nodeThen, graph, strategy)) {
-                        graph.removeEdge(currentNode, nodeThen)
-                        graph.removeVertex(nodeThen)
-                        removeFromHashMap(nodeThen)
+                        removeNodeFromGraph(graph, currentNode, nodeThen)
                         continue
                     }
                 }
@@ -184,10 +183,8 @@ class NetworkExtraction {
                             removeFromHashMap(nodeThen)
                         }
                         graph.removeEdge(currentNode, nodeThen)
-                        graph.removeEdge(currentNode, nodeElse)
 
-                        graph.removeVertex(nodeElse)
-                        removeFromHashMap(nodeElse)
+                        removeNodeFromGraph(graph, currentNode, nodeElse)
                         continue
                     }
                 }
@@ -220,42 +217,40 @@ class NetworkExtraction {
         for (p in processes) {
             val processesCopy = processesCopy(processes)
 
-            //val tmp_node = node.copy()
-            //val tmp_node_net = tmp_node.processes.processes
-
             val actions = ArrayList<InteractionLabel>()
             val waiting = ArrayList<InteractionLabel>()
-            val b = createInteractionLabel(p.key, processesCopy)
-            if (b != null) waiting.add(b)
+            val interactionLabel = createInteractionLabel(p.key, processesCopy)
+            if (interactionLabel != null) waiting.add(interactionLabel)
 
 
             val receivers = ArrayList<String>()
             while (!waiting.isEmpty()) {
-                val lbl = waiting.first()
-                waiting.remove(lbl)
+                val label = waiting.first()
+                waiting.remove(label)
+
                 //multicom can't contain actions with the same receiver
-                if (receivers.contains(lbl.rcv)) throw MulticomException("multicom can't contain actions with the same receiver")
-                actions.add(lbl)
-                receivers.add(lbl.rcv)
+                if (receivers.contains(label.rcv)) throw MulticomException("multicom can't contain actions with the same receiver")
+                actions.add(label)
+                receivers.add(label.rcv)
 
-                val receiver = lbl.rcv
-                val sender = lbl.snd
+                val receiver = label.rcv
+                val sender = label.snd
 
-                val rcv_pb = processesCopy[receiver] //val rcv_pb = tmp_node_net[receiverTerm]
+                val receiverProcessTerm = processesCopy[receiver] //val receiverProcessTerm = tmp_node_net[receiverTerm]
 
                 val marking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
 
                 //fill the list of waiting actions with sending/selection actions from the receiverTerm process behaviour if it is in correct format
                 //return the new receiverTerm pb if success and null otherwise. waiting list is populated implicitly
-                val new_rcv_b = fillWaiting(waiting, actions, lbl, rcv_pb!!.main, processesCopy[receiver]!!.procedures, marking)
-                if (new_rcv_b != null) {
-                    val snd_pb = processesCopy[sender] //val snd_pb = tmp_node_net[senderTerm]
-                    val snd_pb_main = snd_pb!!.main
+                val newReceiverBehaviour = fillWaiting(waiting, actions, label, receiverProcessTerm!!.main, processesCopy[receiver]!!.procedures, marking)
+                if (newReceiverBehaviour != null) {
+                    val senderProcessTerm = processesCopy[sender]
+                    val senderBehaviour = senderProcessTerm!!.main
 
-                    processesCopy.replace(receiver, ProcessTerm(rcv_pb.procedures, new_rcv_b)) // tmp_node_net.replace(receiverTerm, ProcessTerm(rcv_pb.procedures, new_rcv_b))
-                    val snd_cont = if (snd_pb_main is SendingSP) snd_pb_main.continuation else if (snd_pb_main is SelectionSP) snd_pb_main.continuation else throw UnsupportedOperationException()
+                    processesCopy.replace(receiver, ProcessTerm(receiverProcessTerm.procedures, newReceiverBehaviour))
+                    val senderBehaviourContinuation = if (senderBehaviour is SendingSP) senderBehaviour.continuation else if (senderBehaviour is SelectionSP) senderBehaviour.continuation else throw UnsupportedOperationException()
 
-                    processesCopy.replace(sender, ProcessTerm(snd_pb.procedures, snd_cont)) // tmp_node_net.replace(senderTerm, ProcessTerm(snd_pb.procedures, snd_cont))
+                    processesCopy.replace(sender, ProcessTerm(senderProcessTerm.procedures, senderBehaviourContinuation))
                 }
             }
 
@@ -272,7 +267,7 @@ class NetworkExtraction {
                     targetMarking.put(it.snd, true)
                     unfoldedProcesses.remove(it.snd)
                 }
-                unfoldedProcesses.forEach { processesCopy[it]?.main = currentNode.network.processes[it]?.main?.copy()!! } // unfoldedProcesses.forEach { tmp_node_net[it]?.main = currentNode.processes.processes[it]?.main?.copy()!! }
+                unfoldedProcesses.forEach { processesCopy[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
 
                 //if all procedures were visited, flip all markings
                 if (targetMarking.values.all { it }) {
@@ -286,10 +281,9 @@ class NetworkExtraction {
                 val existingNodes = hashesMap[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
                 val existingNode = existingNodes?.firstOrNull { it.network.equals(targetNetwork) && it.marking.equals(targetMarking) }
 
-                if (existingNode == null) { //
+                if (existingNode == null) {
                     val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
                     assert(addNodeToGraph(currentNode, newNode, label, graph))
-                    //log.debug(label)
                     return if (buildGraph(newNode, graph, strategy)) true else continue
                 } else {
                     if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
@@ -298,71 +292,10 @@ class NetworkExtraction {
 
         }
         //endregion
+
         //region Throw exception, if there is no possible actions
         throw NoPossibleActionsException("No possible actions at node" + currentNode.toString())
         //endregion
-    }
-
-    private fun processesCopy(processes: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
-        val processesCopy = HashMap<String, ProcessTerm>()
-        processes.forEach { t, u -> processesCopy[t] = u.copy() }
-        return processesCopy
-    }
-
-    data class AddingConditionResult(var thenNodeAdding: Boolean?, var thenEdgeAdding: Boolean?, var elseNodeAdding: Boolean?, var elseEdgeAdding: Boolean?) {
-        fun toStringMask(): String {
-            return stringify(thenNodeAdding) + stringify(thenEdgeAdding) + stringify(elseNodeAdding) + stringify(elseEdgeAdding)
-        }
-
-        private fun stringify(b: Boolean?): String = if (b == null) "n" else if (b) "1" else "0"
-
-
-        fun isResultFine(): Boolean {
-            val sm = this.toStringMask()
-            return ((sm == "1n1n") || (sm == "n11n") || (sm == "1nn1") || (sm == "n1n1"))
-        }
-
-        constructor() : this(null, null, null, null)
-    }
-
-    private fun fillWaiting(waiting: ArrayList<InteractionLabel>, actions: ArrayList<InteractionLabel>, lbl: InteractionLabel, rcv_pb_main: IBehaviour, rcv_proc: HashMap<String, IBehaviour>, marking: HashMap<ProcessName, Boolean>): IBehaviour? {
-        when (rcv_pb_main) {
-            is SendingSP -> {
-                //look into continuation to be sure that it is in the form a1;...;ak;r?;B where each ai is either the sending of a value or a label selection
-                val snd_cont = fillWaiting(waiting, actions, lbl, rcv_pb_main.continuation, rcv_proc, marking)
-
-                if (snd_cont != null) {
-                    val new_lbl = SendingLabel(lbl.rcv, rcv_pb_main.receiver, rcv_pb_main.expression)
-                    if (!actions.contains(new_lbl)) waiting.add(new_lbl)
-                    return SendingSP(snd_cont, new_lbl.rcv, new_lbl.expr)
-                } else {
-                    return null
-                }
-            }
-            is SelectionSP -> {
-                //look into continuation to be sure that it is in the form a1;...;ak;r?;B where each ai is either the sending of a value or a label selection
-                val sel_cont = fillWaiting(waiting, actions, lbl, rcv_pb_main.continuation, rcv_proc, marking)
-
-                if (sel_cont != null) {
-                    val new_lbl = SelectionLabel(lbl.rcv, rcv_pb_main.receiver, rcv_pb_main.expression)
-                    if (!actions.contains(new_lbl)) waiting.add(new_lbl)
-                    return SelectionSP(sel_cont, lbl.rcv, lbl.expr)
-                }
-            }
-            is ReceiveSP -> if (lbl.snd == rcv_pb_main.sender && lbl is SendingLabel) return rcv_pb_main.continuation
-
-            is OfferingSP -> if (lbl.snd == rcv_pb_main.sender && lbl is SelectionLabel) return rcv_pb_main.branches[lbl.label]!!
-
-            is ProcedureInvocationSP -> {
-                val new_pb = ProcessTerm(rcv_proc, rcv_pb_main)
-                // if (!marking.get(lbl.rcv)!!) {
-                unfold(lbl.rcv, new_pb)
-                marking[lbl.rcv] = true
-                //}
-                return fillWaiting(waiting, actions, lbl, new_pb.main, rcv_proc, marking)
-            }
-        }
-        return null
     }
 
     private fun unrollGraph(root: ConcreteNode, graph: DefaultDirectedGraph<Node, ExtractionLabel>): ArrayList<FakeNode> {
@@ -479,8 +412,8 @@ class NetworkExtraction {
         }
         return Termination()
     }
-
     //endregion
+
     //region Unfold
     private fun unfold(p: String, pb: ProcessTerm): Boolean {
         val pb_main = pb.main
@@ -505,7 +438,6 @@ class NetworkExtraction {
             marking[key] = processes[key]!!.main is TerminationSP || livelocked.contains(key)
         }
     }
-
     //endregion
 
     //region Termination checks
@@ -540,92 +472,74 @@ class NetworkExtraction {
     private fun isTerminated(p: ProcessTerm): Boolean {
         return p.main is TerminationSP
     }
-
     //endregion
-    //region Creating interaction and condition nodes
-    private fun findCommunication(processName: String, processMap: ProcessMap): GetCommunication? {
-        val processTerm = processMap[processName]
 
+    //region Creating interaction and condition nodes
+    private fun getCommunication(processes: ProcessMap, processName: String): GraphNode? {
+        val processTerm = processes[processName]
         val mainBehaviour = processTerm?.main
+
         when (mainBehaviour) {
             is SendingSP -> {
-                val receive = processMap[mainBehaviour.process]
-                if (receive != null && receive.main is ReceiveSP && (receive.main as ReceiveSP).sender == processName) {
-                    return SendReceive(processTerm, receive)
+                val receiverTerm = processes[mainBehaviour.process]
+                if (receiverTerm != null && receiverTerm.main is ReceiveSP && (receiverTerm.main as ReceiveSP).sender == processName) {
+                    return consumeCommunication(processes, processTerm, receiverTerm)
                 }
             }
-
             is ReceiveSP -> {
-                val send = processMap[(processTerm.main as ReceiveSP).process]
-                if (send != null && send.main is SendingSP && (send.main as SendingSP).receiver == processName) {
-                    return SendReceive(send, processTerm)
+                val senderTerm = processes[(processTerm.main as ReceiveSP).process]
+                if (senderTerm != null && senderTerm.main is SendingSP && (senderTerm.main as SendingSP).receiver == processName) {
+                    return consumeCommunication(processes, senderTerm, processTerm)
                 }
             }
-
             is SelectionSP -> {
-                val offer = processMap[mainBehaviour.process]
-                if (offer != null && offer.main is OfferingSP && (offer.main as OfferingSP).sender == processName) {
-                    return SelectOffer(processTerm, offer)
+                val offerTerm = processes[mainBehaviour.process]
+                if (offerTerm != null && offerTerm.main is OfferingSP && (offerTerm.main as OfferingSP).sender == processName) {
+                    return consumeSelection(processes, offerTerm, processTerm)
                 }
             }
-
             is OfferingSP -> {
-                val select = processMap[mainBehaviour.process]
-                if (select != null && select.main is SelectionSP && (select.main as SelectionSP).receiver == processName) {
-                    return SelectOffer(select, processTerm)
+                val selectTerm = processes[mainBehaviour.process]
+                if (selectTerm != null && selectTerm.main is SelectionSP && (selectTerm.main as SelectionSP).receiver == processName) {
+                    return consumeSelection(processes, processTerm, selectTerm)
                 }
             }
-
         }
 
         return null
     }
 
-    private fun getCommunication(processes: ProcessMap, findComm: GetCommunication): GraphNode {
-        when (findComm) {
-            is SendReceive -> {
-                val newProcesses = ProcessMap()
-                processes.forEach { key, value -> newProcesses.put(key, value.copy()) }
+    private fun consumeSelection(processes: ProcessMap, offerTerm: ProcessTerm, selectTerm: ProcessTerm): GraphNode {
+        val newProcesses = ProcessMap()
+        processes.forEach { key, value -> newProcesses[key] = value.copy() }
 
-                val senderTerm = findComm.senderTerm
-                val receiverTerm = findComm.receiverTerm
+        val selectionProcess = (offerTerm.main as OfferingSP).process
+        val offeringProcess = (selectTerm.main as SelectionSP).process
 
-                val receiverName = (senderTerm.main as SendingSP).receiver
-                val senderName = (receiverTerm.main as ReceiveSP).sender
+        val offeringBehavior = (offerTerm.main as OfferingSP).branches[(selectTerm.main as SelectionSP).expression]
+                ?: throw Exception("Trying to senderTerm the label that wasn't offered")
 
-                newProcesses.replace(receiverName, ProcessTerm(receiverTerm.procedures, (receiverTerm.main as ReceiveSP).continuation))
-                newProcesses.replace(senderName, ProcessTerm(senderTerm.procedures, (senderTerm.main as SendingSP).continuation))
+        newProcesses.replace(offeringProcess, ProcessTerm(offerTerm.procedures, offeringBehavior))
+        newProcesses.replace(selectionProcess, ProcessTerm(selectTerm.procedures, (selectTerm.main as SelectionSP).continuation))
 
-                val label = SendingLabel(senderName, receiverName, (senderTerm.main as SendingSP).expression)
+        val label = SelectionLabel(offeringProcess, selectionProcess, (selectTerm.main as SelectionSP).expression)
 
-                return GraphNode(Network(newProcesses), label)
-            }
-
-            is SelectOffer -> {
-                val newProcesses = HashMap<String, ProcessTerm>(processes)
-
-                val selection = findComm.senderTerm
-                val offering = findComm.receiverTerm
-
-                val selectionProcess = (offering.main as OfferingSP).process
-                val offeringProcess = (selection.main as SelectionSP).process
-
-                val offeringBehavior = (offering.main as OfferingSP).branches[(selection.main as SelectionSP).expression]
-                        ?: throw Exception("Trying to senderTerm the label that wasn't offered")
-
-                newProcesses.replace(offeringProcess, ProcessTerm(offering.procedures, offeringBehavior))
-                newProcesses.replace(selectionProcess, ProcessTerm(selection.procedures, (selection.main as SelectionSP).continuation))
-
-                val label = SelectionLabel(offeringProcess, selectionProcess, (selection.main as SelectionSP).expression)
-
-                return GraphNode(Network(newProcesses), label)
-            }
-
-            else -> throw Exception("FindComm object doesn't belong to SendReceive or SelectOffer types")
-        }
+        return GraphNode(Network(newProcesses), label)
     }
 
-    data class ResultCondition(val tmp1: Network, val lb1: ThenLabel, val tmp2: Network, val lbl2: ElseLabel)
+    private fun consumeCommunication(processes: ProcessMap, senderTerm: ProcessTerm, receiverTerm: ProcessTerm): GraphNode {
+        val newProcesses = ProcessMap()
+        processes.forEach { key, value -> newProcesses[key] = value.copy() }
+        val receiverName = (senderTerm.main as SendingSP).receiver
+        val senderName = (receiverTerm.main as ReceiveSP).sender
+
+        newProcesses.replace(receiverName, ProcessTerm(receiverTerm.procedures, (receiverTerm.main as ReceiveSP).continuation))
+        newProcesses.replace(senderName, ProcessTerm(senderTerm.procedures, (senderTerm.main as SendingSP).continuation))
+
+        val label = SendingLabel(senderName, receiverName, (senderTerm.main as SendingSP).expression)
+
+        return GraphNode(Network(newProcesses), label)
+    }
 
     private fun getCondition(n: ProcessMap): ResultCondition? {
         val c = n.entries.stream().filter { it.value.main is ConditionSP }.findFirst()
@@ -645,9 +559,9 @@ class NetworkExtraction {
         }
         return null
     }
-
     //endregion
-    //region Manipulations with nodes
+
+    //region Manipulations with nodes in the graph and auxiliary data structures
     private fun createNewNode(targetNetwork: Network, label: ExtractionLabel, predecessorNode: ConcreteNode, marking: HashMap<ProcessName, Boolean>): ConcreteNode {
         val str = when (label) {
             is ThenLabel -> predecessorNode.choicePath + "0"
@@ -701,6 +615,12 @@ class NetworkExtraction {
         } else false
     }
 
+    private fun removeNodeFromGraph(graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, currentNode: ConcreteNode, removingNode: ConcreteNode) {
+        graph.removeEdge(currentNode, removingNode)
+        graph.removeVertex(removingNode)
+        removeFromHashMap(removingNode)
+    }
+
     private fun addEdgeToGraph(nn: ConcreteNode, newnode: ConcreteNode, lbl: ExtractionLabel, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
         //val exstnode = checkPrefix(newnode)
         if (checkPrefix(newnode)) {
@@ -714,23 +634,8 @@ class NetworkExtraction {
         badLoopCnt++
         return false
     }
-
-    private fun cleanNode(findComm: GetCommunication, n: ProcessMap, nn: ConcreteNode) {
-        val first = if (findComm is SendReceive) findComm.senderTerm else (findComm as SelectOffer).senderTerm
-        val second = if (findComm is SendReceive) findComm.receiverTerm else (findComm as SelectOffer).receiverTerm
-
-        val prk1 = (first.main as ActionSP).process
-        val prb1new = nn.network.processes.get(prk1)
-        val prb1 = n[prk1]
-        val prk2 = (second.main as ActionSP).process
-        val prb2new = nn.network.processes.get(prk2)
-        val prb2 = n[prk2]
-
-        prb1?.main = prb1new?.main?.copy()!!
-        prb2?.main = prb2new?.main?.copy()!!
-    }
-
     //endregion
+
     //region Checkloop and choicePaths manipulations
     private fun checkLoop(source_node: ConcreteNode, target_node: ConcreteNode, lbl: ExtractionLabel, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
         if (lbl.flipped) return true
@@ -777,7 +682,6 @@ class NetworkExtraction {
         return false
     }
 
-    private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processes used in bad loop calculations
     private fun removeFromChoicePathMap(node: ConcreteNode) {
         val nodesList = choicePaths[node.choicePath]
         if (nodesList != null) {
@@ -802,17 +706,18 @@ class NetworkExtraction {
     }
 
     //endregion
+
     //region Exceptions
     class NoPossibleActionsException(override val message: String) : Exception(message)
 
     class MulticomException(override val message: String) : Exception(message)
     //endregion
+
     //region Data classes and interfaces
     data class LabelTarget(val lbl: ExtractionLabel, val target: Node)
 
-    interface GetCommunication
-    data class SendReceive(val senderTerm: ProcessTerm, val receiverTerm: ProcessTerm) : GetCommunication
-    data class SelectOffer(val senderTerm: ProcessTerm, val receiverTerm: ProcessTerm) : GetCommunication
+    data class ResultCondition(val tmp1: Network, val lb1: ThenLabel, val tmp2: Network, val lbl2: ElseLabel)
+
     interface Node
     data class ConcreteNode(val network: Network, val choicePath: String, val id: Int, val bad: ArrayList<Int>, val marking: HashMap<ProcessName, Boolean>) : Node {
         fun copy(): ConcreteNode {
@@ -827,15 +732,11 @@ class NetworkExtraction {
         fun equals(other: ConcreteNode): Boolean {
             return network.equals(other.network) && choicePath == other.choicePath && bad.equals(other.bad) && marking.equals(other.marking)
         }
-        //override fun toString(): String = ""
     }
-
-    //    data class GraphNode(val target: Network, val label: ExtractionLabel)
     data class FakeNode(val procedureName: String, val source: Node) : Node
-
     //endregion
-    //region Utils
 
+    //region Utils
     private fun copyAndSortProcesses(node: ConcreteNode, strategy: Strategy): HashMap<String, ProcessTerm> {
         val net = HashMap<String, ProcessTerm>()
         node.network.processes.forEach { k, v -> net.put(k, v.copy()) }
@@ -855,19 +756,58 @@ class NetworkExtraction {
         }
     }
 
-    /*private fun addToHashesMap(node: ConcreteNode) {
-        val hash = hash(node.network, node.marking)
-        val list = ArrayList<ConcreteNode>()
-        list.add(node)
-        hashesMap.put(hash, list)
-    }*/
-
     private fun nextNodeId(): Int {
         return nodeIdCounter++
     }
 
     private fun hash(n: Network, marking: Marking): Int {
         return Pair(n, marking).hashCode()
+    }
+
+    private fun processesCopy(processes: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        val processesCopy = HashMap<String, ProcessTerm>()
+        processes.forEach { t, u -> processesCopy[t] = u.copy() }
+        return processesCopy
+    }
+
+    private fun fillWaiting(waiting: ArrayList<InteractionLabel>, actions: ArrayList<InteractionLabel>, lbl: InteractionLabel, rcv_pb_main: IBehaviour, rcv_proc: HashMap<String, IBehaviour>, marking: HashMap<ProcessName, Boolean>): IBehaviour? {
+        when (rcv_pb_main) {
+            is SendingSP -> {
+                //look into continuation to be sure that it is in the form a1;...;ak;r?;B where each ai is either the sending of a value or a label selection
+                val snd_cont = fillWaiting(waiting, actions, lbl, rcv_pb_main.continuation, rcv_proc, marking)
+
+                if (snd_cont != null) {
+                    val new_lbl = SendingLabel(lbl.rcv, rcv_pb_main.receiver, rcv_pb_main.expression)
+                    if (!actions.contains(new_lbl)) waiting.add(new_lbl)
+                    return SendingSP(snd_cont, new_lbl.rcv, new_lbl.expr)
+                } else {
+                    return null
+                }
+            }
+            is SelectionSP -> {
+                //look into continuation to be sure that it is in the form a1;...;ak;r?;B where each ai is either the sending of a value or a label selection
+                val sel_cont = fillWaiting(waiting, actions, lbl, rcv_pb_main.continuation, rcv_proc, marking)
+
+                if (sel_cont != null) {
+                    val new_lbl = SelectionLabel(lbl.rcv, rcv_pb_main.receiver, rcv_pb_main.expression)
+                    if (!actions.contains(new_lbl)) waiting.add(new_lbl)
+                    return SelectionSP(sel_cont, lbl.rcv, lbl.expr)
+                }
+            }
+            is ReceiveSP -> if (lbl.snd == rcv_pb_main.sender && lbl is SendingLabel) return rcv_pb_main.continuation
+
+            is OfferingSP -> if (lbl.snd == rcv_pb_main.sender && lbl is SelectionLabel) return rcv_pb_main.branches[lbl.label]!!
+
+            is ProcedureInvocationSP -> {
+                val new_pb = ProcessTerm(rcv_proc, rcv_pb_main)
+                // if (!marking.get(lbl.rcv)!!) {
+                unfold(lbl.rcv, new_pb)
+                marking[lbl.rcv] = true
+                //}
+                return fillWaiting(waiting, actions, lbl, new_pb.main, rcv_proc, marking)
+            }
+        }
+        return null
     }
     //endregion
 }
