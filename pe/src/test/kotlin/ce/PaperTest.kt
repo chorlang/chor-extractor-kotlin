@@ -30,7 +30,7 @@ class PaperTest {
         val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { p.e1->q; r.e2->s; X1 } main {X1}"
+        val expected = "def X1 { r.e2->s; p.e1->q; X1 } main {p.e1->q; X1}"
 
         assertEquals(expected, actual)
     }
