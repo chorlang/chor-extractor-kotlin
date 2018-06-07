@@ -85,9 +85,9 @@ class NetworkExtraction {
                 //remove processes that were unfoldedProcesses but don't participate in the current communication
                 val targetMarking = currentNode.marking.clone() as Marking
 
-                targetMarking.put(label.rcv, true)
+                targetMarking[label.rcv] = true
                 unfoldedProcesses.remove(label.rcv)
-                targetMarking.put(label.snd, true)
+                targetMarking[label.snd] = true
                 unfoldedProcesses.remove(label.snd)
 
                 // revert unfolding all processes not involved in the communication
@@ -107,14 +107,17 @@ class NetworkExtraction {
                 if (existingNode == null) { // || existingNodes.isEmpty()) {
                     val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
                     assert(addNodeToGraph(currentNode, newNode, label, graph))
-                    return if (buildGraph(newNode, graph, strategy)) true else continue
+                    return if (buildGraph(newNode, graph, strategy)) true else {
+                        removeNodeFromGraph(graph, currentNode, newNode)
+                        continue
+                    }
                 }
                 /* case 2 */
                 else {
                     if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
                     else {
                         //cleanNode(findCommunication, processes, currentNode)
-                        unfoldedProcesses.forEach { unfold(it, processes[it]!!) }
+                        unfoldedProcesses.forEach { unfold(it, processes[it]!!) } // Larisa will explain this
                     }
                 }
             }
@@ -179,13 +182,13 @@ class NetworkExtraction {
                     assert(addNodeToGraph(currentNode, nodeElse, labelElse, graph))
                     if (!buildGraph(nodeElse, graph, strategy)) {
                         if (existingNodeThen == null) {
-                            graph.removeVertex(nodeThen)
+                            graph.removeVertex(nodeThen) // Larisa: Why graph.removeVertex instead of removeNodefromGraph?
                             removeFromHashMap(nodeThen)
                         }
                         graph.removeEdge(currentNode, nodeThen)
 
                         removeNodeFromGraph(graph, currentNode, nodeElse)
-                        continue
+                        return false
                     }
                 }
                 /* case 8 */
@@ -409,6 +412,7 @@ class NetworkExtraction {
                     else -> throw Exception("Bad graph. Was waiting for conditional edges, but got unexpected type.")
                 }
             }
+            else -> throw Exception("Bad graph. A node has more than 2 outgoing edges.")
         }
         return Termination()
     }
@@ -628,7 +632,6 @@ class NetworkExtraction {
             if (l) {
                 graph.addEdge(nn, newnode, lbl)
                 return true
-
             } //else throw BadLoopException("Bad loop!")
         }
         badLoopCnt++
