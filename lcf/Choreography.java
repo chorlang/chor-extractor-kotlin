@@ -1,6 +1,7 @@
 import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Set;
+import java.util.ArrayList;
 
 /*
  * AST-like representation of choreographies.
@@ -133,6 +134,26 @@ public class Choreography {
 	for (ChoreographyNode p:procedures.values())
 	    result.addAll(UsedProcedures.run(p));
 	return result;
+    }
+
+    /*
+     * Checks whether a choreography has deadcode (procedures that are never used).
+     */
+    public boolean hasDeadCode() {
+	ArrayList<String> toInspect = new ArrayList<String>();
+	toInspect.add("main");
+	HashSet<String> used = new HashSet<String>();
+	used.add("main");
+	HashSet<String> done = new HashSet<String>();
+	while (!toInspect.isEmpty()) {
+	    //System.out.println("Inspecting "+toInspect.get(0));
+	    HashSet<String> newNames = UsedProcedures.run(procedures.get(toInspect.get(0)));
+	    done.add(toInspect.get(0));
+	    toInspect.addAll(newNames);
+	    toInspect.removeAll(done);
+	    used.addAll(newNames);
+	}
+	return (!used.equals(procedures.keySet()));
     }
 
     /*
