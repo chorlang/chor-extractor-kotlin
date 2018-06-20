@@ -78,12 +78,14 @@ public class ChoreographyGenerator {
 
 	// we generate procedure names as strings of uppercase letters
 	auxNames = new HashSet<String>();
-	bound = Math.toIntExact(Math.round(Math.ceil(Math.log(MAX_PROCEDURES)/Math.log(26))));
-	for (int i=0; i<MAX_PROCEDURES; i++) {
-	    String name = "";
-	    for (int j=0; j<bound; j++)
-		name += (char)(generator.nextInt(26)+65);
-	    auxNames.add(name);
+	if (MAX_PROCEDURES > 0) {
+	    bound = Math.toIntExact(Math.round(Math.ceil(Math.log(MAX_PROCEDURES)/Math.log(26))));
+	    for (int i=0; i<MAX_PROCEDURES; i++) {
+		String name = "";
+		for (int j=0; j<bound; j++)
+		    name += (char)(generator.nextInt(26)+65);
+		auxNames.add(name);
+	    }
 	}
 	this.procedureNames = (String[]) auxNames.toArray(new String[0]);
 	this.numProcedures = procedureNames.length;
@@ -105,19 +107,34 @@ public class ChoreographyGenerator {
 	Choreography c = new Choreography();
 
 	// control how the if statements are distributed among procedures
-	int numIfs = MAX_IFS;
-	int ifsNow = generator.nextInt(numIfs+1);
-	numIfs = numIfs - ifsNow;
-	// System.out.println("Using "+ifsNow+" ifs in main, "+numIfs+" remaining.");
-	c.addProcedure("main",generateBody(ifsNow));
+	int[] ifArray = new int[numProcedures+1];
+	for (int i=0; i<=numProcedures; i++)
+	    ifArray[i] = 0;
+	for (int i=0; i<MAX_IFS; i++)
+	    ifArray[generator.nextInt(numProcedures+1)]++;
 
+	c.addProcedure("main",generateBody(ifArray[0]));
+
+	int ifIndex = 1;
 	for (String name:procedureNames) {
-	    ifsNow = generator.nextInt(numIfs+1);
-	    numIfs = numIfs - ifsNow;
-	    // System.out.println("Using "+ifsNow+" ifs in "+name+", "+numIfs+" remaining.");
-	    c.addProcedure(name,generateBody(ifsNow));
+	    c.addProcedure(name,generateBody(ifArray[ifIndex]));
+	    ifIndex++;
 	}
 	return c;
+
+	// int numIfs = MAX_IFS;
+	// int ifsNow = generator.nextInt(numIfs+1);
+	// numIfs = numIfs - ifsNow;
+	// // System.out.println("Using "+ifsNow+" ifs in main, "+numIfs+" remaining.");
+	// c.addProcedure("main",generateBody(ifsNow));
+
+	// for (String name:procedureNames) {
+	//     ifsNow = generator.nextInt(numIfs+1);
+	//     numIfs = numIfs - ifsNow;
+	//     // System.out.println("Using "+ifsNow+" ifs in "+name+", "+numIfs+" remaining.");
+	//     c.addProcedure(name,generateBody(ifsNow));
+	// }
+	// return c;
     }
 
     /*
@@ -144,9 +161,11 @@ public class ChoreographyGenerator {
 	}
 
 	else {
-	    if (generator.nextDouble() < (numIfs + 0.0)/size) {
+	    if (generator.nextDouble()*size < numIfs) {
 		int thenSize = generator.nextInt(size+1);
-		int ifsThen = generator.nextInt(numIfs);
+		int ifsThen = Math.min(generator.nextInt(numIfs),thenSize); // ifsThen <= thenSize
+		if (numIfs-ifsThen > size-thenSize) // too many ifs on else branch
+		    ifsThen = numIfs+thenSize-size;
 		String decider = processNames[generator.nextInt(numProcesses)];
 		String condition = "c" + (++ifCounter);
 		// System.out.println("Splitting "+numIfs+" into "+ifsThen+" (then) and "+(numIfs-ifsThen-1)+" (else).");
