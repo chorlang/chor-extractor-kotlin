@@ -7,39 +7,39 @@ public class CommunicationNode implements ChoreographyNode {
     private ChoreographyNode nextAction;
 
     public CommunicationNode(String sender, String receiver, String message, ChoreographyNode nextAction) {
-	this.sender = sender;
-	this.receiver = receiver;
-	this.message = message;
-	this.nextAction = nextAction;
+        this.sender = sender;
+        this.receiver = receiver;
+        this.message = message;
+        this.nextAction = nextAction;
     }
 
     /*
      * Getters (and no setters).
      */
     public String getSender() {
-	return sender;
+        return sender;
     }
 
     public String getReceiver() {
-	return receiver;
+        return receiver;
     }
     public String getMessage() {
-	return message;
+        return message;
     }
 
     public ChoreographyNode getNextAction() {
-	return nextAction;
+        return nextAction;
     }
 
     /*
      * For implementing the visitor pattern.
      */
     public void accept(CNVisitor v) {
-	v.visit(this);
+        v.visit(this);
     }
 
     public String toString() {
-	return sender + "." + message + " -> " + receiver + "; " + nextAction.toString();
+        return sender + "." + message + " -> " + receiver + "; " + nextAction.toString();
     }
 
 }

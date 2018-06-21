@@ -8,7 +8,7 @@ public class UsedProcedures implements CNVisitor {
     private HashSet<String> calls;
 
     public UsedProcedures() {
-	calls = new HashSet<String>();
+        calls = new HashSet<String>();
     }
 
     /*
@@ -18,29 +18,29 @@ public class UsedProcedures implements CNVisitor {
     public void visit(TerminationNode n) {}
 
     public void visit(CommunicationNode n) {
-	n.getNextAction().accept(this);
+        n.getNextAction().accept(this);
     }
 
     public void visit(SelectionNode n) {
-	n.getNextAction().accept(this);
+        n.getNextAction().accept(this);
     }
 
     public void visit(ConditionalNode n) {
-	n.getThenAction().accept(this);
-	n.getElseAction().accept(this);
+        n.getThenAction().accept(this);
+        n.getElseAction().accept(this);
     }
 
     public void visit(CallNode n) {
-	calls.add(n.getProcedure());
+        calls.add(n.getProcedure());
     }
 
     /*
      * Method for running the algorithm.
      */
     public static HashSet<String> run(ChoreographyNode n) {
-	UsedProcedures runObject = new UsedProcedures();
-	n.accept(runObject);
-	return runObject.calls;
+        UsedProcedures runObject = new UsedProcedures();
+        n.accept(runObject);
+        return runObject.calls;
     }
 
 }

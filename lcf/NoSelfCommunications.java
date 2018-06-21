@@ -3,10 +3,10 @@
  */
 public class NoSelfCommunications implements CNVisitor {
 
-    private boolean noSelfies;
+    private boolean hasSelfies;
 
     public NoSelfCommunications() {
-	noSelfies = false;
+        hasSelfies = false;
     }
 
     /*
@@ -16,24 +16,24 @@ public class NoSelfCommunications implements CNVisitor {
     public void visit(TerminationNode n) {}
 
     public void visit(CommunicationNode n) {
-	if (n.getSender().equals(n.getReceiver())) {
-	    noSelfies = true;
-	    return;
-	}
-	n.getNextAction().accept(this);
+        if (n.getSender().equals(n.getReceiver())) {
+            hasSelfies = true;
+            return;
+        }
+        n.getNextAction().accept(this);
     }
 
     public void visit(SelectionNode n) {
-	if (n.getSender().equals(n.getReceiver())) {
-	    noSelfies = true;
-	    return;
-	}
-	n.getNextAction().accept(this);
+        if (n.getSender().equals(n.getReceiver())) {
+            hasSelfies = true;
+            return;
+        }
+        n.getNextAction().accept(this);
     }
 
     public void visit(ConditionalNode n) {
-	n.getThenAction().accept(this);
-	n.getElseAction().accept(this);
+        n.getThenAction().accept(this);
+        n.getElseAction().accept(this);
     }
 
     public void visit(CallNode n) {}
@@ -42,9 +42,9 @@ public class NoSelfCommunications implements CNVisitor {
      * Method for running the algorithm.
      */
     public static boolean run(ChoreographyNode n) {
-	NoSelfCommunications runObject = new NoSelfCommunications();
-	n.accept(runObject);
-	return runObject.noSelfies;
+        NoSelfCommunications runObject = new NoSelfCommunications();
+        n.accept(runObject);
+        return runObject.hasSelfies;
     }
 
 }

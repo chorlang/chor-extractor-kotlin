@@ -7,40 +7,40 @@ public class ConditionalNode implements ChoreographyNode {
     private ChoreographyNode thenAction, elseAction;
 
     public ConditionalNode(String decider, String condition, ChoreographyNode thenAction, ChoreographyNode elseAction) {
-	this.decider = decider;
-	this.condition = condition;
-	this.thenAction = thenAction;
-	this.elseAction = elseAction;
+        this.decider = decider;
+        this.condition = condition;
+        this.thenAction = thenAction;
+        this.elseAction = elseAction;
     }
 
     /*
      * Getters (and no setters).
      */
     public String getDecider() {
-	return decider;
+        return decider;
     }
 
     public String getCondition() {
-	return condition;
+        return condition;
     }
 
     public ChoreographyNode getThenAction() {
-	return thenAction;
+        return thenAction;
     }
 
     public ChoreographyNode getElseAction() {
-	return elseAction;
+        return elseAction;
     }
 
     /*
      * For implementing the visitor pattern.
      */
     public void accept(CNVisitor v) {
-	v.visit(this);
+        v.visit(this);
     }
 
     public String toString() {
-	return "if (" + decider + "." + condition + ") then (" + thenAction.toString() + ") else (" + elseAction.toString() + ")";
+        return "if " + decider + "." + condition + " then " + thenAction.toString() + " else " + elseAction.toString();
     }
 
 }
