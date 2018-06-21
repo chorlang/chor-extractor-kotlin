@@ -7,39 +7,39 @@ public class SelectionNode implements ChoreographyNode {
     private ChoreographyNode nextAction;
 
     public SelectionNode(String sender, String receiver, String label, ChoreographyNode nextAction) {
-	this.sender = sender;
-	this.receiver = receiver;
-	this.label = label;
-	this.nextAction = nextAction;
+        this.sender = sender;
+        this.receiver = receiver;
+        this.label = label;
+        this.nextAction = nextAction;
     }
 
     /*
      * Getters (and no setters).
      */
     public String getSender() {
-	return sender;
+        return sender;
     }
 
     public String getReceiver() {
-	return receiver;
+        return receiver;
     }
     public String getLabel() {
-	return label;
+        return label;
     }
 
     public ChoreographyNode getNextAction() {
-	return nextAction;
+        return nextAction;
     }
 
     /*
      * For implementing the visitor pattern.
      */
     public void accept(CNVisitor v) {
-	v.visit(this);
+        v.visit(this);
     }
 
     public String toString() {
-	return sender + " -> " + receiver + "[" + label + "]; " + nextAction.toString();
+        return sender + " -> " + receiver + "[" + label + "]; " + nextAction.toString();
     }
 
 }

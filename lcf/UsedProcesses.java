@@ -9,7 +9,7 @@ public class UsedProcesses implements CNVisitor {
     private HashSet<String> processes;
 
     public UsedProcesses() {
-	processes = new HashSet<String>();
+        processes = new HashSet<String>();
     }
 
     /*
@@ -18,21 +18,21 @@ public class UsedProcesses implements CNVisitor {
     public void visit(TerminationNode n) {}
 
     public void visit(CommunicationNode n) {
-	processes.add(n.getSender());
-	processes.add(n.getReceiver());
-	n.getNextAction().accept(this);
+        processes.add(n.getSender());
+        processes.add(n.getReceiver());
+        n.getNextAction().accept(this);
     }
 
     public void visit(SelectionNode n) {
-	processes.add(n.getSender());
-	processes.add(n.getReceiver());
-	n.getNextAction().accept(this);
+        processes.add(n.getSender());
+        processes.add(n.getReceiver());
+        n.getNextAction().accept(this);
     }
 
     public void visit(ConditionalNode n) {
-	processes.add(n.getDecider());
-	n.getThenAction().accept(this);
-	n.getElseAction().accept(this);
+        processes.add(n.getDecider());
+        n.getThenAction().accept(this);
+        n.getElseAction().accept(this);
     }
 
     public void visit(CallNode n) {}
@@ -41,8 +41,8 @@ public class UsedProcesses implements CNVisitor {
      * Method for running the algorithm.
      */
     public static HashSet<String> run(ChoreographyNode n) {
-	UsedProcesses runObject = new UsedProcesses();
-	n.accept(runObject);
-	return runObject.processes;
+        UsedProcesses runObject = new UsedProcesses();
+        n.accept(runObject);
+        return runObject.processes;
     }
 }
