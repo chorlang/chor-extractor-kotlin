@@ -35,7 +35,7 @@ public class TestGenerator {
 		generatedTests++;
 		badTests++;
 	    }
-	    //System.out.println(c.toString());
+	    System.out.println(c.toString());
 	}
     }
 
@@ -56,6 +56,10 @@ public class TestGenerator {
 	for (int i=0; i<5; i++)
 	    for (int j=0; j<5; j++)
 		makeALotOfTests(10,5,i,j);
+
+		// Test 4: communications only, fixed length, increasing number of processes
+		for (int i=5; i<=100; i+=5)
+				makeALotOfTests(40,i,0,0);
 
 	System.out.println("Generated "+generatedTests+" tests, of which "+badTests+" contain dead code.");
     }
