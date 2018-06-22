@@ -22,7 +22,7 @@ public class FatSemi implements CNVisitor {
 
     public void visit(SelectionNode n) {
         n.getNextAction().accept(this);
-        result = new CommunicationNode(n.getSender(), n.getReceiver(), n.getLabel(), result);
+        result = new SelectionNode(n.getSender(), n.getReceiver(), n.getLabel(), result);
     }
 
     public void visit(ConditionalNode n) {
