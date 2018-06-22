@@ -1,4 +1,4 @@
-import java.util.Random;
+%%%%%import java.util.Random;
 import java.util.HashSet;
 import java.util.Arrays;
 
@@ -88,7 +88,7 @@ public class ChoreographyGenerator {
         // we generate procedure names as strings of uppercase letters
         auxNames = new HashSet<String>();
         if (NUM_PROCEDURES > 0) {
-            bound = Math.toIntExact(Math.round(Math.ceil(Math.log(NUM_PROCEDURES)/Math.log(26))));
+            bound = (NUM_PROCEDURES == 1 ? 1 : Math.toIntExact(Math.round(Math.ceil(Math.log(NUM_PROCEDURES)/Math.log(26)))));
             while (auxNames.size() < NUM_PROCEDURES) {
                 String name = "";
                 for (int j=0; j<bound; j++)
@@ -172,14 +172,16 @@ public class ChoreographyGenerator {
 
         else {
             if (generator.nextDouble()*size < numIfs) {
-                int thenSize = generator.nextInt(size+1);
-                int ifsThen = Math.min(generator.nextInt(numIfs),thenSize); // ifsThen <= thenSize
-                if (numIfs-ifsThen > size-thenSize) // too many ifs on else branch
-                    ifsThen = numIfs+thenSize-size;
+                // ifs contains the number of ifs in each branch, sizes the number of other actions
+                int[] ifs = randomArray(3,numIfs-1);
+                int[] sizes = randomArray(3,size-numIfs);
                 String decider = processNames[generator.nextInt(NUM_PROCESSES)];
                 String condition = "c" + (++ifCounter);
                 // System.out.println("Splitting "+numIfs+" into "+ifsThen+" (then) and "+(numIfs-ifsThen-1)+" (else).");
-                return new ConditionalNode(decider, condition, generateBody(thenSize,ifsThen),generateBody(size-thenSize,numIfs-ifsThen-1));
+                return new ConditionalNode(decider, condition,
+                                           generateBody(sizes[0]+ifs[0],ifs[0]),
+                                           generateBody(sizes[1]+ifs[1],ifs[1]),
+                                           generateBody(sizes[2]+ifs[2],ifs[2]));
             }
             else {
                 String sender = processNames[generator.nextInt(NUM_PROCESSES)];

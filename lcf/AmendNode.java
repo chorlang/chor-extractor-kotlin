@@ -33,17 +33,20 @@ public class AmendNode implements CNVisitor {
     }
 
     public void visit(ConditionalNode n) {
+        n.getPreAction().accept(this);
+        ChoreographyNode preAction = amended;
         n.getThenAction().accept(this);
         ChoreographyNode thenNode = amended;
         n.getElseAction().accept(this);
         ChoreographyNode elseNode = amended;
 
-        for (String process:processes)
-            if (!n.getDecider().equals(process)){
-                thenNode = new SelectionNode(n.getDecider(),process,"L",thenNode);
-                elseNode = new SelectionNode(n.getDecider(),process,"R",elseNode);
-            }
-        amended = new ConditionalNode(n.getDecider(),n.getCondition(),thenNode,elseNode);
+        if (!Equals.run(thenNode,elseNode))
+            for (String process:processes)
+                if (!n.getDecider().equals(process)){
+                    thenNode = new SelectionNode(n.getDecider(),process,"L",thenNode);
+                    elseNode = new SelectionNode(n.getDecider(),process,"R",elseNode);
+                }
+        amended = new ConditionalNode(n.getDecider(),n.getCondition(),preAction,thenNode,elseNode);
     }
 
     public void visit(CallNode n) {
