@@ -1,4 +1,4 @@
-%%%%%import java.util.Random;
+import java.util.Random;
 import java.util.HashSet;
 import java.util.Arrays;
 
