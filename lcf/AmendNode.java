@@ -29,7 +29,7 @@ public class AmendNode implements CNVisitor {
 
     public void visit(SelectionNode n) {
         n.getNextAction().accept(this);
-        amended = new CommunicationNode(n.getSender(), n.getReceiver(), n.getLabel(), amended);
+        amended = new SelectionNode(n.getSender(), n.getReceiver(), n.getLabel(), amended);
     }
 
     public void visit(ConditionalNode n) {

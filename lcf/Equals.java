@@ -28,8 +28,10 @@ public class Equals implements CNVisitor {
             equals = false;
         if (!n.getMessage().equals(testing.getMessage()))
             equals = false;
-        other = testing.getNextAction();
-        n.getNextAction().accept(this);
+	if (equals) {
+	    other = testing.getNextAction();
+	    n.getNextAction().accept(this);
+	}
     }
 
     public void visit(SelectionNode n) {
@@ -44,8 +46,10 @@ public class Equals implements CNVisitor {
             equals = false;
         if (!n.getLabel().equals(testing.getLabel()))
             equals = false;
-        other = testing.getNextAction();
-        n.getNextAction().accept(this);
+	if (equals) {
+	    other = testing.getNextAction();
+	    n.getNextAction().accept(this);
+	}
     }
 
     public void visit(ConditionalNode n) {

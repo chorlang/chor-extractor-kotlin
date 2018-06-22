@@ -24,7 +24,7 @@ import java.io.IOException;
  */
 public class TestGenerator {
 
-    private static final int NUMBER_OF_TESTS = 50;
+    private static final int NUMBER_OF_TESTS = 10;
     private static int generatedTests = 0,
         badTests = 0;
     private static final String LOG_FILE = "summary.log";
@@ -53,7 +53,9 @@ public class TestGenerator {
                 generatedTests++;
                 badTests++;
             }
-            writer.write(c.toString());
+	    writer.write("*** C"+generatedTests+" ***");
+	    writer.newLine();
+            writer.write(c.amend().toString());
 	    writer.newLine();
         }
 	writer.close();
