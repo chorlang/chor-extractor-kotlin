@@ -4,11 +4,17 @@
 public class ConditionalNode implements ChoreographyNode {
 
     private String decider, condition;
-    private ChoreographyNode thenAction, elseAction;
+    // preAction: common prefix to both branches (see toString method)
+    private ChoreographyNode preAction, thenAction, elseAction;
 
     public ConditionalNode(String decider, String condition, ChoreographyNode thenAction, ChoreographyNode elseAction) {
+        this(decider, condition, new TerminationNode(), thenAction, elseAction);
+    }
+
+    public ConditionalNode(String decider, String condition, ChoreographyNode preAction, ChoreographyNode thenAction, ChoreographyNode elseAction) {
         this.decider = decider;
         this.condition = condition;
+        this.preAction = preAction;
         this.thenAction = thenAction;
         this.elseAction = elseAction;
     }
@@ -22,6 +28,10 @@ public class ConditionalNode implements ChoreographyNode {
 
     public String getCondition() {
         return condition;
+    }
+
+    public ChoreographyNode getPreAction() {
+        return preAction;
     }
 
     public ChoreographyNode getThenAction() {
@@ -40,7 +50,9 @@ public class ConditionalNode implements ChoreographyNode {
     }
 
     public String toString() {
-        return "if " + decider + "." + condition + " then " + thenAction.toString() + " else " + elseAction.toString();
+        ChoreographyNode realThen = FatSemi.run(preAction,thenAction),
+            realElse = FatSemi.run(preAction,elseAction);
+        return "if " + decider + "." + condition + " then " + realThen.toString() + " else " + realElse.toString();
     }
 
 }

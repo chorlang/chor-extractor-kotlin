@@ -41,8 +41,10 @@ public class TestGenerator {
     }
 
     public static void main(String[] args) throws GeneratorException {
-        ChoreographyGenerator tester = new ChoreographyGenerator(100,6,10,5);
-        System.out.println(tester.generate().toString()+"\n");
+        ChoreographyGenerator tester = new ChoreographyGenerator(10,6,4,1);
+        Choreography c = tester.generate();
+        System.out.println(c.toString()+"\n");
+        System.out.println(c.amend().toString()+"\n");
         System.exit(0);
 
         // Test 1: communications only, increasing lengths
