@@ -1,10 +1,2 @@
 Strategy, DebugMode
-LengthFirst, true
-LengthFirst, true
-ShortestFirst, true
-SelectionFirst, true
-ConditionFirst, true
-UnmarkedFirst, true
-UnmarkedThenSelection, true
-UnmarkedThenCondition, true
 UnmarkedThenRandom, true

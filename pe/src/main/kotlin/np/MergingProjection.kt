@@ -6,7 +6,7 @@ import ast.sp.nodes.*
 import java.util.*
 
 
-class MergingProjection() {
+class MergingProjection {
     class MergingException(var s: String): Exception(s)
 
         fun merge(left: SPNode, right: SPNode): SPNode {
