@@ -19,7 +19,7 @@ import kotlin.collections.ArrayList
 
 
 object NetworkProjection {
-    private val log = LogManager.getLogger();
+    private val log = LogManager.getLogger()
 
     @Throws(Exception::class)
     @JvmStatic

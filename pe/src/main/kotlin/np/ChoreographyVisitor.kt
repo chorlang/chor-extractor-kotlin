@@ -12,11 +12,7 @@ import kotlin.collections.ArrayList
 
 class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
 
-    val processes: HashSet<String>
-
-    init {
-        processes = HashSet<String>()
-    }
+    val processes: HashSet<String> = HashSet()
 
     fun getCCAST(parseTree: ParseTree): CCNode {
         return this.visit(parseTree)

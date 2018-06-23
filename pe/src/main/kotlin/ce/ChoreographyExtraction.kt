@@ -10,7 +10,7 @@ import org.apache.logging.log4j.LogManager
 import java.io.File
 
 object ChoreographyExtraction{
-    private val log = LogManager.getLogger();
+    private val log = LogManager.getLogger()
 
     @Throws(Exception::class)
     @JvmStatic
