@@ -21,13 +21,13 @@ class GeneratedTest {
     /*Test 2: communications and ifs, fixed length, increasing number of ifs*/
     @Test
     fun test2() {
-        for (i in 10..50 step 10) {
-            val tester = ChoreographyGenerator(50, 6, i, 0)
-            val test = tester.generate().toString()
+        for (i in 1..50 step 1) {
+            val tester = ChoreographyGenerator(2, 2, i, 0)
+            val test = tester.generate().amend().toString()
             println("Choreography: $test")
-            try {
+//            try {
                 println("Network: ${NetworkProjection.project(test)}")
-            } catch (m: MergingProjection.MergingException) { continue }
+//            } catch (m: MergingProjection.MergingException) { continue }
         }
     }
 
