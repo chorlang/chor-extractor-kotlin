@@ -1,9 +1,9 @@
 package ast.cc.nodes
 
 import ast.cc.CCVisitor
-import ast.cc.interfaces.Choreography
+import ast.cc.interfaces.Behaviour
 
-class Termination : Choreography {
+class Termination : Behaviour {
     private val termination = "stop"
 
     override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)

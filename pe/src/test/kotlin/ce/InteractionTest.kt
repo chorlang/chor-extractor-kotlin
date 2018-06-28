@@ -34,7 +34,7 @@ class InteractionTest{
         assertEquals(expected, actual)
     }
 
-    /* interaction with procedure on the one of the processes */
+    /* interaction with procedure on the one of the processesInChoreography */
     @Test
     fun tst3(){
         val test = "p {main{q?;stop}} | q { def X {p!<e>;stop} main{X}}"
@@ -56,6 +56,21 @@ class InteractionTest{
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { p.e->q; X1 } main {X1}"
+
+        assertEquals(expected, actual)
+    }
+
+    // parallel execution
+    @Test
+    fun tst5(){
+        val test =
+                "p {def X {q!<e>;X} main {X}} | q {def Y{p?; Y} main {Y}} | r { main {stop}} || " +
+                "p {def X {q!<e>;X} main {X}} | q {def Y{p?; Y} main {Y}} | r { main {stop}}"
+
+        val args = arrayListOf("-c", test)
+
+        val actual = ChoreographyExtraction.main(args)
+        val expected = "def X1 { p.e->q; X1 } main {X1} || def X1 { p.e->q; X1 } main {X1}"
 
         assertEquals(expected, actual)
     }

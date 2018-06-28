@@ -1,7 +1,7 @@
 package ce
 
 import ast.cc.interfaces.CCNode
-import ast.cc.interfaces.Choreography
+import ast.cc.interfaces.Behaviour
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
 import ast.sp.labels.*
@@ -22,7 +22,7 @@ class NetworkExtraction {
     private val log = LogManager.getLogger()
     private var nodeIdCounter = 0
     private val hashesMap = HashMap<Hash, ArrayList<ConcreteNode>>()
-    private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processes used in bad loop calculations
+    private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processesInChoreography used in bad loop calculations
     private var badLoopCnt = 0
 
     //region Main
@@ -30,7 +30,7 @@ class NetworkExtraction {
         private lateinit var livelocked: ArrayList<String>
         private var debugMode = false
 
-        fun run(n: Network, s: Strategy, l: ArrayList<String>, d: Boolean): Program {
+        fun run(n: Network, s: Strategy, l: ArrayList<String>, d: Boolean): Choreography {
             livelocked = l
             debugMode = d
             return NetworkExtraction().extract(n, s, livelocked)
@@ -41,14 +41,14 @@ class NetworkExtraction {
      * 1. build graph with nodes as networks and edges as choreography actions
      * 2. remove cycles from the graph
      * 3. traverse the graph reading choreography actions
-     * @param n a processes from which a choreography will be extracted
-     * @return Program representation of resulted choreography
+     * @param n a processesInChoreography from which a choreography will be extracted
+     * @return Choreography representation of resulted choreography
      */
-    private fun extract(n: Network, strategy: Strategy, livelocked: ArrayList<String>): Program {
+    private fun extract(n: Network, strategy: Strategy, livelocked: ArrayList<String>): Choreography {
         val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
         val marking = HashMap<ProcessName, Boolean>()
 
-        //we mark as visited processes which has no active actions in the main procedure or which are in the list of livelocked processes
+        //we mark as visited processesInChoreography which has no active actions in the main procedure or which are in the list of livelocked processesInChoreography
         n.processes.forEach({ name, term -> marking[name] = term.main is TerminationSP || livelocked.contains(name) })
 
         val node = ConcreteNode(n, "0", nextNodeId(), ArrayList(), marking)
@@ -69,7 +69,7 @@ class NetworkExtraction {
 
     /*private fun cleanGraph(graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>) {
         val nodesToClean = ArrayList<ConcreteNode>()
-        nodesToClean.addAll(graph.vertexSet().filter { graph.outgoingEdgesOf(it).size == 0 && it.network.processes.filterValues { it.main !is TerminationSP }.isNotEmpty() })
+        nodesToClean.addAll(graph.vertexSet().filter { graph.outgoingEdgesOf(it).size == 0 && it.network.processesInChoreography.filterValues { it.main !is TerminationSP }.isNotEmpty() })
 
         while (nodesToClean.isNotEmpty()) {
             val node = nodesToClean.first()
@@ -140,7 +140,7 @@ class NetworkExtraction {
             if (findCommunication != null) {
                 val (targetNetwork, label) = findCommunication
 
-                //remove processes that were unfoldedProcesses but don't participate in the current communication
+                //remove processesInChoreography that were unfoldedProcesses but don't participate in the current communication
                 val targetMarking = currentNode.marking.clone() as Marking
 
                 targetMarking[label.rcv] = true
@@ -148,7 +148,7 @@ class NetworkExtraction {
                 targetMarking[label.snd] = true
                 unfoldedProcesses.remove(label.snd)
 
-                // revert unfolding all processes not involved in the communication
+                // revert unfolding all processesInChoreography not involved in the communication
                 unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
 
                 //if all procedures were visited, flip all markings
@@ -401,14 +401,14 @@ class NetworkExtraction {
         return fakeNodesList
     }
 
-    private fun buildChoreography(root: Node, fakeNodesList: ArrayList<FakeNode>, graph: DefaultDirectedGraph<Node, ExtractionLabel>): Program {
+    private fun buildChoreography(root: Node, fakeNodesList: ArrayList<FakeNode>, graph: DefaultDirectedGraph<Node, ExtractionLabel>): Choreography {
         val main = bh(root, graph, fakeNodesList)
         val procedures = ArrayList<ProcedureDefinition>()
         for (fk in fakeNodesList) {
             procedures.add(ProcedureDefinition(fk.procedureName, bh(fk, graph, fakeNodesList), HashSet()))
         }
 
-        return Program(main as Choreography, procedures)
+        return Choreography(main as Behaviour, procedures)
     }
 
     private fun bh(node: Node, graph: DefaultDirectedGraph<Node, ExtractionLabel>, fakeNodesList: ArrayList<FakeNode>): CCNode {
@@ -423,7 +423,7 @@ class NetworkExtraction {
                     for (process in node.network.processes) {
                         if (process.value.main !is TerminationSP) {
                             log.debug(node.toString())
-                            throw Exception("Bad graph. No more edges found, but not all processes were terminated.")
+                            throw Exception("Bad graph. No more edges found, but not all processesInChoreography were terminated.")
                         } else return Termination()
                     }
                 }

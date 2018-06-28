@@ -67,7 +67,7 @@ public class Choreography {
      */
 
     /*
-     * Returns the list of processes used in each procedure.
+     * Returns the list of processesInChoreography used in each procedure.
      */
     private HashMap<String,HashSet<String>> usedProcesses() {
         Set<String> keys = procedures.keySet();
@@ -103,7 +103,7 @@ public class Choreography {
 
     /*
      * Now we can amend the choreography in a not-so-clever way.
-     * For each procedure, we add selections to all processes it uses after each conditional.
+     * For each procedure, we add selections to all processesInChoreography it uses after each conditional.
      * We return a new choreography (design option).
      */
     public Choreography amend() {

@@ -59,7 +59,7 @@ public class AmendNode implements CNVisitor {
      * Method for running the algorithm.
      */
     public static ChoreographyNode run(ChoreographyNode n,HashSet<String> processes) {
-        // No problem sharing the list of processes, since it will only be read.
+        // No problem sharing the list of processesInChoreography, since it will only be read.
         AmendNode runObject = new AmendNode(processes);
         n.accept(runObject);
         return runObject.amended;

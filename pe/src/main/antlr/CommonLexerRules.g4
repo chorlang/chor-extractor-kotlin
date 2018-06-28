@@ -1,6 +1,6 @@
 grammar CommonLexerRules;
 
-Identifier : [nodesToClean-zA-Z0-9]+;
+Identifier : [a-zA-Z0-9]+;
 process : Identifier;
 procedure : Identifier;
 BooleanLiteral : 'true' | 'false';
@@ -10,4 +10,5 @@ Wildcard : 'this';
 WS : [ \t\r\n]+ -> skip ;
 
 INT: [0-9]+ ;
+
 

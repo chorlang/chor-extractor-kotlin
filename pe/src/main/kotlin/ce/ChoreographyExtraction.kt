@@ -1,9 +1,11 @@
 package ce
 
-import NetworkLexer
-import NetworkParser
+import antlrgen.NetworkLexer
+import antlrgen.NetworkParser
+import ast.cc.nodes.Choreography
 import ast.cc.nodes.Program
 import ast.sp.nodes.Network
+import ast.sp.nodes.ParallelNetworks
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.apache.logging.log4j.LogManager
@@ -30,14 +32,17 @@ object ChoreographyExtraction{
         val stream = ANTLRInputStream(parsedInput.chor)
         val lexer = NetworkLexer(stream)
         val parser = NetworkParser(CommonTokenStream(lexer))
-        val tree = parser.network()
+        val tree = parser.parallelNetworks()
         val networkVisitor = NetworkVisitor()
-        val network = networkVisitor.visitNetwork(tree) as Network
+        val parallelNetworks = networkVisitor.visitParallelNetworks(tree) as ParallelNetworks
 
-        if (parsedInput.livelocked.isEmpty() || network.processes.keys.containsAll(parsedInput.livelocked)){
-            return NetworkExtraction.run(network, parsedInput.strategy, parsedInput.livelocked, parsedInput.debugMode)
+        val program = ArrayList<Choreography>()
+        for (network in parallelNetworks.networkList) {
+            if (parsedInput.livelocked.isEmpty() || network.processes.keys.containsAll(parsedInput.livelocked)) {
+                program.add(NetworkExtraction.run(network, parsedInput.strategy, parsedInput.livelocked, parsedInput.debugMode))
+            } else throw Exception("Malformed call - list of livelocked processesInChoreography contains not existent processesInChoreography")
         }
-        else throw Exception("Malformed call - list of livelocked processes contains not existent processes")
+        return Program(program)
     }
 
     fun parseStrategy(strategy: String): Strategy {

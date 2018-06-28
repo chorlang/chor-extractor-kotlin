@@ -53,7 +53,7 @@ dependencies {
 generateGrammarSource {
     maxHeapSize = "64m"
     arguments += ["-visitor", "-long-messages"]
-    outputDirectory = file( "src/main/java" )
+    outputDirectory = file( "src/main/java/antlrgen" )
 }
 
 sourceSets.main.java.srcDir file("$buildDir/generated-src/antlr/main/")

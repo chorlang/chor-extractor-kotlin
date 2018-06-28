@@ -1,4 +1,7 @@
 // Generated from Network.g4 by ANTLR 4.7.1
+
+    package antlrgen;
+
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
 /**
@@ -6,6 +9,16 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  * {@link NetworkParser}.
  */
 public interface NetworkListener extends ParseTreeListener {
+	/**
+	 * Enter a parse tree produced by {@link NetworkParser#parallelNetworks}.
+	 * @param ctx the parse tree
+	 */
+	void enterParallelNetworks(NetworkParser.ParallelNetworksContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link NetworkParser#parallelNetworks}.
+	 * @param ctx the parse tree
+	 */
+	void exitParallelNetworks(NetworkParser.ParallelNetworksContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link NetworkParser#network}.
 	 * @param ctx the parse tree
