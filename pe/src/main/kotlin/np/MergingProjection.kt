@@ -38,7 +38,7 @@ class MergingProjection {
         }
 
         private fun merge(left: SelectionSP, right: SelectionSP): SPNode {
-            if (left.process != right.process ||left.expression != right.expression) throw MergingException("Can't merge " + left.process + " and " + right.process )
+            if (left.process != right.process ||left.expression != right.expression) throw MergingException("Can't merge ${left.process}+${left.expression} and ${right.process}+${right.expression}" )
 
             val continuation = merge(left.continuation, right.continuation) as IBehaviour
             return SelectionSP(continuation, left.process, left.expression)
@@ -69,8 +69,8 @@ class MergingProjection {
         }
 
         private fun merge(left: ConditionSP, right: ConditionSP): SPNode {
-            val leftCondition = merge(left.thenBehaviour, left.elseBehaviour) as IBehaviour
-            val rightCondition = merge(right.thenBehaviour, right.elseBehaviour) as IBehaviour
+            val leftCondition = merge(left.thenBehaviour, right.thenBehaviour) as IBehaviour
+            val rightCondition = merge(left.elseBehaviour, right.elseBehaviour) as IBehaviour
             if (left.expression != right.expression)
                 throw MergingException("Can't merge conditions " + leftCondition.toString() + " and " + rightCondition.toString())
 
