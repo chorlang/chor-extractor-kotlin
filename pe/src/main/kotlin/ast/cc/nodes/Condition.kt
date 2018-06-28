@@ -2,9 +2,9 @@ package ast.cc.nodes
 
 import ast.cc.CCVisitor
 import ast.cc.interfaces.CCNode
-import ast.cc.interfaces.Choreography
+import ast.cc.interfaces.Behaviour
 
-data class Condition(val process: String, val expression: String, val thenChoreography: CCNode, val elseChoreograpy: CCNode) : Choreography {
+data class Condition(val process: String, val expression: String, val thenChoreography: CCNode, val elseChoreograpy: CCNode) : Behaviour {
     override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)
 
     override fun toString(): String {

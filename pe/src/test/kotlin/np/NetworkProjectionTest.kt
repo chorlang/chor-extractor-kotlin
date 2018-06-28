@@ -9,12 +9,7 @@ class NetworkProjectionTest{
 
     @Test
     fun tst1(){
-        val test = "def S { if (s.c1) then (h -> c[l12]; s.m10 -> h; S) else (x.m11 -> h; h.m12 -> a; h -> f[l13]; s.m13 -> x; s.m14 -> c; c.m15 -> h; h.m16 -> a; h -> c[l14]; h.m17 -> c; c -> f[l15]; c -> h[l16]; x -> f[l17]; if (c.c2) then (if (f.c3) then (if (s.c4) then (D) else (f.m18 -> c; S)) else (D)) else (S)) }" +
-                "def D { s.m19 -> h; h.m20 -> a; f -> s[l18]; f -> s[l19]; c.m21 -> x; if (h.c5) then (h.m22 -> s; if (x.c6) then (a.m23 -> c; h.m24 -> x; s.m25 -> f; if (a.c7) then (if (h.c8) then (if (a.c9) then (if (c.c10) then (E) else (s -> a[l20]; J)) else (D)) else (S)) else (0)) else (J)) else (c -> f[l21]; s.m26 -> h; s -> f[l22]; s.m27 -> c; f -> x[l23]; h -> c[l24]; s -> h[l25]; c.m28 -> a; c.m29 -> a; 0) }" +
-                "def T { h -> f[l26]; a.m30 -> s; f.m31 -> h; c -> h[l27]; if (s.c11) then (x.m32 -> h; x -> f[l28]; x -> s[l29]; c.m33 -> x; f.m34 -> a; if (s.c12) then (if (s.c13) then (S) else (f.m35 -> h; h.m36 -> s; 0)) else (c -> s[l30]; f -> x[l31]; E)) else (x -> a[l32]; x.m37 -> h; s -> c[l33]; 0) }" +
-                "def E { a -> c[l34]; h.m38 -> a; c.m39 -> x; x -> a[l35]; c -> h[l36]; f.m40 -> a; a.m41 -> f; s.m42 -> f; x -> a[l37]; s.m43 -> c; s.m44 -> h; if (c.c14) then (c -> f[l38]; f -> h[l39]; x.m45 -> s; x -> a[l40]; if (h.c15) then (c -> x[l41]; if (a.c16) then (if (f.c17) then (E) else (h.m46 -> s; T)) else (S)) else (h.m47 -> c; 0)) else (S) }" +
-                "def J { a -> f[l42]; f.m48 -> s; s.m49 -> a; s -> f[l43]; a -> s[l44]; h.m50 -> f; x -> a[l45]; f.m51 -> s; c -> h[l46]; if (a.c18) then (c -> s[l47]; D) else (h -> a[l48]; x.m52 -> a; D) } " +
-                "main { x -> a[l1]; a -> f[l2]; s -> x[l3]; x.m1 -> a; f.m2 -> s; c -> a[l4]; c.m3 -> x; f.m4 -> c; s.m5 -> c; s -> h[l5]; a -> c[l6]; a.m6 -> s; c -> h[l7]; c -> h[l8]; a.m7 -> c; a.m8 -> c; s.m9 -> h; f -> h[l9]; h -> s[l10]; f -> c[l11]; T }"
+        val test = "def X {Y} def Y { p.e->q; stop } main {q.e->p;X}"
 
         val actual = NetworkProjection.project(test).toString()
         val expected = "p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}}"
@@ -201,5 +196,14 @@ class NetworkProjectionTest{
         Assertions.assertThrows(MergingProjection.MergingException::class.java
         ) { NetworkProjection.project(test) }
 
+    }
+    @Test
+    fun tst13(){
+        val test = "def X {Y} def Y { p.e->q; stop } main {q.e->p;X} || def X {Y} def Y { p.e->q; stop } main {q.e->p;X}"
+
+        val actual = NetworkProjection.project(test).toString()
+        val expected = "p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}} || p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}}"
+
+        assertEquals(expected, actual)
     }
 }

@@ -1,26 +1,30 @@
 grammar Choreography;
 import CommonLexerRules;
 
-program : procedureDefinition* main;
+@header {package antlrgen;}
 
-procedureDefinition : 'def' procedure '{' choreography '}';
+program : choreography ('||' choreography)* ;
 
-main : 'main {' choreography '}';
+choreography: procedureDefinition* main;
 
-choreography : interaction
+procedureDefinition : 'def' procedure '{' behaviour '}';
+
+main : 'main {' behaviour '}';
+
+behaviour : interaction
     |   condition
     |   procedureInvocation
     |   TERMINATE
     ;
 
-condition : 'if' process '.' expression 'then' choreography 'else' choreography;
+condition : 'if' process '.' expression 'then' behaviour 'else' behaviour;
 
 procedureInvocation: procedure;
 
 interaction : communication | selection;
 
-communication: process '.' expression '->' process ';' choreography;
-selection: process '->' process '[' expression '];' choreography;
+communication: process '.' expression '->' process ';' behaviour;
+selection: process '->' process '[' expression '];' behaviour;
 
 expression : Identifier
     |   BooleanLiteral

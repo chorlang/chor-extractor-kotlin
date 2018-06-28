@@ -108,7 +108,7 @@ public class TestGenerator {
                 makeALotOfTests(10,5,i,j,logFile);
 	logFile.newLine();
 
-	niceWrite(logFile,"Test 4: communications only, fixed length, increasing number of processes");
+	niceWrite(logFile,"Test 4: communications only, fixed length, increasing number of processesInChoreography");
         for (int i=5; i<=100; i+=5)
             makeALotOfTests(40,i,0,0,logFile);
 	logFile.newLine();

@@ -1,26 +1,39 @@
 package ce
 
-import NetworkParser.*
-import NetworkBaseVisitor
+import antlrgen.NetworkBaseVisitor
+import antlrgen.NetworkParser
 import ast.sp.nodes.*
 import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.nodes.interfaces.SPNode
 import org.antlr.v4.runtime.tree.TerminalNode
-
+import antlrgen.NetworkParser.ParallelNetworksContext
+import antlrgen.NetworkParser.SendingContext
+import antlrgen.NetworkParser.ReceivingContext
+import antlrgen.NetworkParser.SelectionContext
+import antlrgen.NetworkParser.OfferingContext
+import antlrgen.NetworkParser.ConditionContext
+import antlrgen.NetworkParser.ProcedureDefinitionContext
+import antlrgen.NetworkParser.ProcedureInvocationContext
 
 class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
+    override fun visitParallelNetworks(ctx: ParallelNetworksContext): SPNode {
+        val networksList = ArrayList<Network>()
+        ctx.network().mapTo(networksList) { visit(it) as Network }
+        return ParallelNetworks(networksList)
+    }
+
     override fun visitNetwork(ctx: NetworkParser.NetworkContext): SPNode {
         val network = HashMap<String, ProcessTerm>()
-        for (i in 0..ctx.processBehaviour().size - 1) {
-            network.put(ctx.process(i).text, visit(ctx.processBehaviour(i)) as ProcessTerm)
+        for (i in 0 until ctx.processBehaviour().size) {
+            network[ctx.process(i).text] = visit(ctx.processBehaviour(i)) as ProcessTerm
         }
         return Network(network)
     }
 
     override fun visitProcessBehaviour(ctx: NetworkParser.ProcessBehaviourContext): SPNode {
         val procedures = HashMap<String, IBehaviour>()
-        for (i in 0..ctx.procedureDefinition().size - 1) {
-            procedures.put(ctx.procedure(i).text, visit(ctx.procedureDefinition(i)) as IBehaviour)
+        for (i in 0 until ctx.procedureDefinition().size) {
+            procedures[ctx.procedure(i).text] = visit(ctx.procedureDefinition(i)) as IBehaviour
         }
 
         return ProcessTerm(procedures, visit(ctx.behaviour()) as IBehaviour)
@@ -41,7 +54,7 @@ class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     override fun visitOffering(ctx: OfferingContext): SPNode {
         val labeledBehaviour = HashMap<String, IBehaviour>()
         for (lb in ctx.labeledBehaviour()) {
-            labeledBehaviour.put(lb.expression().text, visit(lb.behaviour()) as IBehaviour)
+            labeledBehaviour[lb.expression().text] = visit(lb.behaviour()) as IBehaviour
         }
 
         return OfferingSP(ctx.process().text, labeledBehaviour)

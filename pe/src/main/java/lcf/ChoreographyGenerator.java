@@ -35,7 +35,7 @@ public class ChoreographyGenerator {
      * The real constructor.
      * - seed: initial seed for the random number generator
      * - length: maximum length of each procedure/main body
-     * - numProcesses: maximum number of processes used
+     * - numProcesses: maximum number of processesInChoreography used
      * - numIfs: maximum number of conditional instructions (globally)
      * - numProcedures: maximum number of procedure definitions (excluding main)
      * Most parameters are bounds because we do not check for duplicates.

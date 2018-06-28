@@ -1,9 +1,9 @@
 package np
 
-import ChoreographyLexer
-import ChoreographyParser
+import antlrgen.ChoreographyLexer
+import antlrgen.ChoreographyParser
 import ast.cc.interfaces.CCNode
-import ast.cc.interfaces.Choreography
+import ast.cc.interfaces.Behaviour
 import ast.cc.nodes.*
 import ast.sp.nodes.Network
 import ast.sp.nodes.ProcessTerm
@@ -16,6 +16,7 @@ import kotlin.collections.HashSet
 import kotlin.streams.asSequence
 import java.util.Random
 import kotlin.collections.ArrayList
+import ast.sp.nodes.ParallelNetworks
 
 
 object NetworkProjection {
@@ -41,8 +42,6 @@ object NetworkProjection {
     }
 
     private fun parse(grammar: String): ChoreographyParser.ProgramContext {
-
-
         val stream = ANTLRInputStream(grammar)
         val lexer = ChoreographyLexer(stream)
         val parser = ChoreographyParser(CommonTokenStream(lexer))
@@ -50,19 +49,25 @@ object NetworkProjection {
         return tree
     }
 
-    fun project(choreography: String): Network {
+    fun project(choreography: String): ParallelNetworks {
+        //create choreography AST called program
         val tree = this.parse(choreography)
-        val network = HashMap<String, ProcessTerm>()
-
         val choreographyVisitor = ChoreographyVisitor()
-        val ccast = choreographyVisitor.getCCAST(tree)
-        val processes = choreographyVisitor.processes
+        val program = choreographyVisitor.getProgram(tree) //returns Program
 
+        //project choreographies to networks
         val behaviourProjection = BehaviourProjection()
-        for (process in processes) {
-            network.put(process, behaviourProjection.getSPAST(ccast, process) as ProcessTerm)
+        val choreographyList = (program as Program).choreographyList
+        val network = HashMap<String, ProcessTerm>()
+        val networkList = ArrayList<Network>()
+        for (chor in choreographyList){
+            for (process in chor.processes) {
+                network[process] = behaviourProjection.getProcessTerm(chor, process) as ProcessTerm
+            }
+            networkList.add(Network(network))
         }
-        return Network(network)
+        return ParallelNetworks(networkList)
+
     }
 
     private fun parseInput(args: Array<String>): String {
@@ -113,10 +118,10 @@ object NetworkProjection {
     }
 
     private fun generateStructure(prset: ArrayList<String>, pr: Int, cond: Int): CCNode {
-        val main = generateMain(prset, HashSet<String>(), pr, cond) as Choreography
+        val main = generateMain(prset, HashSet<String>(), pr, cond) as Behaviour
         val procedures = emptyList<ProcedureDefinition>() //TODO procedures generation
 
-        return Program(main, procedures)
+        return Choreography(main, procedures)
     }
 
     private fun generateMain(prset: ArrayList<String>, visited: HashSet<String>, pr: Int, cond: Int):CCNode {

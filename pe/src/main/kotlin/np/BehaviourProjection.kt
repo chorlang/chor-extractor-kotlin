@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package np
 
 import ast.cc.CCVisitor
@@ -17,22 +12,24 @@ import java.util.*
 import kotlin.collections.HashMap
 
 /**
-
  * @author Fabrizio Montesi <famontesi></famontesi>@gmail.com>
  */
 class BehaviourProjection : CCVisitor<SPNode> {
-    override fun visit(n: CommunicationSelection): SPNode {
+    override fun visit(n: Program): SPNode {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
+    override fun visit(n: CommunicationSelection): SPNode {
         val continuation = n.continuation.accept(this)
         val nn = n.node
 
-        when (nn){
+        when (nn) {
             is Selection -> {
                 return when (processName) {
                     nn.sender -> SelectionSP(continuation as IBehaviour, nn.receiver, nn.label)
                     nn.receiver -> {
                         val labels = HashMap<String, IBehaviour>()
-                        labels.put(nn.label, continuation as IBehaviour)
+                        labels[nn.label] = continuation as IBehaviour
                         OfferingSP(nn.sender, labels)
                     }
                     else -> continuation
@@ -56,18 +53,18 @@ class BehaviourProjection : CCVisitor<SPNode> {
     private var processName: String? = null
     private var procedures: MutableList<Behaviour>? = null
 
-    fun getSPAST(node: CCNode, processName: String): SPNode {
+    fun getProcessTerm(node: CCNode, processName: String): SPNode {
         this.processName = processName
-        procedures = ArrayList<Behaviour>()
+        procedures = ArrayList()
         return node.accept(this)
     }
 
     override fun visit(n: Condition): SPNode {
-        if (processName == n.process) {
-            return ConditionSP(n.expression, n.thenChoreography.accept(this) as IBehaviour, n.elseChoreograpy.accept(this) as IBehaviour)
+        return if (processName == n.process) {
+            ConditionSP(n.expression, n.thenChoreography.accept(this) as IBehaviour, n.elseChoreograpy.accept(this) as IBehaviour)
         } else {
             try {
-                return MergingProjection().merge(n.thenChoreography.accept(this), n.elseChoreograpy.accept(this))
+                MergingProjection().merge(n.thenChoreography.accept(this), n.elseChoreograpy.accept(this))
             } catch (e: MergingException) {
                 e.printStackTrace()
                 throw e
@@ -88,18 +85,17 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     override fun visit(n: ProcedureInvocation): SPNode {
-        if (n.processes.contains(processName)) {
-            return ProcedureInvocationSP(n.procedure)
+        return if (n.processes.contains(processName)) {
+            ProcedureInvocationSP(n.procedure)
         } else {
-            return TerminationSP()
-
+            TerminationSP()
         }
     }
 
-    override fun visit(n: Program): SPNode {
+    override fun visit(n: Choreography): SPNode {
         val procedures = HashMap<String, IBehaviour>()
         for (procedure in n.procedures) {
-            procedures.put(procedure.procedure, procedure.accept(this) as IBehaviour)
+            procedures[procedure.procedure] = procedure.accept(this) as IBehaviour
         }
         return ProcessTerm(procedures, n.main.accept(this) as IBehaviour)
     }

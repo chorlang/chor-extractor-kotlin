@@ -39,7 +39,7 @@ data class Network(val processes: HashMap<ProcessName, ProcessTerm>) : SPNode {
     }
 
     override fun hashCode(): Int {
-        //return processes.hashCode()
+        //return processesInChoreography.hashCode()
         var hash = 0
         for (p in processes) {
             hash += p.key.hashCode() * 31 + p.value.hashCode() * 29
