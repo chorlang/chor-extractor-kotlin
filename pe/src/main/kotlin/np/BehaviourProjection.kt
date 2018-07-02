@@ -63,13 +63,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
         return if (processName == n.process) {
             ConditionSP(n.expression, n.thenChoreography.accept(this) as IBehaviour, n.elseChoreograpy.accept(this) as IBehaviour)
         } else {
-            try {
-                MergingProjection().merge(n.thenChoreography.accept(this), n.elseChoreograpy.accept(this))
-            } catch (e: MergingException) {
-                e.printStackTrace()
-                throw e
-            }
-
+            MergingProjection().merge(n.thenChoreography.accept(this), n.elseChoreograpy.accept(this))
         }
     }
 

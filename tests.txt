@@ -1,0 +1,507 @@
+TEST: C182
+CHOREOGRAPHY: def F { d.m3 -> p; p.m4 -> d; b -> w[l2]; p.m5 -> d; X }def X { w -> i[l3]; w -> i[l4]; p -> i[l5]; F }main { w.m1 -> p; b.m2 -> w; p -> d[l1]; F }
+NETWORK: p{def F{d?; d!<m4>; d!<m5>; X} def X{i + l5; F} main {w?; d + l1; F}} | b{def F{w + l2; X} def X{F} main {w!<m2>; F}} | d{def F{p!<m3>; p?; p?; X} def X{F} main {p&{l1: F}}} | w{def F{b&{l2: X}} def X{i + l3; i + l4; F} main {p!<m1>; b?; F}} | i{def F{X} def X{w&{l3: w&{l4: p&{l5: F}}}} main {F}}
+
+TEST: C185
+CHOREOGRAPHY: def F { d.m1 -> w; w -> i[l1]; w.m2 -> p; w -> b[l2]; i.m3 -> d; b -> d[l3]; X }def X { d.m4 -> p; d.m5 -> i; w -> b[l4]; p -> i[l5]; F }main { F }
+NETWORK: p{def F{w?; X} def X{d?; i + l5; F} main {F}} | b{def F{w&{l2: d + l3; X}} def X{w&{l4: F}} main {F}} | d{def F{w!<m1>; i?; b&{l3: X}} def X{p!<m4>; i!<m5>; F} main {F}} | w{def F{d?; i + l1; p!<m2>; b + l2; X} def X{b + l4; F} main {F}} | i{def F{w&{l1: d!<m3>; X}} def X{d?; p&{l5: F}} main {F}}
+
+TEST: C189
+CHOREOGRAPHY: def F { p.m2 -> i; w.m3 -> b; p.m4 -> b; i -> d[l3]; X }def X { b.m5 -> d; b -> p[l4]; w.m6 -> i; 0 }main { p -> d[l1]; p.m1 -> w; d -> i[l2]; F }
+NETWORK: p{def F{i!<m2>; b!<m4>; X} def X{b&{l4: 0}} main {d + l1; w!<m1>; F}} | b{def F{w?; p?; X} def X{d!<m5>; p + l4; 0} main {F}} | d{def F{i&{l3: X}} def X{b?; 0} main {p&{l1: i + l2; F}}} | w{def F{b!<m3>; X} def X{i!<m6>; 0} main {p?; F}} | i{def F{p?; d + l3; X} def X{w?; 0} main {d&{l2: F}}}
+
+TEST: C191
+CHOREOGRAPHY: def F { b.m2 -> i; d -> p[l2]; b -> i[l3]; d.m3 -> p; X }def X { w -> p[l4]; p -> b[l5]; p.m4 -> d; i.m5 -> d; 0 }main { p.m1 -> d; w -> i[l1]; F }
+NETWORK: p{def F{d&{l2: d?; X}} def X{w&{l4: b + l5; d!<m4>; 0}} main {d!<m1>; F}} | b{def F{i!<m2>; i + l3; X} def X{p&{l5: 0}} main {F}} | d{def F{p + l2; p!<m3>; X} def X{p?; i?; 0} main {p?; F}} | w{def F{X} def X{p + l4; 0} main {i + l1; F}} | i{def F{b?; b&{l3: X}} def X{d!<m5>; 0} main {w&{l1: F}}}
+
+TEST: C199
+CHOREOGRAPHY: def F { d -> p[l1]; p -> i[l2]; X }def X { b.m2 -> d; i -> p[l3]; p.m3 -> w; w -> d[l4]; p.m4 -> d; p.m5 -> b; i.m6 -> d; X }main { d.m1 -> w; F }
+NETWORK: p{def F{d&{l1: i + l2; X}} def X{i&{l3: w!<m3>; d!<m4>; b!<m5>; X}} main {F}} | b{def F{X} def X{d!<m2>; p?; X} main {F}} | d{def F{p + l1; X} def X{b?; w&{l4: p?; i?; X}} main {w!<m1>; F}} | w{def F{X} def X{p?; d + l4; X} main {d?; F}} | i{def F{p&{l2: X}} def X{p + l3; d!<m6>; X} main {F}}
+
+TEST: C202
+CHOREOGRAPHY: def F { d.m3 -> p; b.m4 -> p; p -> w[l3]; X }def X { b -> i[l4]; w -> p[l5]; w.m5 -> b; X }main { i -> b[l1]; w.m1 -> b; i -> w[l2]; p.m2 -> d; F }
+NETWORK: p{def F{d?; b?; w + l3; X} def X{w&{l5: X}} main {d!<m2>; F}} | b{def F{p!<m4>; X} def X{i + l4; w?; X} main {i&{l1: w?; F}}} | d{def F{p!<m3>; X} def X{X} main {p?; F}} | w{def F{p&{l3: X}} def X{p + l5; b!<m5>; X} main {b!<m1>; i&{l2: F}}} | i{def F{X} def X{b&{l4: X}} main {b + l1; w + l2; F}}
+
+TEST: C220
+CHOREOGRAPHY: def F { i.m2 -> d; w -> b[l2]; X }def X { d.m3 -> p; w -> d[l3]; d -> b[l4]; b.m4 -> i; p.m5 -> d; i.m6 -> p; 0 }main { p.m1 -> d; w -> b[l1]; F }
+NETWORK: p{def F{X} def X{d?; d!<m5>; i?; 0} main {d!<m1>; F}} | b{def F{w&{l2: X}} def X{d&{l4: i!<m4>; 0}} main {w&{l1: F}}} | d{def F{i?; X} def X{p!<m3>; w&{l3: b + l4; p?; 0}} main {p?; F}} | w{def F{b + l2; X} def X{d + l3; 0} main {b + l1; F}} | i{def F{d!<m2>; X} def X{b?; p!<m6>; 0} main {F}}
+
+TEST: C227
+CHOREOGRAPHY: def F { b -> d[l3]; b.m4 -> d; b.m5 -> i; X }def X { i.m6 -> p; w -> p[l4]; F }main { d -> i[l1]; i.m1 -> d; i -> p[l2]; d.m2 -> w; b.m3 -> d; X }
+NETWORK: p{def F{X} def X{i?; w&{l4: F}} main {i&{l2: X}}} | b{def F{d + l3; d!<m4>; i!<m5>; X} def X{F} main {d!<m3>; X}} | d{def F{b&{l3: b?; X}} def X{F} main {i + l1; i?; w!<m2>; b?; X}} | w{def F{X} def X{p + l4; F} main {d?; X}} | i{def F{b?; X} def X{p!<m6>; F} main {d&{l1: d!<m1>; p + l2; X}}}
+
+TEST: C230
+CHOREOGRAPHY: def F { p.m4 -> b; d.m5 -> p; p -> b[l3]; X }def X { p -> i[l4]; d -> w[l5]; X }main { p.m1 -> b; i.m2 -> p; p -> d[l1]; b -> w[l2]; w.m3 -> b; F }
+NETWORK: p{def F{b!<m4>; d?; b + l3; X} def X{i + l4; X} main {b!<m1>; i?; d + l1; F}} | b{def F{p?; p&{l3: X}} def X{X} main {p?; w + l2; w?; F}} | d{def F{p!<m5>; X} def X{w + l5; X} main {p&{l1: F}}} | w{def F{X} def X{d&{l5: X}} main {b&{l2: b!<m3>; F}}} | i{def F{X} def X{p&{l4: X}} main {p!<m2>; F}}
+
+TEST: C233
+CHOREOGRAPHY: def F { p -> i[l1]; w -> d[l2]; w.m3 -> d; X }def X { b.m4 -> p; b.m5 -> p; p.m6 -> w; d -> p[l3]; p.m7 -> d; F }main { d.m1 -> i; b.m2 -> i; F }
+NETWORK: p{def F{i + l1; X} def X{b?; b?; w!<m6>; d&{l3: d!<m7>; F}} main {F}} | b{def F{X} def X{p!<m4>; p!<m5>; F} main {i!<m2>; F}} | d{def F{w&{l2: w?; X}} def X{p + l3; p?; F} main {i!<m1>; F}} | w{def F{d + l2; d!<m3>; X} def X{p?; F} main {F}} | i{def F{p&{l1: X}} def X{F} main {d?; b?; F}}
+
+TEST: C1
+CHOREOGRAPHY: main { w -> g[l1]; l.m1 -> o; k -> o[l2]; g -> k[l3]; o.m2 -> l; l -> w[l4]; g.m3 -> l; k -> c[l5]; w.m4 -> l; k -> w[l6]; 0 }
+NETWORK: c{main {k&{l5: 0}}} | w{main {g + l1; l&{l4: l!<m4>; k&{l6: 0}}}} | g{main {w&{l1: k + l3; l!<m3>; 0}}} | k{main {o + l2; g&{l3: c + l5; w + l6; 0}}} | l{main {o!<m1>; o?; w + l4; g?; w?; 0}} | o{main {l?; k&{l2: l!<m2>; 0}}}
+
+TEST: C2
+CHOREOGRAPHY: main { o.m1 -> k; o -> k[l1]; k.m2 -> o; w -> l[l2]; w -> o[l3]; c -> l[l4]; c.m3 -> k; k -> o[l5]; c -> o[l6]; o.m4 -> g; 0 }
+NETWORK: c{main {l + l4; k!<m3>; o + l6; 0}} | w{main {l + l2; o + l3; 0}} | g{main {o?; 0}} | k{main {o?; o&{l1: o!<m2>; c?; o + l5; 0}}} | l{main {w&{l2: c&{l4: 0}}}} | o{main {k!<m1>; k + l1; k?; w&{l3: k&{l5: c&{l6: g!<m4>; 0}}}}}
+
+TEST: C3
+CHOREOGRAPHY: main { l.m1 -> g; w.m2 -> o; o -> l[l1]; c -> g[l2]; o -> c[l3]; g.m3 -> c; k.m4 -> o; c.m5 -> l; k -> g[l4]; l.m6 -> w; 0 }
+NETWORK: c{main {g + l2; o&{l3: g?; l!<m5>; 0}}} | g{main {l?; c&{l2: c!<m3>; k&{l4: 0}}}} | w{main {o!<m2>; l?; 0}} | k{main {o!<m4>; g + l4; 0}} | l{main {g!<m1>; o&{l1: c?; w!<m6>; 0}}} | o{main {w?; l + l1; c + l3; k?; 0}}
+
+TEST: C4
+CHOREOGRAPHY: main { l -> g[l1]; l.m1 -> g; w -> g[l2]; k -> o[l3]; g.m2 -> c; w -> c[l4]; g.m3 -> o; c -> l[l5]; c -> w[l6]; k -> w[l7]; 0 }
+NETWORK: c{main {g?; w&{l4: l + l5; w + l6; 0}}} | g{main {l&{l1: l?; w&{l2: c!<m2>; o!<m3>; 0}}}} | w{main {g + l2; c + l4; c&{l6: k&{l7: 0}}}} | k{main {o + l3; w + l7; 0}} | l{main {g + l1; g!<m1>; c&{l5: 0}}} | o{main {k&{l3: g?; 0}}}
+
+TEST: C5
+CHOREOGRAPHY: main { w.m1 -> l; l -> g[l1]; o -> k[l2]; c -> o[l3]; l.m2 -> k; k.m3 -> w; o.m4 -> g; o -> k[l4]; l -> o[l5]; g -> k[l6]; 0 }
+NETWORK: c{main {o + l3; 0}} | w{main {l!<m1>; k?; 0}} | g{main {l&{l1: o?; k + l6; 0}}} | k{main {o&{l2: l?; w!<m3>; o&{l4: g&{l6: 0}}}}} | l{main {w?; g + l1; k!<m2>; o + l5; 0}} | o{main {k + l2; c&{l3: g!<m4>; k + l4; l&{l5: 0}}}}
+
+TEST: C6
+CHOREOGRAPHY: main { g.m1 -> o; g.m2 -> k; g.m3 -> k; l -> k[l1]; k.m4 -> o; g -> w[l2]; l -> w[l3]; k -> c[l4]; k -> l[l5]; w -> c[l6]; 0 }
+NETWORK: c{main {k&{l4: w&{l6: 0}}}} | g{main {o!<m1>; k!<m2>; k!<m3>; w + l2; 0}} | w{main {g&{l2: l&{l3: c + l6; 0}}}} | k{main {g?; g?; l&{l1: o!<m4>; c + l4; l + l5; 0}}} | l{main {k + l1; w + l3; k&{l5: 0}}} | o{main {g?; k?; 0}}
+
+TEST: C7
+CHOREOGRAPHY: main { k -> g[l1]; k -> o[l2]; k -> l[l3]; g.m1 -> l; g -> o[l4]; o.m2 -> l; c -> k[l5]; l.m3 -> c; w.m4 -> l; w -> l[l6]; 0 }
+NETWORK: c{main {k + l5; l?; 0}} | g{main {k&{l1: l!<m1>; o + l4; 0}}} | w{main {l!<m4>; l + l6; 0}} | k{main {g + l1; o + l2; l + l3; c&{l5: 0}}} | l{main {k&{l3: g?; o?; c!<m3>; w?; w&{l6: 0}}}} | o{main {k&{l2: g&{l4: l!<m2>; 0}}}}
+
+TEST: C8
+CHOREOGRAPHY: main { w.m1 -> g; c -> o[l1]; c.m2 -> g; o.m3 -> k; c -> o[l2]; c.m4 -> l; g -> c[l3]; k.m5 -> l; l -> c[l4]; c -> w[l5]; 0 }
+NETWORK: c{main {o + l1; g!<m2>; o + l2; l!<m4>; g&{l3: l&{l4: w + l5; 0}}}} | w{main {g!<m1>; c&{l5: 0}}} | g{main {w?; c?; c + l3; 0}} | k{main {o?; l!<m5>; 0}} | l{main {c?; k?; c + l4; 0}} | o{main {c&{l1: k!<m3>; c&{l2: 0}}}}
+
+TEST: C9
+CHOREOGRAPHY: main { g -> c[l1]; k -> c[l2]; w -> l[l3]; k.m1 -> o; l -> o[l4]; g -> w[l5]; w -> o[l6]; l -> g[l7]; k -> g[l8]; o.m2 -> c; 0 }
+NETWORK: c{main {g&{l1: k&{l2: o?; 0}}}} | g{main {c + l1; w + l5; l&{l7: k&{l8: 0}}}} | w{main {l + l3; g&{l5: o + l6; 0}}} | k{main {c + l2; o!<m1>; g + l8; 0}} | l{main {w&{l3: o + l4; g + l7; 0}}} | o{main {k?; l&{l4: w&{l6: c!<m2>; 0}}}}
+
+TEST: C10
+CHOREOGRAPHY: main { g -> w[l1]; w -> g[l2]; k.m1 -> c; l.m2 -> g; c -> l[l3]; o.m3 -> c; o.m4 -> g; k.m5 -> c; o.m6 -> l; k.m7 -> w; 0 }
+NETWORK: c{main {k?; l + l3; o?; k?; 0}} | g{main {w + l1; w&{l2: l?; o?; 0}}} | w{main {g&{l1: g + l2; k?; 0}}} | k{main {c!<m1>; c!<m5>; w!<m7>; 0}} | l{main {g!<m2>; c&{l3: o?; 0}}} | o{main {c!<m3>; g!<m4>; l!<m6>; 0}}
+
+TEST: C2302
+CHOREOGRAPHY: def T { q -> g[l1]; if c.c1 then 0 else 0 }def Y { q -> i[l2]; p.m2 -> c; if g.c2 then g -> i[L]; g -> c[L]; g -> q[L]; g -> p[L]; Y else g -> i[R]; g -> c[R]; g -> q[R]; g -> p[R]; L }def L { if c.c3 then c -> i[L]; c -> g[L]; c -> q[L]; c -> p[L]; c.m3 -> p; L else c -> i[R]; c -> g[R]; c -> q[R]; c -> p[R]; i.m4 -> p; i.m5 -> q; T }main { c.m1 -> p; Y }
+NETWORK: p{def T{0} def Y{c!<m2>; g&{R: L, L: Y}} def L{c&{R: i?; T, L: c?; L}} main {c?; Y}} | q{def T{g + l1; 0} def Y{i + l2; g&{R: L, L: Y}} def L{c&{R: i?; T, L: L}} main {Y}} | c{def T{if c1 then 0 else 0} def Y{p?; g&{R: L, L: Y}} def L{if c3 then i + L; g + L; q + L; p + L; p!<m3>; L else i + R; g + R; q + R; p + R; T} main {p!<m1>; Y}} | g{def T{q&{l1: 0}} def Y{if c2 then i + L; c + L; q + L; p + L; Y else i + R; c + R; q + R; p + R; L} def L{c&{R: T, L: L}} main {Y}} | i{def T{0} def Y{q&{l2: g&{R: L, L: Y}}} def L{c&{R: p!<m4>; q!<m5>; T, L: L}} main {Y}}
+
+TEST: C2306
+CHOREOGRAPHY: def T { g.m3 -> q; T }def Y { i -> q[l2]; c -> q[l3]; if i.c1 then i -> g[L]; i -> c[L]; i -> q[L]; L else i -> g[R]; i -> c[R]; i -> q[R]; T }def L { if q.c2 then p -> q[l4]; if p.c3 then p -> q[L]; L else p -> q[R]; L else p -> q[l4]; if p.c3 then p -> q[L]; 0 else p -> q[R]; 0 }main { q.m1 -> c; c -> i[l1]; c.m2 -> g; Y }
+np.MergingProjection$MergingException: Process p: Can't merge procedures L and T
+	at np.MergingProjection.merge(MergingProjection.kt:89)
+	at np.MergingProjection.merge(MergingProjection.kt:21)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:66)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Condition.accept(Condition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:23)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.CommunicationSelection.accept(CommunicationSelection.kt:9)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:23)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.CommunicationSelection.accept(CommunicationSelection.kt:9)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:75)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.ProcedureDefinition.accept(ProcedureDefinition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:92)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Choreography.accept(Choreography.kt:8)
+	at np.BehaviourProjection.getProcessTerm(BehaviourProjection.kt:59)
+	at np.NetworkProjection.project(NetworkProjection.kt:66)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:46)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:7)
+	at java.util.LinkedHashMap.forEach(LinkedHashMap.java:684)
+	at np.TestsFromFiles.test(TestsFromFiles.kt:41)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:513)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:170)
+	at org.junit.jupiter.engine.execution.ThrowableCollector.execute(ThrowableCollector.java:40)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:166)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:113)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:58)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:113)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:55)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:43)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:170)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:154)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:90)
+	at com.intellij.junit5.JUnit5IdeaTestRunner.startRunnerWithArgs(JUnit5IdeaTestRunner.java:74)
+	at com.intellij.rt.execution.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:47)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:242)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:70)
+
+TEST: C2318
+CHOREOGRAPHY: def T { i -> c[l2]; q -> p[l3]; g -> c[l4]; L }def Y { i.m1 -> g; i.m2 -> p; L }def L { if c.c2 then c -> i[L]; c -> g[L]; c -> q[L]; c -> p[L]; Y else c -> i[R]; c -> g[R]; c -> q[R]; c -> p[R]; q -> i[l5]; if g.c3 then g -> i[L]; g -> c[L]; g -> q[L]; g -> p[L]; T else g -> i[R]; g -> c[R]; g -> q[R]; g -> p[R]; L }main { i -> q[l1]; if c.c1 then T else T }
+NETWORK: p{def T{q&{l3: L}} def Y{i?; L} def L{c&{R: g&{R: L, L: T}, L: Y}} main {T}} | q{def T{p + l3; L} def Y{L} def L{c&{R: i + l5; g&{R: L, L: T}, L: Y}} main {i&{l1: T}}} | c{def T{i&{l2: g&{l4: L}}} def Y{L} def L{if c2 then i + L; g + L; q + L; p + L; Y else i + R; g + R; q + R; p + R; g&{R: L, L: T}} main {if c1 then T else T}} | g{def T{c + l4; L} def Y{i?; L} def L{c&{R: if c3 then i + L; c + L; q + L; p + L; T else i + R; c + R; q + R; p + R; L, L: Y}} main {T}} | i{def T{c + l2; L} def Y{g!<m1>; p!<m2>; L} def L{c&{R: q&{l5: g&{R: L, L: T}}, L: Y}} main {q + l1; T}}
+
+TEST: C2319
+CHOREOGRAPHY: def T { p.m2 -> i; T }def Y { p.m3 -> c; g.m4 -> p; if c.c3 then c -> g[L]; c -> q[L]; c -> p[L]; q.m5 -> p; 0 else c -> g[R]; c -> q[R]; c -> p[R]; 0 }def L { g -> c[l1]; i.m6 -> c; 0 }main { if g.c1 then c.m1 -> q; g -> i[L]; g -> c[L]; g -> q[L]; g -> p[L]; Y else c.m1 -> q; g -> i[R]; g -> c[R]; g -> q[R]; g -> p[R]; if p.c2 then p -> i[L]; p -> g[L]; p -> c[L]; p -> q[L]; L else p -> i[R]; p -> g[R]; p -> c[R]; p -> q[R]; T }
+NETWORK: p{def T{i!<m2>; T} def Y{c!<m3>; g?; c&{R: 0, L: q?; 0}} def L{0} main {g&{R: if c2 then i + L; g + L; c + L; q + L; L else i + R; g + R; c + R; q + R; T, L: Y}}} | q{def T{T} def Y{c&{R: 0, L: p!<m5>; 0}} def L{0} main {c?; g&{R: p&{R: T, L: L}, L: Y}}} | c{def T{T} def Y{p?; if c3 then g + L; q + L; p + L; 0 else g + R; q + R; p + R; 0} def L{g&{l1: i?; 0}} main {q!<m1>; g&{R: p&{R: T, L: L}, L: Y}}} | g{def T{T} def Y{p!<m4>; c&{R: 0, L: 0}} def L{c + l1; 0} main {if c1 then i + L; c + L; q + L; p + L; Y else i + R; c + R; q + R; p + R; p&{R: T, L: L}}} | i{def T{p?; T} def Y{0} def L{c!<m6>; 0} main {g&{R: p&{R: T, L: L}, L: Y}}}
+
+TEST: C2321
+CHOREOGRAPHY: def T { q -> p[l1]; c -> p[l2]; p -> q[l3]; L }def Y { p.m3 -> q; g -> i[l4]; if p.c1 then g.m4 -> q; p -> i[L]; p -> g[L]; p -> q[L]; Y else g.m4 -> q; p -> i[R]; p -> g[R]; p -> q[R]; 0 }def L { if c.c2 then c -> i[L]; c -> g[L]; c -> q[L]; c -> p[L]; if p.c3 then 0 else 0 else c -> i[R]; c -> g[R]; c -> q[R]; c -> p[R]; Y }main { i.m1 -> c; p.m2 -> q; T }
+np.MergingProjection$MergingException: Process c: Can't merge procedures Y and 0
+	at np.MergingProjection.merge(MergingProjection.kt:89)
+	at np.MergingProjection.merge(MergingProjection.kt:21)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:66)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Condition.accept(Condition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:23)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.CommunicationSelection.accept(CommunicationSelection.kt:9)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:23)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.CommunicationSelection.accept(CommunicationSelection.kt:9)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:75)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.ProcedureDefinition.accept(ProcedureDefinition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:92)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Choreography.accept(Choreography.kt:8)
+	at np.BehaviourProjection.getProcessTerm(BehaviourProjection.kt:59)
+	at np.NetworkProjection.project(NetworkProjection.kt:66)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:46)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:7)
+	at java.util.LinkedHashMap.forEach(LinkedHashMap.java:684)
+	at np.TestsFromFiles.test(TestsFromFiles.kt:41)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:513)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:170)
+	at org.junit.jupiter.engine.execution.ThrowableCollector.execute(ThrowableCollector.java:40)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:166)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:113)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:58)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:113)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:55)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:43)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:170)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:154)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:90)
+	at com.intellij.junit5.JUnit5IdeaTestRunner.startRunnerWithArgs(JUnit5IdeaTestRunner.java:74)
+	at com.intellij.rt.execution.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:47)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:242)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:70)
+
+TEST: C2325
+CHOREOGRAPHY: def T { if i.c1 then i -> g[L]; i -> c[L]; i -> q[L]; if i.c2 then i -> g[L]; i -> c[L]; i -> q[L]; Y else i -> g[R]; i -> c[R]; i -> q[R]; T else i -> g[R]; i -> c[R]; i -> q[R]; 0 }def Y { g.m2 -> c; if g.c3 then q.m3 -> p; g -> i[L]; g -> c[L]; g -> q[L]; i.m4 -> q; 0 else q.m3 -> p; g -> i[R]; g -> c[R]; g -> q[R]; T }def L { c.m5 -> g; Y }main { p -> q[l1]; q -> i[l2]; q.m1 -> i; L }
+np.MergingProjection$MergingException: Process p: Can't merge procedures Y and T
+	at np.MergingProjection.merge(MergingProjection.kt:89)
+	at np.MergingProjection.merge(MergingProjection.kt:21)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:66)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Condition.accept(Condition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:23)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.CommunicationSelection.accept(CommunicationSelection.kt:9)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:23)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.CommunicationSelection.accept(CommunicationSelection.kt:9)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:23)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.CommunicationSelection.accept(CommunicationSelection.kt:9)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:66)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Condition.accept(Condition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:75)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.ProcedureDefinition.accept(ProcedureDefinition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:92)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Choreography.accept(Choreography.kt:8)
+	at np.BehaviourProjection.getProcessTerm(BehaviourProjection.kt:59)
+	at np.NetworkProjection.project(NetworkProjection.kt:66)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:46)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:7)
+	at java.util.LinkedHashMap.forEach(LinkedHashMap.java:684)
+	at np.TestsFromFiles.test(TestsFromFiles.kt:41)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:513)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:170)
+	at org.junit.jupiter.engine.execution.ThrowableCollector.execute(ThrowableCollector.java:40)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:166)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:113)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:58)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:113)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:55)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:43)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:170)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:154)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:90)
+	at com.intellij.junit5.JUnit5IdeaTestRunner.startRunnerWithArgs(JUnit5IdeaTestRunner.java:74)
+	at com.intellij.rt.execution.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:47)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:242)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:70)
+
+TEST: C2326
+CHOREOGRAPHY: def T { i -> q[l1]; if p.c2 then p -> i[L]; p -> g[L]; p -> q[L]; Y else p -> i[R]; p -> g[R]; p -> q[R]; T }def Y { if g.c3 then p -> q[l2]; g -> i[L]; g -> q[L]; i.m1 -> q; Y else p -> q[l2]; g -> i[R]; g -> q[R]; Y }def L { c -> i[l3]; c -> i[l4]; p.m2 -> q; c -> g[l5]; T }main { if c.c1 then c -> i[L]; c -> g[L]; c -> q[L]; c -> p[L]; T else c -> i[R]; c -> g[R]; c -> q[R]; c -> p[R]; L }
+np.MergingProjection$MergingException: Process c: Can't merge procedures Y and T
+	at np.MergingProjection.merge(MergingProjection.kt:89)
+	at np.MergingProjection.merge(MergingProjection.kt:21)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:66)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Condition.accept(Condition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:23)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.CommunicationSelection.accept(CommunicationSelection.kt:9)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:75)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.ProcedureDefinition.accept(ProcedureDefinition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:92)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Choreography.accept(Choreography.kt:8)
+	at np.BehaviourProjection.getProcessTerm(BehaviourProjection.kt:59)
+	at np.NetworkProjection.project(NetworkProjection.kt:66)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:46)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:7)
+	at java.util.LinkedHashMap.forEach(LinkedHashMap.java:684)
+	at np.TestsFromFiles.test(TestsFromFiles.kt:41)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:513)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:170)
+	at org.junit.jupiter.engine.execution.ThrowableCollector.execute(ThrowableCollector.java:40)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:166)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:113)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:58)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:113)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:55)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:43)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:170)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:154)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:90)
+	at com.intellij.junit5.JUnit5IdeaTestRunner.startRunnerWithArgs(JUnit5IdeaTestRunner.java:74)
+	at com.intellij.rt.execution.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:47)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:242)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:70)
+
+TEST: C2334
+CHOREOGRAPHY: def T { q -> p[l1]; q.m1 -> i; if p.c1 then i -> c[l2]; p -> i[L]; p -> g[L]; p -> c[L]; p -> q[L]; c -> i[l3]; Y else i -> c[l2]; p -> i[R]; p -> g[R]; p -> c[R]; p -> q[R]; 0 }def Y { if g.c2 then T else T }def L { g.m2 -> i; g.m3 -> c; p.m4 -> c; c.m5 -> q; Y }main { L }
+NETWORK: p{def T{q&{l1: if c1 then i + L; g + L; c + L; q + L; Y else i + R; g + R; c + R; q + R; 0}} def Y{T} def L{c!<m4>; Y} main {L}} | q{def T{p + l1; i!<m1>; p&{R: 0, L: Y}} def Y{T} def L{c?; Y} main {L}} | c{def T{i&{l2: p&{R: 0, L: i + l3; Y}}} def Y{T} def L{g?; p?; q!<m5>; Y} main {L}} | g{def T{p&{R: 0, L: Y}} def Y{if c2 then T else T} def L{i!<m2>; c!<m3>; Y} main {L}} | i{def T{q?; c + l2; p&{R: 0, L: c&{l3: Y}}} def Y{T} def L{g?; Y} main {L}}
+
+TEST: C2336
+CHOREOGRAPHY: def T { c.m2 -> p; if q.c1 then 0 else 0 }def Y { q -> p[l1]; if i.c2 then g -> p[l2]; g -> c[l3]; i -> c[L]; i -> q[L]; i -> p[L]; L else g -> p[l2]; g -> c[l3]; i -> c[R]; i -> q[R]; i -> p[R]; i -> q[l4]; L }def L { c -> q[l5]; if i.c3 then i -> c[L]; i -> q[L]; i -> p[L]; Y else i -> c[R]; i -> q[R]; i -> p[R]; T }main { p.m1 -> c; L }
+np.MergingProjection$MergingException: Process g: Can't merge procedures Y and T
+	at np.MergingProjection.merge(MergingProjection.kt:89)
+	at np.MergingProjection.merge(MergingProjection.kt:21)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:66)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Condition.accept(Condition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:23)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.CommunicationSelection.accept(CommunicationSelection.kt:9)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:75)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.ProcedureDefinition.accept(ProcedureDefinition.kt:8)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:92)
+	at np.BehaviourProjection.visit(BehaviourProjection.kt:17)
+	at ast.cc.nodes.Choreography.accept(Choreography.kt:8)
+	at np.BehaviourProjection.getProcessTerm(BehaviourProjection.kt:59)
+	at np.NetworkProjection.project(NetworkProjection.kt:66)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:46)
+	at np.TestsFromFiles$test$2.accept(TestsFromFiles.kt:7)
+	at java.util.LinkedHashMap.forEach(LinkedHashMap.java:684)
+	at np.TestsFromFiles.test(TestsFromFiles.kt:41)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.lang.reflect.Method.invoke(Method.java:498)
+	at org.junit.platform.commons.util.ReflectionUtils.invokeMethod(ReflectionUtils.java:513)
+	at org.junit.jupiter.engine.execution.ExecutableInvoker.invoke(ExecutableInvoker.java:115)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.lambda$invokeTestMethod$6(TestMethodTestDescriptor.java:170)
+	at org.junit.jupiter.engine.execution.ThrowableCollector.execute(ThrowableCollector.java:40)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.invokeTestMethod(TestMethodTestDescriptor.java:166)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:113)
+	at org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor.execute(TestMethodTestDescriptor.java:58)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:113)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$2(HierarchicalTestExecutor.java:121)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.accept(ForEachOps.java:184)
+	at java.util.stream.ReferencePipeline$2$1.accept(ReferencePipeline.java:175)
+	at java.util.Iterator.forEachRemaining(Iterator.java:116)
+	at java.util.Spliterators$IteratorSpliterator.forEachRemaining(Spliterators.java:1801)
+	at java.util.stream.AbstractPipeline.copyInto(AbstractPipeline.java:481)
+	at java.util.stream.AbstractPipeline.wrapAndCopyInto(AbstractPipeline.java:471)
+	at java.util.stream.ForEachOps$ForEachOp.evaluateSequential(ForEachOps.java:151)
+	at java.util.stream.ForEachOps$ForEachOp$OfRef.evaluateSequential(ForEachOps.java:174)
+	at java.util.stream.AbstractPipeline.evaluate(AbstractPipeline.java:234)
+	at java.util.stream.ReferencePipeline.forEach(ReferencePipeline.java:418)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.lambda$executeRecursively$3(HierarchicalTestExecutor.java:121)
+	at org.junit.platform.engine.support.hierarchical.SingleTestExecutor.executeSafely(SingleTestExecutor.java:66)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.executeRecursively(HierarchicalTestExecutor.java:108)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor$NodeExecutor.execute(HierarchicalTestExecutor.java:79)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestExecutor.execute(HierarchicalTestExecutor.java:55)
+	at org.junit.platform.engine.support.hierarchical.HierarchicalTestEngine.execute(HierarchicalTestEngine.java:43)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:170)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:154)
+	at org.junit.platform.launcher.core.DefaultLauncher.execute(DefaultLauncher.java:90)
+	at com.intellij.junit5.JUnit5IdeaTestRunner.startRunnerWithArgs(JUnit5IdeaTestRunner.java:74)
+	at com.intellij.rt.execution.junit.IdeaTestRunner$Repeater.startRunnerWithArgs(IdeaTestRunner.java:47)
+	at com.intellij.rt.execution.junit.JUnitStarter.prepareStreamsAndStart(JUnitStarter.java:242)
+	at com.intellij.rt.execution.junit.JUnitStarter.main(JUnitStarter.java:70)
+
+TEST: C2339
+CHOREOGRAPHY: def T { i -> c[l1]; p.m1 -> c; c.m2 -> g; T }def Y { c.m3 -> i; q.m4 -> c; g -> c[l2]; T }def L { if q.c3 then q -> i[L]; q -> g[L]; q -> c[L]; q -> p[L]; T else q -> i[R]; q -> g[R]; q -> c[R]; q -> p[R]; g.m5 -> q; L }main { if q.c1 then q -> i[L]; q -> g[L]; q -> c[L]; q -> p[L]; if i.c2 then i -> g[L]; i -> c[L]; i -> q[L]; i -> p[L]; 0 else i -> g[R]; i -> c[R]; i -> q[R]; i -> p[R]; L else q -> i[R]; q -> g[R]; q -> c[R]; q -> p[R]; Y }
+NETWORK: p{def T{c!<m1>; T} def Y{T} def L{q&{R: L, L: T}} main {q&{R: Y, L: i&{R: L, L: 0}}}} | q{def T{T} def Y{c!<m4>; T} def L{if c3 then i + L; g + L; c + L; p + L; T else i + R; g + R; c + R; p + R; g?; L} main {if c1 then i + L; g + L; c + L; p + L; i&{R: L, L: 0} else i + R; g + R; c + R; p + R; Y}} | c{def T{i&{l1: p?; g!<m2>; T}} def Y{i!<m3>; q?; g&{l2: T}} def L{q&{R: L, L: T}} main {q&{R: Y, L: i&{R: L, L: 0}}}} | g{def T{c?; T} def Y{c + l2; T} def L{q&{R: q!<m5>; L, L: T}} main {q&{R: Y, L: i&{R: L, L: 0}}}} | i{def T{c + l1; T} def Y{c?; T} def L{q&{R: L, L: T}} main {q&{R: Y, L: if c2 then g + L; c + L; q + L; p + L; 0 else g + R; c + R; q + R; p + R; L}}}
+
+
+Process finished with exit code 0
