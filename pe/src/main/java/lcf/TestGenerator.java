@@ -47,7 +47,40 @@ public class TestGenerator {
 	// actual generation of choreographies
 	BufferedWriter writer = new BufferedWriter(new FileWriter("tests/"+testFileName));
         for (int j=0; j<NUMBER_OF_TESTS; j++) {
-            // currently not amending for readability
+            Choreography c = tester.generate();
+            generatedTests++;
+            while (c.hasDeadCode()) {
+                c = tester.generate();
+                generatedTests++;
+                badTests++;
+            }
+	    writer.write("*** C"+generatedTests+" ***");
+	    writer.newLine();
+            writer.write(c.amend().toString());
+	    writer.newLine();
+        }
+	writer.close();
+    }
+
+    /*
+     * This will be refactored at a later stage.
+     */
+    private static void makeALotOfTestsWithSeed(long seed, int length, int numProcesses, int numIfs, int numProcedures, BufferedWriter logFile)
+	throws IOException, GeneratorException {
+
+	// standard filename
+	String testFileName = "chor-"+length+"-"+numProcesses+"-"+numIfs+"-"+numProcedures;
+	logFile.write("Generating file "+testFileName);
+	logFile.newLine();
+
+	// seed info
+        ChoreographyGenerator tester = new ChoreographyGenerator(seed, length, numProcesses, numIfs, numProcedures);
+        logFile.write("Seed (for reproducibility): "+tester.getSeed());
+	logFile.newLine();
+
+	// actual generation of choreographies
+	BufferedWriter writer = new BufferedWriter(new FileWriter("tests/"+testFileName));
+        for (int j=0; j<NUMBER_OF_TESTS; j++) {
             Choreography c = tester.generate();
             generatedTests++;
             while (c.hasDeadCode()) {
@@ -81,18 +114,32 @@ public class TestGenerator {
     }
 
     public static void main(String[] args) throws IOException, GeneratorException {
-        ChoreographyGenerator tester = new ChoreographyGenerator(-9129708236714512406L,10,5,3,3);
-        Choreography c = tester.generate();
-	while (c.hasDeadCode())
-	    c = tester.generate();
-        c = tester.generate();
-	while (c.hasDeadCode())
-	    c = tester.generate();
-        System.out.println(c.toString()+"\n");
-        System.out.println(c.amend().toString()+"\n");
-        System.exit(0);
+        // ChoreographyGenerator tester = new ChoreographyGenerator(-9129708236714512406L,10,5,3,3);
+        // Choreography c = tester.generate();
+	// while (c.hasDeadCode())
+	//     c = tester.generate();
+        // c = tester.generate();
+	// while (c.hasDeadCode())
+	//     c = tester.generate();
+        // System.out.println(c.toString()+"\n");
+        // System.out.println(c.amend().toString()+"\n");
+        // System.exit(0);
 
 	BufferedWriter logFile = new BufferedWriter(new FileWriter(LOG_FILE));
+
+	niceWrite(logFile,"STARTING GENERATION...");
+	logFile.newLine();
+
+	makeALotOfTestsWithSeed(-9129708236714512406L,10,5,3,3,logFile);
+	makeALotOfTestsWithSeed(8463895940458588614L,10,6,0,0,logFile);
+	makeALotOfTestsWithSeed(-6338169410111561988L,10,5,0,2,logFile);
+
+        niceWrite(logFile,"Generated "+generatedTests+" tests, of which "+badTests+" contain dead code.");
+	logFile.close();
+
+	System.exit(0);
+
+	logFile = new BufferedWriter(new FileWriter(LOG_FILE));
 
 	niceWrite(logFile,"STARTING GENERATION...");
 	logFile.newLine();
