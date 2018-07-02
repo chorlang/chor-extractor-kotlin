@@ -81,11 +81,16 @@ public class TestGenerator {
     }
 
     public static void main(String[] args) throws IOException, GeneratorException {
-        // ChoreographyGenerator tester = new ChoreographyGenerator(10,6,4,1);
-        // Choreography c = tester.generate();
-        // System.out.println(c.toString()+"\n");
-        // System.out.println(c.amend().toString()+"\n");
-        // System.exit(0);
+        ChoreographyGenerator tester = new ChoreographyGenerator(-9129708236714512406L,10,5,3,3);
+        Choreography c = tester.generate();
+	while (c.hasDeadCode())
+	    c = tester.generate();
+        c = tester.generate();
+	while (c.hasDeadCode())
+	    c = tester.generate();
+        System.out.println(c.toString()+"\n");
+        System.out.println(c.amend().toString()+"\n");
+        System.exit(0);
 
 	BufferedWriter logFile = new BufferedWriter(new FileWriter(LOG_FILE));
 

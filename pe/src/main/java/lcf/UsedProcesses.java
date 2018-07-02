@@ -33,6 +33,7 @@ public class UsedProcesses implements CNVisitor {
 
     public void visit(ConditionalNode n) {
         processes.add(n.getDecider());
+	n.getPreAction().accept(this);
         n.getThenAction().accept(this);
         n.getElseAction().accept(this);
     }

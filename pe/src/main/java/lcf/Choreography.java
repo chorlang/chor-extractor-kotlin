@@ -73,21 +73,20 @@ public class Choreography {
         Set<String> keys = procedures.keySet();
 
         // first: maps from body to process names and procedure calls in it
-        HashMap<String,HashSet<String>> pn = new HashMap<String,HashSet<String>>();
         HashMap<String,HashSet<String>> calls = new HashMap<String,HashSet<String>>();
-        for (String name:keys) {
-            ChoreographyNode body = procedures.get(name);
-            calls.put(name,UsedProcedures.run(body));
-            pn.put(name,UsedProcesses.run(body));
-        }
+        for (String name:keys)
+            calls.put(name,UsedProcedures.run(procedures.get(name)));
 
         // second: iteratively compute a fixpoint...
         HashMap<String,HashSet<String>> usedProcesses = new HashMap<String,HashSet<String>>(),
             auxUsedProcesses = new HashMap<String,HashSet<String>>();
 
         for (String name:keys)
-            auxUsedProcesses.put(name,pn.get(name));
+            auxUsedProcesses.put(name,UsedProcesses.run(procedures.get(name)));
         while (!usedProcesses.equals(auxUsedProcesses)) {
+	    System.out.println("Old: "+usedProcesses);
+	    System.out.println("New: "+auxUsedProcesses);
+	    System.out.println();
             for (String name:keys)
                 usedProcesses.put(name,auxUsedProcesses.get(name));
             for (String name:keys) {
@@ -108,6 +107,7 @@ public class Choreography {
      */
     public Choreography amend() {
             HashMap<String,HashSet<String>> usedProcesses = usedProcesses();
+	    System.out.println(usedProcesses);
 
             Choreography amended = new Choreography();
 
