@@ -84,9 +84,6 @@ public class Choreography {
         for (String name:keys)
             auxUsedProcesses.put(name,UsedProcesses.run(procedures.get(name)));
         while (!usedProcesses.equals(auxUsedProcesses)) {
-	    System.out.println("Old: "+usedProcesses);
-	    System.out.println("New: "+auxUsedProcesses);
-	    System.out.println();
             for (String name:keys)
                 usedProcesses.put(name,auxUsedProcesses.get(name));
             for (String name:keys) {
@@ -107,7 +104,6 @@ public class Choreography {
      */
     public Choreography amend() {
             HashMap<String,HashSet<String>> usedProcesses = usedProcesses();
-	    System.out.println(usedProcesses);
 
             Choreography amended = new Choreography();
 
