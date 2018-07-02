@@ -65,7 +65,7 @@ object NetworkProjection {
                 try {
                     network[process] = behaviourProjection.getProcessTerm(chor, process) as ProcessTerm
                 } catch( e:MergingProjection.MergingException ) {
-                    val newE = MergingProjection.MergingException( "Process $process: ${e.message!!}" )
+                    val newE = MergingProjection.MergingException( "Process $process ${e.message!!}" )
                     newE.stackTrace = e.stackTrace
                     throw newE
                 }
@@ -142,7 +142,7 @@ object NetworkProjection {
 
             val branch = generateMain(prset, visited, t_pr, cond-1)
 
-            return Condition(process, expression, thenChoreography = branch, elseChoreograpy = branch)
+            return Condition(process, expression, thenChoreography = branch, elseChoreography = branch)
 
         } else {
             //generate communication

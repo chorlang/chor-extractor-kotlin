@@ -33,7 +33,7 @@ public class ChoreographyParser extends Parser {
 
 	private static final String[] _LITERAL_NAMES = {
 		null, "'||'", "'def'", "'{'", "'}'", "'main {'", "'if'", "'.'", "'then'", 
-		"'else'", "'->'", "';'", "'['", "'];'", "'stop'", null, null, null, "'this'"
+		"'else'", "'->'", "';'", "'['", "'];'", null, null, null, null, "'this'"
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
 		null, null, null, null, null, null, null, null, null, null, null, null, 
