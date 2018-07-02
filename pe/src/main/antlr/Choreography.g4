@@ -32,4 +32,4 @@ expression : Identifier
     |   INT
     ;
 
-TERMINATE : 'stop';
+TERMINATE : 'stop' | '0';

@@ -4,7 +4,7 @@ import ast.cc.CCVisitor
 import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.Behaviour
 
-data class Condition(val process: String, val expression: String, val thenChoreography: CCNode, val elseChoreograpy: CCNode) : Behaviour {
+data class Condition(val process: String, val expression: String, val thenChoreography: CCNode, val elseChoreography: CCNode) : Behaviour {
     override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)
 
     override fun toString(): String {
@@ -17,7 +17,7 @@ data class Condition(val process: String, val expression: String, val thenChoreo
                 .append(" then ")
                 .append(thenChoreography.toString())
                 .append(" else ")
-                .append(elseChoreograpy.toString())
+                .append(elseChoreography.toString())
 
         return sb.toString()
     }

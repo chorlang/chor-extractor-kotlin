@@ -7,6 +7,7 @@ import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.nodes.interfaces.SPNode
 import ast.sp.nodes.*
 import np.MergingProjection.*
+import util.UsedProcesses
 
 import java.util.*
 import kotlin.collections.HashMap
@@ -52,6 +53,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
 
     private var processName: String? = null
     private var procedures: MutableList<Behaviour>? = null
+    private var usedProcesses:Map<String,Set<String>>? = null
 
     fun getProcessTerm(node: CCNode, processName: String): SPNode {
         this.processName = processName
@@ -61,9 +63,9 @@ class BehaviourProjection : CCVisitor<SPNode> {
 
     override fun visit(n: Condition): SPNode {
         return if (processName == n.process) {
-            ConditionSP(n.expression, n.thenChoreography.accept(this) as IBehaviour, n.elseChoreograpy.accept(this) as IBehaviour)
+            ConditionSP(n.expression, n.thenChoreography.accept(this) as IBehaviour, n.elseChoreography.accept(this) as IBehaviour)
         } else {
-            MergingProjection().merge(n.thenChoreography.accept(this), n.elseChoreograpy.accept(this))
+            MergingProjection().merge(n.thenChoreography.accept(this), n.elseChoreography.accept(this))
         }
     }
 
@@ -79,7 +81,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     override fun visit(n: ProcedureInvocation): SPNode {
-        return if (n.processes.contains(processName)) {
+        return if (usedProcesses!![n.procedure]!!.contains(processName)) {
             ProcedureInvocationSP(n.procedure)
         } else {
             TerminationSP()
@@ -87,9 +89,16 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     override fun visit(n: Choreography): SPNode {
+        usedProcesses = UsedProcesses.usedProcesses(n)
         val procedures = HashMap<String, IBehaviour>()
         for (procedure in n.procedures) {
-            procedures[procedure.procedure] = procedure.accept(this) as IBehaviour
+            try {
+                procedures[procedure.procedure] = procedure.accept(this) as IBehaviour
+            } catch( e:MergingException ) {
+                val newE = MergingProjection.MergingException( "(procedure ${procedure.procedure}): ${e.message!!}" )
+                newE.stackTrace = e.stackTrace
+                throw newE
+            }
         }
         return ProcessTerm(procedures, n.main.accept(this) as IBehaviour)
     }
