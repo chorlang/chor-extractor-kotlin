@@ -62,7 +62,13 @@ object NetworkProjection {
         val networkList = ArrayList<Network>()
         for (chor in choreographyList){
             for (process in chor.processes) {
-                network[process] = behaviourProjection.getProcessTerm(chor, process) as ProcessTerm
+                try {
+                    network[process] = behaviourProjection.getProcessTerm(chor, process) as ProcessTerm
+                } catch( e:MergingProjection.MergingException ) {
+                    val newE = MergingProjection.MergingException( "Process $process: ${e.message!!}" )
+                    newE.stackTrace = e.stackTrace
+                    throw newE
+                }
             }
             networkList.add(Network(network))
         }

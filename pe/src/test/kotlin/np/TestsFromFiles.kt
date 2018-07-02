@@ -2,6 +2,7 @@ package np
 
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.io.PrintStream
 
 class TestsFromFiles {
     @Test
@@ -12,7 +13,7 @@ class TestsFromFiles {
         require(dir.exists() && dir.isDirectory() && dir.list().isNotEmpty())
 
         //configuration crap
-        val tests = HashMap<String, String>()
+        val tests = LinkedHashMap<String, String>()
         val testName = "([*]{3}) C([0-9]+) ([*]{3})".toRegex()
         val emptyString =  "^\$".toRegex()
         var title = ""
@@ -46,7 +47,8 @@ class TestsFromFiles {
                 println("NETWORK: $result")
                 println()
             } catch (e: MergingProjection.MergingException){
-                println("Tets failed with exception")
+                e.printStackTrace(PrintStream(System.out))
+                println()
             }
 
         }
