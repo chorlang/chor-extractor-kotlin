@@ -5,6 +5,7 @@ import ast.sp.labels.interfaces.InteractionLabel
 import kotlin.collections.ArrayList
 
 data class MulticomLabel(val labels: ArrayList<InteractionLabel>) : ExtractionLabel(false) {
+    override fun copy() = MulticomLabel(labels.clone() as ArrayList<InteractionLabel>)
 
     override fun toString(): String {
         val sb = StringBuilder()

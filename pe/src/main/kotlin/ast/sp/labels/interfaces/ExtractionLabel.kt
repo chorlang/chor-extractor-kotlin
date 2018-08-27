@@ -8,4 +8,6 @@ abstract class ExtractionLabel(var flipped: Boolean) {
         return (Random::nextDouble).hashCode()
     }
 
+    abstract fun copy() : ExtractionLabel
+
 }
