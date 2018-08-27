@@ -49,9 +49,9 @@ class NetworkExtraction {
         val marking = HashMap<ProcessName, Boolean>()
 
         //we mark as visited processesInChoreography which has no active actions in the main procedure or which are in the list of livelocked processesInChoreography
-        n.processes.forEach({ name, term -> marking[name] = term.main is TerminationSP || livelocked.contains(name) })
+        n.processes.forEach { name, term -> marking[name] = term.main is TerminationSP || livelocked.contains(name) }
 
-        val node = ConcreteNode(n, "0", nextNodeId(), ArrayList(), marking)
+        val node = ConcreteNode(network = n, choicePath = "0", id = nextNodeId(), bad = ArrayList(), marking = marking)
         graph.addVertex(node)
         addToChoicePathMap(node)
         addToHashMap(node)
@@ -66,63 +66,6 @@ class NetworkExtraction {
         val unrolledGraphNodesList = unrollGraph(node, graph as DefaultDirectedGraph<Node, ExtractionLabel>)
         return buildChoreography(node, unrolledGraphNodesList, graph)
     }
-
-    /*private fun cleanGraph(graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>) {
-        val nodesToClean = ArrayList<ConcreteNode>()
-        nodesToClean.addAll(graph.vertexSet().filter { graph.outgoingEdgesOf(it).size == 0 && it.network.processesInChoreography.filterValues { it.main !is TerminationSP }.isNotEmpty() })
-
-        while (nodesToClean.isNotEmpty()) {
-            val node = nodesToClean.first()
-            val incomingEdges = ArrayList<ExtractionLabel>()
-            incomingEdges.addAll(graph.incomingEdgesOf(node))
-            incomingEdges.forEach { graph.getEdgeSource(it) }
-            if (incomingEdges.isEmpty()) {
-                graph.removeVertex(node)
-            } else {
-                while (incomingEdges.isNotEmpty()) {
-                    val incomingEdge = incomingEdges.first()
-                    val sourceNode = graph.getEdgeSource(incomingEdge)
-
-                    val outgoingEdges = graph.outgoingEdgesOf(sourceNode)
-                    when (outgoingEdges.size) {
-                        1 -> {
-                            graph.removeVertex(node)
-                            removeFromHashMap(node)
-                            nodesToClean.add(sourceNode)
-                        }
-                        2 -> {
-                            when (incomingEdge) {
-                                is ThenLabel -> {
-                                    val elseLabel = outgoingEdges.find { it is ElseLabel }
-                                    graph.removeEdge(elseLabel)
-                                    incomingEdges.remove(elseLabel)
-                                    graph.removeVertex(node)
-                                    removeFromHashMap(node)
-                                    nodesToClean.add(sourceNode)
-                                }
-                                is ElseLabel -> {
-                                    val thenLabel = outgoingEdges.find { it is ThenLabel }
-                                    graph.removeEdge(thenLabel)
-                                    incomingEdges.remove(thenLabel)
-                                    removeNodeFromGraph(graph, sourceNode, node)
-                                    nodesToClean.add(sourceNode)
-                                }
-                                else -> {
-                                    throw Exception("Only conditional node can have 2 branches")
-                                }
-                            }
-                        }
-                        3 -> {
-                            graph.removeEdge(incomingEdge)
-                        }
-                    }
-
-                    incomingEdges.remove(incomingEdge)
-                }
-            }
-            nodesToClean.remove(node)
-        }
-    }*/
 
     private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         val unfoldedProcesses = HashSet<String>()
@@ -153,7 +96,7 @@ class NetworkExtraction {
 
                 //if all procedures were visited, flip all markings
                 if (targetMarking.values.all { it }) {
-                    flipAndWah(label, targetMarking, targetNetwork)
+                    flipAndWash(label, targetMarking, targetNetwork)
                 }
 
                 //check if the node with the same network and markings already exists in the graph
@@ -198,8 +141,8 @@ class NetworkExtraction {
 
                 //if all procedures were visited, flip all markings
                 if (targetMarking.values.all { it }) {
-                    flipAndWah(labelThen, targetMarking, targetNetworkThen)
-                    flipAndWah(labelElse, targetMarking, targetNetworkElse)
+                    flipAndWash(labelThen, targetMarking, targetNetworkThen)
+                    flipAndWash(labelElse, targetMarking, targetNetworkElse)
                 }
 
                 //check if the node with the same network and markings already exists in the graph
@@ -367,7 +310,7 @@ class NetworkExtraction {
         //endregion
     }
 
-    private fun flipAndWah(label: ExtractionLabel, targetMarking: Marking, targetNetwork: Network) {
+    private fun flipAndWash(label: ExtractionLabel, targetMarking: Marking, targetNetwork: Network) {
         label.flipped = true
         wash(targetMarking, targetNetwork.processes)
     }
@@ -391,7 +334,7 @@ class NetworkExtraction {
                 val labels = graph.outgoingEdgesOf(node.value)
 
                 val targets = ArrayList<LabelTarget>()
-                labels.forEach { label -> targets.add(LabelTarget(label, graph.getEdgeTarget(label))) }
+                labels.forEach { label -> targets.add(LabelTarget(label.copy(), graph.getEdgeTarget(label))) }
 
                 graph.removeAllEdges(ArrayList<ExtractionLabel>(labels))
                 targets.forEach { target -> graph.addEdge(fakeNode, target.target, target.lbl) }

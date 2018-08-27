@@ -3,6 +3,7 @@ package ast.sp.labels
 import ast.sp.labels.interfaces.ConditionLabel
 
 data class ElseLabel(override val process: String, override val expression: String) : ConditionLabel(process, expression, false) {
+    override fun copy() = ElseLabel(process, expression)
 
     override fun toString() = "if $process.$expression else "
 
