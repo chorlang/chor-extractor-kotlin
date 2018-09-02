@@ -7,6 +7,7 @@ import ast.sp.nodes.interfaces.IBehaviour
 import ast.sp.nodes.interfaces.SPNode
 import ast.sp.nodes.*
 import np.MergingProjection.*
+import util.ChoreographyStatistics
 import util.UsedProcesses
 
 import java.util.*
@@ -90,6 +91,8 @@ class BehaviourProjection : CCVisitor<SPNode> {
 
     override fun visit(n: Choreography): SPNode {
         usedProcesses = UsedProcesses.usedProcesses(n)
+        //val chorStat = ChoreographyStatistics().getStat(n)
+
         val procedures = HashMap<String, IBehaviour>()
         for (procedure in n.procedures) {
             try {
