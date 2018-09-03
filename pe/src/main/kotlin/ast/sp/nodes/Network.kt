@@ -1,11 +1,14 @@
 package ast.sp.nodes
 
-import ast.sp.nodes.interfaces.SPNode
+import ast.sp.interfaces.SPNode
+import ast.sp.interfaces.SPVisitor
 import kotlin.collections.HashMap
 
 typealias ProcessName = String
 
 data class Network(val processes: HashMap<ProcessName, ProcessTerm>) : SPNode {
+    override fun <T> accept(visitor: SPVisitor<T>): T = visitor.visit(this)
+
     override fun toString(): String {
         val builder = StringBuilder()
         processes.forEach { t, u -> builder.append(t).append(u.toString()).append(" | ")}

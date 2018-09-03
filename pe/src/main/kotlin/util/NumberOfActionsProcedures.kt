@@ -1,6 +1,6 @@
 package util
 
-import ast.cc.CCVisitor
+import ast.cc.interfaces.CCVisitor
 import ast.cc.nodes.*
 import javax.naming.OperationNotSupportedException
 

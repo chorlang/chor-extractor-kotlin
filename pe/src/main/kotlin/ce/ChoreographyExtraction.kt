@@ -9,7 +9,10 @@ import ast.sp.nodes.ParallelNetworks
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.apache.logging.log4j.LogManager
+import util.NetworkStat
+import util.NetworkStatistics
 import java.io.File
+import javax.naming.OperationNotSupportedException
 
 object ChoreographyExtraction{
     private val log = LogManager.getLogger()
@@ -26,6 +29,20 @@ object ChoreographyExtraction{
             return chor.toString()
         }
         else throw Exception("Malformed call - choreography was expected.")
+    }
+
+    fun getStat(input: String): NetworkStat{
+        val stream = ANTLRInputStream(input)
+        val lexer = NetworkLexer(stream)
+        val parser = NetworkParser(CommonTokenStream(lexer))
+        val tree = parser.parallelNetworks()
+        val networkVisitor = NetworkVisitor()
+        val parallelNetworks = networkVisitor.visitParallelNetworks(tree) as ParallelNetworks
+
+        if (parallelNetworks.networkList.size == 1) {
+            val ns = NetworkStatistics()
+            return ns.visit(parallelNetworks.networkList.first())
+        } else throw OperationNotSupportedException()
     }
 
     private fun extractChoreography(parsedInput: ParsedInput): Program {

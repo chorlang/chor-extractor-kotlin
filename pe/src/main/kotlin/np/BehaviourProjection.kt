@@ -1,13 +1,12 @@
 package np
 
-import ast.cc.CCVisitor
+import ast.cc.interfaces.CCVisitor
 import ast.cc.interfaces.CCNode
 import ast.cc.nodes.*
-import ast.sp.nodes.interfaces.IBehaviour
-import ast.sp.nodes.interfaces.SPNode
+import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
 import np.MergingProjection.*
-import util.ChoreographyStatistics
 import util.UsedProcesses
 
 import java.util.*

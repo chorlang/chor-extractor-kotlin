@@ -1,8 +1,10 @@
 package ast.sp.nodes
 
-import ast.sp.nodes.interfaces.IBehaviour
+import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.SPVisitor
 
 data class ProcedureInvocationSP(val procedure: String) : IBehaviour {
+    override fun <T> accept(visitor: SPVisitor<T>): T = visitor.visit(this)
 
     override fun toString() = procedure
 

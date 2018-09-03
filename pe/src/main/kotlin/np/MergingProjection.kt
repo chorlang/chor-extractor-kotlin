@@ -1,7 +1,7 @@
 package np
 
-import ast.sp.nodes.interfaces.IBehaviour
-import ast.sp.nodes.interfaces.SPNode
+import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
 import java.util.*
 
