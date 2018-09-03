@@ -3,8 +3,8 @@ package ce
 import antlrgen.NetworkBaseVisitor
 import antlrgen.NetworkParser
 import ast.sp.nodes.*
-import ast.sp.nodes.interfaces.IBehaviour
-import ast.sp.nodes.interfaces.SPNode
+import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.SPNode
 import org.antlr.v4.runtime.tree.TerminalNode
 import antlrgen.NetworkParser.ParallelNetworksContext
 import antlrgen.NetworkParser.SendingContext

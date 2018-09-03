@@ -1,11 +1,13 @@
 package ast.sp.nodes
 
-import ast.sp.nodes.interfaces.IBehaviour
-import ast.sp.nodes.interfaces.SPNode
+import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.SPNode
+import ast.sp.interfaces.SPVisitor
 
 typealias ProcedureName = String
 
 class ProcessTerm(val procedures: HashMap<ProcedureName, IBehaviour>, var main: IBehaviour) : SPNode {
+    override fun <T> accept(visitor: SPVisitor<T>): T = visitor.visit(this)
 
     override fun toString(): String {
         val builder = StringBuilder()

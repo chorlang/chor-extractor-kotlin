@@ -1,7 +1,5 @@
 package ast.cc.nodes
 
-import ast.cc.CCVisitor
-import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.Interaction
 
 /**

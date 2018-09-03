@@ -1,9 +1,12 @@
 package ast.sp.nodes
 
-import ast.sp.nodes.interfaces.IBehaviour
-import ast.sp.nodes.interfaces.ActionSP
+import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.ActionSP
+import ast.sp.interfaces.SPVisitor
 
 data class ReceiveSP(val continuation: IBehaviour, val sender: String) : ActionSP(sender) {
+    override fun <T> accept(visitor: SPVisitor<T>): T = visitor.visit(this)
+
     override fun toString() = process + "?; " + continuation.toString()
 
     override fun copy(): ActionSP = ReceiveSP(continuation.copy(), process)

@@ -1,4 +1,4 @@
-package ast.sp.nodes.interfaces
+package ast.sp.interfaces
 
 interface IBehaviour : SPNode {
     fun copy(): IBehaviour

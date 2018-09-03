@@ -1,10 +1,13 @@
 package ast.sp.nodes
 
-import ast.sp.nodes.interfaces.IBehaviour
-import ast.sp.nodes.interfaces.ActionSP
+import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.ActionSP
+import ast.sp.interfaces.SPVisitor
 import kotlin.collections.HashMap
 
 data class OfferingSP(val sender: String, val branches: HashMap<String, IBehaviour>) : ActionSP(sender) {
+    override fun <T> accept(visitor: SPVisitor<T>): T = visitor.visit(this)
+
     override fun toString(): String {
         val builder = StringBuilder()
         builder.append("$process&{")

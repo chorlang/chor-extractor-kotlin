@@ -1,6 +1,6 @@
 package ast.cc.nodes
 
-import ast.cc.CCVisitor
+import ast.cc.interfaces.CCVisitor
 import ast.cc.interfaces.Behaviour
 import java.util.*
 

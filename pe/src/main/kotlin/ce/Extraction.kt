@@ -8,7 +8,7 @@ import ast.sp.labels.*
 import ast.sp.labels.interfaces.ExtractionLabel
 import ast.sp.labels.interfaces.InteractionLabel
 import ast.sp.nodes.*
-import ast.sp.nodes.interfaces.IBehaviour
+import ast.sp.interfaces.IBehaviour
 import org.apache.logging.log4j.LogManager
 import org.jgrapht.graph.DefaultDirectedGraph
 

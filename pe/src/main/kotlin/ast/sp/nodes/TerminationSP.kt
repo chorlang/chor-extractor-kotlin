@@ -1,8 +1,11 @@
 package ast.sp.nodes
 
-import ast.sp.nodes.interfaces.IBehaviour
+import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.SPVisitor
 
 class TerminationSP : IBehaviour {
+    override fun <T> accept(visitor: SPVisitor<T>): T = visitor.visit(this)
+
     private val termination = "stop"
 
     override fun toString() = termination

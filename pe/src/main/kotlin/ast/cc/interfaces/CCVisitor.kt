@@ -1,4 +1,4 @@
-package ast.cc
+package ast.cc.interfaces
 
 import ast.cc.nodes.*
 
