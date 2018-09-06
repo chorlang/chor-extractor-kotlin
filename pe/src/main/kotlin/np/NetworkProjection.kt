@@ -17,8 +17,7 @@ import kotlin.streams.asSequence
 import java.util.Random
 import kotlin.collections.ArrayList
 import ast.sp.nodes.ParallelNetworks
-import util.ChoreographyStat
-import util.ChoreographyStatistics
+import util.choreographyStatistic.*
 import javax.naming.OperationNotSupportedException
 
 
@@ -79,14 +78,14 @@ object NetworkProjection {
 
     }
 
-    fun getStatistic(choreography: String): ChoreographyStat {
+    fun getStatistic(choreography: String): ChoreographyStatisticsData {
         val tree = this.parse(choreography)
         val choreographyVisitor = ChoreographyVisitor()
         val program = choreographyVisitor.getProgram(tree) //returns Program
 
         val choreographyList = (program as Program).choreographyList
         if (choreographyList.size == 1){
-            return ChoreographyStatistics().getStat(choreographyList.first())
+            return getChoreographyStatistic(choreographyList.first())
         } else {
             throw OperationNotSupportedException()
         }
@@ -226,5 +225,18 @@ object NetworkProjection {
         } while (prset.size!=i)
 
         return prset
+    }
+
+    private fun getChoreographyStatistic(choreography: Choreography): ChoreographyStatisticsData {
+        val usedProcesses = UsedProcesses.usedProcesses(choreography)
+        val processes = HashSet<String>()
+        usedProcesses.values.to(processes)
+
+        val numberOfProcedures = usedProcesses.size
+        val numberOfProcesses = processes.size
+        val numberOfActions = NumberOfActions().visit(choreography)
+        val numberOfConditionals = NumberOfConditionals().visit(choreography)
+
+        return ChoreographyStatisticsData(numberOfActions, numberOfProcesses, numberOfProcedures, numberOfConditionals)
     }
 }

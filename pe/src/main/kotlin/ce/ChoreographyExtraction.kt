@@ -6,11 +6,11 @@ import ast.cc.nodes.Choreography
 import ast.cc.nodes.Program
 import ast.sp.nodes.Network
 import ast.sp.nodes.ParallelNetworks
+import ast.sp.nodes.ProcessTerm
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.apache.logging.log4j.LogManager
-import util.NetworkStat
-import util.NetworkStatistics
+import util.networkStatistic.*
 import java.io.File
 import javax.naming.OperationNotSupportedException
 
@@ -31,7 +31,7 @@ object ChoreographyExtraction{
         else throw Exception("Malformed call - choreography was expected.")
     }
 
-    fun getStat(input: String): NetworkStat{
+    fun getStat(input: String): NetworkStatisticData {
         val stream = ANTLRInputStream(input)
         val lexer = NetworkLexer(stream)
         val parser = NetworkParser(CommonTokenStream(lexer))
@@ -40,9 +40,50 @@ object ChoreographyExtraction{
         val parallelNetworks = networkVisitor.visitParallelNetworks(tree) as ParallelNetworks
 
         if (parallelNetworks.networkList.size == 1) {
-            val ns = NetworkStatistics()
-            return ns.visit(parallelNetworks.networkList.first())
+            return getNetworkStatistic(parallelNetworks.networkList.first())
         } else throw OperationNotSupportedException()
+    }
+
+    private fun getNetworkStatistic(n:Network): NetworkStatisticData {
+        val lengthOfProcesses = ArrayList<Int>()
+        val lengthOfProcedures = ArrayList<Int>()
+        val numberOfConditionals = ArrayList<Int>()
+        val numberOfProcedures = ArrayList<Int>()
+
+        n.processes.forEach { processName, processTerm ->
+            val processStatistic = getNetworkProcessStatistic(processTerm)
+
+            lengthOfProcesses.add(processStatistic.lengthOfProcesses)
+            lengthOfProcedures.add(processStatistic.lengthOfProcedures)
+            numberOfConditionals.add(processStatistic.numOfConditions)
+            numberOfProcedures.add(processStatistic.numberOfProcedures)
+        }
+
+        return NetworkStatisticData(
+                minLengthOfProcesses = lengthOfProcesses.min()?:0,
+                maxLengthOfProcesses = lengthOfProcesses.max()?:0,
+                avgLengthOfProcesses = lengthOfProcesses.average().toInt(),
+                minNumberOfProceduresInProcesses = numberOfProcedures.min()?:0,
+                maxNumberOfProceduresInProcesses = numberOfProcedures.max()?:0,
+                avgNumberOfProceduresInProcesses = numberOfProcedures.average().toInt(),
+                minNumberOfConditionalsInProcesses = numberOfConditionals.min()?:0,
+                maxNumberOfConditionalsInProcesses = numberOfConditionals.max()?:0,
+                avgNumberOfConditionalsInProcesses = numberOfConditionals.average().toInt(),
+                numberOfProcessesWithConditionals = numberOfConditionals.filter { it.equals(0) }.size,
+                minProcedureLengthInProcesses = lengthOfProcedures.min()?:0,
+                maxProcedureLengthInProcesses = lengthOfProcedures.max()?:0,
+                avgProcedureLengthInProcesses = lengthOfProcedures.average().toInt()
+        )
+
+    }
+
+    private fun getNetworkProcessStatistic(n: ProcessTerm): NetworkProcessStatisticData {
+        val networkProcessConditionals = NetworkProcessConditions().visit(n)
+        val networkProcessActionProcedures = NetworkProcessActionsProcedures().visit(n)
+        val networkProcessActions = networkProcessActionProcedures + NetworkProcessActionsMain().visit(n)
+        val networkProcessProcedures = n.procedures.size
+
+        return NetworkProcessStatisticData(networkProcessActions, networkProcessProcedures, networkProcessConditionals, networkProcessActionProcedures)
     }
 
     private fun extractChoreography(parsedInput: ParsedInput): Program {

@@ -1,4 +1,4 @@
-package util
+package util.choreographyStatistic
 
 import ast.cc.interfaces.CCVisitor
 import ast.cc.interfaces.CCNode
