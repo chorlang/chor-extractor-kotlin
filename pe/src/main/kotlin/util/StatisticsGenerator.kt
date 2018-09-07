@@ -1,21 +1,16 @@
 package util
 
-import ast.cc.nodes.Choreography
 import ce.ChoreographyExtraction
 import np.NetworkProjection
 import org.junit.jupiter.api.Test
-import util.choreographyStatistic.ChoreographyStatisticsData
-import util.choreographyStatistic.NumberOfActions
-import util.choreographyStatistic.NumberOfConditionals
-import util.choreographyStatistic.UsedProcesses
 import java.io.File
 import java.text.ParseException
 
 class StatisticsGenerator {
     /**
-     * 1. take generated choreographies and collect statistics on them
-     * 2. generate netoworks and collect statistics on them
-     * 3. combine statistics and return as output
+     * for each file with choreographies
+     * 1. generate networks and write them to the file %original_file_name% networks
+     * 2. get statistic and write to the file %original_file_name% statistics
      */
     @Test
     fun run(){
@@ -28,11 +23,7 @@ class StatisticsGenerator {
     }
 
     /**
-     * @input: choreography data: HashMap<choreography_id, choreography_body>
-     * @output: HashMap<choreography_id, ChoreographyStatisticsData>
-     *
-     * foreach chor get stat in the format "id, length, numberOfProcesses, numberOfProcedures, numberOfConditionals"
-     * return set of stat
+     * @input: choreography data: HashMap<choreography_id, choreography_body>, filename
      */
     private fun getStatistics(chorData: HashMap<String, String>, filename: String){
         File("$filename.txt").printWriter().use { out ->
@@ -70,15 +61,14 @@ class StatisticsGenerator {
     }
 
     /**
-     * @input: list of pairs (choreography id, choreography)
-     * @output: list of pairs (choreography id, network)
-     * foreach choreography generate network and save result as (choreography id, network)
+     * @input: chor data: (choreography id, choreography), filename
      */
-    private fun generateNetworks(chorData: java.util.HashMap<String, String>, filename: String) {
+    private fun generateNetworks(chorData: HashMap<String, String>, filename: String) {
         File("$filename.txt").printWriter().use { out ->
             out.println("choreographyId,Network")
             chorData.forEach { choreographyId, choreography ->
-                out.println("$choreographyId,${NetworkProjection.project(choreography)}")
+                val network = NetworkProjection.project(choreography)
+                out.println("$choreographyId,$network")
             }
         }
     }
