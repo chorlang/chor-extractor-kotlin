@@ -4,7 +4,7 @@ import ast.sp.interfaces.SPVisitor
 import ast.sp.nodes.*
 import javax.naming.OperationNotSupportedException
 
-class NetworkProcessActionsProcedures: SPVisitor<Int> {
+class NetworkProcessActions: SPVisitor<Int> {
     override fun visit(n: ConditionSP): Int {
         return n.elseBehaviour.accept(this) + n.thenBehaviour.accept(this)
     }
@@ -26,7 +26,7 @@ class NetworkProcessActionsProcedures: SPVisitor<Int> {
     }
 
     override fun visit(n: ProcessTerm): Int {
-        return n.procedures.values.sumBy { pr -> pr.accept(this) }
+        return n.procedures.values.toList().foldRight(0) { procedure, next -> procedure.accept(this) + next } + n.main.accept(this)
     }
 
     override fun visit(n: ReceiveSP): Int {

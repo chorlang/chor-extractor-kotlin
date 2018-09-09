@@ -81,8 +81,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     override fun visit(n: ProcedureInvocation): SPNode {
-        val pi = usedProcesses?.get(n.procedure)?.contains(processName)
-        return if (pi!=null && pi) {
+        return if (usedProcesses!![n.procedure]!!.contains(processName)) {
             ProcedureInvocationSP(n.procedure)
         } else {
             TerminationSP()

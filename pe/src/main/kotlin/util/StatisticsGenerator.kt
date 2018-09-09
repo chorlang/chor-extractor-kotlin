@@ -34,7 +34,7 @@ class StatisticsGenerator {
                     "minProcedureLengthInProcesses, maxProcedureLengthInProcesses, avgProcedureLengthInProcesses")
             chorData.forEach { choreographyId, choreography ->
                 val network = NetworkProjection.project(choreography).toString()
-                val networkStatistic = ChoreographyExtraction.getStat(network)
+                val networkStatistic = ChoreographyExtraction.getStatistic(network)
                 val choreographyStatistic = NetworkProjection.getStatistic(choreography)
                 out.println(    "$choreographyId," +
                                 "${choreographyStatistic.length}," +
@@ -95,22 +95,27 @@ class StatisticsGenerator {
      * @output: HashMap<choreography_id, choreography_body>>
      */
     private fun parseChoreographiesFile(file: File): HashMap<String, String> {
-        var choreography = ""
+        val choreography = ArrayList<String>()
         var name = ""
+
         val choreographyMap = HashMap<String, String>()
 
         file.forEachLine { line ->
             when {
                 line.startsWith("***") -> name = line.substring(4, 7).trim()
-                line.startsWith("def") -> choreography = line
-                line.startsWith("main") -> choreography = "$choreography $line"
+                line.startsWith("def") -> choreography.add(line)
+                line.startsWith("main") -> choreography.add(line)
                 line.isEmpty() -> {
-                    choreographyMap.put(name, choreography)
-                    choreography = ""
+                    choreographyMap.put(name, choreography.joinToString(separator = " "))
+                    choreography.clear()
                     name = ""
                 }
                 else -> throw ParseException("line $line was unexpected", 0)
             }
+        }
+
+        if (choreography.isNotEmpty() && name!=""){
+            choreographyMap.put(name, choreography.joinToString(separator = " "))
         }
 
         return  choreographyMap
