@@ -90,7 +90,7 @@ class UsedProcesses : CCVisitor<Set<String>> {
                 n.procedures.forEach { procedure ->
                     calls[procedure.procedure]!!.forEach { call ->
                         try {
-                            newUsedProcesses[procedure.procedure] = newUsedProcesses[procedure.procedure].orEmpty() + oldUsedProcesses[call].orEmpty()
+                            newUsedProcesses[procedure.procedure] = newUsedProcesses[procedure.procedure]!! + oldUsedProcesses[call]!!
                         } catch( e:kotlin.KotlinNullPointerException ){
                             e.printStackTrace()
                         }

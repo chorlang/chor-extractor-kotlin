@@ -228,12 +228,8 @@ object NetworkProjection {
     }
 
     private fun getChoreographyStatistic(choreography: Choreography): ChoreographyStatisticsData {
-        val usedProcesses = UsedProcesses.usedProcesses(choreography)
-        val processes = HashSet<String>()
-        usedProcesses.values.to(processes)
-
-        val numberOfProcedures = usedProcesses.size
-        val numberOfProcesses = processes.size
+        val numberOfProcedures = choreography.procedures.size
+        val numberOfProcesses = choreography.processes.size
         val numberOfActions = NumberOfActions().visit(choreography)
         val numberOfConditionals = NumberOfConditionals().visit(choreography)
 

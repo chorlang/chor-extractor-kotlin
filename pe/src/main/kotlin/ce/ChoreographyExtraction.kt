@@ -31,7 +31,7 @@ object ChoreographyExtraction{
         else throw Exception("Malformed call - choreography was expected.")
     }
 
-    fun getStat(input: String): NetworkStatisticData {
+    fun getStatistic(input: String): NetworkStatisticData {
         val stream = ANTLRInputStream(input)
         val lexer = NetworkLexer(stream)
         val parser = NetworkParser(CommonTokenStream(lexer))
@@ -54,7 +54,7 @@ object ChoreographyExtraction{
             val processStatistic = getNetworkProcessStatistic(processTerm)
 
             lengthOfProcesses.add(processStatistic.lengthOfProcesses)
-            lengthOfProcedures.add(processStatistic.lengthOfProcedures)
+            lengthOfProcedures.addAll(processStatistic.lengthOfProcedures)
             numberOfConditionals.add(processStatistic.numOfConditions)
             numberOfProcedures.add(processStatistic.numberOfProcedures)
         }
@@ -69,7 +69,7 @@ object ChoreographyExtraction{
                 minNumberOfConditionalsInProcesses = numberOfConditionals.min()?:0,
                 maxNumberOfConditionalsInProcesses = numberOfConditionals.max()?:0,
                 avgNumberOfConditionalsInProcesses = numberOfConditionals.average().toInt(),
-                numberOfProcessesWithConditionals = numberOfConditionals.filter { it.equals(0) }.size,
+                numberOfProcessesWithConditionals = numberOfConditionals.filter { !it.equals(0) }.size,
                 minProcedureLengthInProcesses = lengthOfProcedures.min()?:0,
                 maxProcedureLengthInProcesses = lengthOfProcedures.max()?:0,
                 avgProcedureLengthInProcesses = lengthOfProcedures.average().toInt()
@@ -79,8 +79,8 @@ object ChoreographyExtraction{
 
     private fun getNetworkProcessStatistic(n: ProcessTerm): NetworkProcessStatisticData {
         val networkProcessConditionals = NetworkProcessConditions().visit(n)
-        val networkProcessActionProcedures = NetworkProcessActionsProcedures().visit(n)
-        val networkProcessActions = networkProcessActionProcedures + NetworkProcessActionsMain().visit(n)
+        val networkProcessActionProcedures = NetworkProcessActionsPerProcedure().getLength(n)
+        val networkProcessActions = NetworkProcessActions().visit(n)
         val networkProcessProcedures = n.procedures.size
 
         return NetworkProcessStatisticData(networkProcessActions, networkProcessProcedures, networkProcessConditionals, networkProcessActionProcedures)

@@ -16,5 +16,5 @@ data class NetworkStatisticData(
         val avgProcedureLengthInProcesses: Int
 )
 
-data class NetworkProcessStatisticData(val lengthOfProcesses: Int, val numberOfProcedures: Int, val numOfConditions: Int, val lengthOfProcedures: Int)
+data class NetworkProcessStatisticData(val lengthOfProcesses: Int, val numberOfProcedures: Int, val numOfConditions: Int, val lengthOfProcedures: ArrayList<Int>)
 
