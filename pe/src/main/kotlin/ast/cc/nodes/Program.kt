@@ -3,7 +3,7 @@ package ast.cc.nodes
 import ast.cc.interfaces.CCVisitor
 import ast.cc.interfaces.CCNode
 
-class Program (val choreographyList: ArrayList<Choreography>): CCNode {
+class Program (val choreographyList: ArrayList<Choreography>, val statistic: ArrayList<GraphStatistic> = ArrayList<GraphStatistic>()): CCNode {
     override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)
 
     override fun toString(): String {
@@ -13,3 +13,8 @@ class Program (val choreographyList: ArrayList<Choreography>): CCNode {
         return sb.toString()
     }
 }
+
+data class GraphStatistic(
+        val nodes: Int,
+        val badLoops: Int
+)

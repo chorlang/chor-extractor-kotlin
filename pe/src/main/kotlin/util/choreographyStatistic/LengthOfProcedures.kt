@@ -4,7 +4,7 @@ import ast.cc.interfaces.CCVisitor
 import ast.cc.nodes.*
 import javax.naming.OperationNotSupportedException
 
-class NumberOfActions: CCVisitor<Int> {
+class LengthOfProcedures: CCVisitor<Int> {
     override fun visit(n: Condition): Int {
         return n.thenChoreography.accept(this) + n.elseChoreography.accept(this)
     }
@@ -22,8 +22,7 @@ class NumberOfActions: CCVisitor<Int> {
     }
 
     override fun visit(n: Choreography): Int {
-        //return n.procedures.foldRight(0) { procedure, next -> procedure.accept(this) + next } +
-        return n.main.accept(this)
+        throw OperationNotSupportedException()
     }
 
     override fun visit(n: Program): Int {
@@ -36,5 +35,11 @@ class NumberOfActions: CCVisitor<Int> {
 
     override fun visit(n: CommunicationSelection): Int {
         return n.continuation.accept(this) + 1
+    }
+
+    fun getLength(n: Choreography): ArrayList<Int>{
+        val stat = ArrayList<Int>()
+        n.procedures.forEach { procedure -> stat.add(procedure.accept(this))}
+        return stat
     }
 }

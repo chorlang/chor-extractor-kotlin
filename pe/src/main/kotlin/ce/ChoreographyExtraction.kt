@@ -3,6 +3,7 @@ package ce
 import antlrgen.NetworkLexer
 import antlrgen.NetworkParser
 import ast.cc.nodes.Choreography
+import ast.cc.nodes.GraphStatistic
 import ast.cc.nodes.Program
 import ast.sp.nodes.Network
 import ast.sp.nodes.ParallelNetworks
@@ -19,14 +20,14 @@ object ChoreographyExtraction{
 
     @Throws(Exception::class)
     @JvmStatic
-    fun main(args: ArrayList<String>): String {
+    fun main(args: ArrayList<String>): Program {
         val parsedInput = parseInput(args)
 
         if (parsedInput!=null) {
-            val chor = extractChoreography(parsedInput)
-            //log.info(chor.toString())
+            val program = extractChoreography(parsedInput)
+            //log.info(network.toString())
 
-            return chor.toString()
+            return program //.toString()
         }
         else throw Exception("Malformed call - choreography was expected.")
     }
@@ -87,7 +88,7 @@ object ChoreographyExtraction{
     }
 
     private fun extractChoreography(parsedInput: ParsedInput): Program {
-        val stream = ANTLRInputStream(parsedInput.chor)
+        val stream = ANTLRInputStream(parsedInput.network)
         val lexer = NetworkLexer(stream)
         val parser = NetworkParser(CommonTokenStream(lexer))
         val tree = parser.parallelNetworks()
@@ -95,12 +96,15 @@ object ChoreographyExtraction{
         val parallelNetworks = networkVisitor.visitParallelNetworks(tree) as ParallelNetworks
 
         val program = ArrayList<Choreography>()
+        val statistic = ArrayList<GraphStatistic>()
         for (network in parallelNetworks.networkList) {
             if (parsedInput.livelocked.isEmpty() || network.processes.keys.containsAll(parsedInput.livelocked)) {
-                program.add(NetworkExtraction.run(network, parsedInput.strategy, parsedInput.livelocked, parsedInput.debugMode))
+                val extraction = Extraction.run(network, parsedInput.strategy, parsedInput.livelocked, parsedInput.debugMode)
+                program.add(extraction.first)
+                statistic.add(extraction.second)
             } else throw Exception("Malformed call - list of livelocked processesInChoreography contains not existent processesInChoreography")
         }
-        return Program(program)
+        return Program(program, statistic)
     }
 
     fun parseStrategy(strategy: String): Strategy {
@@ -110,7 +114,7 @@ object ChoreographyExtraction{
 
     private fun parseInput(args: ArrayList<String>): ParsedInput? {
         var str = Strategy.Default
-        var chor = ""
+        var network = ""
         val livelocked = ArrayList<String>()
         var debugMode = false
 
@@ -127,14 +131,14 @@ object ChoreographyExtraction{
                 "-c" -> {
                     val i = iter.nextIndex()
                     if (args.size >= i + 1)
-                        chor = args.get(i)
+                        network = args.get(i)
                     else throw Exception("Malformed call - choreography was expected.")
                 }
                 "-f" -> {
                     val i = iter.nextIndex()
                     if (args.size >= i + 1) {
                         val f = File(args.get(i))
-                        chor = f.readText()
+                        network = f.readText()
                     }
                     else throw Exception("Malformed call - choreography file name was expected.")
                 }
@@ -152,10 +156,10 @@ object ChoreographyExtraction{
             }
         }
 
-        if (chor == "") return null
-        else return (ParsedInput(chor, str, livelocked, debugMode))
+        if (network == "") return null
+        else return (ParsedInput(network, str, livelocked, debugMode))
     }
 
-    data class ParsedInput(val chor: String, val strategy: Strategy, val livelocked: ArrayList<String>, val debugMode: Boolean)
+    data class ParsedInput(val network: String, val strategy: Strategy, val livelocked: ArrayList<String>, val debugMode: Boolean)
 
 }

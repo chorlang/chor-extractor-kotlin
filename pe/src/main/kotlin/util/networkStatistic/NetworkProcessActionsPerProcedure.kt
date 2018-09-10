@@ -22,7 +22,7 @@ class NetworkProcessActionsPerProcedure: SPVisitor<Int> {
     }
 
     override fun visit(n: ProcedureInvocationSP): Int {
-        return 1
+        return 0
     }
 
     override fun visit(n: ProcessTerm): Int {
@@ -42,7 +42,7 @@ class NetworkProcessActionsPerProcedure: SPVisitor<Int> {
     }
 
     override fun visit(n: TerminationSP): Int {
-        return 1
+        return 0
     }
 
     override fun visit(n: Behaviour): Int {
