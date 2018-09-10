@@ -35,7 +35,7 @@ public class TestGenerator {
 	throws IOException, GeneratorException {
 
 	// standard filename
-	String testFileName = "chor-"+length+"-"+numProcesses+"-"+numIfs+"-"+numProcedures;
+	String testFileName = "network-"+length+"-"+numProcesses+"-"+numIfs+"-"+numProcedures;
 	logFile.write("Generating file "+testFileName);
 	logFile.newLine();
 
@@ -69,7 +69,7 @@ public class TestGenerator {
 	throws IOException, GeneratorException {
 
 	// standard filename
-	String testFileName = "chor-"+length+"-"+numProcesses+"-"+numIfs+"-"+numProcedures;
+	String testFileName = "network-"+length+"-"+numProcesses+"-"+numIfs+"-"+numProcedures;
 	logFile.write("Generating file "+testFileName);
 	logFile.newLine();
 

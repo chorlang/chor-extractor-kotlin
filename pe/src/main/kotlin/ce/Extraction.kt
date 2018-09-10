@@ -18,8 +18,8 @@ typealias GraphNode = Pair<Network, InteractionLabel>
 typealias Marking = HashMap<ProcessName, Boolean>
 typealias Hash = Int
 
-class NetworkExtraction {
-    private val log = LogManager.getLogger()
+class Extraction {
+    //private val log = LogManager.getLogger()
     private var nodeIdCounter = 0
     private val hashesMap = HashMap<Hash, ArrayList<ConcreteNode>>()
     private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processesInChoreography used in bad loop calculations
@@ -30,10 +30,10 @@ class NetworkExtraction {
         private lateinit var livelocked: ArrayList<String>
         private var debugMode = false
 
-        fun run(n: Network, s: Strategy, l: ArrayList<String>, d: Boolean): Choreography {
+        fun run(n: Network, s: Strategy = Strategy.Default, l: ArrayList<String> = ArrayList(), d: Boolean = false): Pair<Choreography, GraphStatistic> {
             livelocked = l
             debugMode = d
-            return NetworkExtraction().extract(n, s, livelocked)
+            return Extraction().extract(n, s, livelocked)
         }
     }
 
@@ -44,7 +44,7 @@ class NetworkExtraction {
      * @param n a processesInChoreography from which a choreography will be extracted
      * @return Choreography representation of resulted choreography
      */
-    private fun extract(n: Network, strategy: Strategy, livelocked: ArrayList<String>): Choreography {
+    private fun extract(n: Network, strategy: Strategy, livelocked: ArrayList<String>): Pair<Choreography, GraphStatistic> {
         val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
         val marking = HashMap<ProcessName, Boolean>()
 
@@ -58,13 +58,13 @@ class NetworkExtraction {
 
         buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy)
 
-        if (debugMode) {
+        /*if (debugMode) {
             log.debug("Graph vertexes: ${graph.vertexSet().size}")
             log.debug("Backtracking: $badLoopCnt")
-        }
+        }*/
 
         val unrolledGraphNodesList = unrollGraph(node, graph as DefaultDirectedGraph<Node, ExtractionLabel>)
-        return buildChoreography(node, unrolledGraphNodesList, graph)
+        return Pair(buildChoreography(node, unrolledGraphNodesList, graph), GraphStatistic(graph.vertexSet().size, badLoopCnt))
     }
 
     private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
@@ -365,7 +365,7 @@ class NetworkExtraction {
                     }
                     for (process in node.network.processes) {
                         if (process.value.main !is TerminationSP) {
-                            log.debug(node.toString())
+                            //log.debug(node.toString())
                             throw Exception("Bad graph. No more edges found, but not all processesInChoreography were terminated.")
                         } else return Termination()
                     }
