@@ -1,5 +1,3 @@
-package util
-
 import ce.ChoreographyExtraction
 import np.NetworkProjection
 import org.junit.jupiter.api.Test
