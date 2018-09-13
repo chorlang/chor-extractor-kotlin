@@ -40,7 +40,7 @@ class StatisticsGenerator {
 
         filesWithNetworks.forEach { filename, networks ->
             File(OUTPUT_DIR, "${filename.dropLast(13)} choreography.txt").printWriter().use { out ->
-                out.println("time(sec),nodes,badLoops,numOfProcedures,minProcedureLength,maxProcedureLength,avgProcedureLength")
+                out.println("time(sec),nodes,badLoops,mainLength,numOfProcedures,minProcedureLength,maxProcedureLength,avgProcedureLength")
 
                 networks.forEach { _, network ->
                     //val idToChoreography = HashMap<String, String>()
