@@ -38,24 +38,28 @@ class StatisticsGenerator {
         checkOutputFolder()
         val filesWithNetworks = parseFolderWithFilesWithNetworks(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, choreography_body>>
 
+        val choreographies = HashMap<String, String>()
+
         filesWithNetworks.forEach { filename, networks ->
             File(OUTPUT_DIR, "${filename.dropLast(13)} choreography.txt").printWriter().use { out ->
-                out.println("time(sec),nodes,badLoops,numOfProcedures,minProcedureLength,maxProcedureLength,avgProcedureLength")
+                out.println("id, time(sec),nodes,badLoops,numOfProcedures,minProcedureLength,maxProcedureLength,avgProcedureLength")
 
-                networks.forEach { _, network ->
+                networks.forEach { choreographyId, network ->
                     //val idToChoreography = HashMap<String, String>()
 
                     val start = System.currentTimeMillis()
                     val program = ChoreographyExtraction.main(arrayListOf("-c", network, "-d"))
-                    val executionTime = (System.currentTimeMillis() - start).toDouble()/1000
+                    val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
 
+                    choreographies[choreographyId] = program.choreographyList.first().toString()
 
                     if (program.choreographyList.size == 1 && program.statistic.size == 1) {
                         val statistic = program.statistic.first()
                         val choreography = program.choreographyList.first()
                         val lengthOfProcedures = LengthOfProcedures().getLength(choreography)
 
-                        out.println("$executionTime," +
+                        out.println("$choreographyId," +
+                                "$executionTime," +
                                 "${statistic.nodes}," +
                                 "${statistic.badLoops}," +
                                 "${NumberOfActions().visit(choreography)}," +
@@ -64,19 +68,13 @@ class StatisticsGenerator {
                                 "${lengthOfProcedures.max() ?: 0}," +
                                 "${lengthOfProcedures.average().toInt()}"
                         )
-
-                        /*StatisticsData(
-                                time = executionTime,
-                                nodes = statistic.nodes,
-                                badLoops = statistic.badLoops,
-                                length = NumberOfActions().visit(choreography),
-                                numOfProcedures = choreography.procedures.size,
-                                minProcedureLength = lengthOfProcedures.min() ?: 0,
-                                maxProcedureLength = lengthOfProcedures.max() ?: 0,
-                                avgProcedureLength = lengthOfProcedures.average().toInt()
-                        )*/
                     } else throw OperationNotSupportedException()
                 }
+            }
+
+            File(OUTPUT_DIR, "${filename.dropLast(13)} newchoreography.txt").printWriter().use { out ->
+                out.println("ID,Choreography")
+                choreographies.forEach { id, choreography -> out.println("$id,$choreography") }
             }
         }
 
