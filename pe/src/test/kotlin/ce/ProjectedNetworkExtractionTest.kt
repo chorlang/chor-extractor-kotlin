@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 
-class ProjectedExtractionTest{
+class ProjectedNetworkExtractionTest{
     @Test
     fun tst1(){
         val test = "p{" +

@@ -9,7 +9,6 @@ import ast.sp.labels.interfaces.ExtractionLabel
 import ast.sp.labels.interfaces.InteractionLabel
 import ast.sp.nodes.*
 import ast.sp.interfaces.IBehaviour
-import org.apache.logging.log4j.LogManager
 import org.jgrapht.graph.DefaultDirectedGraph
 
 
@@ -18,7 +17,7 @@ typealias GraphNode = Pair<Network, InteractionLabel>
 typealias Marking = HashMap<ProcessName, Boolean>
 typealias Hash = Int
 
-class Extraction {
+class NetworkExtraction {
     //private val log = LogManager.getLogger()
     private var nodeIdCounter = 0
     private val hashesMap = HashMap<Hash, ArrayList<ConcreteNode>>()
@@ -33,7 +32,7 @@ class Extraction {
         fun run(n: Network, s: Strategy = Strategy.Default, l: ArrayList<String> = ArrayList(), d: Boolean = false): Pair<Choreography, GraphStatistic> {
             livelocked = l
             debugMode = d
-            return Extraction().extract(n, s, livelocked)
+            return NetworkExtraction().extract(n, s, livelocked)
         }
     }
 

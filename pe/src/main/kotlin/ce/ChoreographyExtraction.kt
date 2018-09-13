@@ -99,7 +99,7 @@ object ChoreographyExtraction{
         val statistic = ArrayList<GraphStatistic>()
         for (network in parallelNetworks.networkList) {
             if (parsedInput.livelocked.isEmpty() || network.processes.keys.containsAll(parsedInput.livelocked)) {
-                val extraction = Extraction.run(network, parsedInput.strategy, parsedInput.livelocked, parsedInput.debugMode)
+                val extraction = NetworkExtraction.run(network, parsedInput.strategy, parsedInput.livelocked, parsedInput.debugMode)
                 program.add(extraction.first)
                 statistic.add(extraction.second)
             } else throw Exception("Malformed call - list of livelocked processesInChoreography contains not existent processesInChoreography")
