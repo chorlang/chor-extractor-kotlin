@@ -1,0 +1,40 @@
+*** C1884 ***
+def U { k -> f[l2]; k.m2 -> q; j.m3 -> k; k.m4 -> q; if j.c3 then j -> k[L]; j -> f[L]; j -> q[L]; f.m5 -> q; 0 else j -> k[R]; j -> f[R]; j -> q[R]; U }
+main { j.m1 -> f; if k.c1 then f -> l[l1]; if k.c2 then k -> l[L]; k -> j[L]; k -> f[L]; k -> q[L]; k -> l[L]; k -> j[L]; k -> f[L]; k -> q[L]; 0 else k -> l[R]; k -> j[R]; k -> f[R]; k -> q[R]; k -> l[L]; k -> j[L]; k -> f[L]; k -> q[L]; 0 else f -> l[l1]; if k.c2 then k -> l[L]; k -> j[L]; k -> f[L]; k -> q[L]; k -> l[R]; k -> j[R]; k -> f[R]; k -> q[R]; U else k -> l[R]; k -> j[R]; k -> f[R]; k -> q[R]; k -> l[R]; k -> j[R]; k -> f[R]; k -> q[R]; U }
+
+*** C1885 ***
+def U { f -> k[l3]; if k.c2 then k -> l[L]; k -> j[L]; k -> f[L]; l.m3 -> j; 0 else k -> l[R]; k -> j[R]; k -> f[R]; f -> k[l4]; if f.c3 then f -> l[L]; f -> k[L]; f -> j[L]; U else f -> l[R]; f -> k[R]; f -> j[R]; 0 }
+main { q.m1 -> k; j.m2 -> f; k -> j[l1]; if f.c1 then j -> l[l2]; f -> l[L]; f -> k[L]; f -> j[L]; f -> q[L]; U else j -> l[l2]; f -> l[R]; f -> k[R]; f -> j[R]; f -> q[R]; 0 }
+
+*** C1887 ***
+def U { q -> l[l2]; if f.c3 then j.m3 -> l; f -> l[L]; f -> k[L]; f -> j[L]; f -> q[L]; 0 else j.m3 -> l; f -> l[R]; f -> k[R]; f -> j[R]; f -> q[R]; l -> f[l3]; l -> k[l4]; 0 }
+main { q.m1 -> f; if k.c1 then k -> l[L]; k -> j[L]; k -> f[L]; k -> q[L]; q -> k[l1]; l.m2 -> q; if j.c2 then U else U else k -> l[R]; k -> j[R]; k -> f[R]; k -> q[R]; U }
+
+*** C1889 ***
+def U { j.m6 -> q; if k.c2 then k -> j[L]; k -> f[L]; k -> q[L]; if f.c3 then 0 else 0 else k -> j[R]; k -> f[R]; k -> q[R]; 0 }
+main { k.m1 -> f; if l.c1 then f.m2 -> j; l -> k[L]; l -> j[L]; l -> f[L]; l -> q[L]; l.m3 -> k; 0 else f.m2 -> j; l -> k[R]; l -> j[R]; l -> f[R]; l -> q[R]; f -> k[l1]; j.m4 -> q; l.m5 -> f; U }
+
+*** C1890 ***
+def U { j.m3 -> k; q.m4 -> l; k -> q[l2]; if j.c3 then j -> l[L]; j -> k[L]; j -> q[L]; k.m5 -> j; U else j -> l[R]; j -> k[R]; j -> q[R]; 0 }
+main { l.m1 -> f; if l.c1 then q -> l[l1]; l -> k[L]; l -> j[L]; l -> f[L]; l -> q[L]; k.m2 -> q; 0 else q -> l[l1]; l -> k[R]; l -> j[R]; l -> f[R]; l -> q[R]; if j.c2 then j -> l[L]; j -> k[L]; j -> f[L]; j -> q[L]; 0 else j -> l[R]; j -> k[R]; j -> f[R]; j -> q[R]; U }
+
+*** C1891 ***
+def U { q -> k[l1]; k.m1 -> q; k -> l[l2]; q -> l[l3]; if q.c3 then k.m2 -> f; q -> l[L]; q -> k[L]; q -> j[L]; q -> f[L]; U else k.m2 -> f; q -> l[R]; q -> k[R]; q -> j[R]; q -> f[R]; q -> j[l4]; f.m3 -> l; U }
+main { if l.c1 then if l.c2 then l -> k[L]; l -> j[L]; l -> f[L]; l -> q[L]; l -> k[L]; l -> j[L]; l -> f[L]; l -> q[L]; 0 else l -> k[R]; l -> j[R]; l -> f[R]; l -> q[R]; l -> k[L]; l -> j[L]; l -> f[L]; l -> q[L]; 0 else if l.c2 then l -> k[L]; l -> j[L]; l -> f[L]; l -> q[L]; l -> k[R]; l -> j[R]; l -> f[R]; l -> q[R]; U else l -> k[R]; l -> j[R]; l -> f[R]; l -> q[R]; l -> k[R]; l -> j[R]; l -> f[R]; l -> q[R]; U }
+
+*** C1893 ***
+def U { j.m2 -> l; l -> k[l2]; q -> k[l3]; k -> f[l4]; f -> j[l5]; U }
+main { if j.c1 then if k.c2 then k.m1 -> j; k -> l[L]; k -> j[L]; k -> f[L]; k -> q[L]; f -> k[l1]; j -> l[L]; j -> k[L]; j -> f[L]; j -> q[L]; if f.c3 then 0 else 0 else k.m1 -> j; k -> l[R]; k -> j[R]; k -> f[R]; k -> q[R]; j -> l[L]; j -> k[L]; j -> f[L]; j -> q[L]; if f.c3 then 0 else 0 else if k.c2 then k.m1 -> j; k -> l[L]; k -> j[L]; k -> f[L]; k -> q[L]; f -> k[l1]; j -> l[R]; j -> k[R]; j -> f[R]; j -> q[R]; U else k.m1 -> j; k -> l[R]; k -> j[R]; k -> f[R]; k -> q[R]; j -> l[R]; j -> k[R]; j -> f[R]; j -> q[R]; U }
+
+*** C1894 ***
+def U { if j.c2 then j -> f[L]; if f.c3 then 0 else 0 else j -> f[R]; U }
+main { f -> q[l1]; f.m1 -> l; l -> k[l2]; j.m2 -> k; j.m3 -> l; l.m4 -> q; if j.c1 then f -> l[l3]; j -> l[L]; j -> k[L]; j -> f[L]; j -> q[L]; U else f -> l[l3]; j -> l[R]; j -> k[R]; j -> f[R]; j -> q[R]; 0 }
+
+*** C1896 ***
+def U { if j.c1 then f -> k[l4]; if j.c2 then j -> l[L]; j -> k[L]; j -> f[L]; j -> q[L]; j -> l[L]; j -> k[L]; j -> f[L]; j -> q[L]; if q.c3 then U else U else j -> l[R]; j -> k[R]; j -> f[R]; j -> q[R]; k.m2 -> l; j -> l[L]; j -> k[L]; j -> f[L]; j -> q[L]; if q.c3 then U else U else f -> k[l4]; if j.c2 then j -> l[L]; j -> k[L]; j -> f[L]; j -> q[L]; j -> l[R]; j -> k[R]; j -> f[R]; j -> q[R]; j.m3 -> k; 0 else j -> l[R]; j -> k[R]; j -> f[R]; j -> q[R]; k.m2 -> l; j -> l[R]; j -> k[R]; j -> f[R]; j -> q[R]; j.m3 -> k; 0 }
+main { j.m1 -> l; k -> q[l1]; l -> j[l2]; j -> l[l3]; U }
+
+*** C1897 ***
+def U { j -> f[l2]; if j.c3 then k.m2 -> j; j.m3 -> q; j -> l[L]; j -> k[L]; j -> f[L]; j -> q[L]; U else k.m2 -> j; j.m3 -> q; j -> l[R]; j -> k[R]; j -> f[R]; j -> q[R]; j -> l[l3]; q -> k[l4]; 0 }
+main { j.m1 -> f; if k.c1 then k -> l[L]; k -> j[L]; k -> f[L]; k -> q[L]; f -> j[l1]; U else k -> l[R]; k -> j[R]; k -> f[R]; k -> q[R]; if l.c2 then l -> k[L]; l -> j[L]; l -> f[L]; l -> q[L]; U else l -> k[R]; l -> j[R]; l -> f[R]; l -> q[R]; 0 }
+

@@ -1,0 +1,40 @@
+*** C1023 ***
+def X { z.m2 -> w; w -> h[l5]; z -> h[l6]; w.m3 -> v; 0 }
+main { if h.c1 then s.m1 -> z; h -> z[L]; h -> w[L]; h -> v[L]; h -> s[L]; X else s.m1 -> z; h -> z[R]; h -> w[R]; h -> v[R]; h -> s[R]; h -> z[l1]; w -> z[l2]; v -> z[l3]; w -> s[l4]; 0 }
+
+*** C1024 ***
+def X { v -> s[l2]; z -> s[l3]; w.m3 -> v; s.m4 -> h; s.m5 -> w; w -> z[l4]; X }
+main { w.m1 -> h; w.m2 -> z; if z.c1 then z -> h[L]; z -> w[L]; z -> v[L]; z -> s[L]; 0 else z -> h[R]; z -> w[R]; z -> v[R]; z -> s[R]; w -> h[l1]; X }
+
+*** C1025 ***
+def X { h -> s[l6]; h.m3 -> z; X }
+main { s -> h[l1]; s -> z[l2]; v.m1 -> h; w -> h[l3]; w.m2 -> z; s -> z[l4]; h -> w[l5]; if z.c1 then X else X }
+
+*** C1026 ***
+def X { w.m2 -> v; w -> s[l2]; w -> h[l3]; w.m3 -> v; s.m4 -> z; v -> w[l4]; h -> v[l5]; X }
+main { h.m1 -> v; if v.c1 then z -> w[l1]; X else z -> w[l1]; X }
+
+*** C1027 ***
+def X { h -> z[l2]; s.m3 -> w; s -> v[l3]; h -> v[l4]; s -> w[l5]; v.m4 -> h; 0 }
+main { h -> z[l1]; if z.c1 then v.m1 -> h; z -> h[L]; z -> w[L]; z -> v[L]; z -> s[L]; X else v.m1 -> h; z -> h[R]; z -> w[R]; z -> v[R]; z -> s[R]; s.m2 -> w; X }
+
+*** C1028 ***
+def X { z -> v[l2]; h.m3 -> v; s -> v[l3]; w -> h[l4]; w.m4 -> v; w -> s[l5]; 0 }
+main { if h.c1 then h.m1 -> w; v -> h[l1]; h -> z[L]; h -> w[L]; h -> v[L]; h -> s[L]; X else h.m1 -> w; v -> h[l1]; h -> z[R]; h -> w[R]; h -> v[R]; h -> s[R]; z.m2 -> s; 0 }
+
+*** C1029 ***
+def X { s -> v[l2]; v -> s[l3]; h.m3 -> v; v -> w[l4]; z.m4 -> s; v.m5 -> h; 0 }
+main { if z.c1 then v -> h[l1]; s.m1 -> w; v.m2 -> w; z -> h[L]; z -> w[L]; z -> v[L]; z -> s[L]; 0 else v -> h[l1]; s.m1 -> w; v.m2 -> w; z -> h[R]; z -> w[R]; z -> v[R]; z -> s[R]; X }
+
+*** C1030 ***
+def X { h.m2 -> z; z.m3 -> w; w -> s[l4]; s.m4 -> v; v -> w[l5]; 0 }
+main { z -> w[l1]; s.m1 -> w; z -> w[l2]; s -> h[l3]; if w.c1 then X else X }
+
+*** C1033 ***
+def X { z.m2 -> s; v.m3 -> s; w -> s[l2]; w.m4 -> z; h.m5 -> w; v.m6 -> h; v.m7 -> w; 0 }
+main { if w.c1 then w -> z[L]; w -> h[L]; w -> v[L]; w -> s[L]; X else w -> z[R]; w -> h[R]; w -> v[R]; w -> s[R]; v.m1 -> w; w -> v[l1]; X }
+
+*** C1036 ***
+def X { h -> z[l1]; h -> w[l2]; z.m3 -> w; z -> w[l3]; s -> v[l4]; h.m4 -> w; s -> h[l5]; X }
+main { v.m1 -> z; if w.c1 then v.m2 -> s; w -> z[L]; w -> h[L]; w -> v[L]; w -> s[L]; X else v.m2 -> s; w -> z[R]; w -> h[R]; w -> v[R]; w -> s[R]; 0 }
+

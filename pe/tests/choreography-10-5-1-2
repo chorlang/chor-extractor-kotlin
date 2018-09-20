@@ -1,0 +1,50 @@
+*** C1037 ***
+def Q { l -> f[l2]; v.m2 -> d; f.m3 -> v; h -> l[l3]; if l.c1 then l -> h[L]; l -> v[L]; l -> f[L]; l -> d[L]; L else l -> h[R]; l -> v[R]; l -> f[R]; l -> d[R]; Q }
+def L { h -> v[l4]; h -> l[l5]; f.m4 -> d; L }
+main { h.m1 -> f; v -> f[l1]; Q }
+
+*** C1040 ***
+def Q { if h.c1 then l -> h[l4]; l.m2 -> d; h -> l[L]; h -> f[L]; h -> d[L]; 0 else l -> h[l4]; l.m2 -> d; h -> l[R]; h -> f[R]; h -> d[R]; L }
+def L { d -> f[l5]; l -> h[l6]; h -> d[l7]; 0 }
+main { l -> d[l1]; l -> v[l2]; v.m1 -> f; h -> d[l3]; Q }
+
+*** C1044 ***
+def Q { v.m3 -> l; v.m4 -> h; v.m5 -> d; d -> h[l1]; 0 }
+def L { f.m6 -> l; if f.c1 then l -> h[l2]; f -> l[L]; f -> h[L]; f -> v[L]; f -> d[L]; l.m7 -> f; Q else l -> h[l2]; f -> l[R]; f -> h[R]; f -> v[R]; f -> d[R]; 0 }
+main { h.m1 -> v; h.m2 -> l; L }
+
+*** C1047 ***
+def Q { v -> h[l2]; d -> f[l3]; h.m3 -> d; v.m4 -> l; L }
+def L { d.m5 -> h; h -> v[l4]; if v.c1 then v -> l[L]; v -> h[L]; v -> f[L]; v -> d[L]; Q else v -> l[R]; v -> h[R]; v -> f[R]; v -> d[R]; L }
+main { f.m1 -> d; h -> d[l1]; v.m2 -> l; L }
+
+*** C1048 ***
+def Q { h -> l[l3]; h.m2 -> l; 0 }
+def L { f -> d[l4]; v -> f[l5]; v.m3 -> l; d -> v[l6]; Q }
+main { if d.c1 then v -> h[l1]; d -> l[L]; d -> h[L]; d -> f[L]; d -> v[L]; v -> d[l2]; 0 else v -> h[l1]; d -> l[R]; d -> h[R]; d -> f[R]; d -> v[R]; l.m1 -> h; L }
+
+*** C1049 ***
+def Q { l.m1 -> h; v -> f[l3]; v -> f[l4]; f.m2 -> d; v.m3 -> d; l -> f[l5]; 0 }
+def L { f -> d[l6]; if l.c1 then Q else Q }
+main { f -> l[l1]; v -> l[l2]; L }
+
+*** C1051 ***
+def Q { f.m4 -> l; 0 }
+def L { d.m5 -> h; h -> l[l2]; v -> f[l3]; v -> f[l4]; Q }
+main { f.m1 -> d; l.m2 -> d; if h.c1 then d -> h[l1]; h -> l[L]; h -> v[L]; h -> f[L]; h -> d[L]; l.m3 -> f; L else d -> h[l1]; h -> l[R]; h -> v[R]; h -> f[R]; h -> d[R]; 0 }
+
+*** C1054 ***
+def Q { l.m2 -> d; Q }
+def L { h -> l[l4]; v.m3 -> h; h -> f[l5]; d -> f[l6]; Q }
+main { if l.c1 then d -> v[l1]; l -> h[L]; l -> f[L]; l -> v[L]; l -> d[L]; d.m1 -> l; L else d -> v[l1]; l -> h[R]; l -> f[R]; l -> v[R]; l -> d[R]; f -> d[l2]; f -> h[l3]; Q }
+
+*** C1057 ***
+def Q { d -> f[l2]; l -> h[l3]; d.m3 -> l; L }
+def L { l -> f[l4]; f -> v[l5]; v.m4 -> f; L }
+main { f -> h[l1]; d.m1 -> l; if d.c1 then f.m2 -> l; d -> l[L]; d -> h[L]; d -> v[L]; d -> f[L]; 0 else f.m2 -> l; d -> l[R]; d -> h[R]; d -> v[R]; d -> f[R]; Q }
+
+*** C1058 ***
+def Q { h.m2 -> d; v -> d[l1]; if f.c1 then f -> l[L]; f -> h[L]; f -> v[L]; f -> d[L]; L else f -> l[R]; f -> h[R]; f -> v[R]; f -> d[R]; 0 }
+def L { l -> f[l2]; v.m3 -> h; f.m4 -> h; h -> v[l3]; h.m5 -> d; f.m6 -> d; Q }
+main { v.m1 -> l; Q }
+

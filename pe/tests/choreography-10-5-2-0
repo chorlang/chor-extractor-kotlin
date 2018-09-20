@@ -1,0 +1,30 @@
+*** C1505 ***
+main { y.m1 -> l; l.m2 -> j; j.m3 -> g; if g.c1 then y.m4 -> b; j.m5 -> l; g -> l[L]; g -> j[L]; g -> y[L]; g -> b[L]; j.m6 -> y; j.m7 -> b; 0 else y.m4 -> b; j.m5 -> l; g -> l[R]; g -> j[R]; g -> y[R]; g -> b[R]; if g.c2 then g -> l[L]; g -> j[L]; g -> y[L]; g -> b[L]; 0 else g -> l[R]; g -> j[R]; g -> y[R]; g -> b[R]; g.m8 -> y; 0 }
+
+*** C1506 ***
+main { l -> y[l1]; g -> j[l2]; l -> y[l3]; j.m1 -> g; j.m2 -> g; if l.c1 then if j.c2 then l -> j[L]; l -> y[L]; l -> g[L]; l -> b[L]; l.m3 -> j; j -> b[l4]; 0 else l -> j[L]; l -> y[L]; l -> g[L]; l -> b[L]; l.m3 -> j; j -> b[l4]; 0 else if j.c2 then l -> j[R]; l -> y[R]; l -> g[R]; l -> b[R]; b -> j[l5]; 0 else l -> j[R]; l -> y[R]; l -> g[R]; l -> b[R]; b -> j[l5]; 0 }
+
+*** C1507 ***
+main { b -> l[l1]; if j.c1 then l.m1 -> j; j -> l[L]; j -> y[L]; j -> g[L]; j -> b[L]; l -> b[l2]; l -> g[l3]; 0 else l.m1 -> j; j -> l[R]; j -> y[R]; j -> g[R]; j -> b[R]; j -> y[l4]; y -> b[l5]; if j.c2 then y -> j[l6]; j -> l[L]; j -> y[L]; j -> g[L]; j -> b[L]; 0 else y -> j[l6]; j -> l[R]; j -> y[R]; j -> g[R]; j -> b[R]; y -> b[l7]; 0 }
+
+*** C1508 ***
+main { b.m1 -> g; y -> j[l1]; y -> j[l2]; b.m2 -> y; g.m3 -> b; b.m4 -> y; g -> y[l3]; if j.c1 then if l.c2 then j -> l[L]; j -> y[L]; j -> g[L]; j -> b[L]; 0 else j -> l[L]; j -> y[L]; j -> g[L]; j -> b[L]; 0 else if l.c2 then j -> l[R]; j -> y[R]; j -> g[R]; j -> b[R]; l -> b[l4]; 0 else j -> l[R]; j -> y[R]; j -> g[R]; j -> b[R]; l -> b[l4]; 0 }
+
+*** C1509 ***
+main { if g.c1 then b -> l[l1]; g -> l[l2]; j.m1 -> g; g -> l[L]; g -> j[L]; g -> y[L]; g -> b[L]; y.m2 -> b; y -> j[l3]; g.m3 -> l; 0 else b -> l[l1]; g -> l[l2]; j.m1 -> g; g -> l[R]; g -> j[R]; g -> y[R]; g -> b[R]; b -> g[l4]; y.m4 -> g; if l.c2 then 0 else 0 }
+
+*** C1510 ***
+main { b.m1 -> y; j.m2 -> y; g.m3 -> y; if b.c1 then l -> y[l1]; l -> b[l2]; if b.c2 then b -> l[L]; b -> j[L]; b -> y[L]; b -> g[L]; 0 else b -> l[L]; b -> j[L]; b -> y[L]; b -> g[L]; 0 else l -> y[l1]; l -> b[l2]; if b.c2 then b -> l[R]; b -> j[R]; b -> y[R]; b -> g[R]; b.m4 -> j; j.m5 -> y; j.m6 -> l; 0 else b -> l[R]; b -> j[R]; b -> y[R]; b -> g[R]; b.m4 -> j; j.m5 -> y; j.m6 -> l; 0 }
+
+*** C1511 ***
+main { g -> y[l1]; if l.c1 then j -> l[l2]; b.m1 -> y; l -> b[l3]; g -> b[l4]; j -> g[l5]; l -> j[L]; l -> y[L]; l -> g[L]; l -> b[L]; 0 else j -> l[l2]; b.m1 -> y; l -> b[l3]; g -> b[l4]; j -> g[l5]; l -> j[R]; l -> y[R]; l -> g[R]; l -> b[R]; if l.c2 then l -> j[L]; l -> y[L]; l -> g[L]; l -> b[L]; 0 else l -> j[R]; l -> y[R]; l -> g[R]; l -> b[R]; l -> j[l6]; y.m2 -> b; 0 }
+
+*** C1512 ***
+main { j -> l[l1]; if y.c1 then l.m1 -> g; y.m2 -> j; y -> l[L]; y -> j[L]; y -> g[L]; y -> b[L]; j.m3 -> g; l.m4 -> j; if j.c2 then j -> l[L]; j -> y[L]; j -> g[L]; j -> b[L]; 0 else j -> l[R]; j -> y[R]; j -> g[R]; j -> b[R]; b -> g[l2]; 0 else l.m1 -> g; y.m2 -> j; y -> l[R]; y -> j[R]; y -> g[R]; y -> b[R]; g -> b[l3]; y -> b[l4]; 0 }
+
+*** C1513 ***
+main { j.m1 -> b; g -> b[l1]; g -> j[l2]; g.m2 -> y; l.m3 -> g; b.m4 -> g; g -> b[l3]; b.m5 -> g; if g.c1 then g -> l[L]; g -> j[L]; g -> y[L]; g -> b[L]; 0 else g -> l[R]; g -> j[R]; g -> y[R]; g -> b[R]; if g.c2 then 0 else 0 }
+
+*** C1514 ***
+main { l -> g[l1]; y.m1 -> j; y.m2 -> j; j.m3 -> y; g.m4 -> b; if y.c1 then b -> y[l2]; y.m5 -> j; y -> l[L]; y -> j[L]; y -> g[L]; y -> b[L]; 0 else b -> y[l2]; y.m5 -> j; y -> l[R]; y -> j[R]; y -> g[R]; y -> b[R]; if l.c2 then l -> j[L]; l -> y[L]; l -> g[L]; l -> b[L]; l -> j[l3]; 0 else l -> j[R]; l -> y[R]; l -> g[R]; l -> b[R]; 0 }
+

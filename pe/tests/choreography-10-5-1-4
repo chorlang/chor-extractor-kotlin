@@ -1,0 +1,70 @@
+*** C1127 ***
+def P { j -> i[l1]; j -> x[l2]; B }
+def A { if q.c1 then q -> j[L]; q -> i[L]; q -> x[L]; q -> b[L]; P else q -> j[R]; q -> i[R]; q -> x[R]; q -> b[R]; q -> x[l3]; 0 }
+def B { x.m2 -> j; j -> b[l4]; A }
+def L { i -> q[l5]; b.m3 -> q; j -> q[l6]; A }
+main { j.m1 -> i; L }
+
+*** C1129 ***
+def P { q -> x[l2]; j.m1 -> b; L }
+def A { j.m2 -> i; 0 }
+def B { q.m3 -> i; b.m4 -> q; A }
+def L { i -> q[l3]; x.m5 -> i; j -> i[l4]; A }
+main { if q.c1 then b -> q[l1]; q -> j[L]; q -> i[L]; q -> x[L]; q -> b[L]; B else b -> q[l1]; q -> j[R]; q -> i[R]; q -> x[R]; q -> b[R]; P }
+
+*** C1178 ***
+def P { i -> b[l1]; b.m1 -> i; A }
+def A { i -> q[l2]; i.m2 -> q; P }
+def B { x.m3 -> i; L }
+def L { i.m4 -> b; x.m5 -> b; q -> b[l3]; x -> j[l4]; P }
+main { if x.c1 then x -> j[L]; x -> i[L]; x -> b[L]; x -> q[L]; A else x -> j[R]; x -> i[R]; x -> b[R]; x -> q[R]; B }
+
+*** C1181 ***
+def P { x.m2 -> b; b -> i[l1]; L }
+def A { b -> q[l2]; b.m3 -> x; P }
+def B { b.m4 -> i; x.m5 -> b; A }
+def L { j.m6 -> b; i -> q[l3]; A }
+main { x.m1 -> j; if q.c1 then q -> j[L]; q -> i[L]; q -> x[L]; q -> b[L]; B else q -> j[R]; q -> i[R]; q -> x[R]; q -> b[R]; A }
+
+*** C1207 ***
+def P { q.m1 -> x; B }
+def A { b.m2 -> j; j -> i[l2]; q.m3 -> x; P }
+def B { j -> i[l3]; 0 }
+def L { q.m4 -> i; i.m5 -> j; q -> x[l4]; 0 }
+main { q -> i[l1]; if j.c1 then j -> i[L]; j -> x[L]; j -> b[L]; j -> q[L]; L else j -> i[R]; j -> x[R]; j -> b[R]; j -> q[R]; A }
+
+*** C1213 ***
+def P { if j.c1 then j -> x[L]; j -> b[L]; j -> q[L]; P else j -> x[R]; j -> b[R]; j -> q[R]; j -> q[l2]; B }
+def A { b -> i[l3]; i -> b[l4]; x -> i[l5]; B }
+def B { b -> x[l6]; L }
+def L { i -> j[l7]; i -> x[l8]; i -> b[l9]; P }
+main { i -> q[l1]; A }
+
+*** C1225 ***
+def P { if b.c1 then b -> j[L]; b -> i[L]; b -> x[L]; B else b -> j[R]; b -> i[R]; b -> x[R]; L }
+def A { b -> x[l2]; i -> x[l3]; i.m2 -> x; P }
+def B { i -> x[l4]; x.m3 -> j; x.m4 -> b; P }
+def L { i -> b[l5]; A }
+main { x -> q[l1]; b.m1 -> i; A }
+
+*** C1226 ***
+def P { i.m2 -> x; i -> q[l1]; b.m3 -> q; x -> b[l2]; B }
+def A { x -> j[l3]; q -> j[l4]; L }
+def B { if x.c1 then x -> j[L]; x -> i[L]; x -> q[L]; L else x -> j[R]; x -> i[R]; x -> q[R]; A }
+def L { q.m4 -> x; x -> i[l5]; P }
+main { i.m1 -> b; B }
+
+*** C1246 ***
+def P { b.m1 -> q; i -> x[l2]; B }
+def A { i.m2 -> j; L }
+def B { if q.c1 then q -> i[L]; q -> x[L]; q -> b[L]; L else q -> i[R]; q -> x[R]; q -> b[R]; q -> b[l3]; L }
+def L { b.m3 -> q; x.m4 -> b; i.m5 -> q; i -> q[l4]; A }
+main { q -> i[l1]; P }
+
+*** C1247 ***
+def P { b.m2 -> x; x -> q[l2]; P }
+def A { q.m3 -> j; j -> q[l3]; P }
+def B { if j.c1 then j -> x[L]; j -> b[L]; j -> q[L]; B else j -> x[R]; j -> b[R]; j -> q[R]; A }
+def L { b -> j[l4]; x.m4 -> q; x -> b[l5]; B }
+main { x.m1 -> b; b -> x[l1]; L }
+

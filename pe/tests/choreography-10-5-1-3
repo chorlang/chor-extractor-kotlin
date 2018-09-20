@@ -1,0 +1,60 @@
+*** C1062 ***
+def V { n.m2 -> u; g -> n[l2]; g.m3 -> v; g.m4 -> r; n -> r[l3]; I }
+def I { if n.c1 then n -> g[L]; n -> v[L]; n -> u[L]; n -> r[L]; V else n -> g[R]; n -> v[R]; n -> u[R]; n -> r[R]; J }
+def J { r.m5 -> g; u.m6 -> v; I }
+main { g.m1 -> r; g -> v[l1]; V }
+
+*** C1066 ***
+def V { v -> u[l2]; v -> r[l3]; r -> u[l4]; n -> r[l5]; I }
+def I { r -> u[l6]; J }
+def J { u -> r[l7]; n.m1 -> u; r -> g[l8]; I }
+main { v -> n[l1]; if v.c1 then v -> n[L]; v -> g[L]; v -> u[L]; v -> r[L]; V else v -> n[R]; v -> g[R]; v -> u[R]; v -> r[R]; I }
+
+*** C1067 ***
+def V { if r.c1 then r -> n[L]; r -> g[L]; r -> v[L]; r -> u[L]; I else r -> n[R]; r -> g[R]; r -> v[R]; r -> u[R]; 0 }
+def I { v -> n[l1]; u -> n[l2]; v -> g[l3]; v.m2 -> r; J }
+def J { r.m3 -> g; n -> v[l4]; g -> r[l5]; g.m4 -> r; V }
+main { g.m1 -> n; J }
+
+*** C1074 ***
+def V { v -> g[l2]; r.m1 -> u; n.m2 -> r; v -> g[l3]; J }
+def I { n.m3 -> r; r -> g[l4]; v -> u[l5]; V }
+def J { n.m4 -> g; if r.c1 then r -> n[L]; r -> g[L]; 0 else r -> n[R]; r -> g[R]; J }
+main { n -> g[l1]; I }
+
+*** C1087 ***
+def V { r -> u[l1]; u.m1 -> r; r.m2 -> v; if n.c1 then n -> v[L]; n -> u[L]; n -> r[L]; u -> r[l2]; I else n -> v[R]; n -> u[R]; n -> r[R]; J }
+def I { r -> v[l3]; r -> u[l4]; u.m3 -> v; r -> v[l5]; I }
+def J { r -> u[l6]; J }
+main { V }
+
+*** C1092 ***
+def V { g.m1 -> r; g.m2 -> u; g.m3 -> n; v -> g[l2]; g -> v[l3]; J }
+def I { g.m4 -> u; g -> n[l4]; V }
+def J { if g.c1 then g -> u[L]; g -> r[L]; J else g -> u[R]; g -> r[R]; u.m5 -> r; J }
+main { n -> v[l1]; I }
+
+*** C1095 ***
+def V { u.m2 -> g; g -> u[l3]; I }
+def I { r -> g[l4]; v.m3 -> n; g -> u[l5]; J }
+def J { if g.c1 then u.m4 -> r; g -> u[L]; g -> r[L]; J else u.m4 -> r; g -> u[R]; g -> r[R]; 0 }
+main { u -> v[l1]; r -> v[l2]; n.m1 -> g; V }
+
+*** C1108 ***
+def V { n.m1 -> v; if u.c1 then n.m2 -> u; n.m3 -> u; u -> n[L]; u -> v[L]; 0 else n.m2 -> u; n.m3 -> u; u -> n[R]; u -> v[R]; I }
+def I { v -> u[l1]; J }
+def J { g -> u[l2]; v -> n[l3]; v -> n[l4]; u -> v[l5]; v -> n[l6]; J }
+main { V }
+
+*** C1110 ***
+def V { n.m1 -> g; n.m2 -> v; J }
+def I { u.m3 -> n; if r.c1 then r -> n[L]; r -> g[L]; r -> v[L]; r -> u[L]; V else r -> n[R]; r -> g[R]; r -> v[R]; r -> u[R]; J }
+def J { u.m4 -> v; r.m5 -> g; u.m6 -> r; g.m7 -> n; I }
+main { n -> g[l1]; u -> v[l2]; J }
+
+*** C1116 ***
+def V { n -> v[l2]; r.m2 -> g; I }
+def I { g.m3 -> r; g -> u[l3]; g -> v[l4]; n.m4 -> r; I }
+def J { u.m5 -> g; I }
+main { r -> u[l1]; g.m1 -> r; if g.c1 then g -> n[L]; g -> v[L]; g -> u[L]; g -> r[L]; V else g -> n[R]; g -> v[R]; g -> u[R]; g -> r[R]; J }
+

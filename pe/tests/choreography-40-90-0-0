@@ -1,0 +1,30 @@
+*** C2593 ***
+main { nh -> ko[l1]; ko.m1 -> yu; vj -> zi[l2]; zd -> tl[l3]; eu -> ey[l4]; wb.m2 -> zd; ed -> ej[l5]; lp -> zh[l6]; rj -> nc[l7]; qu.m3 -> hj; lv -> wb[l8]; yz -> tz[l9]; gc -> nh[l10]; am -> uw[l11]; ka -> zd[l12]; tl -> am[l13]; lv.m4 -> mi; jr.m5 -> ts; nw.m6 -> lv; cb.m7 -> ka; ym -> pk[l14]; qz.m8 -> nh; hj.m9 -> qx; nj -> sk[l15]; gh.m10 -> nj; qx.m11 -> cq; sk -> xp[l16]; fx -> mc[l17]; zb -> jr[l18]; cb -> hj[l19]; yz -> mo[l20]; vt -> ey[l21]; ti -> nc[l22]; ok.m12 -> tv; wu.m13 -> gh; hj.m14 -> qx; ng.m15 -> mi; fq -> qu[l23]; qn.m16 -> lc; jv -> ew[l24]; 0 }
+
+*** C2594 ***
+main { ob.m1 -> sa; yz.m2 -> ul; mo.m3 -> ip; fq.m4 -> hj; xt.m5 -> tv; zb.m6 -> ko; hj.m7 -> ts; fd -> ej[l1]; qx -> tv[l2]; cb.m8 -> zh; zb.m9 -> pk; rg.m10 -> qx; zh.m11 -> ej; ts.m12 -> fd; zu -> do[l3]; yz -> zd[l4]; wu.m13 -> nh; rn -> do[l5]; ul -> zb[l6]; am -> ip[l7]; ng.m14 -> ok; nw.m15 -> yz; oh.m16 -> sk; ho.m17 -> ce; mc.m18 -> jc; ts -> yz[l8]; nj.m19 -> nh; fq.m20 -> ey; wv.m21 -> oq; nj -> gc[l9]; vx -> tj[l10]; rj.m22 -> qx; ej -> cd[l11]; lp.m23 -> jr; ip.m24 -> yu; wb.m25 -> qn; gc.m26 -> ar; cb.m27 -> qx; rd.m28 -> do; cq -> xp[l12]; 0 }
+
+*** C2595 ***
+main { am.m1 -> qx; ce.m2 -> ka; im.m3 -> ej; pf -> wb[l1]; sa -> dm[l2]; wu -> nh[l3]; rd -> ey[l4]; nh -> qu[l5]; ts.m4 -> eu; ar.m5 -> ut; ul.m6 -> ai; zh.m7 -> cd; ul -> fq[l6]; jc -> dm[l7]; dh -> gc[l8]; vx.m8 -> wb; cd.m9 -> ai; ti.m10 -> eu; nj.m11 -> im; ti.m12 -> zi; ul.m13 -> dq; gh -> ln[l9]; eu.m14 -> tv; ln.m15 -> fq; sk -> ti[l10]; fq -> jc[l11]; wb.m16 -> uw; tl -> jr[l12]; ka.m17 -> pf; ko -> ts[l13]; ng.m18 -> ar; ip -> gh[l14]; yz.m19 -> eu; nw -> oh[l15]; sa -> ob[l16]; cq.m20 -> cf; dh -> jr[l17]; dq.m21 -> ln; ai.m22 -> qz; zb.m23 -> nw; 0 }
+
+*** C2596 ***
+main { uw.m1 -> ed; lc -> wb[l1]; sy.m2 -> rn; ts -> cd[l2]; pf.m3 -> ip; rj.m4 -> qz; gc.m5 -> zh; zb -> qn[l3]; dm.m6 -> wu; lc -> ce[l4]; wv -> kd[l5]; dm.m7 -> ln; mo -> sy[l6]; pv.m8 -> ln; wb -> ey[l7]; jv.m9 -> zd; ti.m10 -> tl; sk.m11 -> dh; mo -> zi[l8]; eu.m12 -> zb; nj -> ew[l9]; hj -> ew[l10]; vj.m13 -> yz; ul.m14 -> ko; rj.m15 -> mc; qu -> rg[l11]; zi -> sy[l12]; ed.m16 -> cd; jc -> lc[l13]; ko -> lv[l14]; ce -> qn[l15]; zi -> qn[l16]; oq -> ce[l17]; dh -> lc[l18]; wv -> ul[l19]; vj -> rj[l20]; tj.m17 -> oq; sk.m18 -> pv; eu.m19 -> gc; rd.m20 -> wu; 0 }
+
+*** C2597 ***
+main { wv.m1 -> uw; fx.m2 -> qx; nc -> zb[l1]; dm -> lv[l2]; jt.m3 -> ho; fq -> cb[l3]; zd.m4 -> yz; ed.m5 -> rj; qu.m6 -> nj; tz -> cq[l4]; pk -> rd[l5]; mo.m7 -> ho; ew.m8 -> qz; am -> qz[l6]; fq.m9 -> cb; sk.m10 -> ho; tj.m11 -> ym; lp -> mc[l7]; vx -> tv[l8]; rd -> qn[l9]; ok -> cb[l10]; rn.m12 -> ey; yu -> gy[l11]; dm -> gh[l12]; cf.m13 -> tv; lp.m14 -> rd; ul.m15 -> ln; ej -> cf[l13]; xt -> ts[l14]; ym.m16 -> wv; ew.m17 -> qu; ed.m18 -> nj; ob.m19 -> rj; oh.m20 -> eu; nw -> zi[l15]; tv -> mc[l16]; vx.m21 -> fd; qn -> fx[l17]; lc.m22 -> lv; nw.m23 -> ob; 0 }
+
+*** C2598 ***
+main { cd.m1 -> im; fd.m2 -> kd; cd.m3 -> ip; nh -> cf[l1]; ip.m4 -> lv; zb -> mi[l2]; zu.m5 -> wu; cq -> tj[l3]; ts.m6 -> wu; ob -> ho[l4]; xp.m7 -> zu; tj.m8 -> fd; do -> zi[l5]; fd -> gh[l6]; pf.m9 -> ej; xp.m10 -> oh; vt.m11 -> yz; ln.m12 -> tj; dm.m13 -> ip; mi -> lp[l7]; oh -> cd[l8]; yu.m14 -> ce; eu -> wu[l9]; mc.m15 -> ej; zi.m16 -> ul; sk -> gc[l10]; tz -> wb[l11]; dq -> ok[l12]; tl -> uw[l13]; jv.m17 -> vx; gh -> tz[l14]; hj.m18 -> qu; tz.m19 -> nc; ai.m20 -> ej; zi.m21 -> cd; wv.m22 -> uw; ej.m23 -> mc; sk -> sa[l15]; nc -> ng[l16]; ng.m24 -> sa; 0 }
+
+*** C2599 ***
+main { fx -> xt[l1]; vt.m1 -> tl; tz.m2 -> qz; gh.m3 -> dm; gh -> ew[l2]; ej -> ul[l3]; fq.m4 -> tj; zi -> dq[l4]; mo -> wb[l5]; rj.m5 -> cf; vt -> sk[l6]; rd.m6 -> eu; eu -> ti[l7]; mi.m7 -> vj; qu.m8 -> ym; mo.m9 -> cd; am.m10 -> ti; kd.m11 -> im; ut.m12 -> kd; jt -> zd[l8]; uw.m13 -> ti; ln.m14 -> gy; rj -> xt[l9]; ok -> pf[l10]; rj -> eu[l11]; nc.m15 -> vj; eu -> vj[l12]; rd.m16 -> tl; im -> mo[l13]; tj.m17 -> sy; ln -> zb[l14]; ej.m18 -> tz; dm.m19 -> fd; uw -> cb[l15]; yz -> dh[l16]; ho.m20 -> mc; eu -> ey[l17]; ti.m21 -> rn; vx -> qx[l18]; zi -> dm[l19]; 0 }
+
+*** C2600 ***
+main { ej -> cd[l1]; ey -> ho[l2]; nj -> oq[l3]; ar.m1 -> ew; jc.m2 -> lc; xt -> do[l4]; nw.m3 -> cd; mo -> cd[l5]; wu.m4 -> lp; qx -> nh[l6]; ed -> cb[l7]; zu -> qx[l8]; cq.m5 -> wu; jv.m6 -> zi; rn.m7 -> kd; oh.m8 -> vx; ce.m9 -> oq; lp.m10 -> dq; lc.m11 -> fq; mc -> dq[l9]; gy.m12 -> ts; sa.m13 -> zd; nj.m14 -> tl; zi.m15 -> tj; hj.m16 -> ym; ob.m17 -> ts; fd.m18 -> am; vt.m19 -> ob; pv -> yu[l10]; nw.m20 -> jc; am.m21 -> qu; ho.m22 -> tz; ut.m23 -> gy; zu.m24 -> zb; ng -> tv[l11]; mo -> pk[l12]; lp.m25 -> ed; mo -> uw[l13]; vj.m26 -> eu; ym.m27 -> gh; 0 }
+
+*** C2601 ***
+main { ul -> fx[l1]; ul.m1 -> of; jc -> ed[l2]; sk -> zd[l3]; dh.m2 -> cb; ko -> ey[l4]; mi.m3 -> sk; rg.m4 -> nj; yz -> eu[l5]; ul.m5 -> pf; tv -> ey[l6]; dm -> mi[l7]; qx -> mc[l8]; vt -> tj[l9]; xt.m6 -> dq; zi.m7 -> zu; zh -> rd[l10]; oq.m8 -> gh; oq -> dq[l11]; ti -> pv[l12]; qz -> fx[l13]; gh -> jt[l14]; tz.m9 -> lc; pv -> am[l15]; ey.m10 -> dq; ng -> zu[l16]; ew -> ym[l17]; nw -> mc[l18]; tv.m11 -> nc; ey -> pf[l19]; zi -> pf[l20]; dm -> gy[l21]; vj.m12 -> cb; qn -> gc[l22]; pk.m13 -> jt; dm.m14 -> lc; sa.m15 -> am; vt -> sk[l23]; lc -> nc[l24]; ka.m16 -> tj; 0 }
+
+*** C2602 ***
+main { xp -> lp[l1]; rj -> fx[l2]; cq.m1 -> ew; qx -> nj[l3]; ko -> cq[l4]; ew -> ey[l5]; cf.m2 -> dm; ip -> ai[l6]; nc.m3 -> nw; mi.m4 -> sk; lp.m5 -> ce; sy -> ka[l7]; zh.m6 -> oh; rn -> ul[l8]; fq -> im[l9]; vt.m7 -> rg; rj -> ok[l10]; ka.m8 -> zb; do -> oq[l11]; dq -> zb[l12]; jv.m9 -> tv; gh -> rj[l13]; vt -> yu[l14]; qz -> yu[l15]; lv.m10 -> mi; ar -> rn[l16]; ip.m11 -> nc; qu -> ob[l17]; mo.m12 -> wb; ob -> wv[l18]; ym.m13 -> wb; ut.m14 -> tz; lv -> gh[l19]; ew -> sy[l20]; oq -> sk[l21]; rg.m15 -> qn; xp -> cf[l22]; zh -> im[l23]; hj.m16 -> jr; qu -> uw[l24]; 0 }
+

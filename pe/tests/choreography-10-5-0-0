@@ -1,0 +1,30 @@
+*** C151 ***
+main { a -> z[l1]; j.m1 -> a; a -> z[l2]; t.m2 -> a; j.m3 -> z; t -> z[l3]; a -> j[l4]; a -> z[l5]; j -> q[l6]; t -> q[l7]; 0 }
+
+*** C152 ***
+main { z.m1 -> t; a -> j[l1]; j -> t[l2]; q.m2 -> t; z.m3 -> j; j -> q[l3]; z.m4 -> a; z.m5 -> j; q.m6 -> j; a.m7 -> t; 0 }
+
+*** C153 ***
+main { a.m1 -> z; q.m2 -> t; t -> j[l1]; q -> a[l2]; q -> z[l3]; q -> t[l4]; z -> q[l5]; a -> t[l6]; j.m3 -> q; t.m4 -> z; 0 }
+
+*** C154 ***
+main { z -> a[l1]; j -> q[l2]; q -> t[l3]; a -> j[l4]; j.m1 -> a; a -> q[l5]; a.m2 -> z; q -> z[l6]; q.m3 -> a; t -> j[l7]; 0 }
+
+*** C155 ***
+main { q -> z[l1]; q.m1 -> a; q -> j[l2]; z -> j[l3]; j -> z[l4]; j -> z[l5]; z -> a[l6]; q -> t[l7]; j -> a[l8]; j.m2 -> t; 0 }
+
+*** C156 ***
+main { z -> a[l1]; a.m1 -> q; t -> q[l2]; a.m2 -> t; j.m3 -> t; j -> a[l3]; t.m4 -> z; j.m5 -> z; z -> a[l4]; q.m6 -> j; 0 }
+
+*** C157 ***
+main { t -> j[l1]; q.m1 -> t; a -> j[l2]; q -> t[l3]; j.m2 -> t; j -> q[l4]; q -> z[l5]; j.m3 -> q; z.m4 -> q; q.m5 -> a; 0 }
+
+*** C158 ***
+main { j.m1 -> a; a -> j[l1]; z.m2 -> t; j -> z[l2]; q.m3 -> t; j -> a[l3]; z -> a[l4]; z.m4 -> j; z.m5 -> q; q -> t[l5]; 0 }
+
+*** C159 ***
+main { t.m1 -> q; t -> a[l1]; j.m2 -> q; a -> t[l2]; q -> t[l3]; j -> t[l4]; a.m3 -> j; q.m4 -> a; q -> j[l5]; z.m5 -> j; 0 }
+
+*** C160 ***
+main { z -> j[l1]; z.m1 -> a; a -> t[l2]; a.m2 -> j; j.m3 -> t; q.m4 -> t; q -> a[l3]; j.m5 -> z; j.m6 -> q; a.m7 -> z; 0 }
+

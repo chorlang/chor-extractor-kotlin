@@ -1,0 +1,70 @@
+*** C1938 ***
+def S { o -> i[l1]; r.m2 -> i; H }
+def H { y -> c[l2]; c.m3 -> i; if r.c1 then r -> o[L]; r -> i[L]; r -> y[L]; r -> c[L]; if i.c2 then i -> o[L]; i -> y[L]; i -> c[L]; i -> r[L]; Y else i -> o[R]; i -> y[R]; i -> c[R]; i -> r[R]; Z else r -> o[R]; r -> i[R]; r -> y[R]; r -> c[R]; S }
+def Y { i.m4 -> r; Z }
+def Z { if r.c3 then c.m5 -> r; r -> o[L]; r -> y[L]; r -> i[L]; r -> c[L]; S else c.m5 -> r; r -> o[R]; r -> y[R]; r -> i[R]; r -> c[R]; 0 }
+main { i.m1 -> c; H }
+
+*** C1939 ***
+def S { c.m1 -> r; Y }
+def H { c.m2 -> r; r.m3 -> c; y.m4 -> r; y -> c[l1]; S }
+def Y { if c.c2 then c -> y[L]; c -> r[L]; H else c -> y[R]; c -> r[R]; S }
+def Z { y.m5 -> r; if y.c3 then y -> c[L]; y -> r[L]; y -> c[l2]; H else y -> c[R]; y -> r[R]; Z }
+main { if c.c1 then c -> y[L]; c -> r[L]; Z else c -> y[R]; c -> r[R]; S }
+
+*** C1940 ***
+def S { y -> i[l1]; r -> c[l2]; S }
+def H { i -> c[l3]; o.m1 -> c; S }
+def Y { c.m2 -> r; i.m3 -> o; if c.c3 then c -> o[L]; c -> y[L]; c -> i[L]; c -> r[L]; H else c -> o[R]; c -> y[R]; c -> i[R]; c -> r[R]; Y }
+def Z { y.m4 -> r; H }
+main { if i.c1 then i -> o[L]; i -> y[L]; i -> c[L]; i -> r[L]; H else i -> o[R]; i -> y[R]; i -> c[R]; i -> r[R]; if o.c2 then o -> y[L]; o -> i[L]; o -> c[L]; o -> r[L]; Y else o -> y[R]; o -> i[R]; o -> c[R]; o -> r[R]; Z }
+
+*** C1943 ***
+def S { if r.c1 then r -> o[L]; r -> i[L]; r -> c[L]; r -> c[l3]; 0 else r -> o[R]; r -> i[R]; r -> c[R]; o.m1 -> i; S }
+def H { if i.c2 then Y else Y }
+def Y { c.m2 -> i; c.m3 -> o; c.m4 -> o; H }
+def Z { if r.c3 then r -> o[L]; r -> i[L]; r -> c[L]; Y else r -> o[R]; r -> i[R]; r -> c[R]; S }
+main { i -> o[l1]; c -> r[l2]; Z }
+
+*** C1944 ***
+def S { y.m1 -> r; Y }
+def H { y.m2 -> i; o.m3 -> r; r.m4 -> o; i.m5 -> c; H }
+def Y { if r.c2 then r -> o[L]; r -> i[L]; r -> y[L]; r -> c[L]; if o.c3 then Y else Y else r -> o[R]; r -> i[R]; r -> y[R]; r -> c[R]; H }
+def Z { y -> r[l2]; c -> r[l3]; S }
+main { y -> o[l1]; if r.c1 then r -> o[L]; r -> y[L]; r -> c[L]; S else r -> o[R]; r -> y[R]; r -> c[R]; Z }
+
+*** C1956 ***
+def S { y -> o[l1]; r.m1 -> y; o -> i[l2]; Z }
+def H { c.m2 -> r; if i.c1 then if i.c2 then i -> o[L]; i -> y[L]; i -> c[L]; i -> r[L]; i -> o[L]; i -> y[L]; i -> c[L]; i -> r[L]; S else i -> o[R]; i -> y[R]; i -> c[R]; i -> r[R]; i -> o[L]; i -> y[L]; i -> c[L]; i -> r[L]; S else if i.c2 then i -> o[L]; i -> y[L]; i -> c[L]; i -> r[L]; i -> o[R]; i -> y[R]; i -> c[R]; i -> r[R]; Y else i -> o[R]; i -> y[R]; i -> c[R]; i -> r[R]; i -> o[R]; i -> y[R]; i -> c[R]; i -> r[R]; Y }
+def Y { r -> c[l3]; 0 }
+def Z { c.m3 -> o; i.m4 -> y; r -> o[l4]; S }
+main { H }
+
+*** C1966 ***
+def S { y.m2 -> r; i -> y[l2]; o.m3 -> c; Z }
+def H { r.m4 -> o; y.m5 -> o; r -> y[l3]; 0 }
+def Y { if c.c1 then c -> o[L]; c -> i[L]; c -> y[L]; c -> r[L]; H else c -> o[R]; c -> i[R]; c -> y[R]; c -> r[R]; S }
+def Z { if y.c2 then if c.c3 then c -> o[L]; c -> i[L]; c -> y[L]; c -> r[L]; y -> o[L]; y -> i[L]; y -> c[L]; y -> r[L]; 0 else c -> o[R]; c -> i[R]; c -> y[R]; c -> r[R]; y -> o[L]; y -> i[L]; y -> c[L]; y -> r[L]; 0 else if c.c3 then c -> o[L]; c -> i[L]; c -> y[L]; c -> r[L]; y -> o[R]; y -> i[R]; y -> c[R]; y -> r[R]; Y else c -> o[R]; c -> i[R]; c -> y[R]; c -> r[R]; y -> o[R]; y -> i[R]; y -> c[R]; y -> r[R]; Y }
+main { c -> r[l1]; r.m1 -> c; S }
+
+*** C1975 ***
+def S { c -> y[l2]; o.m1 -> r; c -> y[l3]; r.m2 -> c; Z }
+def H { y -> o[l4]; Z }
+def Y { if c.c1 then c -> o[L]; c -> i[L]; Y else c -> o[R]; c -> i[R]; Z }
+def Z { i -> o[l5]; if o.c2 then o -> y[L]; o -> i[L]; o -> c[L]; if c.c3 then c -> o[L]; c -> y[L]; c -> i[L]; H else c -> o[R]; c -> y[R]; c -> i[R]; 0 else o -> y[R]; o -> i[R]; o -> c[R]; Y }
+main { i -> c[l1]; S }
+
+*** C1983 ***
+def S { o.m1 -> i; o.m2 -> r; S }
+def H { if o.c1 then o -> i[L]; o -> r[L]; S else o -> i[R]; o -> r[R]; r.m3 -> i; Z }
+def Y { if c.c2 then c -> y[l1]; c -> o[L]; c -> i[L]; c -> y[L]; c -> r[L]; r -> i[l2]; i.m4 -> y; H else c -> y[l1]; c -> o[R]; c -> i[R]; c -> y[R]; c -> r[R]; S }
+def Z { o -> r[l3]; r.m5 -> i; Y }
+main { Y }
+
+*** C1990 ***
+def S { if c.c1 then c -> o[L]; c -> y[L]; c -> i[L]; c -> r[L]; Y else c -> o[R]; c -> y[R]; c -> i[R]; c -> r[R]; Z }
+def H { y -> r[l2]; r.m1 -> y; y.m2 -> r; S }
+def Y { o.m3 -> r; i -> o[l3]; r.m4 -> y; Z }
+def Z { if o.c2 then o -> y[L]; o -> i[L]; o -> c[L]; o -> r[L]; S else o -> y[R]; o -> i[R]; o -> c[R]; o -> r[R]; if i.c3 then i -> o[L]; i -> y[L]; i -> c[L]; i -> r[L]; S else i -> o[R]; i -> y[R]; i -> c[R]; i -> r[R]; H }
+main { o -> c[l1]; S }
+
