@@ -35,7 +35,7 @@ public class TestGenerator {
 	throws IOException, GeneratorException {
 
 	// standard filename
-	String testFileName = "network-"+length+"-"+numProcesses+"-"+numIfs+"-"+numProcedures;
+	String testFileName = "choreography-"+length+"-"+numProcesses+"-"+numIfs+"-"+numProcedures;
 	logFile.write("Generating file "+testFileName);
 	logFile.newLine();
 
@@ -125,21 +125,21 @@ public class TestGenerator {
         // System.out.println(c.amend().toString()+"\n");
         // System.exit(0);
 
+//	BufferedWriter logFile = new BufferedWriter(new FileWriter(LOG_FILE));
+//
+//	niceWrite(logFile,"STARTING GENERATION...");
+//	logFile.newLine();
+//
+//	makeALotOfTestsWithSeed(-9129708236714512406L,10,5,3,3,logFile);
+//	makeALotOfTestsWithSeed(8463895940458588614L,10,6,0,0,logFile);
+//	makeALotOfTestsWithSeed(-6338169410111561988L,10,5,0,2,logFile);
+//
+//        niceWrite(logFile,"Generated "+generatedTests+" tests, of which "+badTests+" contain dead code.");
+//	logFile.close();
+//
+//	System.exit(0);
+
 	BufferedWriter logFile = new BufferedWriter(new FileWriter(LOG_FILE));
-
-	niceWrite(logFile,"STARTING GENERATION...");
-	logFile.newLine();
-
-	makeALotOfTestsWithSeed(-9129708236714512406L,10,5,3,3,logFile);
-	makeALotOfTestsWithSeed(8463895940458588614L,10,6,0,0,logFile);
-	makeALotOfTestsWithSeed(-6338169410111561988L,10,5,0,2,logFile);
-
-        niceWrite(logFile,"Generated "+generatedTests+" tests, of which "+badTests+" contain dead code.");
-	logFile.close();
-
-	System.exit(0);
-
-	logFile = new BufferedWriter(new FileWriter(LOG_FILE));
 
 	niceWrite(logFile,"STARTING GENERATION...");
 	logFile.newLine();
