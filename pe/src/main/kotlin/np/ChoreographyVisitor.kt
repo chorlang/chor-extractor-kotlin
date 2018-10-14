@@ -69,7 +69,7 @@ class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
     }
 
     override fun visitProgram(ctx: ProgramContext): CCNode {
-        val choreographyList = ArrayList<Choreography>()
+        val choreographyList = ArrayList<Choreography?>()
         for (choreography in ctx.choreography()){
             processesInChoreography.add(HashSet<String>())
             choreographyList.add(visit(choreography) as Choreography)
