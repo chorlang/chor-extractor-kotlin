@@ -1,0 +1,2 @@
+choreographyId,networkId,Network
+C56, p{def T{u + l3; K} def K{o&{l5: u!<m5>; K}} main {T}} | d{def T{o + l4; stop} def K{stop} main {u?; T}} | u{def T{p&{l3: K}} def K{o?; p?; K} main {v!<m1>; v?; v!<m1>; v?; v&{l2: d!<m2>; T}}} | v{def T{K} def K{o?; K} main {u?; u!<m2>; u?; u!<m2>; o&{l1: u + l2; T}}} | o{def T{d&{l4: K}} def K{u!<m3>; v!<m4>; p + l5; K} main {v + l1; T}}

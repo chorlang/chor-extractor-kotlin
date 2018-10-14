@@ -1,0 +1,11 @@
+id, length, numberOfProcesses, numberOfProcedures, numberOfConditionals, minLengthOfProcesses, maxLengthOfProcesses, avgLengthOfProcesses, minNumberOfProceduresInProcesses, maxNumberOfProceduresInProcesses, avgNumberOfProceduresInProcesses, minNumberOfConditionalsInProcesses, maxNumberOfConditionalsInProcesses, avgNumberOfConditionalsInProcesses, numberOfProcessesWithConditionals, minProcedureLengthInProcesses, maxProcedureLengthInProcesses, avgProcedureLengthInProcesses
+C3,2,5,3,3,2,11,5,3,3,3,0,0,0,0,0,9,1
+C20,21,5,3,3,2,12,7,3,3,3,0,1,0,2,0,7,1
+C22,3,5,3,3,1,10,5,3,3,3,0,0,0,0,0,8,1
+C7,4,5,3,4,2,9,4,3,3,3,0,0,0,0,0,9,1
+C35,1,5,3,2,2,9,4,3,3,3,0,0,0,0,0,8,1
+C26,4,5,3,3,2,18,7,3,3,3,0,0,0,0,0,16,2
+C37,2,5,3,3,1,17,5,3,3,3,0,0,0,0,0,9,1
+C27,10,5,3,3,2,11,5,3,3,3,0,1,0,1,0,6,1
+C19,3,5,3,3,1,10,5,3,3,3,0,1,0,1,0,8,1
+C40,19,5,3,3,1,18,7,3,3,3,0,1,0,2,0,9,1

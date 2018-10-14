@@ -10,13 +10,13 @@ import org.junit.jupiter.params.provider.CsvFileSource
 class PaperTest {
     @Test
     fun ex2() {
-        val test = "c { def X {a!<pwd>; a&{ok: s?; stop, ko: X}} main {X}} | " +
-                "a { def X {c?; s?; if s then c+ok; s+ok; stop else c+ko; s+ko; X} main {X}} | " +
-                "s { def X {a!<s>; a&{ok: c!<t>; stop, ko:X}} main {X}}"
+        val test = "c { def X {a!<pwd>; a&{ok: `value`?; stop, ko: X}} main {X}} | " +
+                "a { def X {c?; `value`?; if `value` then c+ok; `value`+ok; stop else c+ko; `value`+ko; X} main {X}} | " +
+                "`value` { def X {a!<`value`>; a&{ok: c!<t>; stop, ko:X}} main {X}}"
         val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { c.pwd->a; s.s->a; if a.s then a->c[ok]; a->s[ok]; s.t->c; stop else a->c[ko]; a->s[ko]; X1 } main {X1}"
+        val expected = "def X1 { c.pwd->a; `value`.`value`->a; if a.`value` then a->c[ok]; a->`value`[ok]; `value`.t->c; stop else a->c[ko]; a->`value`[ko]; X1 } main {X1}"
 
         assertEquals(expected, actual)
     }
@@ -25,12 +25,12 @@ class PaperTest {
     fun ex4() {
         val test = "p { def X {q!<e1>; X} main {X}} | " +
                 "q { def Y {p?; Y} main {Y}} | " +
-                "r { def Z {s!<e2>; Z} main {Z}} | " +
-                "s { def W {r?; W} main {W}}"
+                "r { def Z {`value`!<e2>; Z} main {Z}} | " +
+                "`value` { def W {r?; W} main {W}}"
         val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { r.e2->s; p.e1->q; X1 } main {p.e1->q; X1}"
+        val expected = "def X1 { r.e2->`value`; p.e1->q; X1 } main {p.e1->q; X1}"
 
         assertEquals(expected, actual)
     }
@@ -39,12 +39,12 @@ class PaperTest {
     fun ex5() {
         val test = "p { def X {q!<e>; X} main {X}} | " +
                 "q { def Y {p?; Y} main {Y}} | " +
-                "r { main {s!<e2>; stop}} | " +
-                "s { main {r?; stop}}"
+                "r { main {`value`!<e2>; stop}} | " +
+                "`value` { main {r?; stop}}"
         val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
+        val expected = "def X1 { p.e->q; X1 } main {r.e2->`value`; X1}"
 
         assertEquals(expected, actual)
     }

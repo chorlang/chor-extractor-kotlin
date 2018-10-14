@@ -12,7 +12,7 @@ class NetworkProjectionTest{
         val test = "def X {Y} def Y { p.e->q; stop } main {q.e->p;X}"
 
         val actual = NetworkProjection.project(test).toString()
-        //  println(NetworkProjection.getChoreographyStatistic(test))
+        //  println(NetworkProjection.getChoreographyStatistic(f))
         val expected = "p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}}"
 
         assertEquals(expected, actual)
