@@ -21,7 +21,7 @@ class ProjectionNetworkExtractionProjectionTest {
         val extraction = NetworkProjection.project(test).toString()
         val args = arrayListOf("-c", extraction, "-d")
 
-        val actual = ChoreographyExtraction.main(args)
+        val actual = ChoreographyExtraction.main(args).toString()
 
         val expected =
                 "def X1 { if p.e then p->q[ok]; q->r[ok]; q.e->p; X1 else p->q[ko]; q->r[ko]; X2 } " +
@@ -54,7 +54,7 @@ class ProjectionNetworkExtractionProjectionTest {
 
         val args = arrayListOf("-c", e)
 
-        val actual = ChoreographyExtraction.main(args)
+        val actual = ChoreographyExtraction.main(args).toString()
 
         val expected = "def X1 { p.e->q; X2 } " +
                 "def X2 { if p.e then p->q[ok]; p->r[ok]; q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; X2 else p->q[ko]; X3 } " +
