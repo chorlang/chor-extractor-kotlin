@@ -1,6 +1,7 @@
 package benchmark
 
 import ce.ChoreographyExtraction
+import ce.NetworkStatistics
 import np.NetworkProjection
 import org.junit.jupiter.api.Test
 import util.choreographyStatistic.LengthOfProcedures
@@ -209,7 +210,7 @@ class StatisticsGenerator {
                     "minProcedureLengthInProcesses, maxProcedureLengthInProcesses, avgProcedureLengthInProcesses")
             chorData.forEach { choreographyId, choreography ->
                 val network = NetworkProjection.project(choreography).toString()
-                val networkStatistic = ChoreographyExtraction.getStatistic(network)
+                val networkStatistic = NetworkStatistics.getNetworkStatistic(network)
                 val choreographyStatistic = NetworkProjection.getStatistic(choreography)
                 out.println("$choreographyId," +
                         "${choreographyStatistic.length}," +
