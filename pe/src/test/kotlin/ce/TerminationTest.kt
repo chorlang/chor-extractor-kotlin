@@ -30,11 +30,11 @@ class TerminationTest {
 
     /*@Test
     fun tst3(){
-        val test = "p { def X{stop} main{q!<e>; X}} | q {def X {stop} main{p?; X}}"
-        val args = arrayListOf("-c", test)
+        value f = "p { def X{stop} main{q!<e>; X}} | q {def X {stop} main{p?; X}}"
+        value args = arrayListOf("-c", f)
 
-        val actual = ChoreographyExtraction.main(args)
-        val expected = "main {stop}"
+        value actual = ChoreographyExtraction.main(args)
+        value expected = "main {stop}"
 
         assertEquals(expected, actual)
     }*/

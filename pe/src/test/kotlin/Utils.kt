@@ -7,7 +7,7 @@ class Utils {
             val args = arrayListOf<String>()
 
             val strategy = ChoreographyExtraction.parseStrategy(str)
-            args.add("-s")
+            args.add("-`value`")
             args.add(strategy.toString())
 
             if (debugMode) args.add("-d")

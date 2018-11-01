@@ -100,13 +100,13 @@ class ConditionTest{
         val test =
                 "p { def X {q!<e>; X} main {X}} | " +
                         "q { def Y {p?; Y} main {Y}} | " +
-                        "r { main {s!<e2>; stop}} | " +
-                        "s { main {r?; stop}}"
+                        "r { main {`value`!<e2>; stop}} | " +
+                        "`value` { main {r?; stop}}"
 
         val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
+        val expected = "def X1 { p.e->q; X1 } main {r.e2->`value`; X1}"
 
         assertEquals(expected, actual)
     }
