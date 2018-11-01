@@ -19,7 +19,7 @@ class TestsFromFiles {
         var title = ""
         var text = ""
 
-        //collecting choreographies from test files
+        //collecting choreographies from f files
         for (fileName in dir.list()){
             val file = File("$dirPath/$fileName")
             file.forEachLine {

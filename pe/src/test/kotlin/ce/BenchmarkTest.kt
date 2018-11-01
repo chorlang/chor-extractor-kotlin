@@ -31,7 +31,7 @@ class BenchmarkTest {
                 assertEquals(expected, actual)
             }
             Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
-                /* val expected =
+                /* value expected =
                         "def X1 { c.busy->d; if a.e then a->b[win]; a->c[lose]; b.sig->a; c.msg->a; a.free->d; X1 else a->b[lose]; a->c[win]; b.sig->a; c.msg->a; a.free->d; X1 } main {X1}"
 
                 assertEquals(expected, actual) */
@@ -184,7 +184,7 @@ class BenchmarkTest {
         val args = param.first
         args.addAll(arrayListOf(test, "-l", "c"))
 
-        //val strategy = param.second
+        //value strategy = param.second
 
         val actual = ChoreographyExtraction.main(args)
         val expected = "def X1 { if a.notok then a->b[hag]; b.price->a; X1 else a->b[happy]; a.info->c; stop } main {X1}"
@@ -493,27 +493,27 @@ class BenchmarkTest {
     /*@ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
     fun tst(strategy: String, debugMode: Boolean) {
-        val test =
-                "r{def X{s!<e>; X} main{X}} | " +
-                        "s{def X{r?; X} main{X}} | " +
+        value f =
+                "r{def X{`value`!<e>; X} main{X}} | " +
+                        "`value`{def X{r?; X} main{X}} | " +
                 "p{def Y{q+l; X} def X{q+r; q!<e>; if e then Y else X} main{Y}} | " +
                 "q{def X{p&{r: Z}} def Z{p?; p&{l: X, r: Z}} main{p&{l:X}}}"
 
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test))
+        value param = resolveArgs(strategy, debugMode)
+        value args = param.first
+        args.addAll(arrayListOf(f))
 
-        val strategy = param.second
+        value strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args)
+        value actual = ChoreographyExtraction.main(args)
 
-        val expected = "def X1 { p->q[r]; X2 } def X2 { p.e->q; if p.e then r.e->s; p->q[l]; X1 else r.e->s; p->q[r]; X2 } main {p->q[l]; X1}"
+        value expected = "def X1 { p->q[r]; X2 } def X2 { p.e->q; if p.e then r.e->`value`; p->q[l]; X1 else r.e->`value`; p->q[r]; X2 } main {p->q[l]; X1}"
         assertEquals(expected, actual)
 
         *//*when (strategy) {
             Strategy.SelectionFirst, Strategy.ConditionFirst -> {
-                val expected =
+                value expected =
                         ""
 
                 assertEquals(expected, actual)
@@ -528,27 +528,27 @@ class BenchmarkTest {
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
     fun tst2(strategy: String, debugMode: Boolean) {
-        val test =
-                "r{def X {s!<0>; X} main {X}} | " +
-                        "s{def X {r?; X} main {X}} | " +
+        value f =
+                "r{def X {`value`!<0>; X} main {X}} | " +
+                        "`value`{def X {r?; X} main {X}} | " +
                 "p{def X {q!<1>; if e then q+L; q!<2>; X else q+R; X } main {q!<0>; q!<3>; X }} | " +
                 "q{def X {p?; p&{L: p?; X, R: X} main {p?; p?; X}}"
 
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test))
+        value param = resolveArgs(strategy, debugMode)
+        value args = param.first
+        args.addAll(arrayListOf(f))
 
-        val strategy = param.second
+        value strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args)
+        value actual = ChoreographyExtraction.main(args)
 
-        val expected = ""
+        value expected = ""
         assertEquals(expected, actual)
 
         *//*when (strategy) {
             Strategy.SelectionFirst, Strategy.ConditionFirst -> {
-                val expected =
+                value expected =
                         ""
 
                 assertEquals(expected, actual)

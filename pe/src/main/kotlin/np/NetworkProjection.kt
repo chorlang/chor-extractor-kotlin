@@ -63,7 +63,7 @@ object NetworkProjection {
         val network = HashMap<String, ProcessTerm>()
         val networkList = ArrayList<Network>()
         for (chor in choreographyList){
-            for (process in chor.processes) {
+            for (process in chor!!.processes) {
                 try {
                     network[process] = behaviourProjection.getProcessTerm(chor, process) as ProcessTerm
                 } catch( e:MergingProjection.MergingException ) {
@@ -85,7 +85,7 @@ object NetworkProjection {
 
         val choreographyList = (program as Program).choreographyList
         if (choreographyList.size == 1){
-            return getChoreographyStatistic(choreographyList.first())
+            return getChoreographyStatistic(choreographyList.first()!!)
         } else {
             throw OperationNotSupportedException()
         }
