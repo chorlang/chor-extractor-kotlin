@@ -138,31 +138,31 @@ class MulticomTest {
 
     @Test
     fun multl1() {
-        val test = "p {main {q!<e1>; r!<e2>; s!<e3>; q?; stop}} | " +
+        val test = "p {main {q!<e1>; r!<e2>; `value`!<e3>; q?; stop}} | " +
                 "q {main {p!<e4>; p?; t!<e5>; stop}} | " +
                 "r {main {p?; stop}} | " +
-                "s {main {p?; stop}} | " +
+                "`value` {main {p?; stop}} | " +
                 "t {main {q?; stop}}"
 
         val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "main {(p.e1->q, q.e4->p, p.e3->s, p.e2->r); q.e5->t; stop}"
+        val expected = "main {(p.e1->q, q.e4->p, p.e3->`value`, p.e2->r); q.e5->t; stop}"
 
         assertEquals(expected, actual)
     }
 
     @Test
     fun multl2() {
-        val test = "p {main {q!<e1>; s?; stop}} | " +
+        val test = "p {main {q!<e1>; `value`?; stop}} | " +
                 "q {main {r!<e2>; p?; stop}} | " +
-                "r {main {s!<e3>; q?; stop}} | " +
-                "s {main {p!<e4>; r?; stop}}"
+                "r {main {`value`!<e3>; q?; stop}} | " +
+                "`value` {main {p!<e4>; r?; stop}}"
 
         val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "main {(p.e1->q, q.e2->r, r.e3->s, s.e4->p); stop}"
+        val expected = "main {(p.e1->q, q.e2->r, r.e3->`value`, `value`.e4->p); stop}"
 
         assertEquals(expected, actual)
     }
@@ -171,39 +171,39 @@ class MulticomTest {
     fun multl3() {
         val test = "p {main {q!<e1>; r!<e2>; q?; stop}} | " +
                 "q {main {p!<e3>; p?; stop}} | " +
-                "r {main {s!<e4>; p?; stop}} | " +
-                "s {main {r?; stop}}"
+                "r {main {`value`!<e4>; p?; stop}} | " +
+                "`value` {main {r?; stop}}"
 
         val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "main {r.e4->s; (p.e1->q, q.e3->p, p.e2->r); stop}"
+        val expected = "main {r.e4->`value`; (p.e1->q, q.e3->p, p.e2->r); stop}"
 
         assertEquals(expected, actual)
     }
 
     @Test
     fun multl4() {
-        val test = "p {main {q!<e1>; q?; r!<e2>; s!<e3>; stop}} | " +
+        val test = "p {main {q!<e1>; q?; r!<e2>; `value`!<e3>; stop}} | " +
                 "q {main {t!<e5>; p!<e4>; p?; stop}} | " +
                 "r {main {p?; stop}} | " +
-                "s {main {p?; stop}} | " +
+                "`value` {main {p?; stop}} | " +
                 "t {main {q?; stop}}"
 
         val args = arrayListOf("-c", test)
 
         val actual = ChoreographyExtraction.main(args)
-        val expected = "main {q.e5->t; (p.e1->q, q.e4->p); p.e2->r; p.e3->s; stop}"
+        val expected = "main {q.e5->t; (p.e1->q, q.e4->p); p.e2->r; p.e3->`value`; stop}"
 
         assertEquals(expected, actual)
     }
 
     @Test //(expected = NetworkExtraction.MulticomException::class)
     fun multl5() {
-        val test = "p {main {q!<e1>; r!<e2>; s!<e3>; q?; q!<e4>; s?; q!<e5>; r!<e6>; q?; stop}} | " +
+        val test = "p {main {q!<e1>; r!<e2>; `value`!<e3>; q?; q!<e4>; `value`?; q!<e5>; r!<e6>; q?; stop}} | " +
                 "q {main {p!<e7>; p?; t!<e8>; r!<e9>; p?; p!<e10>; p?; stop}} | " +
-                "r {main {p?; s!<e11>; s!<e12>; q?; p?; stop}} | " +
-                "s {main {p?; p!<e13>; r?; r?; stop}} | " +
+                "r {main {p?; `value`!<e11>; `value`!<e12>; q?; p?; stop}} | " +
+                "`value` {main {p?; p!<e13>; r?; r?; stop}} | " +
                 "t {main {q?; stop}}"
 
         val args = arrayListOf("-c", test)

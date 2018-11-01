@@ -3,7 +3,7 @@ package ast.cc.nodes
 import ast.cc.interfaces.CCVisitor
 import ast.cc.interfaces.CCNode
 
-class Program (val choreographyList: ArrayList<Choreography>, val statistic: ArrayList<GraphStatistic> = ArrayList<GraphStatistic>()): CCNode {
+class Program (val choreographyList: ArrayList<Choreography?>, val statistic: ArrayList<GraphStatistic> = ArrayList()): CCNode {
     override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)
 
     override fun toString(): String {

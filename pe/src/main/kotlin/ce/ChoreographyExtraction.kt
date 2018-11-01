@@ -10,26 +10,19 @@ import ast.sp.nodes.ParallelNetworks
 import ast.sp.nodes.ProcessTerm
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
-import org.apache.logging.log4j.LogManager
 import util.networkStatistic.*
 import java.io.File
 import javax.naming.OperationNotSupportedException
 
 object ChoreographyExtraction{
-    private val log = LogManager.getLogger()
+    //private val log = LogManager.getLogger()
 
     @Throws(Exception::class)
     @JvmStatic
     fun main(args: ArrayList<String>): Program {
         val parsedInput = parseInput(args)
 
-        if (parsedInput!=null) {
-            val program = extractChoreography(parsedInput)
-            //log.info(network.toString())
-
-            return program //.toString()
-        }
-        else throw Exception("Malformed call - choreography was expected.")
+        return if (parsedInput!=null) extractChoreography(parsedInput) else throw Exception("Malformed call - choreography was expected.")
     }
 
     fun getStatistic(input: String): NetworkStatisticData {
@@ -87,6 +80,15 @@ object ChoreographyExtraction{
         return NetworkProcessStatisticData(networkProcessActions, networkProcessProcedures, networkProcessConditionals, networkProcessActionProcedures)
     }
 
+    fun generateNetwork(network: String): Network{
+        val stream = ANTLRInputStream(network)
+        val lexer = NetworkLexer(stream)
+        val parser = NetworkParser(CommonTokenStream(lexer))
+        val tree = parser.parallelNetworks()
+        val networkVisitor = NetworkVisitor()
+        return (networkVisitor.visitParallelNetworks(tree) as ParallelNetworks).networkList.first()
+    }
+
     private fun extractChoreography(parsedInput: ParsedInput): Program {
         val stream = ANTLRInputStream(parsedInput.network)
         val lexer = NetworkLexer(stream)
@@ -95,7 +97,7 @@ object ChoreographyExtraction{
         val networkVisitor = NetworkVisitor()
         val parallelNetworks = networkVisitor.visitParallelNetworks(tree) as ParallelNetworks
 
-        val program = ArrayList<Choreography>()
+        val program = ArrayList<Choreography?>()
         val statistic = ArrayList<GraphStatistic>()
         for (network in parallelNetworks.networkList) {
             if (parsedInput.livelocked.isEmpty() || network.processes.keys.containsAll(parsedInput.livelocked)) {
@@ -106,6 +108,9 @@ object ChoreographyExtraction{
         }
         return Program(program, statistic)
     }
+
+    private fun fail(message: String): Nothing = throw NoSuchElementException(message)
+
 
     fun parseStrategy(strategy: String): Strategy {
         val s = Strategy.values().find { it.name == strategy }
