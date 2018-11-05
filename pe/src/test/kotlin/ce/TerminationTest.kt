@@ -11,7 +11,7 @@ class TerminationTest {
         val test = "p {main{stop}} | q {main{stop}}"
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args)
+        val actual = ChoreographyExtraction.main(args).toString()
         val expected = "main {stop}"
 
         assertEquals(expected, actual)
@@ -22,7 +22,7 @@ class TerminationTest {
         val test = "p {main{stop}} | q {def X {stop} main{X}}"
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args)
+        val actual = ChoreographyExtraction.main(args).toString()
         val expected = "main {stop}"
 
         assertEquals(expected, actual)
