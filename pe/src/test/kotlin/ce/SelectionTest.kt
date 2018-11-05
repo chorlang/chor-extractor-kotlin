@@ -13,7 +13,7 @@ class SelectionTest {
                 "p { main {q+R; q!<e>; q?; stop}}"
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args)
+        val actual = ChoreographyExtraction.main(args).toString()
         val expected = "main {p->q[R]; p.e->q; q.u1->p; stop}"
 
         assertEquals(expected, actual)
@@ -26,7 +26,7 @@ class SelectionTest {
                 "r { main {stop}}"
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args)
+        val actual = ChoreographyExtraction.main(args).toString()
         val expected = "main {p->q[L]; p.e->q; q.u2->p; stop}"
 
         assertEquals(expected, actual)
@@ -38,7 +38,7 @@ class SelectionTest {
                 "q{def Y{p&{R: p?;Y, L: p?;Y}} main{Y}}"
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args)
+        val actual = ChoreographyExtraction.main(args).toString()
         val expected = "def X1 { p->q[R]; p.e->q; X1 } main {X1}"
 
         assertEquals(expected, actual)

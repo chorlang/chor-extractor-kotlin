@@ -17,8 +17,8 @@ typealias Marking = HashMap<ProcessName, Boolean>
 typealias Hash = Int
 
 class NetworkExtraction {
-    private var nodeIdCounter = 0
-    private val hashesMap = HashMap<Hash, ArrayList<ConcreteNode>>()
+    private var nodeIdCounter = 0 //node id
+    private val hashesMap = HashMap<Hash, ArrayList<ConcreteNode>>() //hashes of all nodes in the graph
     private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processesInChoreography used in badNodesList loop calculations
     private var badLoopCnt = 0
 
@@ -43,16 +43,7 @@ class NetworkExtraction {
      */
     @Suppress("UNCHECKED_CAST")
     private fun extract(n: Network, strategy: Strategy, livelocked: ArrayList<String>): Pair<Choreography?, GraphStatistic> {
-        val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
-        val marking = HashMap<ProcessName, Boolean>()
-
-        //we mark as visited processesInChoreography which has no active actions in the main procedure or which are in the list of livelocked processesInChoreography
-        n.processes.forEach { name, term -> marking[name] = term.main is TerminationSP || livelocked.contains(name) }
-
-        val node = ConcreteNode(network = n, choicePath = "0", id = nextNodeId(), badNodesList = ArrayList(), marking = marking)
-        graph.addVertex(node)
-        addToChoicePathMap(node)
-        addToHashMap(node)
+        val (graph, node) = setUpExtractionStructures(n, livelocked)
 
         return try {
             buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy)
@@ -63,171 +54,61 @@ class NetworkExtraction {
         }
     }
 
+    private fun setUpExtractionStructures(n: Network, livelocked: ArrayList<String>): Pair<DefaultDirectedGraph<Node, ExtractionLabel>, ConcreteNode> {
+        val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
+        val marking = HashMap<ProcessName, Boolean>()
+
+        //we mark as visited processesInChoreography which has no active actions in the main procedure or which are in the list of livelocked processesInChoreography
+        n.processes.forEach { name, term -> marking[name] = term.main is TerminationSP || livelocked.contains(name) }
+
+        val node = ConcreteNode(network = n, choicePath = "0", id = nextNodeId(), badNodesList = ArrayList(), marking = marking)
+        graph.addVertex(node)
+        addToChoicePathMap(node)
+        addToHashesMap(node)
+        return Pair(graph, node)
+    }
+
     private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         val unfoldedProcesses = HashSet<String>()
         val processes = copyAndSortProcesses(currentNode, strategy)
 
-        //region Try to find a single-action communication
+        if (findSingleAction(processes, unfoldedProcesses, currentNode, graph, strategy)) return true
+        if (findMultiAction(processes, currentNode, unfoldedProcesses, graph, strategy)) return true
+        throw NoPossibleActionsException("No possible actions at node" + currentNode.toString())
+    }
+
+    private fun findSingleAction(processes: HashMap<String, ProcessTerm>, unfoldedProcesses: HashSet<String>, currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         for (processPair in processes) {
             //if the processPair has procedure invocation on top, try to unfold it
             if (unfold(processPair.key, processes[processPair.key]!!)) unfoldedProcesses.add(processPair.key)
 
             val processesCopy = processesCopy(processes)
 
-            //region Try to find interaction
-            val findCommunication = getCommunication(processesCopy, processPair.key)
-            if (findCommunication != null) {
-                val (targetNetwork, label) = findCommunication
-
-                //remove processesInChoreography that were unfoldedProcesses but don't participate in the current communication
-                @Suppress("UNCHECKED_CAST")
-                val targetMarking = currentNode.marking.clone() as Marking
-
-                targetMarking[label.rcv] = true
-                unfoldedProcesses.remove(label.rcv)
-                targetMarking[label.snd] = true
-                unfoldedProcesses.remove(label.snd)
-
-                // revert unfolding all processesInChoreography not involved in the communication
-                unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
-
-                //if all procedures were visited, flip all markings
-                if (targetMarking.values.all { it }) {
-                    flipAndWash(label, targetMarking, targetNetwork)
-                }
-
-                //check if the node with the same network and markings already exists in the graph
-                val existingNodes = hashesMap[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
-                val existingNode = existingNodes?.firstOrNull { it.network == targetNetwork && it.marking == targetMarking }
-
-                /* case 1 */
-                if (existingNode == null) { // || existingNodes.isEmpty()) {
-                    val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
-                    assert(addNodeAndEdgeToGraph(currentNode, newNode, label, graph))
-
-                    val size = graph.vertexSet().size + 100
-                    return if (buildGraph(newNode, graph, strategy)) true else {
-                        assert(size == graph.vertexSet().size)
-                        removeNodeFromGraph(graph, newNode)
-                        continue
-                    }
-                }
-                /* case 2 */
-                else {
-                    if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
-                    else continue
-                }
+            val findInteraction = findInteraction(processesCopy, processPair, currentNode, unfoldedProcesses, graph, strategy)
+            if (findInteraction == null) continue
+            else {
+                if (findInteraction) return true
             }
-            //endregion
 
-            //region Try to find condition
-            val findCondition = getCondition(processesCopy)
-            if (findCondition != null) {
-                val (targetNetworkThen, labelThen, targetNetworkElse, labelElse) = findCondition
-                @Suppress("UNCHECKED_CAST")
-                val targetMarking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
-
-                if (unfoldedProcesses.contains(labelThen.process)) {
-                    targetMarking[labelThen.process] = true
-                    unfoldedProcesses.remove(labelThen.process)
-                }
-
-                unfoldedProcesses.forEach {
-                    targetNetworkThen.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!!
-                    targetNetworkElse.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!!
-                }
-
-                //if all procedures were visited, flip all markings
-                if (targetMarking.values.all { it }) {
-                    flipAndWash(labelThen, targetMarking, targetNetworkThen)
-                    flipAndWash(labelElse, targetMarking, targetNetworkElse)
-                }
-
-                //check if the node with the same network and markings already exists in the graph
-                val existingNodesThen = hashesMap[hash(targetNetworkThen, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
-                val existingNodeThen = existingNodesThen?.firstOrNull { it.network == targetNetworkThen && it.marking == targetMarking }
-                val nodeThen: ConcreteNode
-
-                /* case4 */
-                if (existingNodeThen == null) {
-                    nodeThen = createNewNode(targetNetworkThen, labelThen, currentNode, targetMarking)
-                    addNodeAndEdgeToGraph(currentNode, nodeThen, labelThen, graph)
-
-                    val size = graph.vertexSet().size + 100
-                    if (!buildGraph(nodeThen, graph, strategy)) {
-                        removeNodeFromGraph(graph, nodeThen)
-                        assert(size == (graph.vertexSet().size))
-                        continue
-                    }
-                }
-                /* case 5 */
-                else {
-                    nodeThen = existingNodeThen
-                    val edges = graph.edgeSet().size
-                    if (!addEdgeToGraph(currentNode, nodeThen, labelThen, graph)) {
-                        assert(edges == graph.edgeSet().size)
-                        continue
-                    } //else assert(edges == (graph.edgeSet().size + 1))
-                }
-
-                val existingNodesElse = hashesMap[hash(targetNetworkElse, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
-                val existingNodeElse = existingNodesElse?.firstOrNull { it.network == targetNetworkElse && it.marking == targetMarking }
-                val nodeElse: ConcreteNode
-
-                /* case 7 */
-                if (existingNodeElse == null) {
-                    nodeElse = createNewNode(targetNetworkElse, labelElse, currentNode, targetMarking)
-                    addNodeAndEdgeToGraph(currentNode, nodeElse, labelElse, graph)
-
-                    val size = graph.vertexSet().size + 100
-                    if (!buildGraph(nodeElse, graph, strategy)) {
-                        if (existingNodeThen == null) {
-                            removeNodeFromGraph(graph, nodeThen)
-                        } else graph.removeEdge(currentNode, nodeThen)
-                        removeNodeFromGraph(graph, nodeElse)
-                        assert(size == graph.vertexSet().size)
-                        return false
-                    }
-                }
-                /* case 8 */
-                else {
-                    var edges = graph.edgeSet().size
-                    nodeElse = existingNodeElse
-                    if (!addEdgeToGraph(currentNode, nodeElse, labelElse, graph)) {
-                        if (existingNodeThen == null) {
-                            edges -=  graph.edgesOf(nodeThen).size
-                            removeNodeFromGraph(graph, nodeThen)
-                        }
-                        else {
-                            graph.removeEdge(currentNode, nodeThen)
-                            edges -= 1
-                        }
-                        assert(edges == graph.edgeSet().size)
-                        continue
-                    }
-//                    else assert(edges == (graph.edgeSet().size + 1 ))
-                }
-
-                relabel(nodeThen)
-                relabel(nodeElse)
-                return true
+            val findCondition = findCondition(processesCopy, currentNode, unfoldedProcesses, graph, strategy)
+            if (findCondition == null) continue
+            else {
+                if (findCondition) return true
             }
-            //endregion
 
             //check if there are no possible actions left
             if (allTerminated(processes)) return true
         }
-        //endregion
+        return false
+    }
 
-        //region Try to find a multi-action communication
+    private fun findMultiAction(processes: HashMap<String, ProcessTerm>, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         for (p in processes) {
             val processesCopy = processesCopy(processes)
-
             val actions = ArrayList<InteractionLabel>()
             val waiting = ArrayList<InteractionLabel>()
             val interactionLabel = createInteractionLabel(p.key, processesCopy)
             if (interactionLabel != null) waiting.add(interactionLabel)
-
 
             val receivers = ArrayList<String>()
             while (!waiting.isEmpty()) {
@@ -287,7 +168,6 @@ class NetworkExtraction {
 
                 //check if the node with the same network and markings already exists in the graph
                 val targetNetwork = Network(processesCopy)
-
                 val existingNodes = hashesMap[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
                 val existingNode = existingNodes?.firstOrNull { it.network == targetNetwork && it.marking == targetMarking }
 
@@ -301,13 +181,146 @@ class NetworkExtraction {
                     if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
                 }
             }
-
         }
-        //endregion
+        return false
+    }
 
-        //region Throw exception, if there is no possible actions
-        throw NoPossibleActionsException("No possible actions at node" + currentNode.toString())
-        //endregion
+    private fun findCondition(processesCopy: HashMap<String, ProcessTerm>, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean? {
+        val findCondition = getCondition(processesCopy)
+        if (findCondition != null) {
+            val (targetNetworkThen, labelThen, targetNetworkElse, labelElse) = findCondition
+            @Suppress("UNCHECKED_CAST")
+            val targetMarking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
+
+            if (unfoldedProcesses.contains(labelThen.process)) {
+                targetMarking[labelThen.process] = true
+                unfoldedProcesses.remove(labelThen.process)
+            }
+
+            unfoldedProcesses.forEach {
+                targetNetworkThen.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!!
+                targetNetworkElse.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!!
+            }
+
+            //if all procedures were visited, flip all markings
+            if (targetMarking.values.all { it }) {
+                flipAndWash(labelThen, targetMarking, targetNetworkThen)
+                flipAndWash(labelElse, targetMarking, targetNetworkElse)
+            }
+
+            //check if the node with the same network and markings already exists in the graph
+            val existingNodesThen = hashesMap[hash(targetNetworkThen, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
+            val existingNodeThen = existingNodesThen?.firstOrNull { it.network == targetNetworkThen && it.marking == targetMarking }
+            val nodeThen: ConcreteNode
+
+            /* case4 */
+            if (existingNodeThen == null) {
+                nodeThen = createNewNode(targetNetworkThen, labelThen, currentNode, targetMarking)
+                addNodeAndEdgeToGraph(currentNode, nodeThen, labelThen, graph)
+
+                val size = graph.vertexSet().size + 100
+                if (!buildGraph(nodeThen, graph, strategy)) {
+                    removeNodeFromGraph(graph, nodeThen)
+                    assert(size == (graph.vertexSet().size))
+                    return null
+                }
+            }
+            /* case 5 */
+            else {
+                nodeThen = existingNodeThen
+                val edges = graph.edgeSet().size
+                if (!addEdgeToGraph(currentNode, nodeThen, labelThen, graph)) {
+                    assert(edges == graph.edgeSet().size)
+                    return null
+                } //else assert(edges == (graph.edgeSet().size + 1))
+            }
+
+            val existingNodesElse = hashesMap[hash(targetNetworkElse, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
+            val existingNodeElse = existingNodesElse?.firstOrNull { it.network == targetNetworkElse && it.marking == targetMarking }
+            val nodeElse: ConcreteNode
+
+            /* case 7 */
+            if (existingNodeElse == null) {
+                nodeElse = createNewNode(targetNetworkElse, labelElse, currentNode, targetMarking)
+                addNodeAndEdgeToGraph(currentNode, nodeElse, labelElse, graph)
+
+                val size = graph.vertexSet().size + 100
+                if (!buildGraph(nodeElse, graph, strategy)) {
+                    if (existingNodeThen == null) {
+                        removeNodeFromGraph(graph, nodeThen)
+                    } else graph.removeEdge(currentNode, nodeThen)
+                    removeNodeFromGraph(graph, nodeElse)
+                    assert(size == graph.vertexSet().size)
+                    return false
+                }
+            }
+            /* case 8 */
+            else {
+                var edges = graph.edgeSet().size
+                nodeElse = existingNodeElse
+                if (!addEdgeToGraph(currentNode, nodeElse, labelElse, graph)) {
+                    if (existingNodeThen == null) {
+                        edges -= graph.edgesOf(nodeThen).size
+                        removeNodeFromGraph(graph, nodeThen)
+                    } else {
+                        graph.removeEdge(currentNode, nodeThen)
+                        edges -= 1
+                    }
+                    assert(edges == graph.edgeSet().size)
+                    return null
+                }
+            }
+
+            relabel(nodeThen)
+            relabel(nodeElse)
+            return true
+        }
+        return false
+    }
+
+    private fun findInteraction(processesCopy: HashMap<String, ProcessTerm>, processPair: MutableMap.MutableEntry<String, ProcessTerm>, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean? {
+        val findCommunication = getCommunication(processesCopy, processPair.key)
+        if (findCommunication != null) {
+            val (targetNetwork, label) = findCommunication
+
+            //remove processesInChoreography that were unfoldedProcesses but don't participate in the current communication
+            @Suppress("UNCHECKED_CAST")
+            val targetMarking = currentNode.marking.clone() as Marking
+
+            targetMarking[label.rcv] = true
+            unfoldedProcesses.remove(label.rcv)
+            targetMarking[label.snd] = true
+            unfoldedProcesses.remove(label.snd)
+
+            // revert unfolding all processesInChoreography not involved in the communication
+            unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
+
+            //if all procedures were visited, flip all markings
+            if (targetMarking.values.all { it }) flipAndWash(label, targetMarking, targetNetwork)
+
+            //check if the node with the same network and markings already exists in the graph
+            val existingNodes = hashesMap[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
+            val existingNode = existingNodes?.firstOrNull { it.network == targetNetwork && it.marking == targetMarking }
+
+            /* case 1 */
+            if (existingNode == null) {
+                val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
+                assert(addNodeAndEdgeToGraph(currentNode, newNode, label, graph))
+
+                val size = graph.vertexSet().size + 100
+                return if (buildGraph(newNode, graph, strategy)) true
+                else {
+                    assert(size == graph.vertexSet().size)
+                    removeNodeFromGraph(graph, newNode)
+                    null
+                }
+            }
+            /* case 2 */
+            else {
+                return if (addEdgeToGraph(currentNode, existingNode, label, graph)) true else null
+            }
+        }
+        return false
     }
 
     private fun flipAndWash(label: ExtractionLabel, targetMarking: Marking, targetNetwork: Network) {
@@ -345,16 +358,16 @@ class NetworkExtraction {
     }
 
     private fun buildChoreography(root: Node, fakeNodesList: ArrayList<FakeNode>, graph: DefaultDirectedGraph<Node, ExtractionLabel>): Choreography {
-        val main = bh(root, graph, fakeNodesList)
+        val main = buildTerm(root, graph, fakeNodesList)
         val procedures = ArrayList<ProcedureDefinition>()
         for (fk in fakeNodesList) {
-            procedures.add(ProcedureDefinition(fk.procedureName, bh(fk, graph, fakeNodesList), HashSet()))
+            procedures.add(ProcedureDefinition(fk.procedureName, buildTerm(fk, graph, fakeNodesList), HashSet()))
         }
 
         return Choreography(main as Behaviour, procedures)
     }
 
-    private fun bh(node: Node, graph: DefaultDirectedGraph<Node, ExtractionLabel>, fakeNodesList: ArrayList<FakeNode>): CCNode {
+    private fun buildTerm(node: Node, graph: DefaultDirectedGraph<Node, ExtractionLabel>, fakeNodesList: ArrayList<FakeNode>): CCNode {
         val edges = graph.outgoingEdgesOf(node)
 
         when (edges.size) {
@@ -376,11 +389,11 @@ class NetworkExtraction {
                 return when (edge) {
                     is SendingLabel -> {
                         val com = Communication(edge.sender, edge.receiver, edge.expression)
-                        CommunicationSelection(com, bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
+                        CommunicationSelection(com, buildTerm(graph.getEdgeTarget(edge), graph, fakeNodesList))
                     }
                     is SelectionLabel -> {
                         val sel = Selection(edge.receiver, edge.sender, edge.label)
-                        CommunicationSelection(sel, bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
+                        CommunicationSelection(sel, buildTerm(graph.getEdgeTarget(edge), graph, fakeNodesList))
                     }
                     is MulticomLabel -> {
                         val actions = ArrayList<Interaction>()
@@ -395,7 +408,7 @@ class NetworkExtraction {
                                 else -> throw NotImplementedError()
                             }
                         }
-                        Multicom(actions, bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
+                        Multicom(actions, buildTerm(graph.getEdgeTarget(edge), graph, fakeNodesList))
                     }
                     else -> throw Exception("Unexpected label type, can't build choreography")
                 }
@@ -405,8 +418,8 @@ class NetworkExtraction {
                 val right = edges.last()
 
                 return when (left) {
-                    is ThenLabel -> Condition(left.process, left.expression, bh(graph.getEdgeTarget(left), graph, fakeNodesList), bh(graph.getEdgeTarget(right), graph, fakeNodesList))
-                    is ElseLabel -> Condition(left.process, left.expression, bh(graph.getEdgeTarget(right), graph, fakeNodesList), bh(graph.getEdgeTarget(left), graph, fakeNodesList))
+                    is ThenLabel -> Condition(left.process, left.expression, buildTerm(graph.getEdgeTarget(left), graph, fakeNodesList), buildTerm(graph.getEdgeTarget(right), graph, fakeNodesList))
+                    is ElseLabel -> Condition(left.process, left.expression, buildTerm(graph.getEdgeTarget(right), graph, fakeNodesList), buildTerm(graph.getEdgeTarget(left), graph, fakeNodesList))
                     else -> throw Exception("Bad graph. Was waiting for conditional edges, but got unexpected type.")
                 }
             }
@@ -576,7 +589,7 @@ class NetworkExtraction {
         return newNode
     }
 
-    private fun addToHashMap(newNode: ConcreteNode) {
+    private fun addToHashesMap(newNode: ConcreteNode) {
         val hash = hash(newNode.network, newNode.marking)
         hashesMap.compute(hash) { _, value ->
             if (value == null) {
@@ -606,7 +619,7 @@ class NetworkExtraction {
         //check if we can add a new node and an edge
         return if (graph.addVertex(newNode) && graph.addEdge(currentNode, newNode, label)) {
             addToChoicePathMap(newNode)
-            addToHashMap(newNode)
+            addToHashesMap(newNode)
             true
         } else false
     }
@@ -753,13 +766,9 @@ class NetworkExtraction {
         }
     }
 
-    private fun nextNodeId(): Int {
-        return nodeIdCounter++
-    }
+    private fun nextNodeId() = nodeIdCounter++
 
-    private fun hash(n: Network, marking: Marking): Int {
-        return Pair(n, marking).hashCode()
-    }
+    private fun hash(network: Network, marking: Marking) = Pair(network, marking).hashCode()
 
     private fun processesCopy(processes: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
         val processesCopy = HashMap<String, ProcessTerm>()
