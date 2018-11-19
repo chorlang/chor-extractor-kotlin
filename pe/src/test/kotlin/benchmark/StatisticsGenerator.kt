@@ -29,9 +29,6 @@ class StatisticsGenerator {
     }
 
     @Test
-    fun
-
-    @Test
     fun choreographyExtractionStatistics() {
         checkOutputFolder()
         val filesWithNetworks = parseFolderWithFilesWithNetworks(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, network_body>>
