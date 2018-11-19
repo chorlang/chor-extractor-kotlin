@@ -29,7 +29,7 @@ class StatisticsGenerator {
     }
 
     @Test
-    fun 
+    fun
 
     @Test
     fun choreographyExtractionStatistics() {
