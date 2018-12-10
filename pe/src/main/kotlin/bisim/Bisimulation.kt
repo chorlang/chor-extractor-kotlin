@@ -31,6 +31,14 @@ fun bisimilar( c1:String, c2:String ):Boolean
     return bisimilar( program1.choreographyList, program2.choreographyList )
 }
 
+fun similar( c1:String, c2:String ):Boolean
+{
+    val program1 = ChoreographyVisitor().getProgram(parseChoreography(c1)) as Program
+    val program2 = ChoreographyVisitor().getProgram(parseChoreography(c2)) as Program
+
+    return similar( program1.choreographyList, program2.choreographyList )
+}
+
 fun bisimilar( list1:List<Choreography?>, list2:List<Choreography?> ):Boolean
 {
     return similar(list1,list2) && similar(list2,list1)
@@ -71,7 +79,7 @@ fun similar(c1:Choreography, c2:Choreography):Boolean
         val (one, two) = todo.removeAt(0);
         val actionsWithContinuations = getActionsWithContinuations(one, c1.procedures)
         for( (action1, continuation1) in actionsWithContinuations ) {
-            val continuation2 = getContinuation( two, action1, c2.procedures, arrayListOf() )
+            val continuation2 = getContinuation( two, action1, c2.procedures )
             if ( continuation2 == null ) {
                 println( "Could not match ${action1} with continuation ${two}" )
                 return false
@@ -87,7 +95,18 @@ fun similar(c1:Choreography, c2:Choreography):Boolean
     return true
 }
 
-fun getContinuation( c:CCNode, label:ExtractionLabel, procedures:List<ProcedureDefinition>, blockedProcesses:ArrayList<String> ):CCNode?
+private fun pn(label:ExtractionLabel):Set<String>
+{
+    return when( label ) {
+        is ThenLabel -> setOf(label.process)
+        is ElseLabel -> setOf(label.process)
+        is SendingLabel -> setOf(label.sender, label.receiver)
+        is SelectionLabel -> setOf(label.sender, label.receiver)
+        else -> throw java.lang.IllegalArgumentException("Invalid label")
+    }
+}
+
+fun getContinuation( c:CCNode, label:ExtractionLabel, procedures:List<ProcedureDefinition> ):CCNode?
 {
     when( c ) {
         is ProcedureInvocation -> {
@@ -103,34 +122,32 @@ fun getContinuation( c:CCNode, label:ExtractionLabel, procedures:List<ProcedureD
             if ( procedureBody == null ) {
                 return null
             } else {
-                return getContinuation( procedureBody, label, proceduresCopy, blockedProcesses )
+                return getContinuation( procedureBody, label, proceduresCopy )
             }
         }
         is CommunicationSelection -> {
-            if (blockedProcesses.contains(c.node.sender) || blockedProcesses.contains(c.node.receiver))
-                return null
-
             if (equalLabels(labelFromInteraction(c.node), label)) {
                 return c.continuation
             } else {
-                blockedProcesses.add(c.node.sender)
-                blockedProcesses.add(c.node.receiver)
-                val cont = getContinuation(c.continuation, label, procedures, blockedProcesses)
+                val lNames = pn(label)
+                if ( lNames.contains(c.node.sender) || lNames.contains(c.node.receiver) )
+                    return null
+
+                val cont = getContinuation(c.continuation, label, procedures)
                 return if ( cont == null ) null else CommunicationSelection(c.node, cont )
             }
         }
         is Condition -> {
-            if ( blockedProcesses.contains( c.process ) )
-                return null
-
             when( label ) {
                 is ThenLabel -> {
                     if ( c.process == label.process && c.expression == label.expression ) {
                         return c.thenChoreography
                     } else {
-                        blockedProcesses.add( c.process )
-                        val thenCont = getContinuation(c.thenChoreography, label, procedures, ArrayList(blockedProcesses))
-                        val elseCont = getContinuation(c.elseChoreography, label, procedures, ArrayList(blockedProcesses))
+                        if ( pn(label).contains(c.process) )
+                            return null
+
+                        val thenCont = getContinuation(c.thenChoreography, label, procedures)
+                        val elseCont = getContinuation(c.elseChoreography, label, procedures)
                         return if ( thenCont == null || elseCont == null ) null else Condition( c.process, c.expression, thenCont, elseCont )
                     }
                 }
@@ -138,16 +155,20 @@ fun getContinuation( c:CCNode, label:ExtractionLabel, procedures:List<ProcedureD
                     if ( c.process == label.process && c.expression == label.expression ) {
                         return c.elseChoreography
                     } else {
-                        blockedProcesses.add( c.process )
-                        val thenCont = getContinuation(c.thenChoreography, label, procedures, ArrayList(blockedProcesses))
-                        val elseCont = getContinuation(c.elseChoreography, label, procedures, ArrayList(blockedProcesses))
+                        if ( pn(label).contains(c.process) )
+                            return null
+
+                        val thenCont = getContinuation(c.thenChoreography, label, procedures)
+                        val elseCont = getContinuation(c.elseChoreography, label, procedures)
                         return if ( thenCont == null || elseCont == null ) null else Condition( c.process, c.expression, thenCont, elseCont )
                     }
                 }
                 else -> {
-                    blockedProcesses.add( c.process )
-                    val thenCont = getContinuation(c.thenChoreography, label, procedures, blockedProcesses)
-                    val elseCont = getContinuation(c.elseChoreography, label, procedures, blockedProcesses)
+                    if ( pn(label).contains(c.process) )
+                        return null
+
+                    val thenCont = getContinuation(c.thenChoreography, label, procedures)
+                    val elseCont = getContinuation(c.elseChoreography, label, procedures)
                     return if ( thenCont == null || elseCont == null ) null else Condition( c.process, c.expression, thenCont, elseCont )
                 }
             }
