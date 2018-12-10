@@ -312,7 +312,7 @@ class StatisticsGenerator {
         for (fileName in dir.list()) {
             if (fileName.startsWith(prefix)) {
                 val file = File("$dirPath/$fileName")
-                fileToChoreographyMap[fileName.substringAfter(prefix)] = parseFileWithChoreographies(file)
+                fileToChoreographyMap[fileName.substringAfter(prefix)] = parseChoreographyFile(file)
             }
         }
 
@@ -322,7 +322,7 @@ class StatisticsGenerator {
     /**
      * @output: HashMap<choreography_id, choreography_body>>
      */
-    private fun parseFileWithChoreographies(file: File): HashMap<String, String> {
+    private fun parseChoreographyFile(file: File): HashMap<String, String> {
         val choreography = ArrayList<String>()
         var name = ""
 
