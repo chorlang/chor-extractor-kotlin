@@ -1,2 +1,0 @@
-id, length, numberOfProcesses, numberOfProcedures, numberOfConditionals, minLengthOfProcesses, maxLengthOfProcesses, avgLengthOfProcesses, minNumberOfProceduresInProcesses, maxNumberOfProceduresInProcesses, avgNumberOfProceduresInProcesses, minNumberOfConditionalsInProcesses, maxNumberOfConditionalsInProcesses, avgNumberOfConditionalsInProcesses, numberOfProcessesWithConditionals, minProcedureLengthInProcesses, maxProcedureLengthInProcesses, avgProcedureLengthInProcesses
-C56,8,5,2,0,2,7,4,2,2,2,0,0,0,0,0,3,0
