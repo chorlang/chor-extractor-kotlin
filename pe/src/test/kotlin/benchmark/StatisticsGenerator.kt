@@ -13,7 +13,7 @@ import kotlin.math.roundToInt
 import bisim.bisimilar
 
 class StatisticsGenerator {
-    private val CHOREOGRAPHY_PREFIX = "chor-";
+    private val CHOREOGRAPHY_PREFIX = "choreography-";
     private val PROJECTION_PREFIX = "projection-";
     private val EXTRACTION_PREFIX = "extraction-";
     private val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-";
@@ -293,6 +293,7 @@ class StatisticsGenerator {
         File(OUTPUT_DIR, filename).printWriter().use { out ->
             out.println("choreographyId,network")
             chorData.forEach { choreographyId, choreography ->
+                println("Projecting $choreographyId in $filename")
                 val network = NetworkProjection.project(choreography)
                 out.println("$choreographyId, $network")
             }
@@ -330,7 +331,7 @@ class StatisticsGenerator {
 
         file.forEachLine { line ->
             when {
-                line.startsWith("***") -> name = line.substring(4, 7).trim()
+                line.startsWith("***") -> name = line.substring(4).substringBefore("***").trim()
                 line.startsWith("def") -> choreography.add(line)
                 line.startsWith("main") -> choreography.add(line)
                 line.isEmpty() -> {
