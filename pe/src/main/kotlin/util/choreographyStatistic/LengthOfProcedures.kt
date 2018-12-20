@@ -14,7 +14,7 @@ class LengthOfProcedures: CCVisitor<Int> {
     }
 
     override fun visit(n: ProcedureDefinition): Int {
-        return n.choreography.accept(this)
+        return n.body.accept(this)
     }
 
     override fun visit(n: ProcedureInvocation): Int {

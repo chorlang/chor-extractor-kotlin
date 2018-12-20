@@ -1,7 +1,7 @@
 package lcf;
 
 /*
- * Visitor for choreography nodes.
+ * Visitor for body nodes.
  */
 public interface CNVisitor {
 

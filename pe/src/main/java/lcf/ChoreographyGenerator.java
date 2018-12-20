@@ -34,18 +34,18 @@ public class ChoreographyGenerator {
     /*
      * The real constructor.
      * - seed: initial seed for the random number generator
-     * - length: maximum length of each procedure/main body
+     * - length: maximum length of each name/main body
      * - numProcesses: maximum number of processesInChoreography used
      * - numIfs: maximum number of conditional instructions (globally)
-     * - numProcedures: maximum number of procedure definitions (excluding main)
+     * - numProcedures: maximum number of name definitions (excluding main)
      * Most parameters are bounds because we do not check for duplicates.
-     * This constructor also initializes a set of process and procedure names that are
+     * This constructor also initializes a set of process and name names that are
      * shared among all generated choreographies.
      */
     public ChoreographyGenerator(long seed, int length, int numProcesses, int numIfs, int numProcedures)
         throws GeneratorException {
         if (numProcedures >= length)
-            throw new GeneratorException("Total size of the choreography must be at least the number of procedures.");
+            throw new GeneratorException("Total size of the body must be at least the number of procedures.");
         this.SEED = seed;
         this.generator = new Random(seed);
         this.LENGTH = length;
@@ -61,7 +61,7 @@ public class ChoreographyGenerator {
     public ChoreographyGenerator(int length, int numProcesses, int numIfs, int numProcedures)
         throws GeneratorException {
         if (numProcedures >= length)
-            throw new GeneratorException("Total size of the choreography must be at least the number of procedures.");
+            throw new GeneratorException("Total size of the body must be at least the number of procedures.");
         this.generator = new Random();
         SEED = generator.nextLong();
         generator.setSeed(SEED);
@@ -87,7 +87,7 @@ public class ChoreographyGenerator {
         }
         this.processNames = (String[]) auxNames.toArray(new String[0]);
 
-        // we generate procedure names as strings of uppercase letters
+        // we generate name names as strings of uppercase letters
         auxNames = new HashSet<String>();
         if (NUM_PROCEDURES > 0) {
             bound = (NUM_PROCEDURES == 1 ? 1 : Math.toIntExact(Math.round(Math.ceil(Math.log(NUM_PROCEDURES)/Math.log(26)))));
@@ -109,7 +109,7 @@ public class ChoreographyGenerator {
     }
 
     /*
-     * Resets the internal counters, so that a new choreography can be generated.
+     * Resets the internal counters, so that a new body can be generated.
      */
     private void reset() {
         this.messageCounter = 0;
@@ -139,7 +139,7 @@ public class ChoreographyGenerator {
         // control how the if statements are distributed among procedures
         int[] ifArray = randomArray(NUM_PROCEDURES+1,NUM_IFS);
 
-        // same for procedure sizes -- but they must be at least 1
+        // same for name sizes -- but they must be at least 1
         int[] procedureSizes = randomArray(NUM_PROCEDURES+1,LENGTH-NUM_PROCEDURES);
         for (int i=1; i<=NUM_PROCEDURES; i++)
             procedureSizes[i]++;
@@ -156,10 +156,10 @@ public class ChoreographyGenerator {
     }
 
     /*
-     * The key ingredient: generating a procedure body.
+     * The key ingredient: generating a name body.
      * Parameters:
-     * - size is the [exact] number of actions in the body of this procedure
-     * - numIfs is the [maximum] number of if statements in the body of this procedure
+     * - size is the [exact] number of actions in the body of this name
+     * - numIfs is the [maximum] number of if statements in the body of this name
      * Because of the use of random numbers, it is possible that there are less if statements
      * than allowed. The likelihood decreases as size/numIfs increases.
      */

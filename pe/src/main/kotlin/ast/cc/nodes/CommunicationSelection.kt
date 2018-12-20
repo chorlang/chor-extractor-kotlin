@@ -1,16 +1,11 @@
 package ast.cc.nodes
 
 import ast.cc.interfaces.CCVisitor
-import ast.cc.interfaces.CCNode
-import ast.cc.interfaces.Behaviour
+import ast.cc.interfaces.ChoreographyBody
 import ast.cc.interfaces.Interaction
 
-class CommunicationSelection(val node: Interaction, val continuation: CCNode): Behaviour{
+class CommunicationSelection(val eta: Interaction, val continuation: ChoreographyBody): ChoreographyBody {
     override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)
 
-    override fun toString(): String {
-        val sb = StringBuilder()
-        sb.append(node.toString()).append(continuation.toString())
-        return sb.toString()
-    }
+    override fun toString(): String = "$eta; $continuation"
 }

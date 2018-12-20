@@ -2,7 +2,6 @@ package bisim
 
 import antlrgen.ChoreographyLexer
 import antlrgen.ChoreographyParser
-import ast.cc.interfaces.CCNode
 import ast.sp.labels.interfaces.ExtractionLabel
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
@@ -14,6 +13,7 @@ import ast.sp.nodes.ProcedureName
 import np.ChoreographyVisitor
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
+import ast.cc.interfaces.ChoreographyBody
 
 private fun parseChoreography(choreography: String): ChoreographyParser.ProgramContext
 {
@@ -28,7 +28,7 @@ fun bisimilar( c1:String, c2:String ):Boolean
     val program1 = ChoreographyVisitor().getProgram(parseChoreography(c1)) as Program
     val program2 = ChoreographyVisitor().getProgram(parseChoreography(c2)) as Program
 
-    return bisimilar( program1.choreographyList, program2.choreographyList )
+    return bisimilar( program1.choreographies, program2.choreographies )
 }
 
 fun similar( c1:String, c2:String ):Boolean
@@ -36,7 +36,7 @@ fun similar( c1:String, c2:String ):Boolean
     val program1 = ChoreographyVisitor().getProgram(parseChoreography(c1)) as Program
     val program2 = ChoreographyVisitor().getProgram(parseChoreography(c2)) as Program
 
-    return similar( program1.choreographyList, program2.choreographyList )
+    return similar( program1.choreographies, program2.choreographies )
 }
 
 fun bisimilar( list1:List<Choreography?>, list2:List<Choreography?> ):Boolean
@@ -70,8 +70,8 @@ fun similar( list1:List<Choreography?>, list2:List<Choreography?> ):Boolean
 
 fun similar(c1:Choreography, c2:Choreography):Boolean
 {
-    val done:ArrayList<Pair<CCNode, CCNode>> = ArrayList()
-    val todo:ArrayList<Pair<CCNode, CCNode>> = ArrayList()
+    val done:ArrayList<Pair<ChoreographyBody, ChoreographyBody>> = ArrayList()
+    val todo:ArrayList<Pair<ChoreographyBody, ChoreographyBody>> = ArrayList()
 
     todo.add(Pair(c1.main, c2.main));
 
@@ -106,17 +106,17 @@ private fun pn(label:ExtractionLabel):Set<String>
     }
 }
 
-fun getContinuation( c:CCNode, label:ExtractionLabel, procedures:List<ProcedureDefinition> ):CCNode?
+fun getContinuation( c:ChoreographyBody, label:ExtractionLabel, procedures:List<ProcedureDefinition> ):ChoreographyBody?
 {
     when( c ) {
         is ProcedureInvocation -> {
             val proceduresCopy = ArrayList<ProcedureDefinition>()
-            var procedureBody:CCNode? = null
+            var procedureBody:ChoreographyBody? = null
             for( procedure in procedures ) {
-                if( procedure.procedure != c.procedure ) {
+                if( procedure.name != c.procedure ) {
                     proceduresCopy.add( procedure )
                 } else {
-                    procedureBody = procedure.choreography
+                    procedureBody = procedure.body
                 }
             }
             if ( procedureBody == null ) {
@@ -126,15 +126,15 @@ fun getContinuation( c:CCNode, label:ExtractionLabel, procedures:List<ProcedureD
             }
         }
         is CommunicationSelection -> {
-            if (equalLabels(labelFromInteraction(c.node), label)) {
+            if (equalLabels(labelFromInteraction(c.eta), label)) {
                 return c.continuation
             } else {
                 val lNames = pn(label)
-                if ( lNames.contains(c.node.sender) || lNames.contains(c.node.receiver) )
+                if ( lNames.contains(c.eta.sender) || lNames.contains(c.eta.receiver) )
                     return null
 
                 val cont = getContinuation(c.continuation, label, procedures)
-                return if ( cont == null ) null else CommunicationSelection(c.node, cont )
+                return if ( cont == null ) null else CommunicationSelection(c.eta, cont )
             }
         }
         is Condition -> {
@@ -189,10 +189,10 @@ fun equalLabels( l1:ExtractionLabel, l2:ExtractionLabel ):Boolean
     }
 }
 
-fun getActionsWithContinuations( c:CCNode, procedures:List<ProcedureDefinition> ):List<Pair<ExtractionLabel, CCNode>>
+fun getActionsWithContinuations( c:ChoreographyBody, procedures:List<ProcedureDefinition> ):List<Pair<ExtractionLabel, ChoreographyBody>>
 {
     return when( c ) {
-        is CommunicationSelection -> listOf(Pair(labelFromInteraction(c.node), c.continuation))
+        is CommunicationSelection -> listOf(Pair(labelFromInteraction(c.eta), c.continuation))
         is Condition -> listOf(
                 Pair(ThenLabel(c.process, c.expression), c.thenChoreography),
                 Pair(ElseLabel(c.process, c.expression), c.elseChoreography)
@@ -203,14 +203,14 @@ fun getActionsWithContinuations( c:CCNode, procedures:List<ProcedureDefinition> 
     }
 }
 
-fun getProcedure( name:ProcedureName, procedures:List<ProcedureDefinition> ):CCNode
+fun getProcedure( name:ProcedureName, procedures:List<ProcedureDefinition> ):ChoreographyBody
 {
     for( procedure in procedures ) {
-        if( procedure.procedure == name ) {
-            return procedure.choreography
+        if( procedure.name == name ) {
+            return procedure.body
         }
     }
-    throw IllegalArgumentException( "Called a procedure that does not exist: ${name}" )
+    throw IllegalArgumentException( "Called a name that does not exist: $name" )
 }
 
 fun labelFromInteraction(interaction:Interaction):ExtractionLabel

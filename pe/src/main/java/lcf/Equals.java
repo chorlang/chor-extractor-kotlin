@@ -1,7 +1,7 @@
 package lcf;
 
 /*
- * Class for deciding whether two nodes represent the same choreography, using the visitor pattern.
+ * Class for deciding whether two nodes represent the same body, using the visitor pattern.
  */
 public class Equals implements CNVisitor {
 

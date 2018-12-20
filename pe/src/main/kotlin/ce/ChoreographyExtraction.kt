@@ -5,7 +5,7 @@ package ce
 import antlrgen.NetworkLexer
 import antlrgen.NetworkParser
 import ast.cc.nodes.Choreography
-import ast.cc.nodes.GraphStatistic
+import ast.cc.nodes.GraphStatistics
 import ast.cc.nodes.Program
 import ast.sp.nodes.Network
 import ast.sp.nodes.ParallelNetworks
@@ -20,7 +20,7 @@ object ChoreographyExtraction{
         val parsedInput = parseInput(args)
 
         return if (parsedInput!=null) extractChoreography(parsedInput)
-        else throw Exception("Malformed call - choreography was expected.")
+        else throw Exception("Malformed call - body was expected.")
     }
 
     fun generateNetwork(network: String): Network{
@@ -36,7 +36,7 @@ object ChoreographyExtraction{
         val network = generateNetwork(parsedInput.network)
 
         val program = ArrayList<Choreography?>()
-        val statistic = ArrayList<GraphStatistic>()
+        val statistic = ArrayList<GraphStatistics>()
         //for (network in parallelNetworks.networkList) {
             if (parsedInput.livelocked.isEmpty() || network.processes.keys.containsAll(parsedInput.livelocked)) {
                 val extraction = NetworkExtraction.run(network, parsedInput.strategy, parsedInput.livelocked, parsedInput.debugMode)
@@ -66,13 +66,13 @@ object ChoreographyExtraction{
                     if (args.size >= i + 1) {
                         str = parseStrategy(args[i])
                     }
-                    else throw Exception("Malformed call - strategy for choreography generating was expected.")
+                    else throw Exception("Malformed call - strategy for body generating was expected.")
                 }
                 "-c" -> {
                     val i = iterator.nextIndex()
                     if (args.size >= i + 1)
                         network = args[i]
-                    else throw Exception("Malformed call - choreography was expected.")
+                    else throw Exception("Malformed call - body was expected.")
                 }
                 "-f" -> {
                     val i = iterator.nextIndex()
@@ -80,7 +80,7 @@ object ChoreographyExtraction{
                         val f = File(args[i])
                         network = f.readText()
                     }
-                    else throw Exception("Malformed call - choreography file name was expected.")
+                    else throw Exception("Malformed call - body file name was expected.")
                 }
                 "-l" -> {
                     val i = iterator.nextIndex()

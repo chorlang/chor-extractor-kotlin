@@ -12,8 +12,8 @@ public class FatSemi implements CNVisitor {
     }
 
     /*
-     * The attribute contains the choreography we want to return, so in the base cases nothing happens.
-     * For the remaining node types, we either recur or combine the results of the recursive calls.
+     * The attribute contains the body we want to return, so in the base cases nothing happens.
+     * For the remaining eta types, we either recur or combine the results of the recursive calls.
      */
     public void visit(TerminationNode n) {}
 
