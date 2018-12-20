@@ -20,7 +20,7 @@ public class CommonLexerRulesParser extends Parser {
 	public static final int
 		RULE_process = 0, RULE_procedure = 1;
 	public static final String[] ruleNames = {
-		"process", "procedure"
+		"process", "name"
 	};
 
 	private static final String[] _LITERAL_NAMES = {

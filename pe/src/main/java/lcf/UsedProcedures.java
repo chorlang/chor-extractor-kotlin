@@ -3,7 +3,7 @@ package lcf;
 import java.util.HashSet;
 
 /*
- * Class for computing procedures used in a node, using the visitor pattern.
+ * Class for computing procedures used in a eta, using the visitor pattern.
  */
 public class UsedProcedures implements CNVisitor {
 
@@ -14,8 +14,8 @@ public class UsedProcedures implements CNVisitor {
     }
 
     /*
-     * Only procedure calls change the value of the attribute.
-     * For the remaining node types, we either recur or combine the results of the recursive calls.
+     * Only name calls change the value of the attribute.
+     * For the remaining eta types, we either recur or combine the results of the recursive calls.
      */
     public void visit(TerminationNode n) {}
 

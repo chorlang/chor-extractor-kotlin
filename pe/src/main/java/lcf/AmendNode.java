@@ -3,7 +3,7 @@ package lcf;
 import java.util.HashSet;
 
 /*
- * Class for amending a (partial) choreography from a node, given the list of relevantprocesses.
+ * Class for amending a (partial) body from a eta, given the list of relevantprocesses.
  * Uses the visitor pattern.
  */
 public class AmendNode implements CNVisitor {
@@ -18,7 +18,7 @@ public class AmendNode implements CNVisitor {
 
     /*
      * Only conditionals require that we do something.
-     * For the remaining node types, we simply recur.
+     * For the remaining eta types, we simply recur.
      */
     public void visit(TerminationNode n) {
         amended = new TerminationNode();

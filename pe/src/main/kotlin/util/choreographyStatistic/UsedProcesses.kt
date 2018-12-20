@@ -20,7 +20,7 @@ class UsedProcesses : CCVisitor<Set<String>> {
     }
 
     override fun visit(n:CommunicationSelection):Set<String> {
-        return n.continuation.accept(this) + n.node.sender + n.node.receiver
+        return n.continuation.accept(this) + n.eta.sender + n.eta.receiver
     }
 
     override fun visit(n:Multicom):Set<String> {
@@ -49,7 +49,7 @@ class UsedProcesses : CCVisitor<Set<String>> {
         //    private HashMap<String,HashSet<String>> usedProcesses() {
 //        Set<String> keys = procedures.keySet();
 //
-//        // first: maps from body to process names and procedure calls in it
+//        // first: maps from body to process names and name calls in it
 //        HashMap<String,HashSet<String>> calls = new HashMap<String,HashSet<String>>();
 //        for (String name:keys)
 //        calls.put(name,UsedProcedures.run(procedures.get(name)));
@@ -78,19 +78,19 @@ class UsedProcesses : CCVisitor<Set<String>> {
 
         fun usedProcesses(n:Choreography):Map<String,Set<String>> {
             val calls = HashMap<String,Set<String>>()
-            n.procedures.forEach { calls[it.procedure] = UsedProcedures.usedProcedures(it.choreography) }
+            n.procedures.forEach { calls[it.name] = UsedProcedures.usedProcedures(it.body) }
             val oldUsedProcesses = HashMap<String,Set<String>>()
             val newUsedProcesses = HashMap<String,Set<String>>()
             n.procedures.forEach {
-                newUsedProcesses[it.procedure] = freeProcessNames(it.choreography)
+                newUsedProcesses[it.name] = freeProcessNames(it.body)
             }
 
             while( !oldUsedProcesses.equals(newUsedProcesses) ) {
-                n.procedures.forEach { oldUsedProcesses[it.procedure] = newUsedProcesses[it.procedure]!! }
+                n.procedures.forEach { oldUsedProcesses[it.name] = newUsedProcesses[it.name]!! }
                 n.procedures.forEach { procedure ->
-                    calls[procedure.procedure]!!.forEach { call ->
+                    calls[procedure.name]!!.forEach { call ->
                         try {
-                            newUsedProcesses[procedure.procedure] = newUsedProcesses[procedure.procedure]!! + oldUsedProcesses[call]!!
+                            newUsedProcesses[procedure.name] = newUsedProcesses[procedure.name]!! + oldUsedProcesses[call]!!
                         } catch( e:kotlin.KotlinNullPointerException ){
                             e.printStackTrace()
                         }

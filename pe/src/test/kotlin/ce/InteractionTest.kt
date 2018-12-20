@@ -20,7 +20,7 @@ class InteractionTest{
         assertEquals(expected, actual)
     }
 
-    /* interaction with procedure */
+    /* interaction with name */
     @Test
     fun tst2(){
         val test = "p { def X {q!<e>; stop} main {X}} " +
@@ -34,7 +34,7 @@ class InteractionTest{
         assertEquals(expected, actual)
     }
 
-    /* interaction with procedure on the one of the processesInChoreography */
+    /* interaction with name on the one of the processesInChoreography */
     @Test
     fun tst3(){
         val test = "p {main{q?;stop}} | q { def X {p!<e>;stop} main{X}}"
@@ -46,7 +46,7 @@ class InteractionTest{
         assertEquals(expected, actual)
     }
 
-    /* interaction with recursive procedure */
+    /* interaction with recursive name */
     @Test
     fun tst4(){
         val test = "p {def X {q!<e>;X} main {X}} " +

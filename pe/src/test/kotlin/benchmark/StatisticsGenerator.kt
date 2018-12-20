@@ -13,7 +13,7 @@ import kotlin.math.roundToInt
 import bisim.bisimilar
 
 class StatisticsGenerator {
-    private val CHOREOGRAPHY_PREFIX = "choreography-";
+    private val CHOREOGRAPHY_PREFIX = "body-";
     private val PROJECTION_PREFIX = "projection-";
     private val EXTRACTION_PREFIX = "extraction-";
     private val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-";
@@ -26,7 +26,7 @@ class StatisticsGenerator {
     /**
      * for each file with choreographies
      * 1. generate networks and write them to the file %original_file_name% networks
-     * 2. get statistic and write to the file %original_file_name% statistics
+     * 2. get statistics and write to the file %original_file_name% statistics
      */
     @Test
     fun networkProjectionStatistics() {
@@ -36,7 +36,6 @@ class StatisticsGenerator {
             writeNetworksToFile(choreographyData, "$PROJECTION_PREFIX$fileId")
             writeNetworkStatisticsToFile(choreographyData, "$PROJECTION_STATISTICS_PREFIX$fileId")
         }
-
     }
 
     @Test
@@ -59,7 +58,6 @@ class StatisticsGenerator {
 
         assert( bisimilar( (originalChoreographies["10-6-0-0"]!!)["C41"]!!, (extractedChoreographies["10-6-0-0"]!!)["C41"]!! ) )
     }
-
 
     private fun parseExtractionFiles(dirPath:String, prefix:String):HashMap<String, HashMap<String, String>>
     {
@@ -95,11 +93,11 @@ class StatisticsGenerator {
                     val program = ChoreographyExtraction.main(arrayListOf("-c", network, "-d"))
                     val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
 
-                    choreographies[choreographyId] = program.choreographyList.first().toString()
+                    choreographies[choreographyId] = program.choreographies.first().toString()
 
-                    if (program.choreographyList.size == 1 && program.statistic.size == 1) {
-                        val statistic = program.statistic.first()
-                        val choreography = program.choreographyList.first()
+                    if (program.choreographies.size == 1 && program.statistics.size == 1) {
+                        val statistic = program.statistics.first()
+                        val choreography = program.choreographies.first()
                         val lengthOfProcedures = LengthOfProcedures().getLength(choreography!!)
 
                         out.println("$choreographyId," +
@@ -117,7 +115,7 @@ class StatisticsGenerator {
             }
 
             File(OUTPUT_DIR, "$EXTRACTION_PREFIX$fileId").printWriter().use { out ->
-                out.println("id,choreography")
+                out.println("id,body")
                 choreographies.forEach { id, choreography -> out.println("$id,$choreography") }
             }
         }
@@ -158,11 +156,11 @@ class StatisticsGenerator {
                         val screwedId = "$choreographyId-${counter++}"
                         val (screwedNetwork, screwedInformation) = NetworkScrewer().screwNetwork(networkBody)
 
-                        //try and fail to extract choreography
+                        //try and fail to extract body
                         val start = System.currentTimeMillis()
                         val program = ChoreographyExtraction.main(arrayListOf("-c", network, "-d"))
                         val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
-                        val graphStatistic = program.statistic.first()
+                        val graphStatistic = program.statistics.first()
 
 
                         //collect data
@@ -248,7 +246,7 @@ class StatisticsGenerator {
 
 
     /**
-     * @input: choreography data: HashMap<choreography_id, choreography_body>, filename
+     * @input: body data: HashMap<choreography_id, choreography_body>, filename
      */
     private fun writeNetworkStatisticsToFile(chorData: HashMap<String, String>, filename: String) {
         File(OUTPUT_DIR, filename).printWriter().use { out ->
@@ -286,7 +284,7 @@ class StatisticsGenerator {
     }
 
     /**
-     * @input: choreography data: (choreography id, choreography), filename
+     * @input: body data: (body id, body), filename
      */
     private fun writeNetworksToFile(chorData: HashMap<String, String>, filename: String) {
         //var count = 1

@@ -51,7 +51,7 @@ class ConditionTest{
     }
 
     @Test
-    fun tst4(){ /* condition with procedure */
+    fun tst4(){ /* condition with name */
         val test =
                 "p {def X {if e then q!<u>;stop else q!<o>;stop} main {X}} " +
                         "| q {def Y{p?;stop} main {Y}} " +
@@ -66,7 +66,7 @@ class ConditionTest{
     }
 
     @Test
-    fun tst5(){ /* condition with procedure */
+    fun tst5(){ /* condition with name */
         val test =
                 "p {def X {if e then q!<u>;X else q!<o>;X} main {X}} " +
                         "| q {def Y{p?;Y} main {Y}} " +

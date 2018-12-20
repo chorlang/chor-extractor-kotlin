@@ -26,9 +26,9 @@ public class ChoreographyParser extends Parser {
 		RULE_interaction = 7, RULE_communication = 8, RULE_selection = 9, RULE_expression = 10, 
 		RULE_process = 11, RULE_procedure = 12;
 	public static final String[] ruleNames = {
-		"program", "choreography", "procedureDefinition", "main", "behaviour", 
+		"program", "body", "procedureDefinition", "main", "behaviour",
 		"condition", "procedureInvocation", "interaction", "communication", "selection", 
-		"expression", "process", "procedure"
+		"expression", "process", "name"
 	};
 
 	private static final String[] _LITERAL_NAMES = {

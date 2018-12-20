@@ -10,7 +10,7 @@ import antlrgen.ChoreographyParser.ProcedureDefinitionContext
 import antlrgen.ChoreographyParser.MainContext
 import antlrgen.ChoreographyParser.ProcedureInvocationContext
 import ast.cc.interfaces.CCNode
-import ast.cc.interfaces.Behaviour
+import ast.cc.interfaces.ChoreographyBody
 import ast.cc.nodes.*
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
@@ -24,7 +24,7 @@ class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
         return this.visit(parseTree)
     }
 
-    override fun visitCommunication(ctx: CommunicationContext): CCNode {
+    override fun visitCommunication(ctx: CommunicationContext): ChoreographyBody {
         val sender = ctx.process(0).text
         val receiver = ctx.process(1).text
         val expression = ctx.expression().text
@@ -34,10 +34,10 @@ class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
 
         val continuation = visit(ctx.behaviour())
 
-        return CommunicationSelection(Communication(sender, receiver, expression), continuation)
+        return CommunicationSelection(Communication(sender, receiver, expression), continuation as ChoreographyBody)
     }
 
-    override fun visitSelection(ctx: SelectionContext): CCNode {
+    override fun visitSelection(ctx: SelectionContext): ChoreographyBody {
         val sender = ctx.process(0).text
         val receiver = ctx.process(1).text
         val expression = ctx.expression().text
@@ -47,10 +47,10 @@ class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
 
         val continuation = visit(ctx.behaviour())
 
-        return CommunicationSelection(Selection(sender, receiver, expression), continuation)
+        return CommunicationSelection(Selection(sender, receiver, expression), continuation as ChoreographyBody)
     }
 
-    override fun visitCondition(ctx: ConditionContext): CCNode {
+    override fun visitCondition(ctx: ConditionContext): ChoreographyBody {
         val process = ctx.process().text
         val expression = ctx.expression().text
 
@@ -59,13 +59,13 @@ class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
         val thenChoreography = visit(ctx.behaviour(0))
         val elseChoreography = visit(ctx.behaviour(1))
 
-        return Condition(process, expression, thenChoreography, elseChoreography)
+        return Condition(process, expression, thenChoreography as ChoreographyBody, elseChoreography as ChoreographyBody)
     }
 
     override fun visitChoreography(ctx: ChoreographyContext): CCNode {
         val procedures = ArrayList<ProcedureDefinition>()
         ctx.procedureDefinition().stream().forEach { i -> procedures.add(visit(i) as ProcedureDefinition) }
-        return Choreography(visit(ctx.main()) as Behaviour, procedures, processesInChoreography[iteration])
+        return Choreography(visit(ctx.main()) as ChoreographyBody, procedures, processesInChoreography[iteration])
     }
 
     override fun visitProgram(ctx: ProgramContext): CCNode {
@@ -74,13 +74,12 @@ class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
             processesInChoreography.add(HashSet<String>())
             choreographyList.add(visit(choreography) as Choreography)
             iteration++
-
         }
         return Program(choreographyList)
     }
 
     override fun visitProcedureDefinition(ctx: ProcedureDefinitionContext): CCNode {
-        return ProcedureDefinition(ctx.procedure().text, visit(ctx.behaviour()), processesInChoreography[iteration])
+        return ProcedureDefinition(ctx.procedure().text, visit(ctx.behaviour()) as ChoreographyBody, processesInChoreography[iteration])
     }
 
     override fun visitMain(ctx: MainContext): CCNode {
