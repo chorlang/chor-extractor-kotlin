@@ -3,7 +3,7 @@ package lcf;
 import java.util.HashSet;
 
 /*
- * Class for computing processesInChoreography used in a node, using the visitor pattern.
+ * Class for computing processesInChoreography used in a eta, using the visitor pattern.
  * Deliberately ignores recursive calls.
  */
 public class UsedProcesses implements CNVisitor {

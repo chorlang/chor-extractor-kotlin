@@ -3,7 +3,7 @@ package np
 import antlrgen.ChoreographyLexer
 import antlrgen.ChoreographyParser
 import ast.cc.interfaces.CCNode
-import ast.cc.interfaces.Behaviour
+import ast.cc.interfaces.ChoreographyBody
 import ast.cc.nodes.*
 import ast.sp.nodes.Network
 import ast.sp.nodes.ProcessTerm
@@ -35,7 +35,7 @@ object NetworkProjection {
             File("generated_chor.txt").printWriter().use { out -> out.println(ch) }
             val chor = project(ch)
 
-            log.info("project choreography")
+            log.info("project body")
             return chor.toString()
 
         }
@@ -52,14 +52,14 @@ object NetworkProjection {
     }
 
     fun project(choreography: String): ParallelNetworks {
-        //create choreography AST called program
+        //create body AST called program
         val tree = this.parse(choreography)
         val choreographyVisitor = ChoreographyVisitor()
         val program = choreographyVisitor.getProgram(tree) //returns Program
 
         //project choreographies to networks
         val behaviourProjection = BehaviourProjection()
-        val choreographyList = (program as Program).choreographyList
+        val choreographyList = (program as Program).choreographies
         val network = HashMap<String, ProcessTerm>()
         val networkList = ArrayList<Network>()
         for (chor in choreographyList){
@@ -83,7 +83,7 @@ object NetworkProjection {
         val choreographyVisitor = ChoreographyVisitor()
         val program = choreographyVisitor.getProgram(tree) //returns Program
 
-        val choreographyList = (program as Program).choreographyList
+        val choreographyList = (program as Program).choreographies
         if (choreographyList.size == 1){
             return getChoreographyStatistic(choreographyList.first()!!)
         } else {
@@ -100,7 +100,7 @@ object NetworkProjection {
                     val i = iter.nextIndex()
                     if (args.size >= i + 1)
                         return args.get(i)
-                    else throw Exception("Malformed call - choreography name was expected.")
+                    else throw Exception("Malformed call - body name was expected.")
                 }
                 "-f" -> {
                     val i = iter.nextIndex()
@@ -108,10 +108,10 @@ object NetworkProjection {
                         val f = File(args.get(i))
                         return f.readText()
                     }
-                    else throw Exception("Malformed call - choreography file name was expected.")
+                    else throw Exception("Malformed call - body file name was expected.")
                 }
                 "-g" -> {
-                    log.info("generate choreography")
+                    log.info("generate body")
                     val i = iter.nextIndex()
                     if (args.size >= i + 2) {
                         val pr = args.get(i).toInt()
@@ -119,7 +119,7 @@ object NetworkProjection {
                         return generateChoreography(pr, cond)
 
                     }
-                    else throw Exception("Malformed call - parameters for choreography generating were expected.")
+                    else throw Exception("Malformed call - parameters for body generating were expected.")
                 }
 
             }
@@ -140,13 +140,13 @@ object NetworkProjection {
     }
 
     private fun generateStructure(prset: ArrayList<String>, pr: Int, cond: Int): CCNode {
-        val main = generateMain(prset, HashSet<String>(), pr, cond) as Behaviour
+        val main = generateMain(prset, HashSet<String>(), pr, cond) as ChoreographyBody
         val procedures = emptyList<ProcedureDefinition>() //TODO procedures generation
 
         return Choreography(main, procedures)
     }
 
-    private fun generateMain(prset: ArrayList<String>, visited: HashSet<String>, pr: Int, cond: Int):CCNode {
+    private fun generateMain(prset: ArrayList<String>, visited: HashSet<String>, pr: Int, cond: Int):ChoreographyBody {
         val expression = generateExpression()
 
         if(Math.random() < 0.5 && cond!=0){

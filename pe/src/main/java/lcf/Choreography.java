@@ -11,8 +11,8 @@ import java.util.ArrayList;
 public class Choreography {
 
     /*
-     * A choreography is a map of names to procedure bodies.
-     * We identify the choreography's body with a special procedure "main".
+     * A body is a map of names to name bodies.
+     * We identify the body's body with a special name "main".
      */
     private HashMap<String,ChoreographyNode> procedures;
 
@@ -21,21 +21,21 @@ public class Choreography {
     }
 
     /*
-     * Extends this choreography with a new procedure.
+     * Extends this body with a new name.
      */
     public void addProcedure(String s,ChoreographyNode n) {
         procedures.put(s,n);
     }
 
     /*
-     * Returns the body of a procedure in this choreography.
+     * Returns the body of a name in this body.
      */
     public ChoreographyNode getProcedure(String s) {
         return procedures.get(s);
     }
 
     /*
-     * Checks whether a choreography is well-formed:
+     * Checks whether a body is well-formed:
      * - no self-communications;
      * - main is defined;
      * - all called procedures are defined;
@@ -67,12 +67,12 @@ public class Choreography {
      */
 
     /*
-     * Returns the list of processesInChoreography used in each procedure.
+     * Returns the list of processesInChoreography used in each name.
      */
     private HashMap<String,HashSet<String>> usedProcesses() {
         Set<String> keys = procedures.keySet();
 
-        // first: maps from body to process names and procedure calls in it
+        // first: maps from body to process names and name calls in it
         HashMap<String,HashSet<String>> calls = new HashMap<String,HashSet<String>>();
         for (String name:keys)
             calls.put(name,UsedProcedures.run(procedures.get(name)));
@@ -98,9 +98,9 @@ public class Choreography {
     }
 
     /*
-     * Now we can amend the choreography in a not-so-clever way.
-     * For each procedure, we add selections to all processesInChoreography it uses after each conditional.
-     * We return a new choreography (design option).
+     * Now we can amend the body in a not-so-clever way.
+     * For each name, we add selections to all processesInChoreography it uses after each conditional.
+     * We return a new body (design option).
      */
     public Choreography amend() {
             HashMap<String,HashSet<String>> usedProcesses = usedProcesses();
@@ -127,7 +127,7 @@ public class Choreography {
     }
 
     /*
-     * Returns the list of procedures used in this choreography.
+     * Returns the list of procedures used in this body.
      */
     private HashSet<String> usedProcedures() {
         HashSet<String> result = new HashSet<String>();
@@ -137,7 +137,7 @@ public class Choreography {
     }
 
     /*
-     * Checks whether a choreography has deadcode (procedures that are never used).
+     * Checks whether a body has deadcode (procedures that are never used).
      */
     public boolean hasDeadCode() {
         ArrayList<String> toInspect = new ArrayList<String>();

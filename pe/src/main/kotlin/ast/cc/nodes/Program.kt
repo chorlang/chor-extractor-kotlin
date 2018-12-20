@@ -3,18 +3,11 @@ package ast.cc.nodes
 import ast.cc.interfaces.CCVisitor
 import ast.cc.interfaces.CCNode
 
-class Program (val choreographyList: ArrayList<Choreography?>, val statistic: ArrayList<GraphStatistic> = ArrayList()): CCNode {
+// TODO: We want to revisit choreographies: ArrayList<Choreography?> later.
+class Program (val choreographies: ArrayList<Choreography?>, val statistics: ArrayList<GraphStatistics> = ArrayList()): CCNode {
     override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)
 
-    override fun toString(): String {
-        val sb = StringBuilder()
-        choreographyList.forEach {sb.append("$it || ")}
-        sb.delete(sb.length-4, sb.length)
-        return sb.toString()
-    }
+    override fun toString(): String = choreographies.joinToString( separator = " || " )
 }
 
-data class GraphStatistic(
-        val nodes: Int,
-        val badLoops: Int
-)
+data class GraphStatistics( val nodes: Int, val badLoops: Int )

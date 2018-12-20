@@ -1,7 +1,7 @@
 package lcf;
 
 /*
- * Terminated choreography (no continuation).
+ * Terminated body (no continuation).
  */
 public class TerminationNode implements ChoreographyNode {
 

@@ -33,7 +33,7 @@ public class NetworkParser extends Parser {
 		"parallelNetworks", "network", "processBehaviour", "procedureDefinition", 
 		"behaviour", "interaction", "sending", "receiving", "selection", "offering", 
 		"labeledBehaviour", "condition", "procedureInvocation", "expression", 
-		"process", "procedure"
+		"process", "name"
 	};
 
 	private static final String[] _LITERAL_NAMES = {

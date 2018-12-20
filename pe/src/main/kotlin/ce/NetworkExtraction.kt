@@ -1,7 +1,7 @@
 package ce
 
 import ast.cc.interfaces.CCNode
-import ast.cc.interfaces.Behaviour
+import ast.cc.interfaces.ChoreographyBody
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
 import ast.sp.labels.*
@@ -27,7 +27,7 @@ class NetworkExtraction {
         private lateinit var livelocked: ArrayList<String>
         private var debugMode = false
 
-        fun run(n: Network, s: Strategy = Strategy.Default, l: ArrayList<String> = ArrayList(), d: Boolean = false): Pair<Choreography?, GraphStatistic> {
+        fun run(n: Network, s: Strategy = Strategy.Default, l: ArrayList<String> = ArrayList(), d: Boolean = false): Pair<Choreography?, GraphStatistics> {
             livelocked = l
             debugMode = d
             return NetworkExtraction().extract(n, s, livelocked)
@@ -35,18 +35,18 @@ class NetworkExtraction {
     }
 
     /**
-     * 1. build graph with nodes as networks and edges as choreography actions
+     * 1. build graph with nodes as networks and edges as body actions
      * 2. remove cycles from the graph
-     * 3. traverse the graph reading choreography actions
-     * @param n a processesInChoreography from which a choreography will be extracted
-     * @return Choreography representation of resulted choreography
+     * 3. traverse the graph reading body actions
+     * @param n a processesInChoreography from which a body will be extracted
+     * @return Choreography representation of resulted body
      */
     @Suppress("UNCHECKED_CAST")
-    private fun extract(n: Network, strategy: Strategy, livelocked: ArrayList<String>): Pair<Choreography?, GraphStatistic> {
+    private fun extract(n: Network, strategy: Strategy, livelocked: ArrayList<String>): Pair<Choreography?, GraphStatistics> {
         val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
         val marking = HashMap<ProcessName, Boolean>()
 
-        //we mark as visited processesInChoreography which has no active actions in the main procedure or which are in the list of livelocked processesInChoreography
+        //we mark as visited processesInChoreography which has no active actions in the main name or which are in the list of livelocked processesInChoreography
         n.processes.forEach { name, term -> marking[name] = term.main is TerminationSP || livelocked.contains(name) }
 
         val node = ConcreteNode(network = n, choicePath = "0", id = nextNodeId(), badNodesList = ArrayList(), marking = marking)
@@ -54,12 +54,11 @@ class NetworkExtraction {
         addToChoicePathMap(node)
         addToHashMap(node)
 
-        return try {
-            buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy)
+        if ( buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy) ) {
             val unrolledGraphNodesList = unrollGraph(node, graph as DefaultDirectedGraph<Node, ExtractionLabel>)
-            Pair(buildChoreography(node, unrolledGraphNodesList, graph), GraphStatistic(graph.vertexSet().size, badLoopCnt))
-        } catch (e: Exception) {
-            Pair(null, GraphStatistic(graph.vertexSet().size, badLoopCnt))
+            return Pair(buildChoreography(node, unrolledGraphNodesList, graph), GraphStatistics(graph.vertexSet().size, badLoopCnt))
+        } else {
+            return Pair(null, GraphStatistics(graph.vertexSet().size, badLoopCnt))
         }
     }
 
@@ -80,7 +79,7 @@ class NetworkExtraction {
         //if all procedures were visited, flip all markings
         if (targetMarking.values.all { it }) flipAndWash(label, targetMarking, targetNetwork)
 
-        //check if the node with the same network and markings already exists in the graph
+        //check if the eta with the same network and markings already exists in the graph
         val node = findNodeInGraph(targetNetwork, targetMarking, currentNode)
 
         /* case 1 */
@@ -106,13 +105,14 @@ class NetworkExtraction {
     private fun revertUnfolding(unfoldedProcesses: HashSet<String>, targetNetwork: Network, currentNode: ConcreteNode) = unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
 
 
-    private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
+    private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean
+    {
         val unfoldedProcesses = HashSet<String>()
         val processes = copyAndSortProcesses(currentNode, strategy)
 
         //try to find a single-action communication
         for (processPair in processes) {
-            //if the processPair has procedure invocation on top, try to unfold it
+            //if the processPair has name invocation on top, try to unfold it
             if (unfold(processPair.key, processes[processPair.key]!!)) unfoldedProcesses.add(processPair.key)
             val processesCopy = processesCopy(processes)
 
@@ -151,8 +151,8 @@ class NetworkExtraction {
 
         }
 
-        //Throw exception, if there is no possible actions
-        throw NoPossibleActionsException("No possible actions at node" + currentNode.toString())
+        System.err.println( "No possible actions at eta $currentNode" )
+        return false
     }
 
     private fun buildCondition(condition: ResultCondition, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
@@ -169,7 +169,7 @@ class NetworkExtraction {
             flipAndWash(labelElse, targetMarking, targetNetworkElse)
         }
 
-        //check if the node with the same network and markings already exists in the graph
+        //check if the eta with the same network and markings already exists in the graph
         val nodeThen = findNodeInGraph(targetNetworkThen, targetMarking, currentNode)
         val newNodeThen: ConcreteNode
 
@@ -189,7 +189,7 @@ class NetworkExtraction {
             if (!addEdgeToGraph(currentNode, nodeThen, labelThen, graph)) return false
         }
 
-        //check if the node with the same network and markings already exists in the graph
+        //check if the eta with the same network and markings already exists in the graph
         val nodeElse = findNodeInGraph(targetNetworkElse, targetMarking, currentNode)
         val newNodeElse: ConcreteNode
 
@@ -274,7 +274,7 @@ class NetworkExtraction {
         //if all procedures were visited, flip all markings
         if (targetMarking.values.all { it }) flipAndWash(label, targetMarking, targetNetwork)
 
-        //check if the node with the same network and markings already exists in the graph
+        //check if the eta with the same network and markings already exists in the graph
         val existingNode = findNodeInGraph(targetNetwork, targetMarking, currentNode)
 
         if (existingNode == null) {
@@ -334,10 +334,10 @@ class NetworkExtraction {
             procedures.add(ProcedureDefinition(fk.procedureName, bh(fk, graph, fakeNodesList), HashSet()))
         }
 
-        return Choreography(main as Behaviour, procedures)
+        return Choreography(main as ChoreographyBody, procedures)
     }
 
-    private fun bh(node: Node, graph: DefaultDirectedGraph<Node, ExtractionLabel>, fakeNodesList: ArrayList<FakeNode>): CCNode {
+    private fun bh(node: Node, graph: DefaultDirectedGraph<Node, ExtractionLabel>, fakeNodesList: ArrayList<FakeNode>): ChoreographyBody {
         val edges = graph.outgoingEdgesOf(node)
 
         when (edges.size) {
@@ -348,7 +348,7 @@ class NetworkExtraction {
                     }
                     for (process in node.network.processes) {
                         if (process.value.main !is TerminationSP) {
-                            //log.debug(node.toString())
+                            //log.debug(eta.toString())
                             throw Exception("Bad graph. No more edges found, but not all processesInChoreography were terminated.")
                         } else return Termination()
                     }
@@ -380,7 +380,7 @@ class NetworkExtraction {
                         }
                         Multicom(actions, bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
                     }
-                    else -> throw Exception("Unexpected label type, can't build choreography")
+                    else -> throw Exception("Unexpected label type, can't build body")
                 }
             }
             2 -> {
@@ -393,7 +393,7 @@ class NetworkExtraction {
                     else -> throw Exception("Bad graph. Was waiting for conditional edges, but got unexpected type.")
                 }
             }
-            else -> throw Exception("Bad graph. A node has more than 2 outgoing edges.")
+            else -> throw Exception("Bad graph. A eta has more than 2 outgoing edges.")
         }
         return Termination()
     }
@@ -586,7 +586,7 @@ class NetworkExtraction {
     }
 
     private fun addNodeAndEdgeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
-        //check if we can add a new node and an edge
+        //check if we can add a new eta and an edge
         return if (graph.addVertex(newNode) && graph.addEdge(currentNode, newNode, label)) {
             addToChoicePathMap(newNode)
             addToHashMap(newNode)
@@ -655,7 +655,7 @@ class NetworkExtraction {
     private fun checkPrefix(n: ConcreteNode): Boolean {
         for (node in choicePaths) {
             if (node.key.startsWith(n.choicePath) && node.value.isNotEmpty())
-                return true //node.value.first()
+                return true //eta.value.first()
         }
         return false
     }

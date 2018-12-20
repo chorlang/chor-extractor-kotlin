@@ -1,7 +1,7 @@
 package lcf;
 
 /*
- * Class for checking that there are no self-communications in a choreography, using the visitor pattern.
+ * Class for checking that there are no self-communications in a body, using the visitor pattern.
  */
 public class NoSelfCommunications implements CNVisitor {
 
@@ -13,7 +13,7 @@ public class NoSelfCommunications implements CNVisitor {
 
     /*
      * Only communications may change the value of the attribute.
-     * For the remaining node types, we either terminate or combine the results of the recursive calls.
+     * For the remaining eta types, we either terminate or combine the results of the recursive calls.
      */
     public void visit(TerminationNode n) {}
 

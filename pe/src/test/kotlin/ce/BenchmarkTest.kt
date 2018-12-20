@@ -337,11 +337,11 @@ class BenchmarkTest {
 
         val actual = ChoreographyExtraction.main(args).toString()
         val expected =
-                "def X1 { supplier->shipper[item]; shipper.DeliveryItem->supplier;" +
-                        "if supplier.needToShip then X1 else supplier->shipper[done]; supplier.UpdatePOandDeliverySchedule->retailer;" +
-                        "retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier;" +
+                "def X1 { supplier->shipper[item]; shipper.DeliveryItem->supplier; " +
+                        "if supplier.needToShip then X1 else supplier->shipper[done]; supplier.UpdatePOandDeliverySchedule->retailer; " +
+                        "retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; " +
                         "supplier.FinalizedPOandDeliverySchedule->retailer; stop } main {" +
-                        "supplier.PlannedOrderVariations->retailer; retailer.OrderDeliveryVariations->supplier; retailer.DeliverCheckPointRequest->supplier;" +
+                        "supplier.PlannedOrderVariations->retailer; retailer.OrderDeliveryVariations->supplier; retailer.DeliverCheckPointRequest->supplier; " +
                         "if supplier.needToShip then X1 else supplier->shipper[done]; supplier.UpdatePOandDeliverySchedule->retailer; retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; supplier.FinalizedPOandDeliverySchedule->retailer; stop}"
 
         assertEquals(expected, actual)

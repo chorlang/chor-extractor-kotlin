@@ -22,7 +22,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
 
     override fun visit(n: CommunicationSelection): SPNode {
         val continuation = n.continuation.accept(this)
-        val nn = n.node
+        val nn = n.eta
 
         when (nn) {
             is Selection -> {
@@ -74,7 +74,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     override fun visit(n: ProcedureDefinition): SPNode {
-        val node = n.choreography.accept(this)
+        val node = n.body.accept(this)
         val pd = Behaviour(node as IBehaviour)
         procedures!!.add(pd)
         return pd
@@ -94,9 +94,9 @@ class BehaviourProjection : CCVisitor<SPNode> {
         val procedures = HashMap<String, IBehaviour>()
         for (procedure in n.procedures) {
             try {
-                procedures[procedure.procedure] = procedure.accept(this) as IBehaviour
+                procedures[procedure.name] = procedure.accept(this) as IBehaviour
             } catch( e:MergingException ) {
-                val newE = MergingProjection.MergingException( "(procedure ${procedure.procedure}): ${e.message!!}" )
+                val newE = MergingProjection.MergingException( "(name ${procedure.name}): ${e.message!!}" )
                 newE.stackTrace = e.stackTrace
                 throw newE
             }

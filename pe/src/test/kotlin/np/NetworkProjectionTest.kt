@@ -42,7 +42,7 @@ class NetworkProjectionTest{
     }
 
     @Test
-    fun tst3(){ //finite interaction with procedure invocation
+    fun tst3(){ //finite interaction with name invocation
         val test = "def X { p.e->q;stop } main { X }"
 
         val actual = NetworkProjection.project(test).toString()
@@ -72,7 +72,7 @@ class NetworkProjectionTest{
     }
 
     @Test
-    fun tst6(){ //procedure definition/invocation
+    fun tst6(){ //name definition/invocation
         val test = "main {if p.e then p.e->q;stop else p.e->q; stop}"
 
         val actual = NetworkProjection.project(test).toString()
