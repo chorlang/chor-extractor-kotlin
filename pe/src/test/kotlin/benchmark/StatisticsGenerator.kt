@@ -11,24 +11,90 @@ import java.text.ParseException
 import javax.naming.OperationNotSupportedException
 import kotlin.math.roundToInt
 import bisim.bisimilar
+import org.junit.jupiter.api.BeforeAll
 
 class StatisticsGenerator {
-    private val CHOREOGRAPHY_PREFIX = "body-";
-    private val PROJECTION_PREFIX = "projection-";
-    private val EXTRACTION_PREFIX = "extraction-";
-    private val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-";
-    private val SCREWED_EXTRACTION_STATISTICS_PREFIX = "stats-screwed-extraction-";
-    private val PROJECTION_STATISTICS_PREFIX = "stats-projection-";
-    private val EXTRACTION_STATISTICS_PREFIX = "stats-extraction-";
-    private val COMBINED_STATISTICS_PREFIX = "stats-";
-    private val TEST_DIR = "tests";
+    companion object {
+        private val TEST_DIR = "tests"
+        private val CHOREOGRAPHY_PREFIX = "body-"
+        private val PROJECTION_PREFIX = "projection-"
+        private val EXTRACTION_PREFIX = "extraction-"
+        private val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-"
+        private val SCREWED_EXTRACTION_STATISTICS_PREFIX = "stats-screwed-extraction-"
+        private val PROJECTION_STATISTICS_PREFIX = "stats-projection-"
+        private val EXTRACTION_STATISTICS_PREFIX = "stats-extraction-"
+        private val COMBINED_STATISTICS_PREFIX = "stats-"
+
+        @JvmStatic
+        @BeforeAll
+        internal fun setUp() {
+            //delete all files except the ones started with CHOREOGRAPHY_PREFIX
+            cleanTestFolder(TEST_DIR, CHOREOGRAPHY_PREFIX)
+        }
+
+        private fun cleanTestFolder(dirPath: String, prefix: String) {
+            val dir = File(dirPath)
+            require(dir.exists() && dir.isDirectory)
+
+            for (fileName in dir.list()) {
+                if (!fileName.startsWith(prefix)) {
+                    val file = File("$dirPath/$fileName")
+                    file.delete()
+                }
+            }
+        }
+
+    }
+
+    @Test
+    fun gatherALLStatistics() {
+        networkProjectionStatistics()
+        choreographyExtractionStatistics()
+        screwDataStatistics()
+        accumulateStatistics(TEST_DIR, COMBINED_STATISTICS_PREFIX)
+
+    }
+
+    private fun accumulateStatistics(dirPath: String, prefix: String) {
+        val dir = File(dirPath)
+        require(dir.exists() && dir.isDirectory)
+
+        val testFileNames = retrieveTestFileNames()
+
+        for (testFileName in testFileNames) {
+            val file = File("$dirPath/$prefix$testFileName")
+            file.appendText("$testFileName\n")
+
+            for (fileName in dir.list()) {
+                if (fileName.endsWith(testFileName)) {
+                    file.appendText("$fileName\n")
+                    file.appendText(File("$dirPath/$fileName").readText())
+                }
+            }
+        }
+    }
+
+    private fun retrieveTestFileNames(): HashSet<String> {
+        val dir = File(TEST_DIR)
+        require(dir.exists() && dir.isDirectory)
+        val testNames = HashSet<String>()
+
+
+        for (fileName in dir.list()) {
+            if (fileName.startsWith(CHOREOGRAPHY_PREFIX)) {
+                testNames.add(fileName.removePrefix(CHOREOGRAPHY_PREFIX))
+            }
+        }
+
+        return testNames
+    }
 
     /**
      * for each file with choreographies
      * 1. generate networks and write them to the file %original_file_name% networks
      * 2. get statistics and write to the file %original_file_name% statistics
      */
-    @Test
+    //@Test
     fun networkProjectionStatistics() {
         checkOutputFolder()
         val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
@@ -44,8 +110,8 @@ class StatisticsGenerator {
         val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
         originalChoreographies.forEach { fileId, choreographyData ->
             choreographyData.forEach { id, choreography ->
-                if( !bisimilar( choreography, (extractedChoreographies[fileId]!!)[id]!! ) ) {
-                    println( "$id failed the bisimilarity check" )
+                if (!bisimilar(choreography, (extractedChoreographies[fileId]!!)[id]!!)) {
+                    println("$id failed the bisimilarity check")
                 }
             }
         }
@@ -53,14 +119,14 @@ class StatisticsGenerator {
 
     @Test
     fun extractionSoundnessC41() {
+        //NOTE that "10-6-0-0" doesn't contain "C41"
         val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
         val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
 
-        assert( bisimilar( (originalChoreographies["10-6-0-0"]!!)["C41"]!!, (extractedChoreographies["10-6-0-0"]!!)["C41"]!! ) )
+        assert(bisimilar((originalChoreographies["10-6-0-0"]!!)["C41"]!!, (extractedChoreographies["10-6-0-0"]!!)["C41"]!!))
     }
 
-    private fun parseExtractionFiles(dirPath:String, prefix:String):HashMap<String, HashMap<String, String>>
-    {
+    private fun parseExtractionFiles(dirPath: String, prefix: String): HashMap<String, HashMap<String, String>> {
         val dir = File(dirPath)
         require(dir.exists() && dir.isDirectory)
 
@@ -76,7 +142,7 @@ class StatisticsGenerator {
         return fileToChoreographyMap
     }
 
-    @Test
+    //@Test
     fun choreographyExtractionStatistics() {
         checkOutputFolder()
         val filesWithNetworks = parseFolderWithFilesWithNetworks(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, network_body>>
@@ -122,7 +188,7 @@ class StatisticsGenerator {
 
     }
 
-    @Test
+    //@Test
     fun screwDataStatistics() {
         checkOutputFolder()
         val filesWithNetworks = parseFolderWithFilesWithNetworks(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, network_body>>
@@ -302,7 +368,7 @@ class StatisticsGenerator {
      * @input: dir_path
      * @output: HashMap<file_id, HashMap<choreography_id, choreography_body>>
      */
-    private fun parseChoreographyFiles(dirPath: String, prefix:String): HashMap<String, HashMap<String, String>> {
+    private fun parseChoreographyFiles(dirPath: String, prefix: String): HashMap<String, HashMap<String, String>> {
         val dir = File(dirPath)
         require(dir.exists() && dir.isDirectory)
 
@@ -353,7 +419,8 @@ class StatisticsGenerator {
 
         file.forEachLine { line ->
             when {
-                line.startsWith("id") -> {}
+                line.startsWith("id") -> {
+                }
                 else -> {
                     val (id, choreography) = line.split(",", limit = 2)
                     choreographyMap[id] = choreography
