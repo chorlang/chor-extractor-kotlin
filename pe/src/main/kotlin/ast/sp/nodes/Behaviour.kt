@@ -13,12 +13,10 @@ data class Behaviour(val behaviour: IBehaviour) : IBehaviour {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Behaviour) return false
-        if (!behaviour.equals(other.behaviour)) return false
+        if (behaviour != other.behaviour) return false
 
         return true
     }
 
-    override fun hashCode(): Int {
-        return behaviour.hashCode()
-    }
+    override fun hashCode() = behaviour.hashCode()
 }

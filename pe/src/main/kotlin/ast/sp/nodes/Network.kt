@@ -50,16 +50,7 @@ data class Network(val processes: HashMap<ProcessName, ProcessTerm>) : SPNode {
         return hash
     }
 
-    fun copyProcesses(): HashMap<String, ProcessTerm> {
-        val processesCopy = HashMap<String, ProcessTerm>()
-        processes.forEach { t, u -> processesCopy[t] = u.copy() }
-        return processesCopy
-    }
-
-
-    companion object {
-        var i = 0
-    }
+    companion object { var i = 0 }
 }
 
 

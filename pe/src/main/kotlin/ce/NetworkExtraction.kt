@@ -334,7 +334,7 @@ class NetworkExtraction {
             procedures.add(ProcedureDefinition(fk.procedureName, bh(fk, graph, fakeNodesList), HashSet()))
         }
 
-        return Choreography(main as ChoreographyBody, procedures)
+        return Choreography(main, procedures)
     }
 
     private fun bh(node: Node, graph: DefaultDirectedGraph<Node, ExtractionLabel>, fakeNodesList: ArrayList<FakeNode>): ChoreographyBody {

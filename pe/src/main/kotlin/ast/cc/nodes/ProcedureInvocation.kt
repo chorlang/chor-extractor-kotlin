@@ -8,5 +8,4 @@ data class ProcedureInvocation(val procedure: String, val processes: HashSet<Str
     override fun <T> accept(visitor: CCVisitor<T>): T = visitor.visit(this)
 
     override fun toString() = procedure
-
 }
