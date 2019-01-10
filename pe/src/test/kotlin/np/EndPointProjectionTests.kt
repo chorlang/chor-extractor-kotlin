@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 
-class NetworkProjectionTest{
+class EndPointProjectionTests {
 
     @Test
     fun tst1(){
         val test = "def X {Y} def Y { p.e->q; stop } main {q.e->p;X}"
 
-        val actual = NetworkProjection.project(test).toString()
-        //  println(NetworkProjection.getChoreographyStatistic(f))
+        val actual = EndPointProjection.project(test).toString()
+        //  println(EndPointProjection.getChoreographyStatistic(f))
         val expected = "p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}}"
 
         assertEquals(expected, actual)
@@ -23,7 +23,7 @@ class NetworkProjectionTest{
                 "def T { p -> u[l3]; d -> o[l4]; K } " +
                 "def K { o.m3 -> u; o.m4 -> v; o -> p[l5]; p.m5 -> u; K } " +
                 "main { u.m1 -> v; o -> v[l1]; v -> u[l2]; u.m2 -> d; T }"
-        NetworkProjection.project(test).toString()
+        EndPointProjection.project(test).toString()
 
 
     }
@@ -34,7 +34,7 @@ class NetworkProjectionTest{
     fun tst2(){ //termination
         val test = "main { stop }"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = ""
 
         assertEquals(expected, actual)
@@ -44,7 +44,7 @@ class NetworkProjectionTest{
     fun tst3(){ //finite interaction with name invocation
         val test = "def X { p.e->q;stop } main { X }"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{def X{q!<e>; stop} main {X}} | q{def X{p?; stop} main {X}}"
 
         assertEquals(expected, actual)
@@ -54,7 +54,7 @@ class NetworkProjectionTest{
     fun tst4(){ //finite interaction
         val test = "main {p.e->q;stop}"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{main {q!<e>; stop}} | q{main {p?; stop}}"
 
         assertEquals(expected, actual)
@@ -64,7 +64,7 @@ class NetworkProjectionTest{
     fun tst5(){ //finite interaction
         val test = "main {p->q[l];stop}"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{main {q + l; stop}} | q{main {p&{l: stop}}}"
 
         assertEquals(expected, actual)
@@ -74,7 +74,7 @@ class NetworkProjectionTest{
     fun tst6(){ //name definition/invocation
         val test = "main {if p.e then p.e->q;stop else p.e->q; stop}"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{main {if e then q!<e>; stop else q!<e>; stop}} | q{main {p?; stop}}"
 
         assertEquals(expected, actual)
@@ -84,7 +84,7 @@ class NetworkProjectionTest{
     fun tst7(){ //condition
         val test = "main {if p.e then if q.e2 then p.e1 -> q; stop else p.e1 -> q; stop else if q.e2 then p.e3 -> q; stop else p.e3 -> q; stop}"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{main {if e then q!<e1>; stop else q!<e3>; stop}} | q{main {if e2 then p?; stop else p?; stop}}"
 
         assertEquals(expected, actual)
@@ -95,7 +95,7 @@ class NetworkProjectionTest{
         val test = "main {if p.e then p -> q[L]; p.e -> q; q.x -> r; r.z -> q; stop " +
                 "else p -> q[R]; q.y -> r; r.z -> q; q.u -> p; stop}"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{main {if e then q + L; q!<e>; stop else q + R; q?; stop}} | " +
                 "q{main {p&{R: r!<y>; r?; p!<u>; stop, L: p?; r!<x>; r?; stop}}} | " +
                 "r{main {q?; q!<z>; stop}}"
@@ -108,7 +108,7 @@ class NetworkProjectionTest{
         val test = "main {if p.e then p -> q[L]; p.e -> q; q -> r[L1]; r.z1 -> q; stop " +
                 "else p -> q[R]; q -> r[R1]; r.z2 -> q; q.u -> p; stop}"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{main {if e then q + L; q!<e>; stop else q + R; q?; stop}} | " +
                 "q{main {p&{R: r + R1; r?; p!<u>; stop, L: p?; r + L1; r?; stop}}} | " +
                 "r{main {q&{L1: q!<z1>; stop, R1: q!<z2>; stop}}}"
@@ -122,7 +122,7 @@ class NetworkProjectionTest{
                 "def Y {q.e->r; if r.e then r->q[ok]; r->p[ok]; q.e->r; stop else r->q[ko]; r->p[ko]; Y}" +
                 "main {p.e->q;X}"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{" +
                 "def X{q?; if e then q + ok; X else q + ko; Y} " +
                 "def Y{r&{ko: Y, ok: stop}} " +
@@ -152,7 +152,7 @@ class NetworkProjectionTest{
                 "def Z {p.e->q; Y}" +
                 "main {q.i->r; p.e->q; X}"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{" +
                 "def X{if e then q + ok; r + ok; q?; r&{ko: Y, ok: q!<e>; X} else q + ko; r + ko; q&{ko: Z, ok: q!<e>; X}} " +
                 "def Y{q!<e>; X} " +
@@ -171,7 +171,7 @@ class NetworkProjectionTest{
         assertEquals(expected, actual)
     }
 
-    @Test //(expected = MergingProjection.MergingException::class)
+    @Test //(expected = Merging.MergingException::class)
     fun tst12() {
         val test =
                 "def X1 { " +
@@ -206,15 +206,15 @@ class NetworkProjectionTest{
 
 
 
-        Assertions.assertThrows(MergingProjection.MergingException::class.java
-        ) { NetworkProjection.project(test) }
+        Assertions.assertThrows(Merging.MergingException::class.java
+        ) { EndPointProjection.project(test) }
 
     }
     @Test
     fun tst13(){
         val test = "def X {Y} def Y { p.e->q; stop } main {q.e->p;X} || def X {Y} def Y { p.e->q; stop } main {q.e->p;X}"
 
-        val actual = NetworkProjection.project(test).toString()
+        val actual = EndPointProjection.project(test).toString()
         val expected = "p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}} || p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}}"
 
         assertEquals(expected, actual)

@@ -19,7 +19,7 @@ class BenchmarkTest {
         val args = param.first
         args.add(test)
         val strategy = param.second
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
 
         when (strategy) {
             Strategy.SelectionFirst, Strategy.ConditionFirst, Strategy.UnmarkedFirst, Strategy.UnmarkedThenCondition, Strategy.UnmarkedThenSelection -> {
@@ -57,7 +57,7 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
 
         when (strategy) {
             Strategy.SelectionFirst -> {
@@ -102,7 +102,7 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
 
         when (strategy) {
             Strategy.UnmarkedThenRandom, Strategy.RandomProcess -> {
@@ -137,7 +137,7 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
 
         when (strategy) {
             Strategy.SelectionFirst, Strategy.ConditionFirst -> {
@@ -167,7 +167,7 @@ class BenchmarkTest {
         val args = arrayListOf("-c", test)
 
         assertThrows(NetworkExtraction.MulticomException::class.java
-        ) { ChoreographyExtraction.main(args) }
+        ) { Extraction.main(args) }
     }*/
 
     @ParameterizedTest
@@ -184,7 +184,7 @@ class BenchmarkTest {
 
         //value strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "def X1 { if a.notok then a->b[hag]; b.price->a; X1 else a->b[happy]; a.info->c; stop } main {X1}"
 
         assertEquals(expected, actual)
@@ -208,7 +208,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         //assertEquals(expected, actual)
     }
 
@@ -231,7 +231,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "def X1 { p.sendData->hs; X2 } def X2 { hs.subscribed->ss; if ss.ok then ss->hs[ok]; hs->p[subscribed]; hs.account->as; as.logCreated->hs; hs.fwd->t; t.fwdOk->hs; t.helpReq->es; es.provideService->p; p.sendData->hs; X2 else ss->hs[nok]; hs->p[notSubscribed]; X1 } main {X1}"
 
         assertEquals(expected, actual)
@@ -260,7 +260,7 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected =
                 "def X1 { filter.newFilterRequest->data; X2 } def X2 { if data.itemToBeFiltered then data->filter[item]; data.itemToBeFiltered->filter; if filter.itemToBeFiltered then filter.ok->data; X2 else filter.remove->data; X2 else data->filter[noItem]; X1 } main {X1}"
 
@@ -302,7 +302,7 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
 
         //assertEquals(expected, actual)
     }
@@ -333,7 +333,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected =
                 "def X1 { supplier->shipper[item]; shipper.DeliveryItem->supplier; " +
                         "if supplier.needToShip then X1 else supplier->shipper[done]; supplier.UpdatePOandDeliverySchedule->retailer; " +
@@ -376,7 +376,7 @@ class BenchmarkTest {
         args.addAll(arrayListOf(test, "-l", "retailer"))
         val strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected =
                 "def X1 { supplier->shipper[item]; supplier->consignee[item]; shipper.DeliveryItem->supplier; consignee.DeliveryItem->supplier; if supplier.needToShip then X1 else supplier->shipper[done]; supplier->consignee[done]; supplier.UpdatePOandDeliverySchedule->retailer; retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; supplier.FinalizedPOandDeliverySchedule->retailer; stop } main {supplier.PlannedOrderVariations->retailer; retailer.OrderDeliveryVariations->supplier; retailer.DeliverCheckPointRequest->supplier; if supplier.needToShip then X1 else supplier->shipper[done]; supplier->consignee[done]; supplier.UpdatePOandDeliverySchedule->retailer; retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; supplier.FinalizedPOandDeliverySchedule->retailer; stop}"
 
@@ -408,7 +408,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected =
                 "def X1 { cl.connect->int; int.setup->appli; int.syncAccess->cl; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } def X2 { cl->appli[awaitcl]; cl.access->appli; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } main {X1}"
 
@@ -451,7 +451,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected =
                 "def X1 { citizen.request->sanagency; X2 } def X2 { sanagency.askInfo->citizen; citizen.provInf->sanagency; if sanagency.infoProved then sanagency->citizen[acceptance]; sanagency.req->coop; if coop.fine then coop.provT->citizen; coop->bank[recMoneyPossT]; bank.paymentT->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen.request->sanagency; X2 else coop.provM->citizen; coop->bank[recMoneyPossM]; bank.paymentM->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen.request->sanagency; X2 else sanagency->citizen[refusal]; X1 } main {X1}"
 
@@ -477,7 +477,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
 
         when (strategy) {
             Strategy.SelectionFirst, Strategy.ConditionFirst -> {
@@ -509,7 +509,7 @@ class BenchmarkTest {
 
         value strategy = param.second
 
-        value actual = ChoreographyExtraction.main(args)
+        value actual = Extraction.main(args)
 
         value expected = "def X1 { p->q[r]; X2 } def X2 { p.e->q; if p.e then r.e->`value`; p->q[l]; X1 else r.e->`value`; p->q[r]; X2 } main {p->q[l]; X1}"
         assertEquals(expected, actual)
@@ -544,7 +544,7 @@ class BenchmarkTest {
 
         value strategy = param.second
 
-        value actual = ChoreographyExtraction.main(args)
+        value actual = Extraction.main(args)
 
         value expected = ""
         assertEquals(expected, actual)

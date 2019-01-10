@@ -1,6 +1,6 @@
 package bench
 
-import ce.ChoreographyExtraction
+import ce.Extraction
 import org.openjdk.jmh.annotations.*
 import java.util.concurrent.TimeUnit
 
@@ -33,7 +33,7 @@ open class SelectionFirst{
                     "{c?; a?; X} " +
                     "main {X}}"
         val args = arrayListOf("-c", test, "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -49,7 +49,7 @@ open class SelectionFirst{
                 "d2 {def X {c2?; a2?; X} main {X}}"
 
         val args = arrayListOf("-c", test, "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -59,7 +59,7 @@ open class SelectionFirst{
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
         val args = arrayListOf("-c", test, "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -71,7 +71,7 @@ open class SelectionFirst{
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
         val args = arrayListOf("-c", test, "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -82,7 +82,7 @@ open class SelectionFirst{
                         "c { main {a?; stop}}"
 
         val args = arrayListOf("-c", test, "-l", "c", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -97,7 +97,7 @@ open class SelectionFirst{
 
 
         val args = arrayListOf("-c", test, "-l", "c, f", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -113,7 +113,7 @@ open class SelectionFirst{
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "as, t, es", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -133,7 +133,7 @@ open class SelectionFirst{
                         "es2{def X{t2?; p2!<provideService>; X} main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "as1, t1, es1, as2, t2, es2", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -154,7 +154,7 @@ open class SelectionFirst{
 
 
         val args = arrayListOf("-c", test, "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -187,7 +187,7 @@ open class SelectionFirst{
 
 
         val args = arrayListOf("-c", test, "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -210,7 +210,7 @@ open class SelectionFirst{
                         "main{Y}}"
 
         val args = arrayListOf("-c", test, "-l", "retailer", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -238,7 +238,7 @@ open class SelectionFirst{
                         "main{Z}}"
 
         val args = arrayListOf("-c", test, "-l", "retailer", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -260,7 +260,7 @@ open class SelectionFirst{
                         "main {X}}"
 
         val args = arrayListOf("-c", test, "-l", "db, int", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -276,7 +276,7 @@ open class SelectionFirst{
                         "db2{def X{appli2?; X} main {X}}"
 
         val args = arrayListOf("-c", test, "-l", "db1, int1, db2, int2", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -309,7 +309,7 @@ open class SelectionFirst{
                         "main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "coop, bank", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 
     @Benchmark
@@ -367,6 +367,6 @@ open class SelectionFirst{
                         "main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "coop, bank, coop2, bank2", "-s", "SelectionFirst")
-        ChoreographyExtraction.main(args)
+        Extraction.main(args)
     }
 }

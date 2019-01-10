@@ -1,4 +1,4 @@
-package np
+package util
 
 import antlrgen.ChoreographyBaseVisitor
 import antlrgen.ChoreographyParser.*
@@ -8,9 +8,13 @@ import ast.cc.nodes.*
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
 
-class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
+class ChoreographyASTToProgram : ChoreographyBaseVisitor<CCNode>() {
     private var iteration: Int = 0
     val processesInChoreography = ArrayList<HashSet<String>>()
+
+    companion object {
+        fun toProgram(parseTree: ParseTree): Program = ChoreographyASTToProgram().getProgram(parseTree) as Program
+    }
 
     fun getProgram(parseTree: ParseTree): CCNode {
         return this.visit(parseTree)

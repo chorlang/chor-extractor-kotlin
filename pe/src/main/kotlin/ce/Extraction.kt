@@ -13,7 +13,7 @@ import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import java.io.File
 
-object ChoreographyExtraction{
+object Extraction {
     @Throws(Exception::class)
     @JvmStatic
     fun main(args: ArrayList<String>): Program {

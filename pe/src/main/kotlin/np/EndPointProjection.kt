@@ -1,16 +1,14 @@
 package np
 
-import antlrgen.ChoreographyLexer
-import antlrgen.ChoreographyParser
 import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.ChoreographyBody
 import ast.cc.nodes.*
 import ast.sp.nodes.Network
 import ast.sp.nodes.ParallelNetworks
 import ast.sp.nodes.ProcessTerm
-import org.antlr.v4.runtime.ANTLRInputStream
-import org.antlr.v4.runtime.CommonTokenStream
 import org.apache.logging.log4j.LogManager
+import util.ChoreographyASTToProgram
+import util.ParseUtils
 import util.choreographyStatistic.ChoreographyStatisticsData
 import util.choreographyStatistic.NumberOfActions
 import util.choreographyStatistic.NumberOfConditionals
@@ -20,54 +18,44 @@ import javax.naming.OperationNotSupportedException
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.streams.asSequence
+import util.ParseUtils.parseChoreography
 
-
-object NetworkProjection {
+object EndPointProjection {
     private val log = LogManager.getLogger()
 
-    @Throws(Exception::class)
-    @JvmStatic
-    fun main(args: Array<String>): String {
-
-        log.info("parse input parameters")
-        val ch = parseInput(args)
-
-        if (ch != "-1")  {
-            File("generated_chor.txt").printWriter().use { out -> out.println(ch) }
-            val chor = project(ch)
-
-            log.info("project body")
-            return chor.toString()
-
-        }
-        else log.error("Malformed request")
-        return ""
-    }
-
-    private fun parse(grammar: String): ChoreographyParser.ProgramContext {
-        val stream = ANTLRInputStream(grammar)
-        val lexer = ChoreographyLexer(stream)
-        val parser = ChoreographyParser(CommonTokenStream(lexer))
-        return parser.program()
-    }
+//    @Throws(Exception::class)
+//    @JvmStatic
+//    fun main(args: Array<String>): String {
+//
+//        log.info("parse input parameters")
+//        val ch = parseInput(args)
+//
+//        if (ch != "-1")  {
+//            File("generated_chor.txt").printWriter().use { out -> out.println(ch) }
+//            val chor = project(ch)
+//
+//            log.info("project body")
+//            return chor.toString()
+//
+//        }
+//        else log.error("Malformed request")
+//        return ""
+//    }
 
     fun project(choreography: String): ParallelNetworks {
-        //create body AST called program
-        val tree = this.parse(choreography)
-        val choreographyVisitor = ChoreographyVisitor()
-        val program = choreographyVisitor.getProgram(tree) //returns Program
+        val program = ParseUtils.stringToProgram(choreography)
 
         //project choreographies to networks
         val behaviourProjection = BehaviourProjection()
-        val choreographyList = (program as Program).choreographies
+        val choreographyList = program.choreographies
         val network = HashMap<String, ProcessTerm>()
         val networkList = ArrayList<Network>()
         for (chor in choreographyList){
             for (process in chor!!.processes) {
                 try {
                     network[process] = behaviourProjection.getProcessTerm(chor, process) as ProcessTerm
-                } catch( e:MergingProjection.MergingException ) {
-                    val newE = MergingProjection.MergingException( "Process $process ${e.message!!}" )
+                } catch( e:Merging.MergingException ) {
+                    val newE = Merging.MergingException( "Process $process ${e.message!!}" )
                     newE.stackTrace = e.stackTrace
                     throw newE
                 }
@@ -79,8 +67,8 @@ object NetworkProjection {
     }
 
     fun getStatistic(choreography: String): ChoreographyStatisticsData {
-        val tree = this.parse(choreography)
-        val choreographyVisitor = ChoreographyVisitor()
+        val tree = parseChoreography(choreography)
+        val choreographyVisitor = ChoreographyASTToProgram()
         val program = choreographyVisitor.getProgram(tree) //returns Program
 
         val choreographyList = (program as Program).choreographies
