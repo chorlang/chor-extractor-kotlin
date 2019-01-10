@@ -16,7 +16,7 @@ import kotlin.math.roundToInt
 class StatisticsGenerator {
     companion object {
         private const val TEST_DIR = "tests"
-        private const val CHOREOGRAPHY_PREFIX = "body-"
+        private const val CHOREOGRAPHY_PREFIX = "choreography-"
         private const val PROJECTION_PREFIX = "projection-"
         private const val EXTRACTION_PREFIX = "extraction-"
         private const val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-"
@@ -84,7 +84,6 @@ class StatisticsGenerator {
         choreographyExtractionStatistics()
         screwDataStatistics()
         accumulateStatistics(TEST_DIR, COMBINED_STATISTICS_PREFIX)
-
     }
 
     private fun accumulateStatistics(dirPath: String, prefix: String) {

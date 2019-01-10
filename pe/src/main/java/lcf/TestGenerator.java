@@ -35,7 +35,7 @@ public class TestGenerator {
 	throws IOException, GeneratorException {
 
 	// standard filename
-	String testFileName = "body-"+length+"-"+numProcesses+"-"+numIfs+"-"+numProcedures;
+	String testFileName = "choreography-"+length+"-"+numProcesses+"-"+numIfs+"-"+numProcedures;
 	logFile.write("Generating file "+testFileName);
 	logFile.newLine();
 
