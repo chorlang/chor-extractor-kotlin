@@ -1,14 +1,13 @@
 package ce
 
-import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.ChoreographyBody
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
+import ast.sp.interfaces.IBehaviour
 import ast.sp.labels.*
 import ast.sp.labels.interfaces.ExtractionLabel
 import ast.sp.labels.interfaces.InteractionLabel
 import ast.sp.nodes.*
-import ast.sp.interfaces.IBehaviour
 import org.jgrapht.graph.DefaultDirectedGraph
 
 typealias ProcessMap = HashMap<String, ProcessTerm>
@@ -54,11 +53,11 @@ class NetworkExtraction {
         addToChoicePathMap(node)
         addToHashMap(node)
 
-        if ( buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy) ) {
+        return if ( buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy) ) {
             val unrolledGraphNodesList = unrollGraph(node, graph as DefaultDirectedGraph<Node, ExtractionLabel>)
-            return Pair(buildChoreography(node, unrolledGraphNodesList, graph), GraphStatistics(graph.vertexSet().size, badLoopCnt))
+            Pair(buildChoreography(node, unrolledGraphNodesList, graph), GraphStatistics(graph.vertexSet().size, badLoopCnt))
         } else {
-            return Pair(null, GraphStatistics(graph.vertexSet().size, badLoopCnt))
+            Pair(null, GraphStatistics(graph.vertexSet().size, badLoopCnt))
         }
     }
 
@@ -543,8 +542,8 @@ class NetworkExtraction {
     //region Manipulations with nodes in the graph and auxiliary data structures
     private fun createNewNode(targetNetwork: Network, label: ExtractionLabel, predecessorNode: ConcreteNode, marking: HashMap<ProcessName, Boolean>): ConcreteNode {
         val str = when (label) {
-            is ThenLabel -> predecessorNode.choicePath + "0"
-            is ElseLabel -> predecessorNode.choicePath + "1"
+            is ThenLabel -> "${predecessorNode.choicePath}0"
+            is ElseLabel -> "${predecessorNode.choicePath}1"
             else -> predecessorNode.choicePath
         }
 

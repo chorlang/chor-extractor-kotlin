@@ -1,9 +1,7 @@
 package ce
 
 import ast.sp.nodes.*
-import java.lang.Integer.min
 import java.util.*
-import kotlin.collections.HashMap
 import kotlin.collections.LinkedHashMap
 
 enum class Strategy {
@@ -11,9 +9,9 @@ enum class Strategy {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
 
-            net.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network.put(process.key, process.value.copy()) }
-            net.forEach { process -> if (process.value.main is SendingSP || process.value.main is ReceiveSP) network.put(process.key, process.value.copy()) }
-            net.forEach { process -> network.put(process.key, process.value.copy()) }
+            net.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
+            net.forEach { process -> if (process.value.main is SendingSP || process.value.main is ReceiveSP) network[process.key] = process.value.copy() }
+            net.forEach { process -> network[process.key] = process.value.copy() }
             return network
         }
     },
@@ -21,9 +19,9 @@ enum class Strategy {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
 
-            net.forEach { process -> if (process.value.main is ConditionSP) network.put(process.key, process.value.copy()) }
-            net.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network.put(process.key, process.value.copy()) }
-            net.forEach { process -> network.put(process.key, process.value.copy()) }
+            net.forEach { process -> if (process.value.main is ConditionSP) network[process.key] = process.value.copy() }
+            net.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
+            net.forEach { process -> network[process.key] = process.value.copy() }
             return network
         }
     },
@@ -131,12 +129,12 @@ enum class Strategy {
                 }
             }
 
-            unmarkedSelections.forEach { ret.put(it.key, it.value) }
-            unmarkedSending.forEach { ret.put(it.key, it.value) }
-            unmarkedElse.forEach { ret.put(it.key, it.value) }
-            markedSelections.forEach { ret.put(it.key, it.value) }
-            markedSending.forEach { ret.put(it.key, it.value) }
-            markedElse.forEach { ret.put(it.key, it.value) }
+            unmarkedSelections.forEach { ret[it.key] = it.value }
+            unmarkedSending.forEach { ret[it.key] = it.value }
+            unmarkedElse.forEach { ret[it.key] = it.value }
+            markedSelections.forEach { ret[it.key] = it.value }
+            markedSending.forEach { ret[it.key] = it.value }
+            markedElse.forEach { ret[it.key] = it.value }
 
             return ret
         }
@@ -181,12 +179,12 @@ enum class Strategy {
                 }
             }
 
-            unmarkedCondition.forEach { ret.put(it.key, it.value) }
-            unmarkedSelections.forEach { ret.put(it.key, it.value) }
-            unmarkedElse.forEach { ret.put(it.key, it.value) }
-            markedCondition.forEach { ret.put(it.key, it.value) }
-            markedSelections.forEach { ret.put(it.key, it.value) }
-            markedElse.forEach { ret.put(it.key, it.value) }
+            unmarkedCondition.forEach { ret[it.key] = it.value }
+            unmarkedSelections.forEach { ret[it.key] = it.value }
+            unmarkedElse.forEach { ret[it.key] = it.value }
+            markedCondition.forEach { ret[it.key] = it.value }
+            markedSelections.forEach { ret[it.key] = it.value }
+            markedElse.forEach { ret[it.key] = it.value }
 
             return ret
         }

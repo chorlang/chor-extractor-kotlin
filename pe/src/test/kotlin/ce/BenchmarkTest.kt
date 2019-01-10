@@ -2,14 +2,12 @@ package ce
 
 import Utils.Companion.resolveArgs
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertThrows
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 
 class BenchmarkTest {
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun runningExample(strategy: String, debugMode: Boolean) {
         val test =
                 "a {def Y {c?; d!<free>; X} def X {if e then b+win; c+lose; b?; Y else b+lose; c+win; b?; Y} main {X}} |" +
@@ -41,7 +39,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun runningExample2x(strategy: String, debugMode: Boolean) {
 
         val test =
@@ -93,7 +91,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun twoBit(strategy: String, debugMode: Boolean) {
         val test =
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
@@ -126,7 +124,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun twoBit2x(strategy: String, debugMode: Boolean) {
         val test =
                 "a { def X {b?;b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
@@ -173,7 +171,7 @@ class BenchmarkTest {
     }*/
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun bargain(strategy: String, debugMode: Boolean) {
         val test =
                 "a { def X {if notok then b+hag; b?; X else b+happy; c!<info>; stop} main {X}} | " +
@@ -193,7 +191,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun bargain2x(strategy: String, debugMode: Boolean) {
         val test =
                 "a { def X {b!<hag>; b?; if price then b+deal; b!<happy>; c!<info>; X else b+nodeal; X} main {X}} | " +
@@ -215,7 +213,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun health(strategy: String, debugMode: Boolean) {
         val test =
                 "hs{def X{p?; ss!<subscribed>; ss&{" +
@@ -240,7 +238,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun filter(strategy: String, debugMode: Boolean) {
         val test =
                 "filter {" +
@@ -270,7 +268,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun filter2x(strategy: String, debugMode: Boolean) {
         val test =
                 "filter1 {" +
@@ -310,7 +308,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun logistic(strategy: String, debugMode: Boolean) {
         val test =
                 "supplier {" +
@@ -348,7 +346,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun logistic2(strategy: String, debugMode: Boolean) {
         val test =
                 "supplier {" +
@@ -386,7 +384,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun cloudSystem(strategy: String, debugMode: Boolean) {
         val test =
                 "cl{" +
@@ -418,7 +416,7 @@ class BenchmarkTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun sanitaryAgency(strategy: String, debugMode: Boolean) {
         val test =
                 "citizen{" +

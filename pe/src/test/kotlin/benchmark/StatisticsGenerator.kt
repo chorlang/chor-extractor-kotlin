@@ -1,8 +1,10 @@
 package benchmark
 
+import bisim.bisimilar
 import ce.ChoreographyExtraction
 import ce.NetworkStatistics
 import np.NetworkProjection
+import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import util.choreographyStatistic.LengthOfProcedures
 import util.choreographyStatistic.NumberOfActions
@@ -10,20 +12,18 @@ import java.io.File
 import java.text.ParseException
 import javax.naming.OperationNotSupportedException
 import kotlin.math.roundToInt
-import bisim.bisimilar
-import org.junit.jupiter.api.BeforeAll
 
 class StatisticsGenerator {
     companion object {
-        private val TEST_DIR = "tests"
-        private val CHOREOGRAPHY_PREFIX = "body-"
-        private val PROJECTION_PREFIX = "projection-"
-        private val EXTRACTION_PREFIX = "extraction-"
-        private val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-"
-        private val SCREWED_EXTRACTION_STATISTICS_PREFIX = "stats-screwed-extraction-"
-        private val PROJECTION_STATISTICS_PREFIX = "stats-projection-"
-        private val EXTRACTION_STATISTICS_PREFIX = "stats-extraction-"
-        private val COMBINED_STATISTICS_PREFIX = "stats-"
+        private const val TEST_DIR = "tests"
+        private const val CHOREOGRAPHY_PREFIX = "body-"
+        private const val PROJECTION_PREFIX = "projection-"
+        private const val EXTRACTION_PREFIX = "extraction-"
+        private const val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-"
+        private const val SCREWED_EXTRACTION_STATISTICS_PREFIX = "stats-screwed-extraction-"
+        private const val PROJECTION_STATISTICS_PREFIX = "stats-projection-"
+        private const val EXTRACTION_STATISTICS_PREFIX = "stats-extraction-"
+        private const val COMBINED_STATISTICS_PREFIX = "stats-"
 
         @JvmStatic
         @BeforeAll
@@ -44,6 +44,38 @@ class StatisticsGenerator {
             }
         }
 
+    }
+
+    //@Test
+    fun timeToNodes() {
+        checkOutputFolder()
+        networkProjectionStatistics()
+        choreographyExtractionStatistics()
+        val filesWithNetworks = parseFolderWithFilesWithNetworks(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, network_body>>
+
+        filesWithNetworks.forEach { fileId, networks ->
+            val choreographies = HashMap<String, String>()
+
+
+            File(OUTPUT_DIR, "$EXTRACTION_STATISTICS_PREFIX$-timeToNode").printWriter().use { out ->
+                out.println("time nodes")
+
+                networks.forEach { choreographyId, network ->
+                    val start = System.currentTimeMillis()
+                    val program = ChoreographyExtraction.main(arrayListOf("-c", network, "-d"))
+                    val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
+
+                    choreographies[choreographyId] = program.choreographies.first().toString()
+
+                    if (program.choreographies.size == 1 && program.statistics.size == 1) {
+                        out.println(
+                                "$executionTime," +
+                                        "${program.statistics.first().nodes}"
+                        )
+                    } else throw OperationNotSupportedException()
+                }
+            }
+        }
     }
 
     @Test

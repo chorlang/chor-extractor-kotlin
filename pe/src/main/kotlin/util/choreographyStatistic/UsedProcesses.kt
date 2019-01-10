@@ -85,7 +85,7 @@ class UsedProcesses : CCVisitor<Set<String>> {
                 newUsedProcesses[it.name] = freeProcessNames(it.body)
             }
 
-            while( !oldUsedProcesses.equals(newUsedProcesses) ) {
+            while(oldUsedProcesses != newUsedProcesses) {
                 n.procedures.forEach { oldUsedProcesses[it.name] = newUsedProcesses[it.name]!! }
                 n.procedures.forEach { procedure ->
                     calls[procedure.name]!!.forEach { call ->

@@ -3,7 +3,6 @@ package np
 import ce.ChoreographyExtraction
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.params.ParameterizedTest
 
 class ProjectionNetworkExtractionProjectionTest {
     @Test

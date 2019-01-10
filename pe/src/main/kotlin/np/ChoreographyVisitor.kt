@@ -1,23 +1,15 @@
 package np
 
 import antlrgen.ChoreographyBaseVisitor
-import antlrgen.ChoreographyParser.CommunicationContext
-import antlrgen.ChoreographyParser.SelectionContext
-import antlrgen.ChoreographyParser.ConditionContext
-import antlrgen.ChoreographyParser.ChoreographyContext
-import antlrgen.ChoreographyParser.ProgramContext
-import antlrgen.ChoreographyParser.ProcedureDefinitionContext
-import antlrgen.ChoreographyParser.MainContext
-import antlrgen.ChoreographyParser.ProcedureInvocationContext
+import antlrgen.ChoreographyParser.*
 import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.ChoreographyBody
 import ast.cc.nodes.*
 import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
-import kotlin.collections.ArrayList
 
 class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
-    var iteration: Int = 0
+    private var iteration: Int = 0
     val processesInChoreography = ArrayList<HashSet<String>>()
 
     fun getProgram(parseTree: ParseTree): CCNode {
@@ -71,7 +63,7 @@ class ChoreographyVisitor : ChoreographyBaseVisitor<CCNode>() {
     override fun visitProgram(ctx: ProgramContext): CCNode {
         val choreographyList = ArrayList<Choreography?>()
         for (choreography in ctx.choreography()){
-            processesInChoreography.add(HashSet<String>())
+            processesInChoreography.add(HashSet())
             choreographyList.add(visit(choreography) as Choreography)
             iteration++
         }

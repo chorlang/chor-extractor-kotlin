@@ -6,19 +6,20 @@ import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.ChoreographyBody
 import ast.cc.nodes.*
 import ast.sp.nodes.Network
+import ast.sp.nodes.ParallelNetworks
 import ast.sp.nodes.ProcessTerm
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
 import org.apache.logging.log4j.LogManager
-import java.util.*
+import util.choreographyStatistic.ChoreographyStatisticsData
+import util.choreographyStatistic.NumberOfActions
+import util.choreographyStatistic.NumberOfConditionals
 import java.io.File
+import java.util.*
+import javax.naming.OperationNotSupportedException
+import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.streams.asSequence
-import java.util.Random
-import kotlin.collections.ArrayList
-import ast.sp.nodes.ParallelNetworks
-import util.choreographyStatistic.*
-import javax.naming.OperationNotSupportedException
 
 
 object NetworkProjection {
@@ -31,7 +32,7 @@ object NetworkProjection {
         log.info("parse input parameters")
         val ch = parseInput(args)
 
-        if (!ch.equals("-1"))  {
+        if (ch != "-1")  {
             File("generated_chor.txt").printWriter().use { out -> out.println(ch) }
             val chor = project(ch)
 
@@ -47,8 +48,7 @@ object NetworkProjection {
         val stream = ANTLRInputStream(grammar)
         val lexer = ChoreographyLexer(stream)
         val parser = ChoreographyParser(CommonTokenStream(lexer))
-        val tree = parser.program()
-        return tree
+        return parser.program()
     }
 
     fun project(choreography: String): ParallelNetworks {
@@ -99,13 +99,13 @@ object NetworkProjection {
                 "-c" -> {
                     val i = iter.nextIndex()
                     if (args.size >= i + 1)
-                        return args.get(i)
+                        return args[i]
                     else throw Exception("Malformed call - body name was expected.")
                 }
                 "-f" -> {
                     val i = iter.nextIndex()
                     if (args.size >= i + 1) {
-                        val f = File(args.get(i))
+                        val f = File(args[i])
                         return f.readText()
                     }
                     else throw Exception("Malformed call - body file name was expected.")
@@ -114,8 +114,8 @@ object NetworkProjection {
                     log.info("generate body")
                     val i = iter.nextIndex()
                     if (args.size >= i + 2) {
-                        val pr = args.get(i).toInt()
-                        val cond = args.get(i + 1).toInt()
+                        val pr = args[i].toInt()
+                        val cond = args[i + 1].toInt()
                         return generateChoreography(pr, cond)
 
                     }
@@ -140,7 +140,7 @@ object NetworkProjection {
     }
 
     private fun generateStructure(prset: ArrayList<String>, pr: Int, cond: Int): CCNode {
-        val main = generateMain(prset, HashSet<String>(), pr, cond) as ChoreographyBody
+        val main = generateMain(prset, HashSet(), pr, cond)
         val procedures = emptyList<ProcedureDefinition>() //TODO procedures generation
 
         return Choreography(main, procedures)
@@ -153,10 +153,10 @@ object NetworkProjection {
             //generate condition
 
             val process = prset[Random().nextInt(prset.size)]
-            val t_pr = if (visited.contains(process)) pr else pr-1
+            val tpr = if (visited.contains(process)) pr else pr-1
             visited.add(process)
 
-            val branch = generateMain(prset, visited, t_pr, cond-1)
+            val branch = generateMain(prset, visited, tpr, cond-1)
 
             return Condition(process, expression, thenChoreography = branch, elseChoreography = branch)
 
@@ -170,7 +170,7 @@ object NetworkProjection {
             val bs = visited.contains(sender)
             val br = visited.contains(receiver)
 
-            val t_pr =
+            val tpr =
                     if (bs && br) pr
                     else if (bs || br) pr-1
                     else pr-2
@@ -178,18 +178,18 @@ object NetworkProjection {
             visited.add(sender)
             visited.add(receiver)
 
-            if (visited.size == prset.size && cond == 0) {
+            return if (visited.size == prset.size && cond == 0) {
                 if (Math.random() < 0.5)
-                    return CommunicationSelection(Communication(sender, receiver, expression), Termination())
+                    CommunicationSelection(Communication(sender, receiver, expression), Termination())
                 else
-                    return CommunicationSelection(Selection(sender, receiver, expression), Termination())
+                    CommunicationSelection(Selection(sender, receiver, expression), Termination())
             } else {
-                val continuation = generateMain(prset, visited, t_pr, cond)
+                val continuation = generateMain(prset, visited, tpr, cond)
 
                 if (Math.random() < 0.5)
-                    return CommunicationSelection(Communication(sender, receiver, expression), continuation)
+                    CommunicationSelection(Communication(sender, receiver, expression), continuation)
                 else
-                    return CommunicationSelection(Selection(sender, receiver, expression), continuation)
+                    CommunicationSelection(Selection(sender, receiver, expression), continuation)
             }
         }
     }

@@ -15,8 +15,8 @@ data class ConditionSP(val expression: String, val thenBehaviour: IBehaviour, va
         if (other !is ConditionSP) return false
 
         return expression == other.expression &&
-                thenBehaviour.equals(other.thenBehaviour) &&
-                elseBehaviour.equals(other.elseBehaviour)
+                thenBehaviour == other.thenBehaviour &&
+                elseBehaviour == other.elseBehaviour
     }
 
     override fun hashCode(): Int {
