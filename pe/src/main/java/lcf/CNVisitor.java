@@ -5,14 +5,14 @@ package lcf;
  */
 public interface CNVisitor {
 
-    public void visit(TerminationNode n);
+    void visit(TerminationNode n);
 
-    public void visit(CommunicationNode n);
+    void visit(CommunicationNode n);
 
-    public void visit(SelectionNode n);
+    void visit(SelectionNode n);
 
-    public void visit(ConditionalNode n);
+    void visit(ConditionalNode n);
 
-    public void visit(CallNode n);
+    void visit(CallNode n);
 
 }

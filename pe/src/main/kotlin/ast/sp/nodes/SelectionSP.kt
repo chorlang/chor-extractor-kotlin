@@ -16,7 +16,7 @@ data class SelectionSP(val continuation: IBehaviour, val receiver: String, val e
         return other is SelectionSP &&
                 other.process == process &&
                 other.expression == expression &&
-                other.continuation.equals(continuation)
+                other.continuation == continuation
     }
 
     override fun hashCode(): Int {

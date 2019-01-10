@@ -1,7 +1,6 @@
 package ce
 
 import Utils.Companion.resolveArgs
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
@@ -87,7 +86,7 @@ class PaperTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun buyerSeller(strategy: String, debugMode: Boolean){
         val test =
                 "buyer{main{seller!<quote>; seller?; if ok then seller+accept; seller?; stop else seller+reject; stop}} | " +
@@ -110,7 +109,7 @@ class PaperTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun buyerSellerRec(strategy: String, debugMode: Boolean){
         val test =
                 "buyer{def X {seller?; if ok then seller+accept; seller?; stop else seller+reject; X} main {seller!<quote>; X}} | " +
@@ -134,7 +133,7 @@ class PaperTest {
 
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun twoBuyersProtocol(strategy: String, debugMode: Boolean){
         val test =
                 "buyer1{def X {seller!<book>; seller?; buyer2!<quote>; X} main {X}} | " +
@@ -153,7 +152,7 @@ class PaperTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun streamingProtocol(strategy: String, debugMode: Boolean){
         val test =
                 "kernel{def X{data?; key?; consumer!<xor>; X} main{X}} | " +
@@ -193,8 +192,8 @@ class PaperTest {
     }*/
 
     @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun InstrumentControlling(strategy: String, debugMode: Boolean){
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
+    fun instrumentControlling(strategy: String, debugMode: Boolean){
         val test =
                 "user{def X{instrument+move; instrument+photo; instrument+quit; stop} " +
                         "main {operator!<high>; operator&{" +

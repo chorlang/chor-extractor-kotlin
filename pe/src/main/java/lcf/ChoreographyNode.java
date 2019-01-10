@@ -5,6 +5,6 @@ package lcf;
  */
 public interface ChoreographyNode {
 
-    public void accept(CNVisitor v);
+    void accept(CNVisitor v);
 
 }
