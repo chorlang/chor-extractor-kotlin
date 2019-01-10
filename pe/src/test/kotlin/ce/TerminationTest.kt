@@ -10,7 +10,7 @@ class TerminationTest {
         val test = "p {main{stop}} | q {main{stop}}"
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "main {stop}"
 
         assertEquals(expected, actual)
@@ -21,7 +21,7 @@ class TerminationTest {
         val test = "p {main{stop}} | q {def X {stop} main{X}}"
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "main {stop}"
 
         assertEquals(expected, actual)
@@ -32,7 +32,7 @@ class TerminationTest {
         value f = "p { def X{stop} main{q!<e>; X}} | q {def X {stop} main{p?; X}}"
         value args = arrayListOf("-c", f)
 
-        value actual = ChoreographyExtraction.main(args)
+        value actual = Extraction.main(args)
         value expected = "main {stop}"
 
         assertEquals(expected, actual)

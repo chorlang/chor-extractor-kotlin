@@ -6,7 +6,6 @@ import ast.cc.nodes.*
 import ast.sp.interfaces.IBehaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
-import np.MergingProjection.*
 import util.choreographyStatistic.UsedProcesses
 
 import java.util.*
@@ -65,7 +64,7 @@ class BehaviourProjection : CCVisitor<SPNode> {
         return if (processName == n.process) {
             ConditionSP(n.expression, n.thenChoreography.accept(this) as IBehaviour, n.elseChoreography.accept(this) as IBehaviour)
         } else {
-            MergingProjection().merge(n.thenChoreography.accept(this), n.elseChoreography.accept(this))
+            Merging.merge(n.thenChoreography.accept(this), n.elseChoreography.accept(this))
         }
     }
 
@@ -95,8 +94,8 @@ class BehaviourProjection : CCVisitor<SPNode> {
         for (procedure in n.procedures) {
             try {
                 procedures[procedure.name] = procedure.accept(this) as IBehaviour
-            } catch( e:MergingException ) {
-                val newE = MergingProjection.MergingException( "(name ${procedure.name}): ${e.message!!}" )
+            } catch( e:Merging.MergingException ) {
+                val newE = Merging.MergingException( "(name ${procedure.name}): ${e.message!!}" )
                 newE.stackTrace = e.stackTrace
                 throw newE
             }

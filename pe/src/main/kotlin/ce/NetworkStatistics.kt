@@ -5,7 +5,7 @@ import util.networkStatistic.*
 
 object NetworkStatistics {
     fun getNetworkStatistic(input: String): NetworkStatisticData {
-        val network = ChoreographyExtraction.generateNetwork(input)
+        val network = Extraction.generateNetwork(input)
 
         val lengthOfProcesses = ArrayList<Int>()
         val lengthOfProcedures = ArrayList<Int>()
