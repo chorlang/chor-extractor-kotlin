@@ -14,7 +14,7 @@ class ConditionTest{
 
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "main {if p.e then p.e1->q; stop else p.e2->q; stop}"
 
         assertEquals(expected, actual)
@@ -29,7 +29,7 @@ class ConditionTest{
 
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"
 
         assertEquals(expected, actual)
@@ -44,7 +44,7 @@ class ConditionTest{
 
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "main {if p.e then if p.u then p.e1->q; stop else p.e2->q; stop else p.e3->q; stop}"
 
         assertEquals(expected, actual)
@@ -59,7 +59,7 @@ class ConditionTest{
 
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "main {if p.e then p.u->q; stop else p.o->q; stop}"
 
         assertEquals(expected, actual)
@@ -74,7 +74,7 @@ class ConditionTest{
 
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "def X1 { if p.e then p.u->q; X1 else p.o->q; X1 } main {X1}"
 
         assertEquals(expected, actual)
@@ -89,7 +89,7 @@ class ConditionTest{
 
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"
 
         assertEquals(expected, actual)
@@ -105,7 +105,7 @@ class ConditionTest{
 
         val args = arrayListOf("-c", test)
 
-        val actual = ChoreographyExtraction.main(args).toString()
+        val actual = Extraction.main(args).toString()
         val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
 
         assertEquals(expected, actual)

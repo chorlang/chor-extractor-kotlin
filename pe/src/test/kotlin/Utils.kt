@@ -1,4 +1,4 @@
-import ce.ChoreographyExtraction
+import ce.Extraction
 import ce.Strategy
 
 class Utils {
@@ -6,7 +6,7 @@ class Utils {
         fun resolveArgs(str: String, debugMode: Boolean): Pair<ArrayList<String>, Strategy> {
             val args = arrayListOf<String>()
 
-            val strategy = ChoreographyExtraction.parseStrategy(str)
+            val strategy = Extraction.parseStrategy(str)
             args.add("-s")
             args.add(strategy.toString())
 

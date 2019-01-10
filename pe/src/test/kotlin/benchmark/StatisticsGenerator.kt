@@ -1,9 +1,9 @@
 package benchmark
 
 import bisim.bisimilar
-import ce.ChoreographyExtraction
+import ce.Extraction
 import ce.NetworkStatistics
-import np.NetworkProjection
+import np.EndPointProjection
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import util.choreographyStatistic.LengthOfProcedures
@@ -62,7 +62,7 @@ class StatisticsGenerator {
 
                 networks.forEach { choreographyId, network ->
                     val start = System.currentTimeMillis()
-                    val program = ChoreographyExtraction.main(arrayListOf("-c", network, "-d"))
+                    val program = Extraction.main(arrayListOf("-c", network, "-d"))
                     val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
 
                     choreographies[choreographyId] = program.choreographies.first().toString()
@@ -188,7 +188,7 @@ class StatisticsGenerator {
                     //value idToChoreography = HashMap<String, String>()
 
                     val start = System.currentTimeMillis()
-                    val program = ChoreographyExtraction.main(arrayListOf("-c", network, "-d"))
+                    val program = Extraction.main(arrayListOf("-c", network, "-d"))
                     val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
 
                     choreographies[choreographyId] = program.choreographies.first().toString()
@@ -248,7 +248,7 @@ class StatisticsGenerator {
                     //screw network
                     val timesToScrew = 10
                     var counter = 1
-                    val networkBody = ChoreographyExtraction.generateNetwork(network)
+                    val networkBody = Extraction.generateNetwork(network)
 
                     (0..timesToScrew).forEach {
                         val screwedId = "$choreographyId-${counter++}"
@@ -256,7 +256,7 @@ class StatisticsGenerator {
 
                         //try and fail to extract body
                         val start = System.currentTimeMillis()
-                        val program = ChoreographyExtraction.main(arrayListOf("-c", network, "-d"))
+                        val program = Extraction.main(arrayListOf("-c", network, "-d"))
                         val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
                         val graphStatistic = program.statistics.first()
 
@@ -354,9 +354,9 @@ class StatisticsGenerator {
                     "minNumberOfConditionalsInProcesses,maxNumberOfConditionalsInProcesses,avgNumberOfConditionalsInProcesses,numberOfProcessesWithConditionals," +
                     "minProcedureLengthInProcesses,maxProcedureLengthInProcesses,avgProcedureLengthInProcesses")
             chorData.forEach { choreographyId, choreography ->
-                val network = NetworkProjection.project(choreography).toString()
+                val network = EndPointProjection.project(choreography).toString()
                 val networkStatistic = NetworkStatistics.getNetworkStatistic(network)
-                val choreographyStatistic = NetworkProjection.getStatistic(choreography)
+                val choreographyStatistic = EndPointProjection.getStatistic(choreography)
                 out.println("$choreographyId," +
                         "${choreographyStatistic.length}," +
                         "${choreographyStatistic.numberOfProcesses}," +
@@ -390,7 +390,7 @@ class StatisticsGenerator {
             out.println("choreographyId,network")
             chorData.forEach { choreographyId, choreography ->
                 println("Projecting $choreographyId in $filename")
-                val network = NetworkProjection.project(choreography)
+                val network = EndPointProjection.project(choreography)
                 out.println("$choreographyId, $network")
             }
         }

@@ -1,7 +1,5 @@
 package bisim
 
-import antlrgen.ChoreographyLexer
-import antlrgen.ChoreographyParser
 import ast.cc.interfaces.ChoreographyBody
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
@@ -11,30 +9,21 @@ import ast.sp.labels.SendingLabel
 import ast.sp.labels.ThenLabel
 import ast.sp.labels.interfaces.ExtractionLabel
 import ast.sp.nodes.ProcedureName
-import np.ChoreographyVisitor
-import org.antlr.v4.runtime.ANTLRInputStream
-import org.antlr.v4.runtime.CommonTokenStream
-
-private fun parseChoreography(choreography: String): ChoreographyParser.ProgramContext
-{
-    val stream = ANTLRInputStream(choreography)
-    val lexer = ChoreographyLexer(stream)
-    val parser = ChoreographyParser(CommonTokenStream(lexer))
-    return parser.program()
-}
+import util.ChoreographyASTToProgram
+import util.ParseUtils.parseChoreography
 
 fun bisimilar( c1:String, c2:String ):Boolean
 {
-    val program1 = ChoreographyVisitor().getProgram(parseChoreography(c1)) as Program
-    val program2 = ChoreographyVisitor().getProgram(parseChoreography(c2)) as Program
+    val program1 = ChoreographyASTToProgram().getProgram(parseChoreography(c1)) as Program
+    val program2 = ChoreographyASTToProgram().getProgram(parseChoreography(c2)) as Program
 
     return bisimilar( program1.choreographies, program2.choreographies )
 }
 
 fun similar( c1:String, c2:String ):Boolean
 {
-    val program1 = ChoreographyVisitor().getProgram(parseChoreography(c1)) as Program
-    val program2 = ChoreographyVisitor().getProgram(parseChoreography(c2)) as Program
+    val program1 = ChoreographyASTToProgram().getProgram(parseChoreography(c1)) as Program
+    val program2 = ChoreographyASTToProgram().getProgram(parseChoreography(c2)) as Program
 
     return similar( program1.choreographies, program2.choreographies )
 }
