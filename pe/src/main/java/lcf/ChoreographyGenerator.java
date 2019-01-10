@@ -85,7 +85,7 @@ public class ChoreographyGenerator {
                 name += (char)(generator.nextInt(26)+97);
             auxNames.add(name);
         }
-        this.processNames = (String[]) auxNames.toArray(new String[0]);
+        this.processNames = auxNames.toArray(new String[0]);
 
         // we generate name names as strings of uppercase letters
         auxNames = new HashSet<String>();
@@ -98,7 +98,7 @@ public class ChoreographyGenerator {
                 auxNames.add(name);
             }
         }
-        this.procedureNames = (String[]) auxNames.toArray(new String[0]);
+        this.procedureNames = auxNames.toArray(new String[0]);
     }
 
     /*

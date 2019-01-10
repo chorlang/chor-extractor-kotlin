@@ -35,7 +35,7 @@ data class Network(val processes: HashMap<ProcessName, ProcessTerm>) : SPNode {
 
         for (process in processes){
             val otherProcess = otherProcesses[process.key]
-            if (otherProcess == null || !otherProcess.equals(process.value)) return false
+            if (otherProcess == null || otherProcess != process.value) return false
         }
 
         return true

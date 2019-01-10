@@ -2,18 +2,18 @@ package bisim
 
 import antlrgen.ChoreographyLexer
 import antlrgen.ChoreographyParser
-import ast.sp.labels.interfaces.ExtractionLabel
+import ast.cc.interfaces.ChoreographyBody
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
 import ast.sp.labels.ElseLabel
 import ast.sp.labels.SelectionLabel
 import ast.sp.labels.SendingLabel
 import ast.sp.labels.ThenLabel
+import ast.sp.labels.interfaces.ExtractionLabel
 import ast.sp.nodes.ProcedureName
 import np.ChoreographyVisitor
 import org.antlr.v4.runtime.ANTLRInputStream
 import org.antlr.v4.runtime.CommonTokenStream
-import ast.cc.interfaces.ChoreographyBody
 
 private fun parseChoreography(choreography: String): ChoreographyParser.ProgramContext
 {
@@ -73,19 +73,19 @@ fun similar(c1:Choreography, c2:Choreography):Boolean
     val done:ArrayList<Pair<ChoreographyBody, ChoreographyBody>> = ArrayList()
     val todo:ArrayList<Pair<ChoreographyBody, ChoreographyBody>> = ArrayList()
 
-    todo.add(Pair(c1.main, c2.main));
+    todo.add(Pair(c1.main, c2.main))
 
     while( todo.isNotEmpty() ) {
-        val (one, two) = todo.removeAt(0);
+        val (one, two) = todo.removeAt(0)
         val actionsWithContinuations = getActionsWithContinuations(one, c1.procedures)
         for( (action1, continuation1) in actionsWithContinuations ) {
             val continuation2 = getContinuation( two, action1, c2.procedures )
             if ( continuation2 == null ) {
-                println( "Could not match ${action1} with continuation ${two}" )
+                println( "Could not match $action1 with continuation $two" )
                 return false
             } else {
                 if( !done.contains( Pair(continuation1,continuation2) ) && !todo.contains( Pair(continuation1, continuation2) ) ) {
-                    todo.add( Pair( continuation1, continuation2 ) );
+                    todo.add( Pair( continuation1, continuation2 ) )
                 }
             }
         }
@@ -119,11 +119,7 @@ fun getContinuation( c:ChoreographyBody, label:ExtractionLabel, procedures:List<
                     procedureBody = procedure.body
                 }
             }
-            if ( procedureBody == null ) {
-                return null
-            } else {
-                return getContinuation( procedureBody, label, proceduresCopy )
-            }
+            return if ( procedureBody == null ) null else getContinuation( procedureBody, label, proceduresCopy )
         }
         is CommunicationSelection -> {
             if (equalLabels(labelFromInteraction(c.eta), label)) {
