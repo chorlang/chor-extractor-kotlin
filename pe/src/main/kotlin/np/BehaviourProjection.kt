@@ -1,44 +1,49 @@
 package np
 
-import ast.cc.interfaces.CCVisitor
 import ast.cc.interfaces.CCNode
+import ast.cc.interfaces.CCVisitor
 import ast.cc.nodes.*
 import ast.sp.interfaces.IBehaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
 import util.choreographyStatistic.UsedProcesses
-
 import java.util.*
 import kotlin.collections.HashMap
 
 /**
  * @author Fabrizio Montesi <famontesi></famontesi>@gmail.com>
+ * From choreography project network
  */
 class BehaviourProjection : CCVisitor<SPNode> {
+    private var processName: String = ""
+    private var procedures: MutableList<Behaviour> = mutableListOf()
+    private var usedProcesses:Map<String,Set<String>> = emptyMap()
+
     override fun visit(n: Program): SPNode {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
+        /** this is not implemented because parsing of choreographies list was done earlier without use of visitor */
     }
 
     override fun visit(n: CommunicationSelection): SPNode {
         val continuation = n.continuation.accept(this)
-        val nn = n.eta
+        val interaction = n.eta
 
-        when (nn) {
+        when (interaction) {
             is Selection -> {
                 return when (processName) {
-                    nn.sender -> SelectionSP(continuation as IBehaviour, nn.receiver, nn.label)
-                    nn.receiver -> {
+                    interaction.sender -> SelectionSP(continuation as IBehaviour, interaction.receiver, interaction.label)
+                    interaction.receiver -> {
                         val labels = HashMap<String, IBehaviour>()
-                        labels[nn.label] = continuation as IBehaviour
-                        OfferingSP(nn.sender, labels)
+                        labels[interaction.label] = continuation as IBehaviour
+                        OfferingSP(interaction.sender, labels)
                     }
                     else -> continuation
                 }
             }
             is Communication -> {
                 return when (processName) {
-                    nn.sender -> SendingSP(continuation as IBehaviour, nn.receiver, nn.expression)
-                    nn.receiver -> ReceiveSP(continuation as IBehaviour, nn.sender)
+                    interaction.sender -> SendingSP(continuation as IBehaviour, interaction.receiver, interaction.expression)
+                    interaction.receiver -> ReceiveSP(continuation as IBehaviour, interaction.sender)
                     else -> continuation
                 }
             }
@@ -47,12 +52,8 @@ class BehaviourProjection : CCVisitor<SPNode> {
     }
 
     override fun visit(n: Multicom): SPNode {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        TODO("not implemented")
     }
-
-    private var processName: String? = null
-    private var procedures: MutableList<Behaviour>? = null
-    private var usedProcesses:Map<String,Set<String>>? = null
 
     fun getProcessTerm(node: CCNode, processName: String): SPNode {
         this.processName = processName
@@ -75,12 +76,12 @@ class BehaviourProjection : CCVisitor<SPNode> {
     override fun visit(n: ProcedureDefinition): SPNode {
         val node = n.body.accept(this)
         val pd = Behaviour(node as IBehaviour)
-        procedures!!.add(pd)
+        procedures.add(pd)
         return pd
     }
 
     override fun visit(n: ProcedureInvocation): SPNode {
-        return if (usedProcesses!![n.procedure]!!.contains(processName)) {
+        return if (usedProcesses[n.procedure]!!.contains(processName)) {
             ProcedureInvocationSP(n.procedure)
         } else {
             TerminationSP()
@@ -95,9 +96,9 @@ class BehaviourProjection : CCVisitor<SPNode> {
             try {
                 procedures[procedure.name] = procedure.accept(this) as IBehaviour
             } catch( e:Merging.MergingException ) {
-                val newE = Merging.MergingException( "(name ${procedure.name}): ${e.message!!}" )
-                newE.stackTrace = e.stackTrace
-                throw newE
+                val newException = Merging.MergingException( "(name ${procedure.name}): ${e.message!!}" )
+                newException.stackTrace = e.stackTrace
+                throw newException
             }
         }
         return ProcessTerm(procedures, n.main.accept(this) as IBehaviour)

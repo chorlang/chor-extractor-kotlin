@@ -10,6 +10,7 @@ buildscript {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath "me.champeau.gradle:jmh-gradle-plugin:$jmh_gradle_plugin_version"
         classpath 'org.junit.platform:junit-platform-gradle-plugin:+'
+     //   classpath "org.jetbrains.dokka:dokka-gradle-plugin:${dokka_version}"
     }
 }
 
@@ -20,6 +21,7 @@ apply plugin: "idea"
 apply plugin: 'antlr'
 apply plugin: "me.champeau.gradle.jmh"
 apply plugin: 'org.junit.platform.gradle.plugin'
+//apply plugin: 'org.jetbrains.dokka'
 
 repositories {
     mavenCentral()

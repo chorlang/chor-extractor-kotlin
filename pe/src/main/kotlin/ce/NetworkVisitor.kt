@@ -2,18 +2,11 @@ package ce
 
 import antlrgen.NetworkBaseVisitor
 import antlrgen.NetworkParser
-import ast.sp.nodes.*
+import antlrgen.NetworkParser.*
 import ast.sp.interfaces.IBehaviour
 import ast.sp.interfaces.SPNode
+import ast.sp.nodes.*
 import org.antlr.v4.runtime.tree.TerminalNode
-import antlrgen.NetworkParser.ParallelNetworksContext
-import antlrgen.NetworkParser.SendingContext
-import antlrgen.NetworkParser.ReceivingContext
-import antlrgen.NetworkParser.SelectionContext
-import antlrgen.NetworkParser.OfferingContext
-import antlrgen.NetworkParser.ConditionContext
-import antlrgen.NetworkParser.ProcedureDefinitionContext
-import antlrgen.NetworkParser.ProcedureInvocationContext
 
 class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
     override fun visitParallelNetworks(ctx: ParallelNetworksContext): SPNode {

@@ -4,6 +4,9 @@ import ast.sp.nodes.*
 import java.util.*
 import kotlin.collections.LinkedHashMap
 
+/**
+ * Sorting strategy for the first action of each process in a network
+ */
 enum class Strategy {
     SelectionFirst {
         override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {

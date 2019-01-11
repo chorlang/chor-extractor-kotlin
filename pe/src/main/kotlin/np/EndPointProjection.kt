@@ -9,6 +9,7 @@ import ast.sp.nodes.ProcessTerm
 import org.apache.logging.log4j.LogManager
 import util.ChoreographyASTToProgram
 import util.ParseUtils
+import util.ParseUtils.parseChoreography
 import util.choreographyStatistic.ChoreographyStatisticsData
 import util.choreographyStatistic.NumberOfActions
 import util.choreographyStatistic.NumberOfConditionals
@@ -18,30 +19,15 @@ import javax.naming.OperationNotSupportedException
 import kotlin.collections.ArrayList
 import kotlin.collections.HashSet
 import kotlin.streams.asSequence
-import util.ParseUtils.parseChoreography
+
 
 object EndPointProjection {
     private val log = LogManager.getLogger()
 
-//    @Throws(Exception::class)
-//    @JvmStatic
-//    fun main(args: Array<String>): String {
-//
-//        log.info("parse input parameters")
-//        val ch = parseInput(args)
-//
-//        if (ch != "-1")  {
-//            File("generated_chor.txt").printWriter().use { out -> out.println(ch) }
-//            val chor = project(ch)
-//
-//            log.info("project body")
-//            return chor.toString()
-//
-//        }
-//        else log.error("Malformed request")
-//        return ""
-//    }
-
+    /**
+     * @param choreography
+     * @return (parallel) networks projected from the initial choreography
+     */
     fun project(choreography: String): ParallelNetworks {
         val program = ParseUtils.stringToProgram(choreography)
 
@@ -50,12 +36,12 @@ object EndPointProjection {
         val choreographyList = program.choreographies
         val network = HashMap<String, ProcessTerm>()
         val networkList = ArrayList<Network>()
-        for (chor in choreographyList){
+        for (chor in choreographyList) {
             for (process in chor!!.processes) {
                 try {
                     network[process] = behaviourProjection.getProcessTerm(chor, process) as ProcessTerm
-                } catch( e:Merging.MergingException ) {
-                    val newE = Merging.MergingException( "Process $process ${e.message!!}" )
+                } catch (e: Merging.MergingException) {
+                    val newE = Merging.MergingException("Process $process ${e.message!!}")
                     newE.stackTrace = e.stackTrace
                     throw newE
                 }
@@ -72,7 +58,7 @@ object EndPointProjection {
         val program = choreographyVisitor.getProgram(tree) //returns Program
 
         val choreographyList = (program as Program).choreographies
-        if (choreographyList.size == 1){
+        if (choreographyList.size == 1) {
             return getChoreographyStatistic(choreographyList.first()!!)
         } else {
             throw OperationNotSupportedException()
@@ -82,8 +68,8 @@ object EndPointProjection {
 
     private fun parseInput(args: Array<String>): String {
         val iter = args.toList().listIterator()
-        while(iter.hasNext()) {
-            when (iter.next()){
+        while (iter.hasNext()) {
+            when (iter.next()) {
                 "-c" -> {
                     val i = iter.nextIndex()
                     if (args.size >= i + 1)
@@ -95,8 +81,7 @@ object EndPointProjection {
                     if (args.size >= i + 1) {
                         val f = File(args[i])
                         return f.readText()
-                    }
-                    else throw Exception("Malformed call - body file name was expected.")
+                    } else throw Exception("Malformed call - body file name was expected.")
                 }
                 "-g" -> {
                     log.info("generate body")
@@ -106,8 +91,7 @@ object EndPointProjection {
                         val cond = args[i + 1].toInt()
                         return generateChoreography(pr, cond)
 
-                    }
-                    else throw Exception("Malformed call - parameters for body generating were expected.")
+                    } else throw Exception("Malformed call - parameters for body generating were expected.")
                 }
 
             }
@@ -116,7 +100,7 @@ object EndPointProjection {
     }
 
     private fun generateChoreography(pr: Int, cond: Int): String {
-        when (pr){
+        when (pr) {
             0 -> return ""
             1 -> return "main {stop}"
         }
@@ -134,17 +118,17 @@ object EndPointProjection {
         return Choreography(main, procedures)
     }
 
-    private fun generateMain(prset: ArrayList<String>, visited: HashSet<String>, pr: Int, cond: Int):ChoreographyBody {
+    private fun generateMain(prset: ArrayList<String>, visited: HashSet<String>, pr: Int, cond: Int): ChoreographyBody {
         val expression = generateExpression()
 
-        if(Math.random() < 0.5 && cond!=0){
+        if (Math.random() < 0.5 && cond != 0) {
             //generate condition
 
             val process = prset[Random().nextInt(prset.size)]
-            val tpr = if (visited.contains(process)) pr else pr-1
+            val tpr = if (visited.contains(process)) pr else pr - 1
             visited.add(process)
 
-            val branch = generateMain(prset, visited, tpr, cond-1)
+            val branch = generateMain(prset, visited, tpr, cond - 1)
 
             return Condition(process, expression, thenChoreography = branch, elseChoreography = branch)
 
@@ -160,8 +144,8 @@ object EndPointProjection {
 
             val tpr =
                     if (bs && br) pr
-                    else if (bs || br) pr-1
-                    else pr-2
+                    else if (bs || br) pr - 1
+                    else pr - 2
 
             visited.add(sender)
             visited.add(receiver)
@@ -191,18 +175,19 @@ object EndPointProjection {
 
     private fun getSenderReceiver(prset: ArrayList<String>): SenderReceiver {
         val i1 = Random().nextInt(prset.size)
-        var i2 = 0
-        do { i2 = Random().nextInt(prset.size) } while (i1==i2)
+        var i2: Int
+        do {
+            i2 = Random().nextInt(prset.size)
+        } while (i1 == i2)
 
         return SenderReceiver(prset[i1], prset[i2])
-
     }
 
     private fun generateProcessesList(i: Int): ArrayList<String> {
         val source = "pqrstvwxyz"
         val prset = ArrayList<String>()
 
-        val ln :Long = if (i<=source.length) 1 else 3
+        val ln: Long = if (i <= source.length) 1 else 3
 
         do {
             val pr = Random().ints(ln, 0, source.length)
@@ -210,7 +195,7 @@ object EndPointProjection {
                     .map(source::get)
                     .joinToString("")
             if (!prset.contains(pr)) prset.add(pr)
-        } while (prset.size!=i)
+        } while (prset.size != i)
 
         return prset
     }
