@@ -13,9 +13,9 @@ class NetworkRemoveActions : SPVisitor<IBehaviour> {
         return when {
             counter > numOfProcesses -> {
                 counter -= numOfProcesses
-                ConditionSP(n.expression, n.thenBehaviour, n.elseBehaviour.accept(this))
+                ConditionSP(n.label, n.thenBehaviour, n.elseBehaviour.accept(this))
             }
-            else -> ConditionSP(n.expression, n.thenBehaviour.accept(this), n.elseBehaviour)
+            else -> ConditionSP(n.label, n.thenBehaviour.accept(this), n.elseBehaviour)
         }*/
         throw OperationNotSupportedException()
     }

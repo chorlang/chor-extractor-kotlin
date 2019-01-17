@@ -3,11 +3,12 @@ package bisim
 import ast.cc.interfaces.ChoreographyBody
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
-import ast.sp.labels.ElseLabel
-import ast.sp.labels.SelectionLabel
-import ast.sp.labels.SendingLabel
-import ast.sp.labels.ThenLabel
-import ast.sp.labels.interfaces.ExtractionLabel
+import ast.sp.labels.ExtractionLabel
+import ast.sp.labels.ExtractionLabel.ConditionLabel.ElseLabel
+import ast.sp.labels.ExtractionLabel.ConditionLabel.ThenLabel
+import ast.sp.labels.ExtractionLabel.InteractionLabel.SelectionLabel
+import ast.sp.labels.ExtractionLabel.InteractionLabel.SendingLabel
+import ast.sp.labels.ExtractionLabel.MulticomLabel
 import ast.sp.nodes.ProcedureName
 import util.ChoreographyASTToProgram
 import util.ParseUtils.parseChoreography
@@ -84,14 +85,14 @@ fun similar(c1:Choreography, c2:Choreography):Boolean
     return true
 }
 
-private fun pn(label:ExtractionLabel):Set<String>
+private fun pn(label: ExtractionLabel):Set<String>
 {
     return when( label ) {
         is ThenLabel -> setOf(label.process)
         is ElseLabel -> setOf(label.process)
         is SendingLabel -> setOf(label.sender, label.receiver)
         is SelectionLabel -> setOf(label.sender, label.receiver)
-        else -> throw java.lang.IllegalArgumentException("Invalid label")
+        is MulticomLabel -> TODO()
     }
 }
 
@@ -170,7 +171,7 @@ fun equalLabels( l1:ExtractionLabel, l2:ExtractionLabel ):Boolean
         is SelectionLabel -> when( l2 ) { is SelectionLabel -> l1.sender == l2.sender && l1.receiver == l2.receiver && l1.label == l2.label else -> false }
         is ThenLabel -> when( l2 ) { is ThenLabel -> l1.process == l2.process && l1.expression == l2.expression else -> false }
         is ElseLabel -> when( l2 ) { is ElseLabel -> l1.process == l2.process && l1.expression == l2.expression else -> false }
-        else -> false
+        is MulticomLabel -> TODO()
     }
 }
 
@@ -201,8 +202,8 @@ fun getProcedure( name:ProcedureName, procedures:List<ProcedureDefinition> ):Cho
 fun labelFromInteraction(interaction:Interaction):ExtractionLabel
 {
     return when( interaction ) {
-        is Communication -> SendingLabel( interaction.sender, interaction.receiver, interaction.expression )
-        is Selection -> SelectionLabel( interaction.sender, interaction.receiver, interaction.label )
+        is Communication -> SendingLabel(interaction.sender, interaction.receiver, interaction.expression)
+        is Selection -> SelectionLabel(interaction.sender, interaction.receiver, interaction.label)
         else -> throw IllegalArgumentException()
     }
 }

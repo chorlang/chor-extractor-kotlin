@@ -4,9 +4,12 @@ import ast.cc.interfaces.ChoreographyBody
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
 import ast.sp.interfaces.IBehaviour
-import ast.sp.labels.*
-import ast.sp.labels.interfaces.ExtractionLabel
-import ast.sp.labels.interfaces.InteractionLabel
+import ast.sp.labels.ExtractionLabel
+import ast.sp.labels.ExtractionLabel.*
+import ast.sp.labels.ExtractionLabel.ConditionLabel.ElseLabel
+import ast.sp.labels.ExtractionLabel.ConditionLabel.ThenLabel
+import ast.sp.labels.ExtractionLabel.InteractionLabel.SelectionLabel
+import ast.sp.labels.ExtractionLabel.InteractionLabel.SendingLabel
 import ast.sp.nodes.*
 import org.jgrapht.graph.DefaultDirectedGraph
 
@@ -53,7 +56,7 @@ class NetworkExtraction {
         addToChoicePathMap(node)
         addToHashMap(node)
 
-        return if ( buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy) ) {
+        return if (buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy)) {
             val unrolledGraphNodesList = unrollGraph(node, graph as DefaultDirectedGraph<Node, ExtractionLabel>)
             Pair(buildChoreography(node, unrolledGraphNodesList, graph), GraphStatistics(graph.vertexSet().size, badLoopCnt))
         } else {
@@ -61,7 +64,7 @@ class NetworkExtraction {
         }
     }
 
-    private fun buildCommunication(findCommunication:GraphNode, currentNode:ConcreteNode, unfoldedProcesses:HashSet<String>, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy) : Boolean {
+    private fun buildCommunication(findCommunication: GraphNode, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         val (targetNetwork, label) = findCommunication
 
         //remove processesInChoreography that were unfoldedProcesses but don't participate in the current communication
@@ -69,8 +72,8 @@ class NetworkExtraction {
         val targetMarking = currentNode.marking.clone() as Marking
 
         /* TODO find out what the hell is going on here */
-        magicFunction(targetMarking, label.rcv, unfoldedProcesses)
-        magicFunction(targetMarking, label.snd, unfoldedProcesses)
+        magicFunction(targetMarking, label.receiver, unfoldedProcesses)
+        magicFunction(targetMarking, label.sender, unfoldedProcesses)
 
         // revert unfolding all processesInChoreography not involved in the communication
         revertUnfolding(unfoldedProcesses, targetNetwork, currentNode)
@@ -104,8 +107,7 @@ class NetworkExtraction {
     private fun revertUnfolding(unfoldedProcesses: HashSet<String>, targetNetwork: Network, currentNode: ConcreteNode) = unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
 
 
-    private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean
-    {
+    private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         val unfoldedProcesses = HashSet<String>()
         val processes = copyAndSortProcesses(currentNode, strategy)
 
@@ -118,7 +120,7 @@ class NetworkExtraction {
             //try to find interaction
             val communication = findCommunication(processesCopy, processPair.key)
             if (communication != null) {
-                if (buildCommunication(communication,currentNode,unfoldedProcesses,graph,strategy)) return true else continue
+                if (buildCommunication(communication, currentNode, unfoldedProcesses, graph, strategy)) return true else continue
             }
 
             //try to find condition
@@ -150,7 +152,7 @@ class NetworkExtraction {
 
         }
 
-        System.err.println( "No possible actions at eta $currentNode" )
+        System.err.println("No possible actions at eta $currentNode")
         return false
     }
 
@@ -226,12 +228,12 @@ class NetworkExtraction {
             waiting.remove(label)
 
             //multicom can't contain actions with the same receiver
-            if (receivers.contains(label.rcv)) throw MulticomException("multicom can't contain actions with the same receiver")
+            if (receivers.contains(label.receiver)) throw MulticomException("multicom can't contain actions with the same receiver")
             actions.add(label)
-            receivers.add(label.rcv)
+            receivers.add(label.receiver)
 
-            val receiver = label.rcv
-            val sender = label.snd
+            val receiver = label.receiver
+            val sender = label.sender
 
             val receiverProcessTerm = processesCopy[receiver] //val receiverProcessTerm = tmp_node_net[receiverTerm]
 
@@ -264,8 +266,8 @@ class NetworkExtraction {
 
         //fold back unfoldedProcesses procedures that were not participating in communication
         label.labels.forEach {
-            magicFunction(targetMarking, it.rcv, unfoldedProcesses)
-            magicFunction(targetMarking, it.snd, unfoldedProcesses)
+            magicFunction(targetMarking, it.receiver, unfoldedProcesses)
+            magicFunction(targetMarking, it.sender, unfoldedProcesses)
         }
 
         revertUnfolding(unfoldedProcesses, targetNetwork, currentNode)
@@ -347,7 +349,6 @@ class NetworkExtraction {
                     }
                     for (process in node.network.processes) {
                         if (process.value.main !is TerminationSP) {
-                            //log.debug(eta.toString())
                             throw Exception("Bad graph. No more edges found, but not all processesInChoreography were terminated.")
                         } else return Termination()
                     }
@@ -356,43 +357,36 @@ class NetworkExtraction {
             1 -> {
                 val edge = edges.first()
                 return when (edge) {
-                    is SendingLabel -> {
-                        val com = Communication(edge.sender, edge.receiver, edge.expression)
-                        CommunicationSelection(com, bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
-                    }
-                    is SelectionLabel -> {
-                        val sel = Selection(edge.receiver, edge.sender, edge.label)
-                        CommunicationSelection(sel, bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
-                    }
+                    is SendingLabel -> CommunicationSelection(Communication(edge.sender, edge.receiver, edge.expression), bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
+                    is SelectionLabel -> CommunicationSelection(Selection(edge.receiver, edge.sender, edge.label), bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
+
                     is MulticomLabel -> {
                         val actions = ArrayList<Interaction>()
                         for (label in edge.labels) {
                             when (label) {
-                                is SelectionLabel -> {
-                                    actions.add(Selection(label.snd, label.rcv, label.label))
-                                }
-                                is SendingLabel -> {
-                                    actions.add(Communication(label.snd, label.rcv, label.expr))
-                                }
-                                else -> throw NotImplementedError()
+                                is SelectionLabel -> actions.add(Selection(label.sender, label.receiver, label.label))
+                                is SendingLabel -> actions.add(Communication(label.sender, label.receiver, label.expression))
+
                             }
                         }
                         Multicom(actions, bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
                     }
-                    else -> throw Exception("Unexpected label type, can't build body")
+
+                    is ConditionLabel -> {
+                        TODO()
+                    }
                 }
             }
             2 -> {
-                val left = edges.first()
+                val left = edges.first() as ConditionLabel
                 val right = edges.last()
 
                 return when (left) {
                     is ThenLabel -> Condition(left.process, left.expression, bh(graph.getEdgeTarget(left), graph, fakeNodesList), bh(graph.getEdgeTarget(right), graph, fakeNodesList))
                     is ElseLabel -> Condition(left.process, left.expression, bh(graph.getEdgeTarget(right), graph, fakeNodesList), bh(graph.getEdgeTarget(left), graph, fakeNodesList))
-                    else -> throw Exception("Bad graph. Was waiting for conditional edges, but got unexpected type.")
                 }
             }
-            else -> throw Exception("Bad graph. A eta has more than 2 outgoing edges.")
+            else -> throw Exception("Bad graph. A node has more than 2 outgoing edges.")
         }
         return Termination()
     }
@@ -756,9 +750,9 @@ class NetworkExtraction {
                 val sendingContinuation = fillWaiting(waiting, actions, label, receiverProcessTermMain.continuation, receiverProcesses, marking)
 
                 return if (sendingContinuation != null) {
-                    val newLabel = SendingLabel(label.rcv, receiverProcessTermMain.receiver, receiverProcessTermMain.expression)
+                    val newLabel = SendingLabel(label.receiver, receiverProcessTermMain.receiver, receiverProcessTermMain.expression)
                     if (!actions.contains(newLabel)) waiting.add(newLabel)
-                    SendingSP(sendingContinuation, newLabel.rcv, newLabel.expr)
+                    SendingSP(sendingContinuation, newLabel.receiver, newLabel.expression)
                 } else {
                     null
                 }
@@ -768,20 +762,20 @@ class NetworkExtraction {
                 val selectionContinuation = fillWaiting(waiting, actions, label, receiverProcessTermMain.continuation, receiverProcesses, marking)
 
                 if (selectionContinuation != null) {
-                    val newLabel = SelectionLabel(label.rcv, receiverProcessTermMain.receiver, receiverProcessTermMain.expression)
+                    val newLabel = SelectionLabel(label.receiver, receiverProcessTermMain.receiver, receiverProcessTermMain.expression)
                     if (!actions.contains(newLabel)) waiting.add(newLabel)
-                    return SelectionSP(selectionContinuation, label.rcv, label.expr)
+                    return SelectionSP(selectionContinuation, label.receiver, label.expression)
                 }
             }
-            is ReceiveSP -> if (label.snd == receiverProcessTermMain.sender && label is SendingLabel) return receiverProcessTermMain.continuation
+            is ReceiveSP -> if (label.sender == receiverProcessTermMain.sender && label is SendingLabel) return receiverProcessTermMain.continuation
 
-            is OfferingSP -> if (label.snd == receiverProcessTermMain.sender && label is SelectionLabel) return receiverProcessTermMain.branches[label.label]!!
+            is OfferingSP -> if (label.sender == receiverProcessTermMain.sender && label is SelectionLabel) return receiverProcessTermMain.branches[label.label]!!
 
             is ProcedureInvocationSP -> {
                 val newProcessTerm = ProcessTerm(receiverProcesses, receiverProcessTermMain)
-                // if (!marking.get(label.rcv)!!) {
-                unfold(label.rcv, newProcessTerm)
-                marking[label.rcv] = true
+                // if (!marking.get(label.receiver)!!) {
+                unfold(label.receiver, newProcessTerm)
+                marking[label.receiver] = true
                 //}
                 return fillWaiting(waiting, actions, label, newProcessTerm.main, receiverProcesses, marking)
             }
