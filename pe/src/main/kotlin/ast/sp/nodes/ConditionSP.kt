@@ -1,14 +1,14 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPVisitor
 
-data class ConditionSP(val expression: String, val thenBehaviour: IBehaviour, val elseBehaviour: IBehaviour) : IBehaviour {
+data class ConditionSP(val expression: String, val thenBehaviour: Behaviour, val elseBehaviour: Behaviour) : Behaviour {
     override fun <T> accept(visitor: SPVisitor<T>): T = visitor.visit(this)
 
     override fun toString() = "if $expression then $thenBehaviour else $elseBehaviour"
 
-    override fun copy(): IBehaviour = ConditionSP(expression, thenBehaviour.copy(), elseBehaviour.copy())
+    override fun copy(): Behaviour = ConditionSP(expression, thenBehaviour.copy(), elseBehaviour.copy())
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

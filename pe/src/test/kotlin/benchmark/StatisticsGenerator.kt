@@ -1,9 +1,9 @@
 package benchmark
 
 import bisim.bisimilar
-import ce.Extraction
-import ce.NetworkStatistics
-import np.EndPointProjection
+import extraction.Extraction
+import extraction.NetworkStatistics
+import epp.EndPointProjection
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import util.choreographyStatistic.LengthOfProcedures
@@ -355,7 +355,7 @@ class StatisticsGenerator {
             chorData.forEach { choreographyId, choreography ->
                 val network = EndPointProjection.project(choreography).toString()
                 val networkStatistic = NetworkStatistics.getNetworkStatistic(network)
-                val choreographyStatistic = EndPointProjection.getStatistic(choreography)
+                val choreographyStatistic = EndPointProjection.getStatistics(choreography)
                 out.println("$choreographyId," +
                         "${choreographyStatistic.length}," +
                         "${choreographyStatistic.numberOfProcesses}," +

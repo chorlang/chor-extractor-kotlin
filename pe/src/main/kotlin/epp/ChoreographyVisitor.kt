@@ -1,4 +1,4 @@
-package np
+package epp
 
 import antlrgen.ChoreographyBaseVisitor
 import antlrgen.ChoreographyParser

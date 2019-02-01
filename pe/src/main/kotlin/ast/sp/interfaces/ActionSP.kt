@@ -1,3 +1,3 @@
 package ast.sp.interfaces
 
-abstract class ActionSP(val process: String) : IBehaviour
+abstract class ActionSP(val process: String) : Behaviour

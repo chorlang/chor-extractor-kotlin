@@ -1,6 +1,6 @@
-package np
+package epp
 
-import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
 import java.util.*
@@ -11,28 +11,27 @@ object Merging {
 
     fun merge(left: SPNode, right: SPNode): SPNode {
         return when {
-            left is SendingSP && right is SendingSP -> merge(left, right)
+            left is SendSP && right is SendSP -> merge(left, right)
             left is ReceiveSP && right is ReceiveSP -> merge(left, right)
             left is TerminationSP && right is TerminationSP -> TerminationSP()
             left is SelectionSP && right is SelectionSP -> merge(left, right)
             left is OfferingSP && right is OfferingSP -> merge(left, right)
             left is ConditionSP && right is ConditionSP -> merge(left, right)
-            left is Behaviour && right is Behaviour -> merge(left, right)
             left is ProcedureInvocationSP && right is ProcedureInvocationSP -> merge(left, right)
             else -> throw MergingException("Can't merge $left with $right")
         }
     }
 
-    private fun merge(left: SendingSP, right: SendingSP): SPNode {
+    private fun merge(left: SendSP, right: SendSP): SPNode {
         if (left.process != right.process || left.expression != right.expression) throw MergingException("Can't merge ${left.process} and ${right.process}")
-        val m = merge(left.continuation, right.continuation) as IBehaviour
-        return SendingSP(m, left.process, left.expression)
+        val m = merge(left.continuation, right.continuation) as Behaviour
+        return SendSP(m, left.process, left.expression)
     }
 
     private fun merge(left: ReceiveSP, right: ReceiveSP): SPNode {
         if (left.process != right.process) throw MergingException("Can't merge ${left.process} and ${right.process}")
 
-        val m = merge(left.continuation, right.continuation) as IBehaviour
+        val m = merge(left.continuation, right.continuation) as Behaviour
         return ReceiveSP(m, left.process)
 
     }
@@ -40,7 +39,7 @@ object Merging {
     private fun merge(left: SelectionSP, right: SelectionSP): SPNode {
         if (left.process != right.process || left.expression != right.expression) throw MergingException("Can't merge ${left.process}+${left.expression} and ${right.process}+${right.expression}")
 
-        val continuation = merge(left.continuation, right.continuation) as IBehaviour
+        val continuation = merge(left.continuation, right.continuation) as Behaviour
         return SelectionSP(continuation, left.process, left.expression)
     }
 
@@ -49,35 +48,30 @@ object Merging {
 
         val leftBranches = left.branches
         val rightBranches = right.branches
-        val labels = HashMap<String, IBehaviour>()
+        val labels = HashMap<String, Behaviour>()
 
         for (leftKey in leftBranches.keys) {
             if (rightBranches.containsKey(leftKey)) {
-                labels[leftKey] = merge(left.branches[leftKey]!!, right.branches[leftKey]!!) as IBehaviour
+                labels[leftKey] = merge(left.branches[leftKey]!!, right.branches[leftKey]!!) as Behaviour
                 rightBranches.remove(leftKey)
             } else {
-                labels[leftKey] = left.branches[leftKey] as IBehaviour
+                labels[leftKey] = left.branches[leftKey] as Behaviour
             }
         }
         for (rightKey in rightBranches.keys) {
-            labels[rightKey] = right.branches[rightKey] as IBehaviour
+            labels[rightKey] = right.branches[rightKey] as Behaviour
         }
 
         return OfferingSP(left.process, labels)
     }
 
     private fun merge(left: ConditionSP, right: ConditionSP): SPNode {
-        val leftCondition = merge(left.thenBehaviour, right.thenBehaviour) as IBehaviour
-        val rightCondition = merge(left.elseBehaviour, right.elseBehaviour) as IBehaviour
+        val leftCondition = merge(left.thenBehaviour, right.thenBehaviour) as Behaviour
+        val rightCondition = merge(left.elseBehaviour, right.elseBehaviour) as Behaviour
         if (left.expression != right.expression)
             throw MergingException("Can't merge conditions $leftCondition and $rightCondition")
 
         return ConditionSP(left.expression, leftCondition, rightCondition)
-    }
-
-    private fun merge(left: ast.sp.nodes.Behaviour, right: ast.sp.nodes.Behaviour): SPNode {
-        val mergeBehaviour = merge(left.behaviour, right.behaviour) as IBehaviour
-        return Behaviour(mergeBehaviour)
     }
 
     private fun merge(left: ProcedureInvocationSP, right: ProcedureInvocationSP): SPNode {

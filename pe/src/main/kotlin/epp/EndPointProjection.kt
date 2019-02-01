@@ -1,4 +1,4 @@
-package np
+package epp
 
 import ast.cc.interfaces.CCNode
 import ast.cc.interfaces.ChoreographyBody
@@ -32,14 +32,13 @@ object EndPointProjection {
         val program = ParseUtils.stringToProgram(choreography)
 
         //project choreographies to networks
-        val behaviourProjection = BehaviourProjection()
         val choreographyList = program.choreographies
         val network = HashMap<String, ProcessTerm>()
         val networkList = ArrayList<Network>()
         for (chor in choreographyList) {
             for (process in chor!!.processes) {
                 try {
-                    network[process] = behaviourProjection.getProcessTerm(chor, process) as ProcessTerm
+                    network[process] = BehaviourProjection.project(chor, process) as ProcessTerm
                 } catch (e: Merging.MergingException) {
                     val newE = Merging.MergingException("Process $process ${e.message!!}")
                     newE.stackTrace = e.stackTrace
@@ -52,7 +51,7 @@ object EndPointProjection {
 
     }
 
-    fun getStatistic(choreography: String): ChoreographyStatisticsData {
+    fun getStatistics(choreography: String): ChoreographyStatisticsData {
         val tree = parseChoreography(choreography)
         val choreographyVisitor = ChoreographyASTToProgram()
         val program = choreographyVisitor.getProgram(tree) //returns Program

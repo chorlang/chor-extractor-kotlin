@@ -22,9 +22,7 @@ interface SPVisitor<T> {
 
     fun visit(n: SelectionSP): T
 
-    fun visit(n: SendingSP): T
+    fun visit(n: SendSP): T
 
     fun visit(n: TerminationSP): T
-
-    fun visit(n: Behaviour): T
 }

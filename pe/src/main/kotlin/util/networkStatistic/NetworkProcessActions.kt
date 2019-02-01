@@ -1,6 +1,6 @@
 package util.networkStatistic
 
-import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPVisitor
 import ast.sp.nodes.*
 import javax.naming.OperationNotSupportedException
@@ -38,7 +38,7 @@ class NetworkProcessActions: SPVisitor<Int> {
         return n.continuation.accept(this) + 1
     }
 
-    override fun visit(n: SendingSP): Int {
+    override fun visit(n: SendSP): Int {
         return n.continuation.accept(this) + 1
     }
 
@@ -46,11 +46,7 @@ class NetworkProcessActions: SPVisitor<Int> {
         return 0
     }
 
-    override fun visit(n: Behaviour): Int {
-        throw OperationNotSupportedException()
-    }
-
-    fun visit(b: IBehaviour): Int {
+    fun visit(b: Behaviour): Int {
         return b.accept(this)
     }
 }

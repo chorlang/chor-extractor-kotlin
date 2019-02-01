@@ -46,54 +46,20 @@ class UsedProcesses : CCVisitor<Set<String>> {
             return n.accept(UsedProcesses())
         }
 
-        //    private HashMap<String,HashSet<String>> usedProcesses() {
-//        Set<String> keys = procedures.keySet();
-//
-//        // first: maps from body to process names and name calls in it
-//        HashMap<String,HashSet<String>> calls = new HashMap<String,HashSet<String>>();
-//        for (String name:keys)
-//        calls.put(name,UsedProcedures.run(procedures.get(name)));
-//
-//        // second: iteratively compute a fixpoint...
-//        HashMap<String,HashSet<String>> usedProcesses = new HashMap<String,HashSet<String>>(),
-//        auxUsedProcesses = new HashMap<String,HashSet<String>>();
-//
-//        for (String name:keys)
-//        auxUsedProcesses.put(name,UsedProcesses.run(procedures.get(name)));
-//        while (!usedProcesses.equals(auxUsedProcesses)) {
-//            for (String name:keys)
-//            usedProcesses.put(name,auxUsedProcesses.get(name));
-
-//            for (String name:keys) {
-//                HashSet<String> processSet = usedProcesses.get(name);
-//                for (String called:calls.get(name))
-//                processSet.addAll(usedProcesses.get(called));
-//                auxUsedProcesses.put(name,processSet);
-//            }
-//        }
-//
-//        return usedProcesses;
-//    }
-
-
-        fun usedProcesses(n:Choreography):Map<String,Set<String>> {
+        fun usedProcesses(choreography:Choreography):Map<String,Set<String>> {
             val calls = HashMap<String,Set<String>>()
-            n.procedures.forEach { calls[it.name] = UsedProcedures.usedProcedures(it.body) }
+            choreography.procedures.forEach { calls[it.name] = UsedProcedures.usedProcedures(it.body) }
             val oldUsedProcesses = HashMap<String,Set<String>>()
             val newUsedProcesses = HashMap<String,Set<String>>()
-            n.procedures.forEach {
+            choreography.procedures.forEach {
                 newUsedProcesses[it.name] = freeProcessNames(it.body)
             }
 
             while(oldUsedProcesses != newUsedProcesses) {
-                n.procedures.forEach { oldUsedProcesses[it.name] = newUsedProcesses[it.name]!! }
-                n.procedures.forEach { procedure ->
+                choreography.procedures.forEach { oldUsedProcesses[it.name] = newUsedProcesses[it.name]!! }
+                choreography.procedures.forEach { procedure ->
                     calls[procedure.name]!!.forEach { call ->
-                        try {
-                            newUsedProcesses[procedure.name] = newUsedProcesses[procedure.name]!! + oldUsedProcesses[call]!!
-                        } catch( e:kotlin.KotlinNullPointerException ){
-                            e.printStackTrace()
-                        }
+                        newUsedProcesses[procedure.name] = newUsedProcesses[procedure.name]!! + oldUsedProcesses[call]!!
                     }
                 }
             }

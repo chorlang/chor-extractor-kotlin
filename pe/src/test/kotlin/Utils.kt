@@ -1,5 +1,5 @@
-import ce.Extraction
-import ce.Strategy
+import extraction.Extraction
+import extraction.Strategy
 
 class Utils {
     companion object {

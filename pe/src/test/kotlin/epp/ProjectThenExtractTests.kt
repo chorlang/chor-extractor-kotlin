@@ -1,6 +1,6 @@
-package np
+package epp
 
-import ce.Extraction
+import extraction.Extraction
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 

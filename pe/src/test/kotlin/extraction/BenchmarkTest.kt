@@ -1,4 +1,4 @@
-package ce
+package extraction
 
 import Utils.Companion.resolveArgs
 import org.junit.jupiter.api.Assertions.assertEquals

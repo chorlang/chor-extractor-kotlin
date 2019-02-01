@@ -1,22 +1,22 @@
 package util.networkStatistic
 
-import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPVisitor
 import ast.sp.nodes.*
 import javax.naming.OperationNotSupportedException
 
-class NetworkSwapActions : SPVisitor<IBehaviour> {
+class NetworkSwapActions : SPVisitor<Behaviour> {
     private var counter: Int = 0
 
-    override fun visit(n: ConditionSP): IBehaviour {
+    override fun visit(n: ConditionSP): Behaviour {
         throw OperationNotSupportedException()
     }
 
-    override fun visit(n: ProcessTerm): IBehaviour {
+    override fun visit(n: ProcessTerm): Behaviour {
         return n.main.accept(this)
     }
 
-    override fun visit(n: ReceiveSP): IBehaviour {
+    override fun visit(n: ReceiveSP): Behaviour {
         return if (counter > 0) {
             counter--
             ReceiveSP(n.continuation.accept(this), n.sender)
@@ -24,14 +24,14 @@ class NetworkSwapActions : SPVisitor<IBehaviour> {
         } else n.continuation
     }
 
-    override fun visit(n: SendingSP): IBehaviour {
+    override fun visit(n: SendSP): Behaviour {
         return if (counter > 0) {
             counter--
-            SendingSP(n.continuation.accept(this), n.receiver, n.expression)
+            SendSP(n.continuation.accept(this), n.receiver, n.expression)
         } else n.continuation
     }
 
-    override fun visit(n: OfferingSP): IBehaviour {
+    override fun visit(n: OfferingSP): Behaviour {
         /*n.branches.forEach { label, behaviour ->
             val numOfProcesses = NetworkProcessActions().visit(behaviour)
             when {
@@ -47,7 +47,7 @@ class NetworkSwapActions : SPVisitor<IBehaviour> {
         throw OperationNotSupportedException()
     }
 
-    override fun visit(n: SelectionSP): IBehaviour {
+    override fun visit(n: SelectionSP): Behaviour {
         return if (counter > 0) {
             counter--
             SelectionSP(n.continuation.accept(this), n.receiver, n.expression)
@@ -61,23 +61,19 @@ class NetworkSwapActions : SPVisitor<IBehaviour> {
         return ProcessTerm(processTerm.procedures, newMain)
     }
 
-    override fun visit(n: Network): IBehaviour {
+    override fun visit(n: Network): Behaviour {
         throw OperationNotSupportedException()
     }
 
-    override fun visit(n: Behaviour): IBehaviour {
+    override fun visit(n: ParallelNetworks): Behaviour {
         throw OperationNotSupportedException()
     }
 
-    override fun visit(n: ParallelNetworks): IBehaviour {
+    override fun visit(n: TerminationSP): Behaviour {
         throw OperationNotSupportedException()
     }
 
-    override fun visit(n: TerminationSP): IBehaviour {
-        throw OperationNotSupportedException()
-    }
-
-    override fun visit(n: ProcedureInvocationSP): IBehaviour {
+    override fun visit(n: ProcedureInvocationSP): Behaviour {
         throw OperationNotSupportedException()
     }
 }

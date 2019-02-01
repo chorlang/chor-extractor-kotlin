@@ -1,4 +1,4 @@
-package ce
+package extraction
 
 import ast.sp.nodes.ProcessTerm
 import util.networkStatistic.*

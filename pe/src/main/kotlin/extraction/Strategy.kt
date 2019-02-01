@@ -1,4 +1,4 @@
-package ce
+package extraction
 
 import ast.sp.nodes.*
 import java.util.*
@@ -13,7 +13,7 @@ enum class Strategy {
             val network = LinkedHashMap<String, ProcessTerm>()
 
             net.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
-            net.forEach { process -> if (process.value.main is SendingSP || process.value.main is ReceiveSP) network[process.key] = process.value.copy() }
+            net.forEach { process -> if (process.value.main is SendSP || process.value.main is ReceiveSP) network[process.key] = process.value.copy() }
             net.forEach { process -> network[process.key] = process.value.copy() }
             return network
         }
@@ -114,7 +114,7 @@ enum class Strategy {
                             markedSelections.add(AbstractMap.SimpleEntry(processName, processTerm))
                         }
                     }
-                    is SendingSP, is ReceiveSP -> {
+                    is SendSP, is ReceiveSP -> {
                         if (!marked) {
                             unmarkedSending.add(AbstractMap.SimpleEntry(processName, processTerm))
                         } else {
