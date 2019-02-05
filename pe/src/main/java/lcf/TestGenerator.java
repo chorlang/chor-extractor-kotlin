@@ -149,7 +149,7 @@ public class TestGenerator {
             makeALotOfTests(i,6,0,0,logFile);
 	logFile.newLine();
 
-        niceWrite(logFile,"Test 2: communications and ifs, fixed length, increasing number of ifs");
+        /*niceWrite(logFile,"Test 2: communications and ifs, fixed length, increasing number of ifs");
         for (int i=10; i<=50; i+=10)
             makeALotOfTests(50,6,i,0,logFile);
 	logFile.newLine();
@@ -158,7 +158,7 @@ public class TestGenerator {
         for (int i=0; i<=5; i++)
             for (int j=0; j<=5; j++)
                 makeALotOfTests(10,5,i,j,logFile);
-	logFile.newLine();
+	logFile.newLine();*/
 
 	niceWrite(logFile,"Test 4: communications only, fixed length, increasing number of processesInChoreography");
         for (int i=5; i<=100; i+=5)

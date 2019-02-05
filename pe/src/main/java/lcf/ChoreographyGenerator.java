@@ -1,8 +1,9 @@
 package lcf;
 
-import java.util.Random;
-import java.util.HashSet;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Random;
 
 /*
  * Class for generating random choreographies, based on some parameters.
@@ -79,11 +80,14 @@ public class ChoreographyGenerator {
         // we generate process names randomly as strings of lowercase letters
         HashSet<String> auxNames = new HashSet<String>();
         int bound = Math.toIntExact(Math.round(Math.ceil(Math.log(NUM_PROCESSES)/Math.log(26))));
+        List<String> keywords = Arrays.asList("if","def","then","else","stop");
+
         while (auxNames.size() < NUM_PROCESSES) {
             String name = "";
             for (int j=0; j<bound; j++)
                 name += (char)(generator.nextInt(26)+97);
-            auxNames.add(name);
+            if (!keywords.contains(name))
+                auxNames.add(name);
         }
         this.processNames = auxNames.toArray(new String[0]);
 
