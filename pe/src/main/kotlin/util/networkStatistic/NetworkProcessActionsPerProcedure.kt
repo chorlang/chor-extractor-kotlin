@@ -37,7 +37,7 @@ class NetworkProcessActionsPerProcedure: SPVisitor<Int> {
         return n.continuation.accept(this) + 1
     }
 
-    override fun visit(n: SendingSP): Int {
+    override fun visit(n: SendSP): Int {
         return n.continuation.accept(this) + 1
     }
 
@@ -45,13 +45,9 @@ class NetworkProcessActionsPerProcedure: SPVisitor<Int> {
         return 0
     }
 
-    override fun visit(n: Behaviour): Int {
-        throw OperationNotSupportedException()
-    }
-
     fun getLength(n: ProcessTerm): ArrayList<Int> {
         val actionsProcedures = ArrayList<Int>()
-        n.procedures.forEach { name, term -> actionsProcedures.add(term.accept(this)) }
+        n.procedures.forEach { _, term -> actionsProcedures.add(term.accept(this)) }
         return actionsProcedures
 
     }

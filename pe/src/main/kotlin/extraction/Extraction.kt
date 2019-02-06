@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package ce
+package extraction
 
 import antlrgen.NetworkLexer
 import antlrgen.NetworkParser

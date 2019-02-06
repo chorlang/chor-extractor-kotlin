@@ -37,15 +37,11 @@ class NetworkProcessConditions: SPVisitor<Int> {
         return n.continuation.accept(this)
     }
 
-    override fun visit(n: SendingSP): Int {
+    override fun visit(n: SendSP): Int {
         return n.continuation.accept(this)
     }
 
     override fun visit(n: TerminationSP): Int {
         return 0
-    }
-
-    override fun visit(n: Behaviour): Int {
-        throw OperationNotSupportedException()
     }
 }

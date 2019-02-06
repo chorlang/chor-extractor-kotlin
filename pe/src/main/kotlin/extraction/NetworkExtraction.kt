@@ -1,9 +1,9 @@
-package ce
+package extraction
 
 import ast.cc.interfaces.ChoreographyBody
 import ast.cc.interfaces.Interaction
 import ast.cc.nodes.*
-import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.Behaviour
 import ast.sp.labels.ExtractionLabel
 import ast.sp.labels.ExtractionLabel.*
 import ast.sp.labels.ExtractionLabel.ConditionLabel.ElseLabel
@@ -248,7 +248,7 @@ class NetworkExtraction {
                 val senderBehaviour = senderProcessTerm!!.main
 
                 processesCopy.replace(receiver, ProcessTerm(receiverProcessTerm.procedures, newReceiverBehaviour))
-                val senderBehaviourContinuation = (senderBehaviour as? SendingSP)?.continuation
+                val senderBehaviourContinuation = (senderBehaviour as? SendSP)?.continuation
                         ?: ((senderBehaviour as? SelectionSP)?.continuation
                                 ?: throw UnsupportedOperationException())
 
@@ -417,15 +417,15 @@ class NetworkExtraction {
     //endregion
 
     //region Termination checks
-    private fun doesNotContainInvocations(pr: IBehaviour): Boolean {
+    private fun doesNotContainInvocations(pr: Behaviour): Boolean {
         return !containsInvocation(pr)
     }
 
-    private fun containsInvocation(pr: IBehaviour): Boolean {
+    private fun containsInvocation(pr: Behaviour): Boolean {
         when (pr) {
             is ProcedureInvocationSP -> return true
             is TerminationSP -> return false
-            is SendingSP -> return doesNotContainInvocations(pr.continuation)
+            is SendSP -> return doesNotContainInvocations(pr.continuation)
             is ReceiveSP -> return doesNotContainInvocations(pr.continuation)
             is SelectionSP -> return doesNotContainInvocations(pr.continuation)
             is OfferingSP -> {
@@ -452,7 +452,7 @@ class NetworkExtraction {
         val mainBehaviour = processTerm?.main
 
         when (mainBehaviour) {
-            is SendingSP -> {
+            is SendSP -> {
                 val receiverTerm = processes[mainBehaviour.process]
                 if (receiverTerm != null && receiverTerm.main is ReceiveSP && (receiverTerm.main as ReceiveSP).sender == processName) {
                     return consumeCommunication(processes, processTerm, receiverTerm)
@@ -460,7 +460,7 @@ class NetworkExtraction {
             }
             is ReceiveSP -> {
                 val senderTerm = processes[(processTerm.main as ReceiveSP).process]
-                if (senderTerm != null && senderTerm.main is SendingSP && (senderTerm.main as SendingSP).receiver == processName) {
+                if (senderTerm != null && senderTerm.main is SendSP && (senderTerm.main as SendSP).receiver == processName) {
                     return consumeCommunication(processes, senderTerm, processTerm)
                 }
             }
@@ -502,13 +502,13 @@ class NetworkExtraction {
     private fun consumeCommunication(processes: ProcessMap, senderTerm: ProcessTerm, receiverTerm: ProcessTerm): GraphNode {
         val newProcesses = ProcessMap()
         processes.forEach { key, value -> newProcesses[key] = value.copy() }
-        val receiverName = (senderTerm.main as SendingSP).receiver
+        val receiverName = (senderTerm.main as SendSP).receiver
         val senderName = (receiverTerm.main as ReceiveSP).sender
 
         newProcesses.replace(receiverName, ProcessTerm(receiverTerm.procedures, (receiverTerm.main as ReceiveSP).continuation))
-        newProcesses.replace(senderName, ProcessTerm(senderTerm.procedures, (senderTerm.main as SendingSP).continuation))
+        newProcesses.replace(senderName, ProcessTerm(senderTerm.procedures, (senderTerm.main as SendSP).continuation))
 
-        val label = SendingLabel(senderName, receiverName, (senderTerm.main as SendingSP).expression)
+        val label = SendingLabel(senderName, receiverName, (senderTerm.main as SendSP).expression)
 
         return GraphNode(Network(newProcesses), label)
     }
@@ -719,7 +719,7 @@ class NetworkExtraction {
     private fun createInteractionLabel(processName: String, processes: HashMap<String, ProcessTerm>): InteractionLabel? {
         val processTerm = processes[processName]?.main
         return when (processTerm) {
-            is SendingSP -> {
+            is SendSP -> {
                 SendingLabel(processName, processTerm.receiver, processTerm.expression)
             }
             is SelectionSP -> {
@@ -743,16 +743,16 @@ class NetworkExtraction {
         return processesCopy
     }
 
-    private fun fillWaiting(waiting: ArrayList<InteractionLabel>, actions: ArrayList<InteractionLabel>, label: InteractionLabel, receiverProcessTermMain: IBehaviour, receiverProcesses: HashMap<String, IBehaviour>, marking: HashMap<ProcessName, Boolean>): IBehaviour? {
+    private fun fillWaiting(waiting: ArrayList<InteractionLabel>, actions: ArrayList<InteractionLabel>, label: InteractionLabel, receiverProcessTermMain: Behaviour, receiverProcesses: HashMap<String, Behaviour>, marking: HashMap<ProcessName, Boolean>): Behaviour? {
         when (receiverProcessTermMain) {
-            is SendingSP -> {
+            is SendSP -> {
                 //look into continuation to be sure that it is in the form a1;...;ak;r?;B where each ai is either the sending of a value or a label selection
                 val sendingContinuation = fillWaiting(waiting, actions, label, receiverProcessTermMain.continuation, receiverProcesses, marking)
 
                 return if (sendingContinuation != null) {
                     val newLabel = SendingLabel(label.receiver, receiverProcessTermMain.receiver, receiverProcessTermMain.expression)
                     if (!actions.contains(newLabel)) waiting.add(newLabel)
-                    SendingSP(sendingContinuation, newLabel.receiver, newLabel.expression)
+                    SendSP(sendingContinuation, newLabel.receiver, newLabel.expression)
                 } else {
                     null
                 }

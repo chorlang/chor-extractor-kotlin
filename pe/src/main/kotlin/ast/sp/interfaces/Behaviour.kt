@@ -1,6 +1,6 @@
 package ast.sp.interfaces
 
-interface IBehaviour : SPNode {
-    fun copy(): IBehaviour
+interface Behaviour : SPNode {
+    fun copy(): Behaviour
     override fun hashCode(): Int
 }

@@ -1,11 +1,11 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.ActionSP
 import ast.sp.interfaces.SPVisitor
 import kotlin.collections.HashMap
 
-data class OfferingSP(val sender: String, val branches: HashMap<String, IBehaviour>) : ActionSP(sender) {
+data class OfferingSP(val sender: String, val branches: HashMap<String, Behaviour>) : ActionSP(sender) {
     override fun <T> accept(visitor: SPVisitor<T>): T = visitor.visit(this)
 
     override fun toString(): String {
@@ -20,7 +20,7 @@ data class OfferingSP(val sender: String, val branches: HashMap<String, IBehavio
     }
 
     override fun copy(): ActionSP {
-        val branchesCopy = HashMap<String, IBehaviour>()
+        val branchesCopy = HashMap<String, Behaviour>()
         branches.forEach { branchesCopy[it.key] = it.value.copy() }
 
         return OfferingSP(process, branchesCopy)

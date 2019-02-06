@@ -1,6 +1,6 @@
 package bench
 
-import ce.Extraction
+import extraction.Extraction
 import org.openjdk.jmh.annotations.*
 import java.util.concurrent.TimeUnit
 

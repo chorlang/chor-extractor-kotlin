@@ -1,12 +1,12 @@
 package ast.sp.nodes
 
-import ast.sp.interfaces.IBehaviour
+import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.interfaces.SPVisitor
 
 typealias ProcedureName = String
 
-class ProcessTerm(val procedures: HashMap<ProcedureName, IBehaviour>, var main: IBehaviour) : SPNode {
+class ProcessTerm(val procedures: HashMap<ProcedureName, Behaviour>, var main: Behaviour) : SPNode {
     override fun <T> accept(visitor: SPVisitor<T>): T = visitor.visit(this)
 
     override fun toString(): String {
@@ -19,7 +19,7 @@ class ProcessTerm(val procedures: HashMap<ProcedureName, IBehaviour>, var main: 
     }
 
     fun copy(): ProcessTerm{
-        val proceduresCopy = HashMap<String, IBehaviour>()
+        val proceduresCopy = HashMap<String, Behaviour>()
         procedures.forEach{ proceduresCopy[it.key] = it.value.copy() }
         return ProcessTerm(proceduresCopy, main.copy())
     }

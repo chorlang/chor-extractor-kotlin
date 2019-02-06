@@ -3,7 +3,7 @@ package lcf;
 import java.util.HashSet;
 
 /*
- * Class for amending a (partial) body from a eta, given the list of relevantprocesses.
+ * Class for amending a (partial) body from a eta, given the list of relevant processes.
  * Uses the visitor pattern.
  */
 public class AmendNode implements CNVisitor {
