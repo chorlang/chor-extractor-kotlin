@@ -1,9 +1,9 @@
 package benchmark
 
 import bisim.bisimilar
+import epp.EndPointProjection
 import extraction.Extraction
 import extraction.NetworkStatistics
-import epp.EndPointProjection
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
 import util.choreographyStatistic.LengthOfProcedures
@@ -23,7 +23,13 @@ class StatisticsGenerator {
         private const val SCREWED_EXTRACTION_STATISTICS_PREFIX = "stats-screwed-extraction-"
         private const val PROJECTION_STATISTICS_PREFIX = "stats-projection-"
         private const val EXTRACTION_STATISTICS_PREFIX = "stats-extraction-"
-        private const val COMBINED_STATISTICS_PREFIX = "stats-"
+        private const val COMBINED_STATISTICS_PREFIX = "stats"
+
+        val regexes = mapOf(
+                "test1" to "(100|[1-9]0)-6-0-0".toRegex(),
+                "test2" to "50-6-[1-5]0-0".toRegex(),
+                "test3" to "10-5-[0-5]+-[0-5]+".toRegex(),
+                "test4" to "40-(5|100|[1-9][0|5])+-0-0".toRegex())
 
         @JvmStatic
         @BeforeAll
@@ -46,38 +52,6 @@ class StatisticsGenerator {
 
     }
 
-    //@Test
-    fun timeToNodes() {
-        checkOutputFolder()
-        networkProjectionStatistics()
-        choreographyExtractionStatistics()
-        val filesWithNetworks = parseFolderWithFilesWithNetworks(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, network_body>>
-
-        filesWithNetworks.forEach { fileId, networks ->
-            val choreographies = HashMap<String, String>()
-
-
-            File(OUTPUT_DIR, "$EXTRACTION_STATISTICS_PREFIX$-timeToNode").printWriter().use { out ->
-                out.println("time nodes")
-
-                networks.forEach { choreographyId, network ->
-                    val start = System.currentTimeMillis()
-                    val program = Extraction.main(arrayListOf("-c", network, "-d"))
-                    val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
-
-                    choreographies[choreographyId] = program.choreographies.first().toString()
-
-                    if (program.choreographies.size == 1 && program.statistics.size == 1) {
-                        out.println(
-                                "$executionTime," +
-                                        "${program.statistics.first().nodes}"
-                        )
-                    } else throw OperationNotSupportedException()
-                }
-            }
-        }
-    }
-
     @Test
     fun gatherALLStatistics() {
         networkProjectionStatistics()
@@ -87,33 +61,44 @@ class StatisticsGenerator {
     }
 
     private fun accumulateStatistics(dirPath: String, prefix: String) {
-        val dir = File(dirPath)
-        require(dir.exists() && dir.isDirectory)
 
-        val testFileNames = retrieveTestFileNames()
+        for (regex in regexes) {
+            val file = File("$dirPath/$prefix-${regex.key}")
+            file.appendText("time\tnodes\tbadloops\tlength\tprocesses\n")
 
-        for (testFileName in testFileNames) {
-            val file = File("$dirPath/$prefix$testFileName")
-            file.appendText("$testFileName\n")
+            val testFileNames = retrieveTestFileNames(EXTRACTION_STATISTICS_PREFIX, regex.value)
+            for (testFileName in testFileNames) {
+                val parseStatName = parseStatName(testFileName)
+                val length = parseStatName.length
+                val numOfProcesses = parseStatName.numOfProcesses
 
-            for (fileName in dir.list()) {
-                if (fileName.endsWith(testFileName)) {
-                    file.appendText("$fileName\n")
-                    file.appendText(File("$dirPath/$fileName").readText())
+                File("$dirPath/$EXTRACTION_STATISTICS_PREFIX$testFileName").forEachLine { line ->
+                    val split = line.split(",")
+                    if (isNumeric(split[1])) file.appendText("${split[1]}\t${split[2]}\t${split[3]}\t$length\t$numOfProcesses\n")
                 }
             }
         }
     }
 
-    private fun retrieveTestFileNames(): HashSet<String> {
+    private fun isNumeric(input: String): Boolean =
+            try {
+                input.toDouble()
+                true
+            } catch(e: NumberFormatException) {
+                false
+            }
+
+    private fun retrieveTestFileNames(prefix: String = "", regex: Regex = "".toRegex()): HashSet<String> {
         val dir = File(TEST_DIR)
-        require(dir.exists() && dir.isDirectory)
+
         val testNames = HashSet<String>()
 
+        val fix = if (prefix.isBlank()) CHOREOGRAPHY_PREFIX else prefix
 
         for (fileName in dir.list()) {
-            if (fileName.startsWith(CHOREOGRAPHY_PREFIX)) {
-                testNames.add(fileName.removePrefix(CHOREOGRAPHY_PREFIX))
+            if (fileName.startsWith(fix)) {
+                val stat = fileName.removePrefix(fix)
+                if ((regex.matches("")) || regex.matches(stat)) testNames.add(fileName.removePrefix(fix))
             }
         }
 
@@ -148,14 +133,14 @@ class StatisticsGenerator {
         }
     }
 
-    @Test
+    /*@Test
     fun extractionSoundnessC41() {
         //NOTE that "10-6-0-0" doesn't contain "C41"
         val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
         val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
 
         assert(bisimilar((originalChoreographies["10-6-0-0"]!!)["C41"]!!, (extractedChoreographies["10-6-0-0"]!!)["C41"]!!))
-    }
+    }*/
 
     private fun parseExtractionFiles(dirPath: String, prefix: String): HashMap<String, HashMap<String, String>> {
         val dir = File(dirPath)
@@ -461,6 +446,13 @@ class StatisticsGenerator {
 
         return choreographyMap
     }
+
+    private fun parseStatName(name: String): StatHeader {
+        val stat = name.split("-".toRegex())
+        return StatHeader(stat[stat.size-4], stat[stat.size-3], stat[stat.size-2], stat[stat.size-1])
+    }
+
+    data class StatHeader(val length: String, val numOfProcesses: String, val numOfCondition: String, val numOfProcedures: String)
 
     data class ScrewedExecutionStatistic(val choreographyId: String,
                                          val minExecutionTime: Double, val maxExecutionTime: Double, val avgExecutionTime: Double,
