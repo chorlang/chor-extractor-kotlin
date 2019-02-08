@@ -1,4 +1,4 @@
-package util.networkStatistic
+package util.networkStatistics
 
 data class NetworkStatisticData(
         val minLengthOfProcesses: Int,

@@ -2,7 +2,7 @@ package benchmark
 
 import ast.sp.nodes.Network
 import ast.sp.nodes.ProcessName
-import util.networkStatistic.*
+import util.networkStatistics.*
 
 
 class NetworkScrewer {

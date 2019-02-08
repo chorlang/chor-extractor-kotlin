@@ -1,13 +1,12 @@
-package util.networkStatistic
+package util.networkStatistics
 
-import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPVisitor
 import ast.sp.nodes.*
 import javax.naming.OperationNotSupportedException
 
-class NetworkProcessActionsForScrewer: SPVisitor<Int> {
+class NetworkProcessConditions: SPVisitor<Int> {
     override fun visit(n: ConditionSP): Int {
-        return 0
+        return 1 + n.elseBehaviour.accept(this) + n.thenBehaviour.accept(this)
     }
 
     override fun visit(n: Network): Int {
@@ -15,7 +14,7 @@ class NetworkProcessActionsForScrewer: SPVisitor<Int> {
     }
 
     override fun visit(n: OfferingSP): Int {
-        return 0
+        return n.branches.values.sumBy { behaviour -> behaviour.accept(this) }
     }
 
     override fun visit(n: ParallelNetworks): Int {
@@ -31,22 +30,18 @@ class NetworkProcessActionsForScrewer: SPVisitor<Int> {
     }
 
     override fun visit(n: ReceiveSP): Int {
-        return n.continuation.accept(this) +1
+        return n.continuation.accept(this)
     }
 
     override fun visit(n: SelectionSP): Int {
-        return n.continuation.accept(this) + 1
+        return n.continuation.accept(this)
     }
 
     override fun visit(n: SendSP): Int {
-        return n.continuation.accept(this) + 1
+        return n.continuation.accept(this)
     }
 
     override fun visit(n: TerminationSP): Int {
         return 0
-    }
-
-    fun visit(b: Behaviour): Int {
-        return b.accept(this)
     }
 }

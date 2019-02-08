@@ -1,29 +1,15 @@
 package epp
 
-import ast.cc.interfaces.CCNode
-import ast.cc.interfaces.ChoreographyBody
-import ast.cc.nodes.*
 import ast.sp.nodes.Network
 import ast.sp.nodes.ParallelNetworks
 import ast.sp.nodes.ProcessTerm
 import org.apache.logging.log4j.LogManager
-import util.ChoreographyASTToProgram
 import util.ParseUtils
-import util.ParseUtils.parseChoreography
-import util.choreographyStatistic.ChoreographyStatisticsData
-import util.choreographyStatistic.NumberOfActions
-import util.choreographyStatistic.NumberOfConditionals
-import java.io.File
 import java.util.*
-import javax.naming.OperationNotSupportedException
 import kotlin.collections.ArrayList
-import kotlin.collections.HashSet
-import kotlin.streams.asSequence
 
 
 object EndPointProjection {
-    private val log = LogManager.getLogger()
-
     /**
      * @param choreography
      * @return (parallel) networks projected from the initial choreography
@@ -38,7 +24,7 @@ object EndPointProjection {
         for (chor in choreographyList) {
             for (process in chor!!.processes) {
                 try {
-                    network[process] = BehaviourProjection.project(chor, process) as ProcessTerm
+                    network[process] = BehaviourProjection.project(chor, process)
                 } catch (e: Merging.MergingException) {
                     val newE = Merging.MergingException("Process $process ${e.message!!}")
                     newE.stackTrace = e.stackTrace
@@ -48,23 +34,9 @@ object EndPointProjection {
             networkList.add(Network(network))
         }
         return ParallelNetworks(networkList)
-
     }
 
-    fun getStatistics(choreography: String): ChoreographyStatisticsData {
-        val tree = parseChoreography(choreography)
-        val choreographyVisitor = ChoreographyASTToProgram()
-        val program = choreographyVisitor.getProgram(tree) //returns Program
-
-        val choreographyList = (program as Program).choreographies
-        if (choreographyList.size == 1) {
-            return getChoreographyStatistic(choreographyList.first()!!)
-        } else {
-            throw OperationNotSupportedException()
-        }
-    }
-
-
+/*
     private fun parseInput(args: Array<String>): String {
         val iter = args.toList().listIterator()
         while (iter.hasNext()) {
@@ -109,6 +81,7 @@ object EndPointProjection {
 
         return chor.toString()
     }
+
 
     private fun generateStructure(prset: ArrayList<String>, pr: Int, cond: Int): CCNode {
         val main = generateMain(prset, HashSet(), pr, cond)
@@ -197,14 +170,5 @@ object EndPointProjection {
         } while (prset.size != i)
 
         return prset
-    }
-
-    private fun getChoreographyStatistic(choreography: Choreography): ChoreographyStatisticsData {
-        val numberOfProcedures = choreography.procedures.size
-        val numberOfProcesses = choreography.processes.size
-        val numberOfActions = NumberOfActions().visit(choreography)
-        val numberOfConditionals = NumberOfConditionals().visit(choreography)
-
-        return ChoreographyStatisticsData(numberOfActions, numberOfProcesses, numberOfProcedures, numberOfConditionals)
-    }
+    } */
 }

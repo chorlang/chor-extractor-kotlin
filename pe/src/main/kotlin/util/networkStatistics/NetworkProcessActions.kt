@@ -1,10 +1,11 @@
-package util.networkStatistic
+package util.networkStatistics
 
+import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPVisitor
 import ast.sp.nodes.*
 import javax.naming.OperationNotSupportedException
 
-class NetworkProcessActionsPerProcedure: SPVisitor<Int> {
+class NetworkProcessActions: SPVisitor<Int> {
     override fun visit(n: ConditionSP): Int {
         return n.elseBehaviour.accept(this) + n.thenBehaviour.accept(this)
     }
@@ -26,7 +27,7 @@ class NetworkProcessActionsPerProcedure: SPVisitor<Int> {
     }
 
     override fun visit(n: ProcessTerm): Int {
-        return n.procedures.values.sumBy { pr -> pr.accept(this) }
+        return n.procedures.values.toList().foldRight(0) { procedure, next -> procedure.accept(this) + next } + n.main.accept(this)
     }
 
     override fun visit(n: ReceiveSP): Int {
@@ -45,10 +46,7 @@ class NetworkProcessActionsPerProcedure: SPVisitor<Int> {
         return 0
     }
 
-    fun getLength(n: ProcessTerm): ArrayList<Int> {
-        val actionsProcedures = ArrayList<Int>()
-        n.procedures.forEach { _, term -> actionsProcedures.add(term.accept(this)) }
-        return actionsProcedures
-
+    fun visit(b: Behaviour): Int {
+        return b.accept(this)
     }
 }

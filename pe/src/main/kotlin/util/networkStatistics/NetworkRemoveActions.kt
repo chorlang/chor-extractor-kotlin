@@ -1,4 +1,4 @@
-package util.networkStatistic
+package util.networkStatistics
 
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPVisitor

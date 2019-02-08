@@ -32,7 +32,7 @@ class ProjectThenExtractTests {
 
     @Test
     fun tst2() {
-        val test =
+        /* val test =
                 "def X {if p.e " +
                     "then p->q[ok]; p->r[ok]; if r.e " +
                         "then q.e->p; r->p[ok];r->q[ok];p.e->q;X " +
@@ -44,7 +44,7 @@ class ProjectThenExtractTests {
                 "def Z {p.e->q; Y}" +
                 "main {q.i->r; p.e->q; X}"
 
-        val extraction = EndPointProjection.project(test).toString()
+        val extraction = EndPointProjection.project(test).toString() */
 
         val e = "p{def X{if e then q + ok; r + ok; q?; r&{ko: Y, ok: q!<e>; X} else q + ko; r + ko; q&{ko: Z, ok: q!<e>; X}} def Y{q!<e>; X} def Z{q!<e>; Y} main {q!<e>; X}} | " +
                 " q{def X{p&{ko: if e then p + ok; r + ok; p?; X else p + ko; r + ko; Z, ok: p!<e>; r&{ko: r?; Y, ok: p?; X}}} def Y{p?; X} def Z{p?; Y} main {r!<i>; p?; X}} |" +

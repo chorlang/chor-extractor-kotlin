@@ -4,10 +4,8 @@ import ast.cc.interfaces.CCVisitor
 import ast.cc.interfaces.ChoreographyBody
 import ast.cc.nodes.*
 import ast.sp.interfaces.Behaviour
-import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
-import util.choreographyStatistic.UsedProcesses
-import java.util.*
+import util.choreographyStatistics.UsedProcesses
 import javax.naming.OperationNotSupportedException
 import kotlin.collections.HashMap
 
@@ -15,7 +13,7 @@ import kotlin.collections.HashMap
  * @author Fabrizio Montesi <famontesi@gmail.com>
  * From choreography project network
  */
-class BehaviourProjection(private val processName:String, private val usedProcesses: Map<String,Set<String>>) : CCVisitor<Behaviour> {
+class BehaviourProjection private constructor(private val processName:String, private val usedProcesses: Map<String,Set<String>>) : CCVisitor<Behaviour> {
     override fun visit(n: CommunicationSelection): Behaviour {
         val continuation = n.continuation.accept(this)
         val eta = n.eta
@@ -43,10 +41,7 @@ class BehaviourProjection(private val processName:String, private val usedProces
         }
     }
 
-    override fun visit(n: Multicom): Behaviour {
-        TODO("not implemented")
-        throw OperationNotSupportedException()
-    }
+    override fun visit(n: Multicom): Behaviour = throw OperationNotSupportedException() // TODO : implement this
 
     override fun visit(n: Condition): Behaviour {
         return if (processName == n.process) {

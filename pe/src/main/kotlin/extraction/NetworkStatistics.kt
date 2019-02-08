@@ -1,7 +1,7 @@
 package extraction
 
 import ast.sp.nodes.ProcessTerm
-import util.networkStatistic.*
+import util.networkStatistics.*
 
 object NetworkStatistics {
     fun getNetworkStatistic(input: String): NetworkStatisticData {
