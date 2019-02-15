@@ -23,27 +23,28 @@ object Extraction {
         else throw Exception("Malformed call - body was expected.")
     }
 
-    fun generateNetwork(network: String): Network{
+    fun parseNetwork(network: String): Network {
         val stream = ANTLRInputStream(network)
         val lexer = NetworkLexer(stream)
         val parser = NetworkParser(CommonTokenStream(lexer))
-        val tree = parser.parallelNetworks()
+        val tree = parser.network()
         val networkVisitor = NetworkVisitor()
-        return (networkVisitor.visitParallelNetworks(tree) as ParallelNetworks).networkList.first()
+        return (networkVisitor.visitNetwork(tree) as Network)
     }
 
-    private fun extractChoreography(parsedInput: ParsedInput): Program {
-        val network = generateNetwork(parsedInput.network)
+    fun extractChoreography(parsedInput: ParsedInput): Program {
+        val network = parseNetwork(parsedInput.network)
+        val parallelNetworks = ParallelNetworks(arrayListOf(network))
 
         val program = ArrayList<Choreography?>()
         val statistic = ArrayList<GraphStatistics>()
-        //for (network in parallelNetworks.networkList) {
+        for (network in parallelNetworks.networkList) {
             if (parsedInput.livelocked.isEmpty() || network.processes.keys.containsAll(parsedInput.livelocked)) {
                 val extraction = NetworkExtraction.run(network, parsedInput.strategy, parsedInput.livelocked, parsedInput.debugMode)
                 program.add(extraction.first)
                 statistic.add(extraction.second)
             } else throw Exception("Malformed call - list of livelocked processesInChoreography contains not existent processesInChoreography")
-        //}
+        }
         return Program(program, statistic)
     }
 

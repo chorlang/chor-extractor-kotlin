@@ -1,4 +1,4 @@
-// Generated from Network.g4 by ANTLR 4.7.1
+// Generated from Network.g4 by ANTLR 4.7.2
 
     package antlrgen;
 
@@ -13,13 +13,6 @@ import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
  * operations with no return type.
  */
 public class NetworkBaseVisitor<T> extends AbstractParseTreeVisitor<T> implements NetworkVisitor<T> {
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation returns the result of calling
-	 * {@link #visitChildren} on {@code ctx}.</p>
-	 */
-	@Override public T visitParallelNetworks(NetworkParser.ParallelNetworksContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

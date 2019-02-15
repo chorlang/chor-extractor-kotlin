@@ -1,14 +1,17 @@
 package benchmark
 
+import ast.cc.nodes.Program
+import ast.sp.nodes.Network
 import bisim.bisimilar
 import epp.EndPointProjection
 import extraction.Extraction
-import extraction.NetworkStatistics
-import org.junit.jupiter.api.BeforeAll
+import extraction.Strategy
 import org.junit.jupiter.api.Test
+import util.ParseUtils
 import util.choreographyStatistics.ChoreographyStatistics
 import util.choreographyStatistics.LengthOfProcedures
 import util.choreographyStatistics.NumberOfActions
+import util.networkStatistics.NetworkStatistics
 import java.io.File
 import java.text.ParseException
 import javax.naming.OperationNotSupportedException
@@ -27,433 +30,457 @@ class Benchmarks {
         private const val CHOREOGRAPHY_PREFIX = "choreography-"
         private const val PROJECTION_PREFIX = "projection-"
         private const val EXTRACTION_PREFIX = "extraction-"
-        private const val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-"
-        private const val SCREWED_EXTRACTION_STATISTICS_PREFIX = "stats-screwed-extraction-"
         private const val PROJECTION_STATISTICS_PREFIX = "stats-projection-"
         private const val EXTRACTION_STATISTICS_PREFIX = "stats-extraction-"
-        private const val COMBINED_STATISTICS_PREFIX = "stats"
+        private const val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-"
+        private const val SCREWED_EXTRACTION_STATISTICS_PREFIX = "stats-screwed-extraction-"
+        private const val COMBINED_STATISTICS_PREFIX = "stats-"
 
-        val regexes = mapOf(
-                "test1" to "(100|[1-9]0)-6-0-0".toRegex(),
-                "test2" to "50-6-[1-5]0-0".toRegex(),
-                "test3" to "10-5-[0-5]+-[0-5]+".toRegex(),
-                "test4" to "40-(5|100|[1-9][0|5])+-0-0".toRegex())
+        private const val PROJECTION_STATISTICS_HEADER = "id,numberOfActions,numberOfProcesses,numberOfProcedures,numberOfConditionals," +
+                "minLengthOfProcesses,maxLengthOfProcesses,avgLengthOfProcesses," +
+                "minNumberOfProceduresInProcesses,maxNumberOfProceduresInProcesses,avgNumberOfProceduresInProcesses," +
+                "minNumberOfConditionalsInProcesses,maxNumberOfConditionalsInProcesses,avgNumberOfConditionalsInProcesses,numberOfProcessesWithConditionals," +
+                "minProcedureLengthInProcesses,maxProcedureLengthInProcesses,avgProcedureLengthInProcesses"
+        private const val EXTRACTION_STATISTICS_HEADER = "id,time(sec),nodes,badLoops,mainLength,numOfProcedures,minProcedureLength,maxProcedureLength,avgProcedureLength"
+        private const val SCREWED_PROJECTION_STATISTICS_HEADER = "choreographyId," +
+                "screwedId," +
+                "screwedNetwork," +
+                "addProcessPosition," +
+                "removeProcessPosition," +
+                "swapProcessPosition," +
+                "time(msecs)," +
+                "badLoops," +
+                "nodes"
+        private const val SCREWED_EXTRACTION_STATISTICS_HEADER = "choreographyId," +
+                "minExecutionTime,maxExecutionTime,avgExecutionTime," +
+                "minNodes,maxNodes,avgNodes," +
+                "minBadLoops,maxBadLoops,avgBadLoops"
+    }
 
-        @JvmStatic
-        @BeforeAll
-        internal fun setUp() {
-            //delete all files except the ones started with CHOREOGRAPHY_PREFIX
-            cleanTestFolder(TEST_DIR, CHOREOGRAPHY_PREFIX)
+    /**
+     * for each file with choreographies
+     * 1. generate networks and write them to the file %original_file_name% networks
+     * 2. get statistics and write to the file %original_file_name% statistics
+     */
+    @Test
+    fun epp() {
+        checkOutputFolder()
+        val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
+        choreographyFiles.forEach { fileId, choreographyMap ->
+            val projectionMap = HashMap<String, Pair<Program, Network>>()
+            choreographyMap.forEach { choreographyId, choreography ->
+                println("Projecting $choreographyId in $CHOREOGRAPHY_PREFIX$fileId")
+                val program = ParseUtils.stringToProgram(choreography)
+                projectionMap[choreographyId] = Pair(program, EndPointProjection.project(program))
+            }
+            writeNetworksToFile(projectionMap, "$PROJECTION_PREFIX$fileId")
+            writeNetworkStatisticsToFile(projectionMap, "$PROJECTION_STATISTICS_PREFIX$fileId")
         }
+    }
 
-        /**
-         * for each file with choreographies
-         * 1. generate networks and write them to the file %original_file_name% networks
-         * 2. get statistics and write to the file %original_file_name% statistics
-         */
-        @Test
-        fun epp() {
-            checkOutputFolder()
-            val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
-            choreographyFiles.forEach { fileId, choreographyData ->
-                generateProjections(choreographyData, "$PROJECTION_PREFIX$fileId")
-                writeNetworkStatisticsToFile(choreographyData, "$PROJECTION_STATISTICS_PREFIX$fileId")
+    private fun writeNetworksToFile(projectionMap: Map<String, Pair<Program, Network>>, filename: String) {
+        File(OUTPUT_DIR, filename).printWriter().use { out ->
+            out.println("choreographyId,network")
+            projectionMap.forEach { id, pair -> out.println("$id, ${pair.second}") }
+        }
+    }
+
+    private fun writeNetworkStatisticsToFile(projectionMap: Map<String, Pair<Program, Network>>, filename: String) {
+        File(OUTPUT_DIR, filename).printWriter().use { out ->
+            out.println(PROJECTION_STATISTICS_HEADER)
+            projectionMap.forEach { id, pair ->
+                val networkStatistics = NetworkStatistics.compute(pair.second)
+                val choreographyStatistics = ChoreographyStatistics.compute(pair.first)
+                out.println("$id," +
+                        "${choreographyStatistics.numberOfActions}," +
+                        "${choreographyStatistics.numberOfProcesses}," +
+                        "${choreographyStatistics.numberOfProcedures}," +
+                        "${choreographyStatistics.numberOfConditionals}," +
+                        "${networkStatistics.minLengthOfProcesses}," +
+                        "${networkStatistics.maxLengthOfProcesses}," +
+                        "${networkStatistics.avgLengthOfProcesses}," +
+                        "${networkStatistics.minNumberOfProceduresInProcesses}," +
+                        "${networkStatistics.maxNumberOfProceduresInProcesses}," +
+                        "${networkStatistics.avgNumberOfProceduresInProcesses}," +
+                        "${networkStatistics.minNumberOfConditionalsInProcesses}," +
+                        "${networkStatistics.maxNumberOfConditionalsInProcesses}," +
+                        "${networkStatistics.avgNumberOfConditionalsInProcesses}," +
+                        "${networkStatistics.numberOfProcessesWithConditionals}," +
+                        "${networkStatistics.minProcedureLengthInProcesses}," +
+                        "${networkStatistics.maxProcedureLengthInProcesses}," +
+                        "${networkStatistics.avgProcedureLengthInProcesses}"
+                )
             }
         }
+    }
 
-        private fun cleanTestFolder(dirPath: String, prefix: String) {
-            val dir = File(dirPath)
-            require(dir.exists() && dir.isDirectory)
+    /* private fun cleanTestFolder(dirPath: String, prefix: String) {
+        val dir = File(dirPath)
+        require(dir.exists() && dir.isDirectory)
 
-            for (fileName in dir.list()) {
-                if (!fileName.startsWith(prefix)) {
-                    val file = File("$dirPath/$fileName")
-                    file.delete()
-                }
+        for (fileName in dir.list()) {
+            if (!fileName.startsWith(prefix)) {
+                val file = File("$dirPath/$fileName")
+                file.delete()
             }
         }
+    } */
 
-        private fun accumulateStatistics(dirPath: String, prefix: String) {
-
-            for (regex in regexes) {
-                val file = File("$dirPath/$prefix-${regex.key}")
-                file.appendText("time\tnodes\tbadloops\tlength\tprocesses\n")
-
-                val testFileNames = retrieveTestFileNames(EXTRACTION_STATISTICS_PREFIX, regex.value)
-                for (testFileName in testFileNames) {
-                    val parseStatName = parseStatName(testFileName)
-                    val length = parseStatName.length
-                    val numOfProcesses = parseStatName.numOfProcesses
-
-                    File("$dirPath/$EXTRACTION_STATISTICS_PREFIX$testFileName").forEachLine { line ->
-                        val split = line.split(",")
-                        if (isNumeric(split[1])) file.appendText("${split[1]}\t${split[2]}\t${split[3]}\t$length\t$numOfProcesses\n")
-                    }
-                }
-            }
-        }
-
-        private fun isNumeric(input: String): Boolean =
-                try {
-                    input.toDouble()
-                    true
-                } catch (e: NumberFormatException) {
-                    false
-                }
-
-        private fun retrieveTestFileNames(prefix: String = "", regex: Regex = "".toRegex()): HashSet<String> {
-            val dir = File(TEST_DIR)
-
-            val testNames = HashSet<String>()
-
-            val fix = if (prefix.isBlank()) CHOREOGRAPHY_PREFIX else prefix
-
-            for (fileName in dir.list()) {
-                if (fileName.startsWith(fix)) {
-                    val stat = fileName.removePrefix(fix)
-                    if ((regex.matches("")) || regex.matches(stat)) testNames.add(fileName.removePrefix(fix))
-                }
-            }
-
-            return testNames
-        }
-
-        @Test
-        fun extractionSoundness() {
-            val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
-            val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
-            originalChoreographies.forEach { fileId, choreographyData ->
-                choreographyData.forEach { id, choreography ->
-                    if (!bisimilar(choreography, (extractedChoreographies[fileId]!!)[id]!!)) {
-                        println("$id failed the bisimilarity check")
-                    }
-                }
-            }
-        }
-
-        /*@Test
-    fun extractionSoundnessC41() {
-        //NOTE that "10-6-0-0" doesn't contain "C41"
+    @Test
+    fun extractionSoundness() {
         val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
         val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
+        originalChoreographies.forEach { fileId, choreographyData ->
+            choreographyData.forEach { id, choreography ->
+                if (!bisimilar(choreography, (extractedChoreographies[fileId]!!)[id]!!)) {
+                    println("$id failed the bisimilarity check")
+                }
+            }
+        }
+    }
 
-        assert(bisimilar((originalChoreographies["10-6-0-0"]!!)["C41"]!!, (extractedChoreographies["10-6-0-0"]!!)["C41"]!!))
-    }*/
+    /*@Test
+fun extractionSoundnessC41() {
+    //NOTE that "10-6-0-0" doesn't contain "C41"
+    val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
+    val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
 
-        private fun parseExtractionFiles(dirPath: String, prefix: String): HashMap<String, HashMap<String, String>> {
-            val dir = File(dirPath)
-            require(dir.exists() && dir.isDirectory)
+    assert(bisimilar((originalChoreographies["10-6-0-0"]!!)["C41"]!!, (extractedChoreographies["10-6-0-0"]!!)["C41"]!!))
+}*/
 
-            val fileToChoreographyMap = HashMap<String, HashMap<String, String>>()
+    private fun parseExtractionFiles(dirPath: String, prefix: String): HashMap<String, HashMap<String, String>> {
+        val dir = File(dirPath)
+        require(dir.exists() && dir.isDirectory)
 
-            for (fileName in dir.list()) {
-                if (fileName.startsWith(prefix)) {
-                    val file = File("$dirPath/$fileName")
-                    fileToChoreographyMap[fileName.substringAfter(prefix)] = parseExtractionFile(file)
+        val fileToChoreographyMap = HashMap<String, HashMap<String, String>>()
+
+        for (fileName in dir.list()) {
+            if (fileName.startsWith(prefix)) {
+                val file = File("$dirPath/$fileName")
+                fileToChoreographyMap[fileName.substringAfter(prefix)] = parseExtractionFile(file)
+            }
+        }
+
+        return fileToChoreographyMap
+    }
+
+    private fun writeExtractionsToFile(extractionMap: Map<String, Pair<Program, Network>>, filename: String) {
+        File(OUTPUT_DIR, filename).printWriter().use { out ->
+            out.println("choreographyId,network")
+            projectionMap.forEach { id, pair -> out.println("$id, ${pair.second}") }
+        }
+    }
+
+    //@Test
+    fun extraction() {
+        checkOutputFolder()
+
+//        val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
+//        choreographyFiles.forEach { fileId, choreographyMap ->
+//            val projectionMap = HashMap<String, Pair<Program, Network>>()
+//            choreographyMap.forEach { choreographyId, choreography ->
+//                println("Projecting $choreographyId in $CHOREOGRAPHY_PREFIX$fileId")
+//                val program = ParseUtils.stringToProgram(choreography)
+//                projectionMap[choreographyId] = Pair(program, EndPointProjection.project(program))
+//            }
+//            writeNetworksToFile(projectionMap, "$PROJECTION_PREFIX$fileId")
+//            writeNetworkStatisticsToFile(projectionMap, "$PROJECTION_STATISTICS_PREFIX$fileId")
+//        }
+
+        val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
+
+        networkFiles.forEach { fileId, networkMap ->
+            val extractionMap = HashMap<String, Pair<Program, Double>>()
+            networkMap.forEach { id, network ->
+                println("Extracting $id in $PROJECTION_PREFIX$fileId")
+                val start = System.currentTimeMillis()
+                val program = Extraction.extractChoreography(Extraction.ParsedInput(network, Strategy.Default, ArrayList<String>(), true))
+                val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000 // Arrived here. We want the conversion in the printing method
+
+                extractionMap[id] = Pair( program, executionTime )
+            }
+            writeExtractionToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
+            writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX$fileId")
+
+            File(OUTPUT_DIR, "$EXTRACTION_STATISTICS_PREFIX$fileId").printWriter().use { out ->
+                out.println(EXTRACTION_STATISTICS_HEADER)
+
+                networkMap.forEach { id, network ->
+                    //value idToChoreography = HashMap<String, String>()
+
+                    val start = System.currentTimeMillis()
+                    val program = Extraction.main(arrayListOf("-c", network, "-d"))
+                    val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
+
+                    extractionMap[id] = program.choreographies.first().toString()
+
+                    if (program.choreographies.size == 1 && program.statistics.size == 1) {
+                        val statistic = program.statistics.first()
+                        val choreography = program.choreographies.first()
+                        val lengthOfProcedures = LengthOfProcedures().getLength(choreography!!)
+
+                        out.println("$id," +
+                                "$executionTime," +
+                                "${statistic.nodes}," +
+                                "${statistic.badLoops}," +
+                                "${NumberOfActions.compute(choreography)}," +
+                                "${choreography.procedures.size}," +
+                                "${lengthOfProcedures.min() ?: 0}," +
+                                "${lengthOfProcedures.max() ?: 0}," +
+                                "${lengthOfProcedures.average().toInt()}"
+                        )
+                    } else throw OperationNotSupportedException()
                 }
             }
 
-            return fileToChoreographyMap
+            File(OUTPUT_DIR, "$EXTRACTION_PREFIX$fileId").printWriter().use { out ->
+                out.println("id,body")
+                extractionMap.forEach { id, choreography -> out.println("$id,$choreography") }
+            }
         }
 
-        //@Test
-        fun choreographyExtractionStatistics() {
-            checkOutputFolder()
-            val filesWithNetworks = parseFolderWithFilesWithNetworks(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, network_body>>
+    }
 
-            filesWithNetworks.forEach { fileId, networks ->
-                val choreographies = HashMap<String, String>()
-                File(OUTPUT_DIR, "$EXTRACTION_STATISTICS_PREFIX$fileId").printWriter().use { out ->
-                    out.println("id,time(sec),nodes,badLoops,mainLength,numOfProcedures,minProcedureLength,maxProcedureLength,avgProcedureLength")
+    //@Test
+    fun screwDataStatistics() {
+        checkOutputFolder()
+        val filesWithNetworks = parseNetworkFiles(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, network_body>>
 
-                    networks.forEach { choreographyId, network ->
-                        //value idToChoreography = HashMap<String, String>()
+        filesWithNetworks.forEach { fileId, networks ->
+            val screwedExecutionStatistic = ArrayList<ScrewedExecutionStatistic>()
 
+            File(OUTPUT_DIR, "$SCREWED_PROJECTION_STATISTICS_PREFIX$fileId").printWriter().use { out ->
+                //file header
+                out.println(SCREWED_PROJECTION_STATISTICS_HEADER)
+
+                val badLoopsList = ArrayList<Int>()
+                val nodesList = ArrayList<Int>()
+                val executionTimeList = ArrayList<Double>()
+
+                networks.forEach { choreographyId, network ->
+                    //screw network
+                    val timesToScrew = 10
+                    var counter = 1
+                    val networkBody = Extraction.parseNetwork(network)
+
+                    (0..timesToScrew).forEach {
+                        val screwedId = "$choreographyId-${counter++}"
+                        val (screwedNetwork, screwedInformation) = NetworkScrewer().screwNetwork(networkBody)
+
+                        //try and fail to extract body
                         val start = System.currentTimeMillis()
                         val program = Extraction.main(arrayListOf("-c", network, "-d"))
                         val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
+                        val graphStatistic = program.statistics.first()
 
-                        choreographies[choreographyId] = program.choreographies.first().toString()
 
-                        if (program.choreographies.size == 1 && program.statistics.size == 1) {
-                            val statistic = program.statistics.first()
-                            val choreography = program.choreographies.first()
-                            val lengthOfProcedures = LengthOfProcedures().getLength(choreography!!)
+                        //collect data
+                        out.println("$choreographyId," +
+                                "$screwedId," +
+                                "$screwedNetwork," +
+                                "${screwedInformation.add}," +
+                                "${screwedInformation.remove}," +
+                                "${screwedInformation.swap}," +
+                                "${executionTime.roundToInt()}," +
+                                "${graphStatistic.badLoops}," +
+                                "${graphStatistic.nodes}"
+                        )
 
-                            out.println("$choreographyId," +
-                                    "$executionTime," +
-                                    "${statistic.nodes}," +
-                                    "${statistic.badLoops}," +
-                                    "${NumberOfActions.compute(choreography)}," +
-                                    "${choreography.procedures.size}," +
-                                    "${lengthOfProcedures.min() ?: 0}," +
-                                    "${lengthOfProcedures.max() ?: 0}," +
-                                    "${lengthOfProcedures.average().toInt()}"
-                            )
-                        } else throw OperationNotSupportedException()
+                        badLoopsList.add(graphStatistic.badLoops)
+                        nodesList.add(graphStatistic.nodes)
+                        executionTimeList.add(executionTime)
                     }
-                }
 
-                File(OUTPUT_DIR, "$EXTRACTION_PREFIX$fileId").printWriter().use { out ->
-                    out.println("id,body")
-                    choreographies.forEach { id, choreography -> out.println("$id,$choreography") }
+                    screwedExecutionStatistic.add(ScrewedExecutionStatistic(choreographyId,
+                            executionTimeList.min() ?: 0.0, executionTimeList.max()
+                            ?: 0.0, executionTimeList.average(),
+                            nodesList.min() ?: 0, nodesList.max() ?: 0, nodesList.average().toInt(),
+                            badLoopsList.min() ?: 0, badLoopsList.max() ?: 0, badLoopsList.average().toInt()
+                    ))
                 }
             }
+            File(OUTPUT_DIR, "$SCREWED_EXTRACTION_STATISTICS_PREFIX$fileId").printWriter().use { out ->
+                out.println(SCREWED_EXTRACTION_STATISTICS_HEADER)
 
-        }
-
-        //@Test
-        fun screwDataStatistics() {
-            checkOutputFolder()
-            val filesWithNetworks = parseFolderWithFilesWithNetworks(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, network_body>>
-
-            filesWithNetworks.forEach { fileId, networks ->
-                val screwedExecutionStatistic = ArrayList<ScrewedExecutionStatistic>()
-
-                File(OUTPUT_DIR, "$SCREWED_PROJECTION_STATISTICS_PREFIX$fileId").printWriter().use { out ->
-                    //file header
-                    out.println("choreographyId," +
-                            "screwedId," +
-                            "screwedNetwork," +
-                            "addProcessPosition," +
-                            "removeProcessPosition," +
-                            "swapProcessPosition," +
-                            "time(msecs)," +
-                            "badLoops," +
-                            "nodes")
-
-                    val badLoopsList = ArrayList<Int>()
-                    val nodesList = ArrayList<Int>()
-                    val executionTimeList = ArrayList<Double>()
-
-                    networks.forEach { choreographyId, network ->
-                        //screw network
-                        val timesToScrew = 10
-                        var counter = 1
-                        val networkBody = Extraction.generateNetwork(network)
-
-                        (0..timesToScrew).forEach {
-                            val screwedId = "$choreographyId-${counter++}"
-                            val (screwedNetwork, screwedInformation) = NetworkScrewer().screwNetwork(networkBody)
-
-                            //try and fail to extract body
-                            val start = System.currentTimeMillis()
-                            val program = Extraction.main(arrayListOf("-c", network, "-d"))
-                            val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
-                            val graphStatistic = program.statistics.first()
-
-
-                            //collect data
-                            out.println("$choreographyId," +
-                                    "$screwedId," +
-                                    "$screwedNetwork," +
-                                    "${screwedInformation.add}," +
-                                    "${screwedInformation.remove}," +
-                                    "${screwedInformation.swap}," +
-                                    "${executionTime.roundToInt()}," +
-                                    "${graphStatistic.badLoops}," +
-                                    "${graphStatistic.nodes}"
-                            )
-
-                            badLoopsList.add(graphStatistic.badLoops)
-                            nodesList.add(graphStatistic.nodes)
-                            executionTimeList.add(executionTime)
-                        }
-
-                        screwedExecutionStatistic.add(ScrewedExecutionStatistic(choreographyId,
-                                executionTimeList.min() ?: 0.0, executionTimeList.max()
-                                ?: 0.0, executionTimeList.average(),
-                                nodesList.min() ?: 0, nodesList.max() ?: 0, nodesList.average().toInt(),
-                                badLoopsList.min() ?: 0, badLoopsList.max() ?: 0, badLoopsList.average().toInt()
-                        ))
-                    }
-                }
-                File(OUTPUT_DIR, "$SCREWED_EXTRACTION_STATISTICS_PREFIX$fileId").printWriter().use { out ->
-                    out.println("choreographyId," +
-                            "minExecutionTime,maxExecutionTime,avgExecutionTime," +
-                            "minNodes,maxNodes,avgNodes," +
-                            "minBadLoops,maxBadLoops,avgBadLoops")
-
-                    screwedExecutionStatistic.forEach { elem ->
-                        out.println("${elem.choreographyId}," +
-                                "${elem.minExecutionTime},${elem.maxExecutionTime},${elem.avgExecutionTime.roundToInt()}," +
-                                "${elem.minNodes},${elem.maxNodes},${elem.avgNodes}," +
-                                "${elem.minBadLoops},${elem.maxBadLoops},${elem.avgBadLoops}")
-                    }
+                screwedExecutionStatistic.forEach { elem ->
+                    out.println("${elem.choreographyId}," +
+                            "${elem.minExecutionTime},${elem.maxExecutionTime},${elem.avgExecutionTime.roundToInt()}," +
+                            "${elem.minNodes},${elem.maxNodes},${elem.avgNodes}," +
+                            "${elem.minBadLoops},${elem.maxBadLoops},${elem.avgBadLoops}")
                 }
             }
         }
+    }
 
-        @Suppress("PrivatePropertyName")
-        private val OUTPUT_DIR = TEST_DIR
+    @Suppress("PrivatePropertyName")
+    private val OUTPUT_DIR = TEST_DIR
 
-        private fun checkOutputFolder() {
-            val dir = File(OUTPUT_DIR)
-            if (!dir.exists())
-                dir.mkdirs()
-            else if (!dir.isDirectory)
-                throw InternalError("$OUTPUT_DIR already exists and is not a directory")
-        }
+    private fun checkOutputFolder() {
+        val dir = File(OUTPUT_DIR)
+        if (!dir.exists())
+            dir.mkdirs()
+        else if (!dir.isDirectory)
+            throw InternalError("$OUTPUT_DIR already exists and is not a directory")
+    }
 
-        private fun parseFolderWithFilesWithNetworks(dirPath: String): HashMap<String, HashMap<String, String>> {
-            val dir = File(dirPath)
-            require(dir.exists() && dir.isDirectory)
+    private fun parseNetworkFiles(dirPath: String, prefix: String): HashMap<String, HashMap<String, String>> {
+        val dir = File(dirPath)
+        require(dir.exists() && dir.isDirectory)
 
-            val fileToNetworksMap = HashMap<String, HashMap<String, String>>()
+        val fileToNetworksMap = HashMap<String, HashMap<String, String>>()
 
-            for (fileName in dir.list()) {
-                if (fileName.startsWith(PROJECTION_PREFIX)) {
-                    val file = File("$dirPath/$fileName")
-                    fileToNetworksMap[fileName.substringAfter(PROJECTION_PREFIX)] = parseNetworkFile(file)
-                }
+        for (fileName in dir.list()) {
+            if (fileName.startsWith(prefix)) {
+                val file = File("$dirPath/$fileName")
+                fileToNetworksMap[fileName.substringAfter(prefix)] = parseNetworkFile(file)
             }
-
-            return fileToNetworksMap
         }
 
-        private fun parseNetworkFile(file: File): HashMap<String, String> {
-            val networks = HashMap<String, String>()
+        return fileToNetworksMap
+    }
 
-            file.forEachLine { line ->
-                val separator = line.indexOf(",")
-                if (separator != -1) {
-                    networks[line.substring(0, separator)] = line.substring(separator + 1)
-                }
+    private fun parseNetworkFile(file: File): HashMap<String, String> {
+        val networks = HashMap<String, String>()
+
+        file.forEachLine { line ->
+            val separator = line.indexOf(",")
+            if (separator != -1) {
+                networks[line.substring(0, separator)] = line.substring(separator + 1)
             }
-
-            networks.remove("choreographyId") //remove csv title
-
-            return networks
         }
 
+        networks.remove("choreographyId") //remove csv title
 
-        /**
-         * @input: body data: HashMap<choreography_id, choreography_body>, filename
-         */
-        private fun writeNetworkStatisticsToFile(chorData: HashMap<String, String>, filename: String) {
-            File(OUTPUT_DIR, filename).printWriter().use { out ->
-                out.println("id,numberOfActions,numberOfProcesses,numberOfProcedures,numberOfConditionals," +
-                        "minLengthOfProcesses,maxLengthOfProcesses,avgLengthOfProcesses," +
-                        "minNumberOfProceduresInProcesses,maxNumberOfProceduresInProcesses,avgNumberOfProceduresInProcesses," +
-                        "minNumberOfConditionalsInProcesses,maxNumberOfConditionalsInProcesses,avgNumberOfConditionalsInProcesses,numberOfProcessesWithConditionals," +
-                        "minProcedureLengthInProcesses,maxProcedureLengthInProcesses,avgProcedureLengthInProcesses")
-                chorData.forEach { choreographyId, choreography ->
-                    val network = EndPointProjection.project(choreography).toString()
-                    val networkStatistic = NetworkStatistics.getNetworkStatistic(network)
-                    val choreographyStatistic = ChoreographyStatistics.compute(choreography)
-                    out.println("$choreographyId," +
-                            "${choreographyStatistic.numberOfActions}," +
-                            "${choreographyStatistic.numberOfProcesses}," +
-                            "${choreographyStatistic.numberOfProcedures}," +
-                            "${choreographyStatistic.numberOfConditionals}," +
-                            "${networkStatistic.minLengthOfProcesses}," +
-                            "${networkStatistic.maxLengthOfProcesses}," +
-                            "${networkStatistic.avgLengthOfProcesses}," +
-                            "${networkStatistic.minNumberOfProceduresInProcesses}," +
-                            "${networkStatistic.maxNumberOfProceduresInProcesses}," +
-                            "${networkStatistic.avgNumberOfProceduresInProcesses}," +
-                            "${networkStatistic.minNumberOfConditionalsInProcesses}," +
-                            "${networkStatistic.maxNumberOfConditionalsInProcesses}," +
-                            "${networkStatistic.avgNumberOfConditionalsInProcesses}," +
-                            "${networkStatistic.numberOfProcessesWithConditionals}," +
-                            "${networkStatistic.minProcedureLengthInProcesses}," +
-                            "${networkStatistic.maxProcedureLengthInProcesses}," +
-                            "${networkStatistic.avgProcedureLengthInProcesses}"
-                    )
-                }
+        return networks
+    }
+
+    /**
+     * @input: dir_path
+     * @output: HashMap<file_id, HashMap<choreography_id, choreography_body>>
+     */
+    private fun parseChoreographyFiles(dirPath: String, prefix: String): HashMap<String, HashMap<String, String>> {
+        val dir = File(dirPath)
+        require(dir.exists() && dir.isDirectory)
+
+        val fileToChoreographyMap = HashMap<String, HashMap<String, String>>()
+
+        for (fileName in dir.list()) {
+            if (fileName.startsWith(prefix)) {
+                val file = File("$dirPath/$fileName")
+                fileToChoreographyMap[fileName.substringAfter(prefix)] = parseChoreographyFile(file)
             }
-
         }
 
-        private fun generateProjections(chorData: HashMap<String, String>, filename: String) {
-            File(OUTPUT_DIR, filename).printWriter().use { out ->
-                out.println("choreographyId,network")
-                chorData.forEach { choreographyId, choreography ->
-                    println("Projecting $choreographyId in $filename")
-                    val network = EndPointProjection.project(choreography)
-                    out.println("$choreographyId, $network")
+        return fileToChoreographyMap
+    }
+
+    /**
+     * @output: HashMap<choreography_id, choreography_body>>
+     */
+    private fun parseChoreographyFile(file: File): HashMap<String, String> {
+        val choreography = ArrayList<String>()
+        var name = ""
+
+        val choreographyMap = HashMap<String, String>()
+
+        file.forEachLine { line ->
+            when {
+                line.startsWith("***") -> name = line.substring(4).substringBefore("***").trim()
+                line.startsWith("def") -> choreography.add(line)
+                line.startsWith("main") -> choreography.add(line)
+                line.isEmpty() -> {
+                    choreographyMap[name] = choreography.joinToString(separator = " ")
+                    choreography.clear()
+                    name = ""
+                }
+                else -> throw ParseException("line $line was unexpected in $file", 0)
+            }
+        }
+
+        if (choreography.isNotEmpty() && name != "") {
+            choreographyMap[name] = choreography.joinToString(separator = " ")
+        }
+
+        return choreographyMap
+    }
+
+    private fun parseExtractionFile(file: File): HashMap<String, String> {
+        val choreographyMap = HashMap<String, String>()
+
+        file.forEachLine { line ->
+            when {
+                line.startsWith("id") -> {
+                }
+                else -> {
+                    val (id, choreography) = line.split(",", limit = 2)
+                    choreographyMap[id] = choreography
                 }
             }
         }
 
-        /**
-         * @input: dir_path
-         * @output: HashMap<file_id, HashMap<choreography_id, choreography_body>>
-         */
-        private fun parseChoreographyFiles(dirPath: String, prefix: String): HashMap<String, HashMap<String, String>> {
-            val dir = File(dirPath)
-            require(dir.exists() && dir.isDirectory)
+        return choreographyMap
+    }
 
-            val fileToChoreographyMap = HashMap<String, HashMap<String, String>>()
+    private fun parseStatName(name: String): StatHeader {
+        val stat = name.split("-".toRegex())
+        return StatHeader(stat[stat.size - 4], stat[stat.size - 3], stat[stat.size - 2], stat[stat.size - 1])
+    }
 
-            for (fileName in dir.list()) {
-                if (fileName.startsWith(prefix)) {
-                    val file = File("$dirPath/$fileName")
-                    fileToChoreographyMap[fileName.substringAfter(prefix)] = parseChoreographyFile(file)
+    @Test
+    fun runAllBenchmarks() {
+        epp()
+        extraction()
+        screwDataStatistics()
+    }
+
+    @Test
+    fun makeCombinedStatistics() {
+        combineStatistics("test1", "(100|[1-9]0)-6-0-0")
+//        combineStatistics("test2", "50-6-[1-5]0-0")
+//        combineStatistics("test3", "10-5-[0-5]+-[0-5]+")
+        combineStatistics("test4", "40-(5|100|[1-9][0|5])+-0-0")
+    }
+
+    private fun retrieveTestFileData(prefix: String, regexStr: String): HashMap<String, String> {
+        val dir = File(TEST_DIR)
+        val regex = regexStr.toRegex()
+
+        val data = HashMap<String, String>()
+
+        for (filename in dir.list()) {
+            if (filename.startsWith(prefix) && regex.matches(filename.removePrefix(prefix))) {
+                val lines = File("$TEST_DIR/$filename").readLines()
+                var i = 1
+                while (i < lines.size) {
+                    val split = lines[i].split(",", limit = 2)
+                    data.put(split[0], split[1])
+                    i++
                 }
             }
-
-            return fileToChoreographyMap
         }
 
-        /**
-         * @output: HashMap<choreography_id, choreography_body>>
-         */
-        private fun parseChoreographyFile(file: File): HashMap<String, String> {
-            val choreography = ArrayList<String>()
-            var name = ""
+        return data
+    }
 
-            val choreographyMap = HashMap<String, String>()
+    private fun combineStatistics(filename: String, regexStr: String) {
+        val outputFile = File("$TEST_DIR/$COMBINED_STATISTICS_PREFIX$filename")
 
-            file.forEachLine { line ->
-                when {
-                    line.startsWith("***") -> name = line.substring(4).substringBefore("***").trim()
-                    line.startsWith("def") -> choreography.add(line)
-                    line.startsWith("main") -> choreography.add(line)
-                    line.isEmpty() -> {
-                        choreographyMap[name] = choreography.joinToString(separator = " ")
-                        choreography.clear()
-                        name = ""
-                    }
-                    else -> throw ParseException("line $line was unexpected in $file", 0)
-                }
+        val statsToCombine = arrayOf(PROJECTION_STATISTICS_PREFIX, EXTRACTION_STATISTICS_PREFIX)
+        val headersToCombine = arrayOf(PROJECTION_STATISTICS_HEADER, EXTRACTION_STATISTICS_HEADER)
+
+        val bigData = HashMap<String, Map<String, String>>() // prefix -> choreography_id -> data
+        for (prefix in statsToCombine) {
+            bigData[prefix] = retrieveTestFileData(prefix, regexStr)
+        }
+
+        outputFile.printWriter().use { out ->
+            out.println("id," + headersToCombine.map { it.split(",", limit = 2)[1] }.joinToString(","))
+
+            for (key in bigData[statsToCombine[0]]!!.keys.map { Integer.parseInt(it.substring(1)) }.sorted()) {
+                val ckey = "C$key"
+                out.print("$ckey,")
+                out.println(bigData.map { it.value[ckey] }.joinToString(","))
             }
-
-            if (choreography.isNotEmpty() && name != "") {
-                choreographyMap[name] = choreography.joinToString(separator = " ")
-            }
-
-            return choreographyMap
-        }
-
-        private fun parseExtractionFile(file: File): HashMap<String, String> {
-            val choreographyMap = HashMap<String, String>()
-
-            file.forEachLine { line ->
-                when {
-                    line.startsWith("id") -> {
-                    }
-                    else -> {
-                        val (id, choreography) = line.split(",", limit = 2)
-                        choreographyMap[id] = choreography
-                    }
-                }
-            }
-
-            return choreographyMap
-        }
-
-        private fun parseStatName(name: String): StatHeader {
-            val stat = name.split("-".toRegex())
-            return StatHeader(stat[stat.size - 4], stat[stat.size - 3], stat[stat.size - 2], stat[stat.size - 1])
-        }
-
-        @Test
-        fun runAll() {
-            epp()
-            choreographyExtractionStatistics()
-            screwDataStatistics()
-            accumulateStatistics(TEST_DIR, COMBINED_STATISTICS_PREFIX)
         }
     }
 }

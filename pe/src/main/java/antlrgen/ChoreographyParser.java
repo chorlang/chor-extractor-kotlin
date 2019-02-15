@@ -1,4 +1,4 @@
-// Generated from Choreography.g4 by ANTLR 4.7.1
+// Generated from Choreography.g4 by ANTLR 4.7.2
 package antlrgen;
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class ChoreographyParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7.2", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -25,21 +25,30 @@ public class ChoreographyParser extends Parser {
 		RULE_main = 3, RULE_behaviour = 4, RULE_condition = 5, RULE_procedureInvocation = 6, 
 		RULE_interaction = 7, RULE_communication = 8, RULE_selection = 9, RULE_expression = 10, 
 		RULE_process = 11, RULE_procedure = 12;
-	public static final String[] ruleNames = {
-		"program", "body", "procedureDefinition", "main", "behaviour",
-		"condition", "procedureInvocation", "interaction", "communication", "selection", 
-		"expression", "process", "name"
-	};
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"program", "choreography", "procedureDefinition", "main", "behaviour", 
+			"condition", "procedureInvocation", "interaction", "communication", "selection", 
+			"expression", "process", "procedure"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
 
-	private static final String[] _LITERAL_NAMES = {
-		null, "'||'", "'def'", "'{'", "'}'", "'main {'", "'if'", "'.'", "'then'", 
-		"'else'", "'->'", "';'", "'['", "'];'", null, null, null, null, "'this'"
-	};
-	private static final String[] _SYMBOLIC_NAMES = {
-		null, null, null, null, null, null, null, null, null, null, null, null, 
-		null, null, "TERMINATE", "Identifier", "BooleanLiteral", "StringLiteral", 
-		"Wildcard", "WS", "INT"
-	};
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, "'||'", "'def'", "'{'", "'}'", "'main {'", "'if'", "'.'", "'then'", 
+			"'else'", "'->'", "';'", "'['", "'];'", null, null, null, null, "'this'"
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, null, null, null, null, null, null, null, null, null, null, null, 
+			null, null, "TERMINATE", "Identifier", "BooleanLiteral", "StringLiteral", 
+			"Wildcard", "WS", "INT"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
@@ -89,6 +98,7 @@ public class ChoreographyParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
+
 	public static class ProgramContext extends ParserRuleContext {
 		public List<ChoreographyContext> choreography() {
 			return getRuleContexts(ChoreographyContext.class);

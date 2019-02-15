@@ -1,6 +1,7 @@
 package util.choreographyStatistics
 
 import ast.cc.nodes.Choreography
+import ast.cc.nodes.Program
 import util.ParseUtils
 import javax.naming.OperationNotSupportedException
 
@@ -11,9 +12,7 @@ data class ChoreographyStatistics(
         val numberOfConditionals: Int
 ) {
     companion object {
-        fun compute(choreography: String): ChoreographyStatistics {
-            val program = ParseUtils.stringToProgram(choreography)
-
+        fun compute(program: Program): ChoreographyStatistics {
             val choreographyList = program.choreographies
             if (choreographyList.size == 1) {
                 return getChoreographyStatistics(choreographyList.first()!!)

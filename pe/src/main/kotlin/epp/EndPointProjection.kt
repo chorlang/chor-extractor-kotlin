@@ -1,12 +1,10 @@
 package epp
 
+import ast.cc.nodes.Program
 import ast.sp.nodes.Network
-import ast.sp.nodes.ParallelNetworks
 import ast.sp.nodes.ProcessTerm
-import org.apache.logging.log4j.LogManager
 import util.ParseUtils
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 object EndPointProjection {
@@ -14,26 +12,31 @@ object EndPointProjection {
      * @param choreography
      * @return (parallel) networks projected from the initial choreography
      */
-    fun project(choreography: String): ParallelNetworks {
+    fun project(choreography: String): Network {
         val program = ParseUtils.stringToProgram(choreography)
 
+        return project(program)
+    }
+
+    fun project(program: Program): Network {
         //project choreographies to networks
         val choreographyList = program.choreographies
-        val network = HashMap<String, ProcessTerm>()
-        val networkList = ArrayList<Network>()
+        val networkMap = HashMap<String, ProcessTerm>()
         for (chor in choreographyList) {
             for (process in chor!!.processes) {
                 try {
-                    network[process] = BehaviourProjection.project(chor, process)
+                    if (networkMap.containsKey(process))
+                        throw InputMismatchException("Parallel choreographies cannot share processes (process $process)")
+
+                    networkMap[process] = BehaviourProjection.project(chor, process)
                 } catch (e: Merging.MergingException) {
                     val newE = Merging.MergingException("Process $process ${e.message!!}")
                     newE.stackTrace = e.stackTrace
                     throw newE
                 }
             }
-            networkList.add(Network(network))
         }
-        return ParallelNetworks(networkList)
+        return Network(networkMap)
     }
 
 /*

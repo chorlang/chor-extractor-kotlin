@@ -5,7 +5,6 @@ import CommonLexerRules;
     package antlrgen;
 }
 
-parallelNetworks: network ('||' network)*;
 network: process processBehaviour ('|' process processBehaviour)*;
 
 processBehaviour : '{' ('def' procedure procedureDefinition)* 'main' '{' behaviour '}' '}'

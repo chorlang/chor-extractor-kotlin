@@ -1,4 +1,4 @@
-// Generated from Network.g4 by ANTLR 4.7.1
+// Generated from Network.g4 by ANTLR 4.7.2
 
     package antlrgen;
 
@@ -13,18 +13,6 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class NetworkBaseListener implements NetworkListener {
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterParallelNetworks(NetworkParser.ParallelNetworksContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitParallelNetworks(NetworkParser.ParallelNetworksContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

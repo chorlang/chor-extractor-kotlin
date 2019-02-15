@@ -1,4 +1,4 @@
-// Generated from Network.g4 by ANTLR 4.7.1
+// Generated from Network.g4 by ANTLR 4.7.2
 
     package antlrgen;
 
@@ -12,12 +12,6 @@ import org.antlr.v4.runtime.tree.ParseTreeVisitor;
  * operations with no return type.
  */
 public interface NetworkVisitor<T> extends ParseTreeVisitor<T> {
-	/**
-	 * Visit a parse tree produced by {@link NetworkParser#parallelNetworks}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitParallelNetworks(NetworkParser.ParallelNetworksContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link NetworkParser#network}.
 	 * @param ctx the parse tree

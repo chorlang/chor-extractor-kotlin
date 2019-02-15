@@ -1,4 +1,4 @@
-// Generated from CommonLexerRules.g4 by ANTLR 4.7.1
+// Generated from CommonLexerRules.g4 by ANTLR 4.7.2
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 @SuppressWarnings({"all", "warnings", "unchecked", "unused", "cast"})
 public class CommonLexerRulesParser extends Parser {
-	static { RuntimeMetaData.checkVersion("4.7.1", RuntimeMetaData.VERSION); }
+	static { RuntimeMetaData.checkVersion("4.7.2", RuntimeMetaData.VERSION); }
 
 	protected static final DFA[] _decisionToDFA;
 	protected static final PredictionContextCache _sharedContextCache =
@@ -19,17 +19,26 @@ public class CommonLexerRulesParser extends Parser {
 		Identifier=1, BooleanLiteral=2, StringLiteral=3, Wildcard=4, WS=5, INT=6;
 	public static final int
 		RULE_process = 0, RULE_procedure = 1;
-	public static final String[] ruleNames = {
-		"process", "name"
-	};
+	private static String[] makeRuleNames() {
+		return new String[] {
+			"process", "procedure"
+		};
+	}
+	public static final String[] ruleNames = makeRuleNames();
 
-	private static final String[] _LITERAL_NAMES = {
-		null, null, null, null, "'this'"
-	};
-	private static final String[] _SYMBOLIC_NAMES = {
-		null, "Identifier", "BooleanLiteral", "StringLiteral", "Wildcard", "WS", 
-		"INT"
-	};
+	private static String[] makeLiteralNames() {
+		return new String[] {
+			null, null, null, null, "'this'"
+		};
+	}
+	private static final String[] _LITERAL_NAMES = makeLiteralNames();
+	private static String[] makeSymbolicNames() {
+		return new String[] {
+			null, "Identifier", "BooleanLiteral", "StringLiteral", "Wildcard", "WS", 
+			"INT"
+		};
+	}
+	private static final String[] _SYMBOLIC_NAMES = makeSymbolicNames();
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
 	/**
@@ -79,6 +88,7 @@ public class CommonLexerRulesParser extends Parser {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
 	}
+
 	public static class ProcessContext extends ParserRuleContext {
 		public TerminalNode Identifier() { return getToken(CommonLexerRulesParser.Identifier, 0); }
 		public ProcessContext(ParserRuleContext parent, int invokingState) {

@@ -9,12 +9,6 @@ import ast.sp.nodes.*
 import org.antlr.v4.runtime.tree.TerminalNode
 
 class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
-    override fun visitParallelNetworks(ctx: ParallelNetworksContext): SPNode {
-        val networksList = ArrayList<Network>()
-        ctx.network().mapTo(networksList) { visit(it) as Network }
-        return ParallelNetworks(networksList)
-    }
-
     override fun visitNetwork(ctx: NetworkParser.NetworkContext): SPNode {
         val network = HashMap<String, ProcessTerm>()
         for (i in 0 until ctx.processBehaviour().size) {
