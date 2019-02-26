@@ -36,13 +36,13 @@ class Benchmarks {
         private const val SCREWED_EXTRACTION_STATISTICS_PREFIX = "stats-screwed-extraction-"
         private const val COMBINED_STATISTICS_PREFIX = "stats-"
 
-        private const val PROJECTION_STATISTICS_HEADER = "id,numberOfActions,numberOfProcesses,numberOfProcedures,numberOfConditionals," +
+        private const val PROJECTION_STATISTICS_HEADER = "testId,numberOfActions,numberOfProcesses,numberOfProcedures,numberOfConditionals," +
                 "minLengthOfProcesses,maxLengthOfProcesses,avgLengthOfProcesses," +
                 "minNumberOfProceduresInProcesses,maxNumberOfProceduresInProcesses,avgNumberOfProceduresInProcesses," +
                 "minNumberOfConditionalsInProcesses,maxNumberOfConditionalsInProcesses,avgNumberOfConditionalsInProcesses,numberOfProcessesWithConditionals," +
                 "minProcedureLengthInProcesses,maxProcedureLengthInProcesses,avgProcedureLengthInProcesses"
-        private const val EXTRACTION_STATISTICS_HEADER = "id,time(sec),nodes,badLoops,mainLength,numOfProcedures,minProcedureLength,maxProcedureLength,avgProcedureLength"
-        private const val SCREWED_PROJECTION_STATISTICS_HEADER = "choreographyId," +
+        private const val EXTRACTION_STATISTICS_HEADER = "testId,time(sec),nodes,badLoops,mainLength,numOfProcedures,minProcedureLength,maxProcedureLength,avgProcedureLength"
+        private const val SCREWED_PROJECTION_STATISTICS_HEADER = "testId," +
                 "screwedId," +
                 "screwedNetwork," +
                 "addProcessPosition," +
@@ -51,7 +51,7 @@ class Benchmarks {
                 "time(msecs)," +
                 "badLoops," +
                 "nodes"
-        private const val SCREWED_EXTRACTION_STATISTICS_HEADER = "choreographyId," +
+        private const val SCREWED_EXTRACTION_STATISTICS_HEADER = "testId," +
                 "minExecutionTime,maxExecutionTime,avgExecutionTime," +
                 "minNodes,maxNodes,avgNodes," +
                 "minBadLoops,maxBadLoops,avgBadLoops"
@@ -80,7 +80,7 @@ class Benchmarks {
 
     private fun writeNetworksToFile(projectionMap: Map<String, Pair<Program, Network>>, filename: String) {
         File(OUTPUT_DIR, filename).printWriter().use { out ->
-            out.println("choreographyId,network")
+            out.println("testId,network")
             projectionMap.forEach { id, pair -> out.println("$id, ${pair.second}") }
         }
     }
@@ -164,87 +164,63 @@ fun extractionSoundnessC41() {
         return fileToChoreographyMap
     }
 
-    private fun writeExtractionsToFile(extractionMap: Map<String, Pair<Program, Network>>, filename: String) {
+    private fun writeExtractionsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String) {
         File(OUTPUT_DIR, filename).printWriter().use { out ->
-            out.println("choreographyId,network")
-            projectionMap.forEach { id, pair -> out.println("$id, ${pair.second}") }
+            out.println("testId,choreography")
+            extractionMap.forEach { id, pair -> out.println("$id, ${pair.first}") }
         }
     }
 
-    //@Test
+    private fun writeExtractionStatisticsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String) {
+        File(OUTPUT_DIR, filename).printWriter().use { out ->
+            out.println(EXTRACTION_STATISTICS_HEADER)
+            extractionMap.forEach { id, pair ->
+                val program = pair.first
+                if (program.choreographies.size == 1 && program.statistics.size == 1) {
+                    val statistic = program.statistics.first()
+                    val choreography = program.choreographies.first()
+                    val lengthOfProcedures = LengthOfProcedures().getLength(choreography!!)
+
+                    out.println("$id," +
+                            "${pair.second.toDouble() / 1000}," +
+                            "${statistic.nodes}," +
+                            "${statistic.badLoops}," +
+                            "${NumberOfActions.compute(choreography)}," +
+                            "${choreography.procedures.size}," +
+                            "${lengthOfProcedures.min() ?: 0}," +
+                            "${lengthOfProcedures.max() ?: 0}," +
+                            "${lengthOfProcedures.average().toInt()}"
+                    )
+                } else throw OperationNotSupportedException()
+            }
+        }
+    }
+
+    @Test
     fun extraction() {
         checkOutputFolder()
-
-//        val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
-//        choreographyFiles.forEach { fileId, choreographyMap ->
-//            val projectionMap = HashMap<String, Pair<Program, Network>>()
-//            choreographyMap.forEach { choreographyId, choreography ->
-//                println("Projecting $choreographyId in $CHOREOGRAPHY_PREFIX$fileId")
-//                val program = ParseUtils.stringToProgram(choreography)
-//                projectionMap[choreographyId] = Pair(program, EndPointProjection.project(program))
-//            }
-//            writeNetworksToFile(projectionMap, "$PROJECTION_PREFIX$fileId")
-//            writeNetworkStatisticsToFile(projectionMap, "$PROJECTION_STATISTICS_PREFIX$fileId")
-//        }
 
         val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
 
         networkFiles.forEach { fileId, networkMap ->
-            val extractionMap = HashMap<String, Pair<Program, Double>>()
+            val extractionMap = HashMap<String, Pair<Program, Long>>()
             networkMap.forEach { id, network ->
-                println("Extracting $id in $PROJECTION_PREFIX$fileId")
+                println("Extracting $id from $PROJECTION_PREFIX$fileId")
                 val start = System.currentTimeMillis()
                 val program = Extraction.extractChoreography(Extraction.ParsedInput(network, Strategy.Default, ArrayList<String>(), true))
-                val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000 // Arrived here. We want the conversion in the printing method
+                val executionTime = System.currentTimeMillis() - start
 
                 extractionMap[id] = Pair( program, executionTime )
             }
-            writeExtractionToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
+            writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
             writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX$fileId")
-
-            File(OUTPUT_DIR, "$EXTRACTION_STATISTICS_PREFIX$fileId").printWriter().use { out ->
-                out.println(EXTRACTION_STATISTICS_HEADER)
-
-                networkMap.forEach { id, network ->
-                    //value idToChoreography = HashMap<String, String>()
-
-                    val start = System.currentTimeMillis()
-                    val program = Extraction.main(arrayListOf("-c", network, "-d"))
-                    val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
-
-                    extractionMap[id] = program.choreographies.first().toString()
-
-                    if (program.choreographies.size == 1 && program.statistics.size == 1) {
-                        val statistic = program.statistics.first()
-                        val choreography = program.choreographies.first()
-                        val lengthOfProcedures = LengthOfProcedures().getLength(choreography!!)
-
-                        out.println("$id," +
-                                "$executionTime," +
-                                "${statistic.nodes}," +
-                                "${statistic.badLoops}," +
-                                "${NumberOfActions.compute(choreography)}," +
-                                "${choreography.procedures.size}," +
-                                "${lengthOfProcedures.min() ?: 0}," +
-                                "${lengthOfProcedures.max() ?: 0}," +
-                                "${lengthOfProcedures.average().toInt()}"
-                        )
-                    } else throw OperationNotSupportedException()
-                }
-            }
-
-            File(OUTPUT_DIR, "$EXTRACTION_PREFIX$fileId").printWriter().use { out ->
-                out.println("id,body")
-                extractionMap.forEach { id, choreography -> out.println("$id,$choreography") }
-            }
         }
-
     }
 
     //@Test
     fun screwDataStatistics() {
         checkOutputFolder()
-        val filesWithNetworks = parseNetworkFiles(OUTPUT_DIR) //HashMap<filename, HashMap<choreography_id, network_body>>
+        val filesWithNetworks = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) //HashMap<filename, HashMap<choreography_id, network_body>>
 
         filesWithNetworks.forEach { fileId, networks ->
             val screwedExecutionStatistic = ArrayList<ScrewedExecutionStatistic>()
@@ -349,7 +325,7 @@ fun extractionSoundnessC41() {
             }
         }
 
-        networks.remove("choreographyId") //remove csv title
+        networks.remove("testId") //remove csv title
 
         return networks
     }
