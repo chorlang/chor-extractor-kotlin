@@ -69,7 +69,7 @@ public class TestGenerator {
             throws IOException, GeneratorException {
 
         // standard filename
-        String testFileName = "network-" + length + "-" + numProcesses + "-" + numIfs + "-" + numProcedures;
+        String testFileName = "choreography-" + length + "-" + numProcesses + "-" + numIfs + "-" + numProcedures;
         logFile.write("Generating file " + testFileName);
         logFile.newLine();
 
@@ -147,23 +147,23 @@ public class TestGenerator {
 
         niceWrite(logFile, "Test 1: communications only, increasing lengths");
         for (int i = 10; i <= 100; i += 10)
-            makeALotOfTests(i, 6, 0, 0, logFile);
+            makeALotOfTestsWithSeed(0L,i, 6, 0, 0, logFile);
         logFile.newLine();
 
         niceWrite(logFile, "Test 2: communications and ifs, fixed length, increasing number of ifs");
         for (int i = 10; i <= 50; i += 10)
-            makeALotOfTests(50, 6, i, 0, logFile);
+            makeALotOfTestsWithSeed(0L,50, 6, i, 0, logFile);
         logFile.newLine();
 
         niceWrite(logFile, "Test 3: inserting recursion; two varying parameters - #ifs and #procs");
         for (int i = 0; i <= 5; i++)
             for (int j = 0; j <= 5; j++)
-                makeALotOfTests(10, 5, i, j, logFile);
+                makeALotOfTestsWithSeed(0L,10, 5, i, j, logFile);
         logFile.newLine();
 
         niceWrite(logFile, "Test 4: communications only, fixed length, increasing number of processesInChoreography");
         for (int i = 5; i <= 100; i += 5)
-            makeALotOfTests(40, i, 0, 0, logFile);
+            makeALotOfTestsWithSeed(0L,40, i, 0, 0, logFile);
         logFile.newLine();
 
         niceWrite(logFile, "Generated " + generatedTests + " tests, of which " + badTests + " contain dead code.");

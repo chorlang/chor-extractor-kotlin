@@ -204,17 +204,19 @@ fun extractionSoundnessC41() {
         val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
 
         networkFiles.forEach { fileId, networkMap ->
-            val extractionMap = HashMap<String, Pair<Program, Long>>()
-            networkMap.forEach { id, network ->
-                println("Extracting $id from $PROJECTION_PREFIX$fileId")
-                val start = System.currentTimeMillis()
-                val program = Extraction.extractChoreography(Extraction.ParsedInput(network, Strategy.Default, ArrayList<String>(), true))
-                val executionTime = System.currentTimeMillis() - start
+            if ( fileId == "10-5-4-3" ) {
+                val extractionMap = HashMap<String, Pair<Program, Long>>()
+                networkMap.forEach { id, network ->
+                    println("Extracting $id from $PROJECTION_PREFIX$fileId")
+                    val start = System.currentTimeMillis()
+                    val program = Extraction.extractChoreography(Extraction.ParsedInput(network, Strategy.Default, ArrayList<String>(), true))
+                    val executionTime = System.currentTimeMillis() - start
 
-                extractionMap[id] = Pair( program, executionTime )
+                    extractionMap[id] = Pair(program, executionTime)
+                }
+                writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
+                writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX$fileId")
             }
-            writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
-            writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX$fileId")
         }
     }
 
