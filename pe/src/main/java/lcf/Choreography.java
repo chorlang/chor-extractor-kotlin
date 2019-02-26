@@ -87,7 +87,7 @@ public class Choreography {
             for (String name:keys)
                 usedProcesses.put(name,auxUsedProcesses.get(name));
             for (String name:keys) {
-                HashSet<String> processSet = usedProcesses.get(name);
+                HashSet<String> processSet = new HashSet<String>(usedProcesses.get(name));
                 for (String called:calls.get(name))
                     processSet.addAll(usedProcesses.get(called));
                 auxUsedProcesses.put(name,processSet);

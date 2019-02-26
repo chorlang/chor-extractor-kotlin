@@ -80,9 +80,11 @@ class BehaviourProjection private constructor(private val processName:String, pr
             val procedureProjections = HashMap<String, Behaviour>()
             for (procedure in choreography.procedures) {
                 try {
-                    procedureProjections[procedure.name] = project(procedure.body, processName, usedProcesses)
+                    if ( usedProcesses[procedure.name]!!.contains(processName) ) {
+                        procedureProjections[procedure.name] = project(procedure.body, processName, usedProcesses)
+                    }
                 } catch( e:Merging.MergingException ) {
-                    val newException = Merging.MergingException( "(name ${procedure.name}): ${e.message!!}" )
+                    val newException = Merging.MergingException( "(procedure ${procedure.name}): ${e.message!!}" )
                     newException.stackTrace = e.stackTrace
                     throw newException
                 }

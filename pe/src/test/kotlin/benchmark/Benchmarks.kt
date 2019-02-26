@@ -17,6 +17,7 @@ import java.text.ParseException
 import javax.naming.OperationNotSupportedException
 import kotlin.math.roundToInt
 
+// TODO Still have to go through the screwing
 class Benchmarks {
     data class StatHeader(val length: String, val numOfProcesses: String, val numOfCondition: String, val numOfProcedures: String)
 
@@ -412,8 +413,8 @@ fun extractionSoundnessC41() {
     @Test
     fun makeCombinedStatistics() {
         combineStatistics("test1", "(100|[1-9]0)-6-0-0")
-//        combineStatistics("test2", "50-6-[1-5]0-0")
-//        combineStatistics("test3", "10-5-[0-5]+-[0-5]+")
+        combineStatistics("test2", "50-6-[1-5]0-0")
+        combineStatistics("test3", "10-5-[0-5]+-[0-5]+")
         combineStatistics("test4", "40-(5|100|[1-9][0|5])+-0-0")
     }
 
