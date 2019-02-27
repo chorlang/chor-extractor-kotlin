@@ -11,7 +11,7 @@ import ast.sp.labels.ExtractionLabel.ConditionLabel.ThenLabel
 import ast.sp.labels.ExtractionLabel.InteractionLabel.SelectionLabel
 import ast.sp.labels.ExtractionLabel.InteractionLabel.SendingLabel
 import ast.sp.nodes.*
-import org.jgrapht.graph.DefaultDirectedGraph
+import org.jgrapht.graph.DirectedPseudograph
 
 typealias ProcessMap = HashMap<String, ProcessTerm>
 typealias GraphNode = Pair<Network, InteractionLabel>
@@ -45,7 +45,7 @@ class NetworkExtraction {
      */
     @Suppress("UNCHECKED_CAST")
     private fun extract(n: Network, strategy: Strategy, livelocked: ArrayList<String>): Pair<Choreography?, GraphStatistics> {
-        val graph = DefaultDirectedGraph<Node, ExtractionLabel>(ExtractionLabel::class.java)
+        val graph = DirectedPseudograph<Node, ExtractionLabel>(ExtractionLabel::class.java)
         val marking = HashMap<ProcessName, Boolean>()
 
         //we mark as visited processesInChoreography which has no active actions in the main name or which are in the list of livelocked processesInChoreography
@@ -56,29 +56,28 @@ class NetworkExtraction {
         addToChoicePathMap(node)
         addToHashMap(node)
 
-        return if (buildGraph(node, graph as DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy)) {
-            val unrolledGraphNodesList = unrollGraph(node, graph as DefaultDirectedGraph<Node, ExtractionLabel>)
+        return if (buildGraph(node, graph as DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy)) {
+            val unrolledGraphNodesList = unrollGraph(node, graph as DirectedPseudograph<Node, ExtractionLabel>)
             Pair(buildChoreography(node, unrolledGraphNodesList, graph), GraphStatistics(graph.vertexSet().size, badLoopCnt))
         } else {
             Pair(null, GraphStatistics(graph.vertexSet().size, badLoopCnt))
         }
     }
 
-    private fun buildCommunication(findCommunication: GraphNode, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
+    private fun buildCommunication(findCommunication: GraphNode, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         val (targetNetwork, label) = findCommunication
 
         //remove processesInChoreography that were unfoldedProcesses but don't participate in the current communication
         @Suppress("UNCHECKED_CAST")
         val targetMarking = currentNode.marking.clone() as Marking
 
-        /* TODO find out what the hell is going on here */
-        magicFunction(targetMarking, label.receiver, unfoldedProcesses)
-        magicFunction(targetMarking, label.sender, unfoldedProcesses)
+        markProcess(targetMarking, label.receiver, unfoldedProcesses)
+        markProcess(targetMarking, label.sender, unfoldedProcesses)
 
         // revert unfolding all processesInChoreography not involved in the communication
         revertUnfolding(unfoldedProcesses, targetNetwork, currentNode)
 
-        //if all procedures were visited, flip all markings
+        //if all processes were "fired", flip all markings
         if (targetMarking.values.all { it }) flipAndWash(label, targetMarking, targetNetwork)
 
         //check if the eta with the same network and markings already exists in the graph
@@ -99,15 +98,15 @@ class NetworkExtraction {
         else addEdgeToGraph(currentNode, node, label, graph)
     }
 
-    private fun magicFunction(targetMarking: Marking, label: String, unfoldedProcesses: HashSet<String>) {
-        targetMarking[label] = true
-        unfoldedProcesses.remove(label)
+    private fun markProcess(targetMarking: Marking, processName: String, unfoldedProcesses: HashSet<String>) {
+        targetMarking[processName] = true
+        unfoldedProcesses.remove(processName)
     }
 
     private fun revertUnfolding(unfoldedProcesses: HashSet<String>, targetNetwork: Network, currentNode: ConcreteNode) = unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
 
 
-    private fun buildGraph(currentNode: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
+    private fun buildGraph(currentNode: ConcreteNode, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         val unfoldedProcesses = HashSet<String>()
         val processes = copyAndSortProcesses(currentNode, strategy)
 
@@ -152,15 +151,15 @@ class NetworkExtraction {
 
         }
 
-        System.err.println("No possible actions at eta $currentNode")
+        //System.err.println("No possible actions at eta $currentNode")
         return false
     }
 
-    private fun buildCondition(condition: ResultCondition, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
+    private fun buildCondition(condition: ResultCondition, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         val (targetNetworkThen, labelThen, targetNetworkElse, labelElse) = condition
         val targetMarking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
 
-        if (unfoldedProcesses.contains(labelThen.process)) magicFunction(targetMarking, labelThen.process, unfoldedProcesses)
+        if (unfoldedProcesses.contains(labelThen.process)) markProcess(targetMarking, labelThen.process, unfoldedProcesses)
 
         revertUnfolding(unfoldedProcesses, targetNetworkThen, currentNode)
         revertUnfolding(unfoldedProcesses, targetNetworkElse, currentNode)
@@ -257,7 +256,7 @@ class NetworkExtraction {
         }
     }
 
-    private fun buildMulticom(actions: ArrayList<InteractionLabel>, currentNode: ConcreteNode, processesCopy: HashMap<String, ProcessTerm>, unfoldedProcesses: HashSet<String>, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
+    private fun buildMulticom(actions: ArrayList<InteractionLabel>, currentNode: ConcreteNode, processesCopy: HashMap<String, ProcessTerm>, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy: Strategy): Boolean {
         val label = MulticomLabel(actions)
 
         @Suppress("UNCHECKED_CAST")
@@ -266,8 +265,8 @@ class NetworkExtraction {
 
         //fold back unfoldedProcesses procedures that were not participating in communication
         label.labels.forEach {
-            magicFunction(targetMarking, it.receiver, unfoldedProcesses)
-            magicFunction(targetMarking, it.sender, unfoldedProcesses)
+            markProcess(targetMarking, it.receiver, unfoldedProcesses)
+            markProcess(targetMarking, it.sender, unfoldedProcesses)
         }
 
         revertUnfolding(unfoldedProcesses, targetNetwork, currentNode)
@@ -294,12 +293,17 @@ class NetworkExtraction {
         return existingNodes?.firstOrNull { it.network == targetNetwork && it.marking == targetMarking }
     }
 
+    /***
+     * if all processes in the target node were already exploited we need to set it to the initial state
+     * we mark the label between the source and target node as it was "flipped" and
+     * we wash all previous markings from the target node
+     */
     private fun flipAndWash(label: ExtractionLabel, targetMarking: Marking, targetNetwork: Network) {
         label.flipped = true
         wash(targetMarking, targetNetwork.processes)
     }
 
-    private fun unrollGraph(root: ConcreteNode, graph: DefaultDirectedGraph<Node, ExtractionLabel>): ArrayList<FakeNode> {
+    private fun unrollGraph(root: ConcreteNode, graph: DirectedPseudograph<Node, ExtractionLabel>): ArrayList<FakeNode> {
         val fakeNodesList = ArrayList<FakeNode>()
 
         var count = 1
@@ -328,7 +332,7 @@ class NetworkExtraction {
         return fakeNodesList
     }
 
-    private fun buildChoreography(root: Node, fakeNodesList: ArrayList<FakeNode>, graph: DefaultDirectedGraph<Node, ExtractionLabel>): Choreography {
+    private fun buildChoreography(root: Node, fakeNodesList: ArrayList<FakeNode>, graph: DirectedPseudograph<Node, ExtractionLabel>): Choreography {
         val main = bh(root, graph, fakeNodesList)
         val procedures = ArrayList<ProcedureDefinition>()
         for (fk in fakeNodesList) {
@@ -338,7 +342,7 @@ class NetworkExtraction {
         return Choreography(main, procedures)
     }
 
-    private fun bh(node: Node, graph: DefaultDirectedGraph<Node, ExtractionLabel>, fakeNodesList: ArrayList<FakeNode>): ChoreographyBody {
+    private fun bh(node: Node, graph: DirectedPseudograph<Node, ExtractionLabel>, fakeNodesList: ArrayList<FakeNode>): ChoreographyBody {
         val edges = graph.outgoingEdgesOf(node)
 
         when (edges.size) {
@@ -373,7 +377,7 @@ class NetworkExtraction {
                     }
 
                     is ConditionLabel -> {
-                        TODO()
+                        TODO("Something very wrong has just happened, the universe should be collapsed by now")
                     }
                 }
             }
@@ -409,6 +413,10 @@ class NetworkExtraction {
         } else false
     }
 
+    /***
+     * if the process is not terminated yet and not in the list of the livelocked processess
+     * we mark it as false meaning that it wasn't "fired" yet
+     */
     private fun wash(marking: HashMap<ProcessName, Boolean>, processes: ProcessMap) {
         for (key in marking.keys) {
             marking[key] = processes[key]!!.main is TerminationSP || livelocked.contains(key)
@@ -578,7 +586,7 @@ class NetworkExtraction {
         }
     }
 
-    private fun addNodeAndEdgeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun addNodeAndEdgeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
         //check if we can add a new eta and an edge
         return if (graph.addVertex(newNode) && graph.addEdge(currentNode, newNode, label)) {
             addToChoicePathMap(newNode)
@@ -587,28 +595,23 @@ class NetworkExtraction {
         } else false
     }
 
-    private fun removeNodeFromGraph(graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, removingNode: ConcreteNode) {
+    private fun removeNodeFromGraph(graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, removingNode: ConcreteNode) {
         graph.removeVertex(removingNode)
         removeFromHashMap(removingNode)
         removeFromChoicePathMap(removingNode)
     }
 
-    private fun addEdgeToGraph(nn: ConcreteNode, newnode: ConcreteNode, lbl: ExtractionLabel, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
-        if (checkPrefix(newnode)) {
-            val l = checkLoop(nn, newnode, lbl, graph)
-            if (l) {
-                assert(graph.addEdge(nn, newnode, lbl))
-                assert(graph.edgeSet().contains(lbl))
-                return true
-            }
-        }
+    private fun addEdgeToGraph(sourceNode: ConcreteNode, targetNode: ConcreteNode, lbl: ExtractionLabel, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
+        if (checkPrefix(targetNode) && checkLoop(sourceNode, targetNode, lbl, graph))
+            return graph.addEdge(sourceNode, targetNode, lbl)
+
         badLoopCnt++
         return false
     }
     //endregion
 
     //region Checkloop and choicePaths manipulations
-    private fun checkLoop(source_node: ConcreteNode, target_node: ConcreteNode, lbl: ExtractionLabel, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun checkLoop(source_node: ConcreteNode, target_node: ConcreteNode, lbl: ExtractionLabel, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
         if (lbl.flipped) return true
 
         if (target_node.equals(source_node)) return false
@@ -627,7 +630,7 @@ class NetworkExtraction {
 
     }
 
-    private fun recompute(n: ConcreteNode, graph: DefaultDirectedGraph<ConcreteNode, ExtractionLabel>, tomark: HashSet<ConcreteNode>): HashSet<ConcreteNode> {
+    private fun recompute(n: ConcreteNode, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, tomark: HashSet<ConcreteNode>): HashSet<ConcreteNode> {
         val edges = graph.outgoingEdgesOf(n)
         for (e in edges) {
             if (!e.flipped) {
