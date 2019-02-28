@@ -1,14 +1,25 @@
-package extraction
+package util
 
 import antlrgen.NetworkBaseVisitor
 import antlrgen.NetworkParser
 import antlrgen.NetworkParser.*
+import ast.cc.interfaces.CCNode
+import ast.cc.nodes.Program
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
+import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
 
-class NetworkVisitor : NetworkBaseVisitor<SPNode>() {
+class NetworkASTToNetwork : NetworkBaseVisitor<SPNode>() {
+    companion object {
+        fun toNetwork(parseTree: NetworkParser.NetworkContext): Network = NetworkASTToNetwork().getNetwork(parseTree) as Network
+    }
+
+    fun getNetwork(parseTree: NetworkParser.NetworkContext): SPNode {
+        return this.visit(parseTree)
+    }
+
     override fun visitNetwork(ctx: NetworkParser.NetworkContext): SPNode {
         val network = HashMap<String, ProcessTerm>()
         for (i in 0 until ctx.processBehaviour().size) {

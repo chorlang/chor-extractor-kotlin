@@ -12,6 +12,7 @@ import ast.sp.labels.ExtractionLabel.MulticomLabel
 import ast.sp.nodes.ProcedureName
 import util.ChoreographyASTToProgram
 import util.ParseUtils.parseChoreography
+import util.choreographyStatistics.NumberOfActions
 
 fun bisimilar( c1:String, c2:String ):Boolean
 {
@@ -67,18 +68,24 @@ fun similar(c1:Choreography, c2:Choreography):Boolean
 
     while( todo.isNotEmpty() ) {
         val (one, two) = todo.removeAt(0)
+        println("Getting actions")
         val actionsWithContinuations = getActionsWithContinuations(one, c1.procedures)
         for( (action1, continuation1) in actionsWithContinuations ) {
+            println("getting continuation ${two.toString().length}")
             val continuation2 = getContinuation( two, action1, c2.procedures )
             if ( continuation2 == null ) {
                 println( "Could not match $action1 with continuation $two" )
                 return false
             } else {
                 if( !done.contains( Pair(continuation1,continuation2) ) && !todo.contains( Pair(continuation1, continuation2) ) ) {
+//                    System.out.println( "TODO $continuation1, $continuation2 (size of todo: ${todo.size}, size of done: ${done.size})" )
+                    System.out.println( "TODO (size of todo: ${todo.size}, size of done: ${done.size})" )
                     todo.add( Pair( continuation1, continuation2 ) )
                 }
             }
         }
+//        System.out.println( "DONE $one, $two (size of todo: ${todo.size}, size of done: ${done.size})" )
+        System.out.println( "DONE (size of todo: ${todo.size}, size of done: ${done.size})" )
         done.add( Pair( one, two ) )
     }
 

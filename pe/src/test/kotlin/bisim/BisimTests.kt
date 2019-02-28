@@ -304,6 +304,24 @@ class BisimTests{
         assert( bisimilar(c1,c2) )
     }
 
+    @Test
+    fun C171()
+    {
+        val C171orig = "def H { s.m4 -> n; j.m5 -> x; x -> j[l3]; v.m6 -> s; s -> v[l4]; H } main { j.m1 -> v; j.m2 -> s; v -> n[l1]; v -> s[l2]; v.m3 -> s; H }"
+        val C171extracted = "def X1 { s.m4->n; j.m5->x; x->j[l3]; v.m6->s; s->v[l4]; X1 } main {j.m1->v; v->n[l1]; j.m2->s; v->s[l2]; v.m3->s; j.m5->x; x->j[l3]; j.m5->x; s.m4->n; x->j[l3]; v.m6->s; s->v[l4]; j.m5->x; x->j[l3]; X1}"
+        assert( bisimilar(C171orig, C171extracted) )
+    }
+
+    @Test
+    fun C1998()
+    {
+        val orig = "def H { v.m2 -> s; v -> n[l2]; if x.c4 then n -> v[l3]; s -> j[l4]; H else n -> v[l3]; s -> j[l4]; H }\n" +
+                "main { if v.c1 then if j.c2 then j -> n[L]; j -> x[L]; j -> v[L]; j -> s[L]; v -> n[L]; v -> j[L]; v -> x[L]; v -> s[L]; n.m1 -> x; if n.c3 then H else H else j -> n[R]; j -> x[R]; j -> v[R]; j -> s[R]; v -> n[L]; v -> j[L]; v -> x[L]; v -> s[L]; n.m1 -> x; if n.c3 then H else H else if j.c2 then j -> n[L]; j -> x[L]; j -> v[L]; j -> s[L]; v -> n[R]; v -> j[R]; v -> x[R]; v -> s[R]; n -> v[l1]; 0 else j -> n[R]; j -> x[R]; j -> v[R]; j -> s[R]; v -> n[R]; v -> j[R]; v -> x[R]; v -> s[R]; n -> v[l1]; 0 }"
+        val extracted = "def X1 { s->j[l4]; if x.c4 then if x.c4 then v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X1 else v.m2->s; X1 else v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X1 else v.m2->s; X1 else if x.c4 then v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X1 else v.m2->s; X1 else v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X1 else v.m2->s; X1 } def X2 { s->j[l4]; if x.c4 then if x.c4 then v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X2 else v.m2->s; X2 else v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X2 else v.m2->s; X2 else if x.c4 then v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X2 else v.m2->s; X2 else v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X2 else v.m2->s; X2 } def X3 { s->j[l4]; if x.c4 then if x.c4 then v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X3 else v.m2->s; X3 else v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X3 else v.m2->s; X3 else if x.c4 then v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X3 else v.m2->s; X3 else v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X3 else v.m2->s; X3 } def X4 { s->j[l4]; if x.c4 then if x.c4 then v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X4 else v.m2->s; X4 else v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X4 else v.m2->s; X4 else if x.c4 then v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X4 else v.m2->s; X4 else v->n[l2]; n->v[l3]; if x.c4 then v.m2->s; X4 else v.m2->s; X4 } main {if v.c1 then if j.c2 then j->n[L]; j->x[L]; j->v[L]; j->s[L]; v->n[L]; v->j[L]; v->x[L]; v->s[L]; n.m1->x; if n.c3 then v.m2->s; X1 else v.m2->s; X2 else j->n[R]; j->x[R]; j->v[R]; j->s[R]; v->n[L]; v->j[L]; v->x[L]; v->s[L]; n.m1->x; if n.c3 then v.m2->s; X3 else v.m2->s; X4 else if j.c2 then j->n[L]; j->x[L]; j->v[L]; j->s[L]; v->n[R]; v->j[R]; v->x[R]; v->s[R]; n->v[l1]; stop else j->n[R]; j->x[R]; j->v[R]; j->s[R]; v->n[R]; v->j[R]; v->x[R]; v->s[R]; n->v[l1]; stop}"
+
+        assert( bisimilar(orig, extracted) )
+    }
+
 //    Stack overflows
 //    @Test
 //    fun unfolding2()

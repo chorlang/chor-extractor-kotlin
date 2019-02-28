@@ -23,6 +23,6 @@ class NumberOfActions private constructor(): CCVisitor<Int> {
 
     companion object {
         fun compute(choreography:Choreography):Int =
-            choreography.procedures.map { it.body.accept(NumberOfActions()) }.fold(0, Int::plus)
+            choreography.procedures.map { it.body.accept(NumberOfActions()) }.fold(0, Int::plus) + choreography.main.accept(NumberOfActions())
     }
 }

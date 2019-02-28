@@ -22,7 +22,8 @@ class NumberOfConditionals private constructor(): CCVisitor<Int> {
     override fun visit(n: Program): Int = throw OperationNotSupportedException()
 
     companion object {
-        fun compute(choreography:Choreography):Int =
-                choreography.procedures.map { it.body.accept(NumberOfConditionals()) }.fold(0, Int::plus)
+        fun compute(choreography:Choreography):Int {
+            return choreography.procedures.map { it.body.accept(NumberOfConditionals()) }.fold(0, Int::plus) + choreography.main.accept(NumberOfConditionals())
+        }
     }
 }

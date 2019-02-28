@@ -15,16 +15,15 @@ import util.networkStatistics.NetworkStatistics
 import java.io.File
 import java.text.ParseException
 import javax.naming.OperationNotSupportedException
-import kotlin.math.roundToInt
 
 // TODO Still have to go through the screwing
 class Benchmarks {
     data class StatHeader(val length: String, val numOfProcesses: String, val numOfCondition: String, val numOfProcedures: String)
 
-    data class ScrewedExecutionStatistic(val choreographyId: String,
-                                         val minExecutionTime: Double, val maxExecutionTime: Double, val avgExecutionTime: Double,
-                                         val minNodes: Int, val maxNodes: Int, val avgNodes: Int,
-                                         val minBadLoops: Int, val maxBadLoops: Int, val avgBadLoops: Int)
+    data class ScrewedExecutionStatistics(val choreographyId: String,
+                                          val minExecutionTime: Long, val maxExecutionTime: Long, val avgExecutionTime: Double,
+                                          val minNodes: Int, val maxNodes: Int, val avgNodes: Int,
+                                          val minBadLoops: Int, val maxBadLoops: Int, val avgBadLoops: Int)
 
     companion object {
         private const val TEST_DIR = "tests"
@@ -64,7 +63,7 @@ class Benchmarks {
      * 2. get statistics and write to the file %original_file_name% statistics
      */
     @Test
-    fun epp() {
+    fun epp(){
         checkOutputFolder()
         val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
         choreographyFiles.forEach { fileId, choreographyMap ->
@@ -132,11 +131,14 @@ class Benchmarks {
         val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
         val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
         originalChoreographies.forEach { fileId, choreographyData ->
-            choreographyData.forEach { id, choreography ->
-                if (!bisimilar(choreography, (extractedChoreographies[fileId]!!)[id]!!)) {
-                    println("$id failed the bisimilarity check")
+//            if ( !fileId.startsWith("50") ) {
+                choreographyData.forEach { id, choreography ->
+                    System.out.println("Checking $id in $fileId")
+                    if (!bisimilar(choreography, (extractedChoreographies[fileId]!!)[id]!!)) {
+                        println("$id failed the bisimilarity check")
+                    }
                 }
-            }
+//            }
         }
     }
 
@@ -183,7 +185,7 @@ fun extractionSoundnessC41() {
                     val lengthOfProcedures = LengthOfProcedures().getLength(choreography!!)
 
                     out.println("$id," +
-                            "${pair.second.toDouble() / 1000}," +
+                            "${pair.second}," +
                             "${statistic.nodes}," +
                             "${statistic.badLoops}," +
                             "${NumberOfActions.compute(choreography)}," +
@@ -204,19 +206,20 @@ fun extractionSoundnessC41() {
         val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
 
         networkFiles.forEach { fileId, networkMap ->
-            if ( fileId == "10-5-4-3" ) {
+//            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" ) {
+//            if ( fileId == "50-6-50-0" || fileId == "50-6-40-0" ) {
                 val extractionMap = HashMap<String, Pair<Program, Long>>()
                 networkMap.forEach { id, network ->
                     println("Extracting $id from $PROJECTION_PREFIX$fileId")
                     val start = System.currentTimeMillis()
-                    val program = Extraction.extractChoreography(Extraction.ParsedInput(network, Strategy.Default, ArrayList<String>(), true))
+                    val program = Extraction.extractChoreography(network, Strategy.Default, ArrayList<String>(), true)
                     val executionTime = System.currentTimeMillis() - start
 
                     extractionMap[id] = Pair(program, executionTime)
                 }
                 writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
                 writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX$fileId")
-            }
+//            }
         }
     }
 
@@ -226,7 +229,7 @@ fun extractionSoundnessC41() {
         val filesWithNetworks = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) //HashMap<filename, HashMap<choreography_id, network_body>>
 
         filesWithNetworks.forEach { fileId, networks ->
-            val screwedExecutionStatistic = ArrayList<ScrewedExecutionStatistic>()
+            val screwedExecutionStatistic = ArrayList<ScrewedExecutionStatistics>()
 
             File(OUTPUT_DIR, "$SCREWED_PROJECTION_STATISTICS_PREFIX$fileId").printWriter().use { out ->
                 //file header
@@ -234,13 +237,13 @@ fun extractionSoundnessC41() {
 
                 val badLoopsList = ArrayList<Int>()
                 val nodesList = ArrayList<Int>()
-                val executionTimeList = ArrayList<Double>()
+                val executionTimeList = ArrayList<Long>()
 
                 networks.forEach { choreographyId, network ->
                     //screw network
                     val timesToScrew = 10
                     var counter = 1
-                    val networkBody = Extraction.parseNetwork(network)
+                    val networkBody = ParseUtils.stringToNetwork(network)
 
                     (0..timesToScrew).forEach {
                         val screwedId = "$choreographyId-${counter++}"
@@ -248,8 +251,8 @@ fun extractionSoundnessC41() {
 
                         //try and fail to extract body
                         val start = System.currentTimeMillis()
-                        val program = Extraction.main(arrayListOf("-c", network, "-d"))
-                        val executionTime = (System.currentTimeMillis() - start).toDouble() / 1000
+                        val program = Extraction.extractChoreography(network, Strategy.Default, ArrayList(), true)
+                        val executionTime = System.currentTimeMillis() - start
                         val graphStatistic = program.statistics.first()
 
 
@@ -260,7 +263,7 @@ fun extractionSoundnessC41() {
                                 "${screwedInformation.add}," +
                                 "${screwedInformation.remove}," +
                                 "${screwedInformation.swap}," +
-                                "${executionTime.roundToInt()}," +
+                                "${executionTime}," +
                                 "${graphStatistic.badLoops}," +
                                 "${graphStatistic.nodes}"
                         )
@@ -270,9 +273,9 @@ fun extractionSoundnessC41() {
                         executionTimeList.add(executionTime)
                     }
 
-                    screwedExecutionStatistic.add(ScrewedExecutionStatistic(choreographyId,
-                            executionTimeList.min() ?: 0.0, executionTimeList.max()
-                            ?: 0.0, executionTimeList.average(),
+                    screwedExecutionStatistic.add(ScrewedExecutionStatistics(choreographyId,
+                            executionTimeList.min() ?: 0, executionTimeList.max()
+                            ?: 0, executionTimeList.average(),
                             nodesList.min() ?: 0, nodesList.max() ?: 0, nodesList.average().toInt(),
                             badLoopsList.min() ?: 0, badLoopsList.max() ?: 0, badLoopsList.average().toInt()
                     ))
@@ -283,7 +286,7 @@ fun extractionSoundnessC41() {
 
                 screwedExecutionStatistic.forEach { elem ->
                     out.println("${elem.choreographyId}," +
-                            "${elem.minExecutionTime},${elem.maxExecutionTime},${elem.avgExecutionTime.roundToInt()}," +
+                            "${elem.minExecutionTime},${elem.maxExecutionTime},${elem.avgExecutionTime}," +
                             "${elem.minNodes},${elem.maxNodes},${elem.avgNodes}," +
                             "${elem.minBadLoops},${elem.maxBadLoops},${elem.avgBadLoops}")
                 }
