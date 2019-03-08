@@ -1,3 +1,4 @@
+/*
 package extraction
 
 import Utils.Companion.resolveArgs
@@ -19,20 +20,22 @@ class BenchmarkTest {
         val args = param.first
         args.add(test)
         val strategy = param.second
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
 
         when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst, Strategy.UnmarkedFirst, Strategy.UnmarkedThenCondition, Strategy.UnmarkedThenSelection -> {
+            ExtractionStrategy.SelectionFirst, ExtractionStrategy.ConditionFirst, ExtractionStrategy.UnmarkedFirst, ExtractionStrategy.UnmarkedThenCondition, ExtractionStrategy.UnmarkedThenSelection -> {
                 val expected =
                         "def X1 { if a.e then a->b[win]; c.busy->d; a->c[lose]; b.sig->a; c.msg->a; a.free->d; X1 else a->b[lose]; c.busy->d; a->c[win]; b.sig->a; c.msg->a; a.free->d; X1 } main {X1}"
 
                 assertEquals(expected, actual)
             }
-            Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
-                /* value expected =
+            ExtractionStrategy.RandomProcess, ExtractionStrategy.UnmarkedThenRandom -> {
+                */
+/* value expected =
                         "def X1 { c.busy->d; if a.e then a->b[win]; a->c[lose]; b.sig->a; c.msg->a; a.free->d; X1 else a->b[lose]; a->c[win]; b.sig->a; c.msg->a; a.free->d; X1 } main {X1}"
 
-                assertEquals(expected, actual) */
+                assertEquals(expected, actual) *//*
+
             }
 
         }
@@ -57,31 +60,31 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
 
         when (strategy) {
-            Strategy.SelectionFirst -> {
+            ExtractionStrategy.SelectionFirst -> {
                 val expected =
                         "def X1 { if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; a1->c1[lose]; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; c2.busy->d2; a1->b1[win]; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; a1->b1[lose]; a1->c1[win]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; a1->c1[lose]; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; c2.busy->d2; a1->b1[win]; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; a1->b1[lose]; a1->c1[win]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; a1->c1[win]; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; a1->b1[win]; a1->c1[lose]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; c2.busy->d2; a1->b1[lose]; a1->c1[win]; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; a1->c1[win]; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; a1->b1[win]; a1->c1[lose]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; c2.busy->d2; a1->b1[lose]; a1->c1[win]; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 } main {X1}"
 
                 assertEquals(expected, actual)
             }
-            Strategy.ConditionFirst -> {
+            ExtractionStrategy.ConditionFirst -> {
                 //if it doesn't fail then we are happy
             }
-            Strategy.UnmarkedFirst -> {
+            ExtractionStrategy.UnmarkedFirst -> {
                 val expected =
                         "def X1 { c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X2 } def X10 { c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X11 } def X11 { c1.lose->b1; X12 } def X12 { b2.sig->a2; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X12 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X12 else c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X11 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10 } def X2 { b1.lose->c1; X3 } def X3 { b2.sig->a2; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X2 else c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X3 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X3 } def X4 { c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X5 } def X5 { b1.lose->c1; X6 } def X6 { b2.sig->a2; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X5 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X6 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X6 } def X7 { c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X8 } def X8 { c1.lose->b1; X9 } def X9 { b2.sig->a2; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X9 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X9 else c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X8 } main {if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10}"
 
                 assertEquals(expected, actual)
             }
-            Strategy.UnmarkedThenCondition -> {
+            ExtractionStrategy.UnmarkedThenCondition -> {
                 val expected =
                         "def X1 { c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X2 } def X10 { c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X11 } def X11 { c1.lose->b1; X12 } def X12 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X12 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X12 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X11 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10 } def X2 { b1.lose->c1; X3 } def X3 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X2 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X3 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X3 } def X4 { c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X5 } def X5 { b1.lose->c1; X6 } def X6 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X5 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X6 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X6 } def X7 { c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X8 } def X8 { c1.lose->b1; X9 } def X9 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X9 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X9 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X8 } main {if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10}"
 
                 assertEquals(expected, actual)
             }
-            Strategy.UnmarkedThenSelection -> {
+            ExtractionStrategy.UnmarkedThenSelection -> {
                 val expected =
                         "def X1 { if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 } main {X1}"
 
@@ -102,17 +105,17 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
 
         when (strategy) {
-            Strategy.UnmarkedThenRandom, Strategy.RandomProcess -> {
+            ExtractionStrategy.UnmarkedThenRandom, ExtractionStrategy.RandomProcess -> {
                 //Random result, can't assert
             }
-            Strategy.LengthFirst -> {
+            ExtractionStrategy.LengthFirst -> {
                 val expected = "def X1 { (b.ack0->a, a.1->b); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
                 assertEquals(expected, actual)
             }
-            Strategy.ShortestFirst -> {
+            ExtractionStrategy.ShortestFirst -> {
                 val expected = "def X1 { (a.1->b, b.ack0->a); (b.ack1->a, a.0->b); X1 } main {a.0->b; X1}"
                 assertEquals(expected, actual)
             }
@@ -137,17 +140,17 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
 
         when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst -> {
+            ExtractionStrategy.SelectionFirst, ExtractionStrategy.ConditionFirst -> {
                 val expected =
                         "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); (c.1->d, d.ack0->c); (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); (c.0->d, d.ack1->c); X1 } main {a.0->b; c.0->d; X1}"
 
                 assertEquals(expected, actual)
             }
 
-            Strategy.UnmarkedFirst, Strategy.UnmarkedThenCondition, Strategy.UnmarkedThenSelection -> {
+            ExtractionStrategy.UnmarkedFirst, ExtractionStrategy.UnmarkedThenCondition, ExtractionStrategy.UnmarkedThenSelection -> {
                 val expected =
                         "def X1 { (a.1->b, b.ack0->a); (c.1->d, d.ack0->c); (a.0->b, b.ack1->a); (c.0->d, d.ack1->c); X1 } main {a.0->b; c.0->d; X1}"
 
@@ -158,7 +161,8 @@ class BenchmarkTest {
         }
     }
 
-    /*@Test //(expected = NetworkExtraction.MulticomException::class)
+    */
+/*@Test //(expected = NetworkExtraction.MulticomException::class)
     fun threeBit() {
         val test =
                 "a { def X {b?; b!<0>;b?;b!<1>;b?;b!<2>;X} main {b!<0>;b!<1>;b!<2>; X}} | " +
@@ -167,8 +171,9 @@ class BenchmarkTest {
         val args = arrayListOf("-c", test)
 
         assertThrows(NetworkExtraction.MulticomException::class.java
-        ) { Extraction.main(args) }
-    }*/
+        ) { Extraction.extractChoreography(test) }
+    }*//*
+
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
@@ -184,7 +189,7 @@ class BenchmarkTest {
 
         //value strategy = param.second
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { if a.notok then a->b[hag]; b.price->a; X1 else a->b[happy]; a.info->c; stop } main {X1}"
 
         assertEquals(expected, actual)
@@ -208,7 +213,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         //assertEquals(expected, actual)
     }
 
@@ -231,7 +236,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { p.sendData->hs; X2 } def X2 { hs.subscribed->ss; if ss.ok then ss->hs[ok]; hs->p[subscribed]; hs.account->as; as.logCreated->hs; hs.fwd->t; t.fwdOk->hs; t.helpReq->es; es.provideService->p; p.sendData->hs; X2 else ss->hs[nok]; hs->p[notSubscribed]; X1 } main {X1}"
 
         assertEquals(expected, actual)
@@ -260,7 +265,7 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected =
                 "def X1 { filter.newFilterRequest->data; X2 } def X2 { if data.itemToBeFiltered then data->filter[item]; data.itemToBeFiltered->filter; if filter.itemToBeFiltered then filter.ok->data; X2 else filter.remove->data; X2 else data->filter[noItem]; X1 } main {X1}"
 
@@ -302,7 +307,7 @@ class BenchmarkTest {
         val strategy = param.second
         args.add(test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
 
         //assertEquals(expected, actual)
     }
@@ -333,7 +338,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected =
                 "def X1 { supplier->shipper[item]; shipper.DeliveryItem->supplier; " +
                         "if supplier.needToShip then X1 else supplier->shipper[done]; supplier.UpdatePOandDeliverySchedule->retailer; " +
@@ -376,7 +381,7 @@ class BenchmarkTest {
         args.addAll(arrayListOf(test, "-l", "retailer"))
         val strategy = param.second
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected =
                 "def X1 { supplier->shipper[item]; supplier->consignee[item]; shipper.DeliveryItem->supplier; consignee.DeliveryItem->supplier; if supplier.needToShip then X1 else supplier->shipper[done]; supplier->consignee[done]; supplier.UpdatePOandDeliverySchedule->retailer; retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; supplier.FinalizedPOandDeliverySchedule->retailer; stop } main {supplier.PlannedOrderVariations->retailer; retailer.OrderDeliveryVariations->supplier; retailer.DeliverCheckPointRequest->supplier; if supplier.needToShip then X1 else supplier->shipper[done]; supplier->consignee[done]; supplier.UpdatePOandDeliverySchedule->retailer; retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; supplier.FinalizedPOandDeliverySchedule->retailer; stop}"
 
@@ -408,7 +413,7 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected =
                 "def X1 { cl.connect->int; int.setup->appli; int.syncAccess->cl; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } def X2 { cl->appli[awaitcl]; cl.access->appli; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } main {X1}"
 
@@ -451,14 +456,15 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected =
                 "def X1 { citizen.request->sanagency; X2 } def X2 { sanagency.askInfo->citizen; citizen.provInf->sanagency; if sanagency.infoProved then sanagency->citizen[acceptance]; sanagency.req->coop; if coop.fine then coop.provT->citizen; coop->bank[recMoneyPossT]; bank.paymentT->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen.request->sanagency; X2 else coop.provM->citizen; coop->bank[recMoneyPossM]; bank.paymentM->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen.request->sanagency; X2 else sanagency->citizen[refusal]; X1 } main {X1}"
 
         assertEquals(expected, actual)
     }
 
-    /*@ParameterizedTest
+    */
+/*@ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
     fun sanitaryAgency2x(strategy: String, debugMode: Boolean) {
         val test =
@@ -477,23 +483,25 @@ class BenchmarkTest {
 
         val strategy = param.second
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
 
         when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst -> {
+            ExtractionStrategy.SelectionFirst, ExtractionStrategy.ConditionFirst -> {
                 val expected =
                         "def X1 { citizen.provInf->sanagency; if sanagency.infoProved then sanagency->citizen[acceptance]; sanagency.req->coop; if coop.fine then coop.provT->citizen; coop->bank[recMoneyPossT]; bank.paymentT->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop.provM->citizen; coop->bank[recMoneyPossM]; bank.paymentM->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency->citizen[refusal]; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 } main {citizen.request->sanagency; sanagency.askInfo->citizen; X1}"
 
                 assertEquals(expected, actual)
             }
 
-            Strategy.UnmarkedFirst, Strategy.UnmarkedThenSelection, Strategy.UnmarkedThenCondition, Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
+            ExtractionStrategy.UnmarkedFirst, ExtractionStrategy.UnmarkedThenSelection, ExtractionStrategy.UnmarkedThenCondition, ExtractionStrategy.RandomProcess, ExtractionStrategy.UnmarkedThenRandom -> {
                 //"If it doesn't fail, we are happy "
             }
         }
-    }*/
+    }*//*
 
-    /*@ParameterizedTest
+
+    */
+/*@ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
     fun tst(strategy: String, debugMode: Boolean) {
         value f =
@@ -509,23 +517,27 @@ class BenchmarkTest {
 
         value strategy = param.second
 
-        value actual = Extraction.main(args)
+        value actual = Extraction.extractChoreography(test)
 
         value expected = "def X1 { p->q[r]; X2 } def X2 { p.e->q; if p.e then r.e->`value`; p->q[l]; X1 else r.e->`value`; p->q[r]; X2 } main {p->q[l]; X1}"
         assertEquals(expected, actual)
 
-        *//*when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst -> {
+        *//*
+*/
+/*when (strategy) {
+            ExtractionStrategy.SelectionFirst, ExtractionStrategy.ConditionFirst -> {
                 value expected =
                         ""
 
                 assertEquals(expected, actual)
             }
 
-            Strategy.UnmarkedFirst, Strategy.UnmarkedThenSelection, Strategy.UnmarkedThenCondition, Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
+            ExtractionStrategy.UnmarkedFirst, ExtractionStrategy.UnmarkedThenSelection, ExtractionStrategy.UnmarkedThenCondition, ExtractionStrategy.RandomProcess, ExtractionStrategy.UnmarkedThenRandom -> {
                 //"If it doesn't fail, we are happy "
             }
         }*//*
+*/
+/*
     }
 
     @ParameterizedTest
@@ -544,22 +556,27 @@ class BenchmarkTest {
 
         value strategy = param.second
 
-        value actual = Extraction.main(args)
+        value actual = Extraction.extractChoreography(test)
 
         value expected = ""
         assertEquals(expected, actual)
 
-        *//*when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst -> {
+        *//*
+*/
+/*when (strategy) {
+            ExtractionStrategy.SelectionFirst, ExtractionStrategy.ConditionFirst -> {
                 value expected =
                         ""
 
                 assertEquals(expected, actual)
             }
 
-            Strategy.UnmarkedFirst, Strategy.UnmarkedThenSelection, Strategy.UnmarkedThenCondition, Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
+            ExtractionStrategy.UnmarkedFirst, ExtractionStrategy.UnmarkedThenSelection, ExtractionStrategy.UnmarkedThenCondition, ExtractionStrategy.RandomProcess, ExtractionStrategy.UnmarkedThenRandom -> {
                 //"If it doesn't fail, we are happy "
             }
         }*//*
-    }*/
-}
+*/
+/*
+    }*//*
+
+}*/

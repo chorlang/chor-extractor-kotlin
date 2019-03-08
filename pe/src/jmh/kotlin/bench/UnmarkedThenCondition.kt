@@ -1,3 +1,4 @@
+/*
 package bench
 
 import extraction.Extraction
@@ -369,4 +370,4 @@ open class UnmarkedThenCondition{
         val args = arrayListOf("-c", test, "-l", "coop, bank, coop2, bank2", "-s", "UnmarkedThenCondition")
         Extraction.main(args)
     }
-}
+}*/

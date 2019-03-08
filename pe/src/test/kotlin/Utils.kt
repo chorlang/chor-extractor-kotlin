@@ -1,9 +1,11 @@
+/*
 import extraction.Extraction
-import extraction.Strategy
+import extraction.ExtractionStrategy
 
 class Utils {
     companion object {
-        fun resolveArgs(str: String, debugMode: Boolean): Pair<ArrayList<String>, Strategy> {
+        */
+/*fun resolveArgs(str: String, debugMode: Boolean): Pair<ArrayList<String>, ExtractionStrategy> {
             val args = arrayListOf<String>()
 
             val strategy = Extraction.parseStrategy(str)
@@ -14,6 +16,7 @@ class Utils {
             args.add("-c")
 
             return Pair(args, strategy)
-        }
+        }*//*
+
     }
-}
+}*/

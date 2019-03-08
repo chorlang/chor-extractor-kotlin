@@ -2,7 +2,6 @@ package util.choreographyStatistics
 
 import ast.cc.nodes.Choreography
 import ast.cc.nodes.Program
-import util.ParseUtils
 import javax.naming.OperationNotSupportedException
 
 data class ChoreographyStatistics(

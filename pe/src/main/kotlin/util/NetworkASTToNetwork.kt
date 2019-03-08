@@ -3,12 +3,9 @@ package util
 import antlrgen.NetworkBaseVisitor
 import antlrgen.NetworkParser
 import antlrgen.NetworkParser.*
-import ast.cc.interfaces.CCNode
-import ast.cc.nodes.Program
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPNode
 import ast.sp.nodes.*
-import org.antlr.v4.runtime.tree.ParseTree
 import org.antlr.v4.runtime.tree.TerminalNode
 
 class NetworkASTToNetwork : NetworkBaseVisitor<SPNode>() {

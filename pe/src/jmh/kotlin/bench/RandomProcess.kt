@@ -33,7 +33,7 @@ open class RandomProcess{
                     "{c?; a?; X} " +
                     "main {X}}"
         val args = arrayListOf("-c", test, "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -49,7 +49,7 @@ open class RandomProcess{
                 "d2 {def X {c2?; a2?; X} main {X}}"
 
         val args = arrayListOf("-c", test, "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -59,7 +59,7 @@ open class RandomProcess{
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
         val args = arrayListOf("-c", test, "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -71,7 +71,7 @@ open class RandomProcess{
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
         val args = arrayListOf("-c", test, "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -82,7 +82,7 @@ open class RandomProcess{
                         "c { main {a?; stop}}"
 
         val args = arrayListOf("-c", test, "-l", "c", "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -97,7 +97,7 @@ open class RandomProcess{
 
 
         val args = arrayListOf("-c", test, "-l", "c, f", "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -113,7 +113,7 @@ open class RandomProcess{
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "as, t, es", "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -133,7 +133,7 @@ open class RandomProcess{
                         "es2{def X{t2?; p2!<provideService>; X} main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "as1, t1, es1, as2, t2, es2", "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -154,7 +154,7 @@ open class RandomProcess{
 
 
         val args = arrayListOf("-c", test, "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -187,7 +187,7 @@ open class RandomProcess{
 
 
         val args = arrayListOf("-c", test, "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -210,7 +210,7 @@ open class RandomProcess{
                         "main{Y}}"
 
         val args = arrayListOf("-c", test, "-l", "retailer", "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -238,7 +238,7 @@ open class RandomProcess{
                         "main{Z}}"
 
         val args = arrayListOf("-c", test, "-l", "retailer", "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -260,7 +260,7 @@ open class RandomProcess{
                         "main {X}}"
 
         val args = arrayListOf("-c", test, "-l", "db, int", "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -276,7 +276,7 @@ open class RandomProcess{
                         "db2{def X{appli2?; X} main {X}}"
 
         val args = arrayListOf("-c", test, "-l", "db1, int1, db2, int2", "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -309,6 +309,6 @@ open class RandomProcess{
                         "main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "coop, bank", "-s", "RandomProcess")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 }

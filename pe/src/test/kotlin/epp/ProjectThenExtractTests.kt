@@ -20,7 +20,7 @@ class ProjectThenExtractTests {
         val extraction = EndPointProjection.project(test).toString()
         val args = arrayListOf("-c", extraction, "-d")
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
 
         val expected =
                 "def X1 { if p.e then p->q[ok]; q->r[ok]; q.e->p; X1 else p->q[ko]; q->r[ko]; X2 } " +
@@ -51,9 +51,9 @@ class ProjectThenExtractTests {
                 "r{def X{p&{ko: q&{ko: X, ok: X}, ok: if e then p + ok; q + ok; X else p + ko; q + ko; q!<u>; X}} main {q?; X}}"
 
 
-        val args = arrayListOf("-c", e)
+        // val args = arrayListOf("-c", e)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(e).toString()
 
         val expected = "def X1 { p.e->q; X2 } " +
                 "def X2 { if p.e then p->q[ok]; p->r[ok]; q.e->p; if r.e then r->p[ok]; r->q[ok]; X1 else r->p[ko]; r->q[ko]; r.u->q; p.e->q; X2 else p->q[ko]; X3 } " +

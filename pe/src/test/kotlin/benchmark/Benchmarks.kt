@@ -5,7 +5,7 @@ import ast.sp.nodes.Network
 import bisim.bisimilar
 import epp.EndPointProjection
 import extraction.Extraction
-import extraction.Strategy
+import extraction.ExtractionStrategy
 import org.junit.jupiter.api.Test
 import util.ParseUtils
 import util.choreographyStatistics.ChoreographyStatistics
@@ -18,7 +18,7 @@ import javax.naming.OperationNotSupportedException
 
 // TODO Still have to go through the screwing
 class Benchmarks {
-    data class StatHeader(val length: String, val numOfProcesses: String, val numOfCondition: String, val numOfProcedures: String)
+    //data class StatHeader(val length: String, val numOfProcesses: String, val numOfCondition: String, val numOfProcedures: String)
 
     data class ScrewedExecutionStatistics(val choreographyId: String,
                                           val minExecutionTime: Long, val maxExecutionTime: Long, val avgExecutionTime: Double,
@@ -212,7 +212,7 @@ fun extractionSoundnessC41() {
                 networkMap.forEach { id, network ->
                     println("Extracting $id from $PROJECTION_PREFIX$fileId")
                     val start = System.currentTimeMillis()
-                    val program = Extraction.extractChoreography(network, Strategy.Default, ArrayList<String>(), true)
+                    val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList(), true)
                     val executionTime = System.currentTimeMillis() - start
 
                     extractionMap[id] = Pair(program, executionTime)
@@ -224,7 +224,7 @@ fun extractionSoundnessC41() {
     }
 
     //@Test
-    fun screwDataStatistics() {
+    private fun screwDataStatistics() {
         checkOutputFolder()
         val filesWithNetworks = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) //HashMap<filename, HashMap<choreography_id, network_body>>
 
@@ -245,13 +245,13 @@ fun extractionSoundnessC41() {
                     var counter = 1
                     val networkBody = ParseUtils.stringToNetwork(network)
 
-                    (0..timesToScrew).forEach {
+                    repeat((0..timesToScrew).count()) {
                         val screwedId = "$choreographyId-${counter++}"
                         val (screwedNetwork, screwedInformation) = NetworkScrewer().screwNetwork(networkBody)
 
                         //try and fail to extract body
                         val start = System.currentTimeMillis()
-                        val program = Extraction.extractChoreography(network, Strategy.Default, ArrayList(), true)
+                        val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList(), true)
                         val executionTime = System.currentTimeMillis() - start
                         val graphStatistic = program.statistics.first()
 
@@ -263,7 +263,7 @@ fun extractionSoundnessC41() {
                                 "${screwedInformation.add}," +
                                 "${screwedInformation.remove}," +
                                 "${screwedInformation.swap}," +
-                                "${executionTime}," +
+                                "$executionTime," +
                                 "${graphStatistic.badLoops}," +
                                 "${graphStatistic.nodes}"
                         )
@@ -403,10 +403,10 @@ fun extractionSoundnessC41() {
         return choreographyMap
     }
 
-    private fun parseStatName(name: String): StatHeader {
+    /*private fun parseStatName(name: String): StatHeader {
         val stat = name.split("-".toRegex())
         return StatHeader(stat[stat.size - 4], stat[stat.size - 3], stat[stat.size - 2], stat[stat.size - 1])
-    }
+    }*/
 
     @Test
     fun runAllBenchmarks() {
@@ -435,7 +435,7 @@ fun extractionSoundnessC41() {
                 var i = 1
                 while (i < lines.size) {
                     val split = lines[i].split(",", limit = 2)
-                    data.put(split[0], split[1])
+                    data[split[0]] = split[1]
                     i++
                 }
             }
@@ -456,7 +456,7 @@ fun extractionSoundnessC41() {
         }
 
         outputFile.printWriter().use { out ->
-            out.println("id," + headersToCombine.map { it.split(",", limit = 2)[1] }.joinToString(","))
+            out.println("id," + headersToCombine.joinToString(",") { it.split(",", limit = 2)[1] })
 
             for (key in bigData[statsToCombine[0]]!!.keys.map { Integer.parseInt(it.substring(1)) }.sorted()) {
                 val ckey = "C$key"

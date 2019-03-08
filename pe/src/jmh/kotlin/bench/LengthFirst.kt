@@ -33,7 +33,7 @@ open class LengthFirst{
                     "{c?; a?; X} " +
                     "main {X}}"
         val args = arrayListOf("-c", test, "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -49,7 +49,7 @@ open class LengthFirst{
                 "d2 {def X {c2?; a2?; X} main {X}}"
 
         val args = arrayListOf("-c", test, "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -59,7 +59,7 @@ open class LengthFirst{
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
         val args = arrayListOf("-c", test, "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -71,7 +71,7 @@ open class LengthFirst{
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
         val args = arrayListOf("-c", test, "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -82,7 +82,7 @@ open class LengthFirst{
                         "c { main {a?; stop}}"
 
         val args = arrayListOf("-c", test, "-l", "c", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -97,7 +97,7 @@ open class LengthFirst{
 
 
         val args = arrayListOf("-c", test, "-l", "c, f", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -113,7 +113,7 @@ open class LengthFirst{
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "as, t, es", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -133,7 +133,7 @@ open class LengthFirst{
                         "es2{def X{t2?; p2!<provideService>; X} main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "as1, t1, es1, as2, t2, es2", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -154,7 +154,7 @@ open class LengthFirst{
 
 
         val args = arrayListOf("-c", test, "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -187,7 +187,7 @@ open class LengthFirst{
 
 
         val args = arrayListOf("-c", test, "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -210,7 +210,7 @@ open class LengthFirst{
                         "main{Y}}"
 
         val args = arrayListOf("-c", test, "-l", "retailer", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -238,7 +238,7 @@ open class LengthFirst{
                         "main{Z}}"
 
         val args = arrayListOf("-c", test, "-l", "retailer", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -260,7 +260,7 @@ open class LengthFirst{
                         "main {X}}"
 
         val args = arrayListOf("-c", test, "-l", "db, int", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -276,7 +276,7 @@ open class LengthFirst{
                         "db2{def X{appli2?; X} main {X}}"
 
         val args = arrayListOf("-c", test, "-l", "db1, int1, db2, int2", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -309,7 +309,7 @@ open class LengthFirst{
                         "main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "coop, bank", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 
     @Benchmark
@@ -367,6 +367,6 @@ open class LengthFirst{
                         "main{X}}"
 
         val args = arrayListOf("-c", test, "-l", "coop, bank, coop2, bank2", "-s", "LengthFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test)
     }
 }

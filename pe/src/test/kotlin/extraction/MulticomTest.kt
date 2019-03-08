@@ -13,7 +13,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {(p.0->q, q.1->p); stop}"
 
         assertEquals(expected, actual)
@@ -27,7 +27,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {(p->q[R], q->p[L]); p.e->q; stop}"
 
         assertEquals(expected, actual)
@@ -42,7 +42,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {(q.2->r, r.0->q); (p.0->q, q.1->p); stop}"
 
         assertEquals(expected, actual)
@@ -56,7 +56,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {(p.0->q, q.1->p); stop}"
 
         assertEquals(expected, actual)
@@ -71,7 +71,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {(q.2->r, r.0->q); (q.1->p, p.0->q); stop}"
 
         assertEquals(expected, actual)
@@ -85,7 +85,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { (p.0->q, q.1->p); X1 } main {X1}"
 
         assertEquals(expected, actual)
@@ -99,7 +99,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { (q.1->p, p.0->q); X1 } main {X1}"
 
         assertEquals(expected, actual)
@@ -114,7 +114,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { (q.2->r, r.0->q); (q.1->p, p.0->q); X1 } main {X1}"
 
         assertEquals(expected, actual)
@@ -129,7 +129,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
 
         assertEquals(expected, actual)
@@ -145,7 +145,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {(p.e1->q, q.e4->p, p.e3->s, p.e2->r); q.e5->t; stop}"
 
         assertEquals(expected, actual)
@@ -160,7 +160,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {(p.e1->q, q.e2->r, r.e3->s, s.e4->p); stop}"
 
         assertEquals(expected, actual)
@@ -175,7 +175,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {r.e4->s; (p.e1->q, q.e3->p, p.e2->r); stop}"
 
         assertEquals(expected, actual)
@@ -191,7 +191,7 @@ class MulticomTest {
 
         val args = arrayListOf("-c", test)
 
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {q.e5->t; (p.e1->q, q.e4->p); p.e2->r; p.e3->s; stop}"
 
         assertEquals(expected, actual)
@@ -208,6 +208,6 @@ class MulticomTest {
         val args = arrayListOf("-c", test)
 
         Assertions.assertThrows(NetworkExtraction.MulticomException::class.java
-        ) { Extraction.main(args) }
+        ) { Extraction.extractChoreography(test) }
     }*/
 }
