@@ -16,7 +16,7 @@ import org.jgrapht.graph.DirectedPseudograph
 typealias ProcessMap = HashMap<String, ProcessTerm>
 typealias GraphNode = Pair<Network, InteractionLabel>
 typealias Marking = HashMap<ProcessName, Boolean>
-typealias Hash = Int
+typealias NodeHash = Int
 
 class NetworkExtraction {
 

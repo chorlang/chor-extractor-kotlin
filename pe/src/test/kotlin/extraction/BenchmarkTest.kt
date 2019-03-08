@@ -1,6 +1,5 @@
 package extraction
 
-import Utils.Companion.resolveArgs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
@@ -8,19 +7,16 @@ import org.junit.jupiter.params.provider.CsvFileSource
 class BenchmarkTest {
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun runningExample(strategy: String, debugMode: Boolean) {
+    fun runningExample(strategyName: String, debugMode: Boolean) {
         val test =
                 "a {def Y {c?; d!<free>; X} def X {if e then b+win; c+lose; b?; Y else b+lose; c+win; b?; Y} main {X}} |" +
                         "b {def X {a&{win: a!<sig>; X, lose: a!<sig>; X}} main {X}} |" +
                         "c {def X {d!<busy>; a&{win: a!<msg>; X, lose: a!<msg>; X}} main {X}} |" +
                         "d {def X {c?; a?; X} main {X}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.add(test)
-        val strategy = param.second
-        val actual = Extraction.main(args).toString()
-
+        val strategy = Utils.parseStrategy(strategyName)
+        val actual = Extraction.extractChoreography( test, strategy ).toString()
+        
         when (strategy) {
             Strategy.SelectionFirst, Strategy.ConditionFirst, Strategy.UnmarkedFirst, Strategy.UnmarkedThenCondition, Strategy.UnmarkedThenSelection -> {
                 val expected =
@@ -28,7 +24,7 @@ class BenchmarkTest {
 
                 assertEquals(expected, actual)
             }
-            Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
+            Strategy.Random, Strategy.UnmarkedThenRandom -> {
                 /* value expected =
                         "def X1 { c.busy->d; if a.e then a->b[win]; a->c[lose]; b.sig->a; c.msg->a; a.free->d; X1 else a->b[lose]; a->c[win]; b.sig->a; c.msg->a; a.free->d; X1 } main {X1}"
 
@@ -40,7 +36,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun runningExample2x(strategy: String, debugMode: Boolean) {
+    fun runningExample2x(strategyName: String, debugMode: Boolean) {
 
         val test =
                 "a1 {def X {if e then b1+win; c1+lose; b1?; c1?; d1!<free>; X else b1+lose; c1+win; b1?; c1?; d1!<free>; X} main {X}} |" +
@@ -52,12 +48,8 @@ class BenchmarkTest {
                         "c2 {def X {d2!<busy>; a2&{win: b2!<lose>; a2!<msg>; X, lose: b2?; a2!<msg>; X}} main {X}} |" +
                         "d2 {def X {c2?; a2?; X} main {X}} "
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy(strategyName)
+        val actual = Extraction.extractChoreography( test, strategy ).toString()
 
         when (strategy) {
             Strategy.SelectionFirst -> {
@@ -92,20 +84,16 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun twoBit(strategy: String, debugMode: Boolean) {
+    fun twoBit(strategyName: String, debugMode: Boolean) {
         val test =
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy(strategyName)
+        val actual = Extraction.extractChoreography( test, strategy ).toString()
 
         when (strategy) {
-            Strategy.UnmarkedThenRandom, Strategy.RandomProcess -> {
+            Strategy.UnmarkedThenRandom, Strategy.Random -> {
                 //Random result, can't assert
             }
             Strategy.LengthFirst -> {
@@ -125,19 +113,15 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun twoBit2x(strategy: String, debugMode: Boolean) {
+    fun twoBit2x(strategyName: String, debugMode: Boolean) {
         val test =
                 "a { def X {b?;b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}} | " +
                         "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy(strategyName)
+        val actual = Extraction.extractChoreography( test, strategy ).toString()
 
         when (strategy) {
             Strategy.SelectionFirst, Strategy.ConditionFirst -> {
@@ -172,19 +156,14 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun bargain(strategy: String, debugMode: Boolean) {
+    fun bargain(strategyName: String, debugMode: Boolean) {
         val test =
                 "a { def X {if notok then b+hag; b?; X else b+happy; c!<info>; stop} main {X}} | " +
                 "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
                 "c { main {a?; stop}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test, "-l", "c"))
-
-        //value strategy = param.second
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy(strategyName)
+        val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("c")) ).toString()
         val expected = "def X1 { if a.notok then a->b[hag]; b.price->a; X1 else a->b[happy]; a.info->c; stop } main {X1}"
 
         assertEquals(expected, actual)
@@ -192,7 +171,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun bargain2x(strategy: String, debugMode: Boolean) {
+    fun bargain2x(strategyName: String, debugMode: Boolean) {
         val test =
                 "a { def X {b!<hag>; b?; if price then b+deal; b!<happy>; c!<info>; X else b+nodeal; X} main {X}} | " +
                         "b { def Y {a?; a!<price>; a&{deal: a?; Y, nodeal: Y}} main {Y}} | " +
@@ -202,19 +181,14 @@ class BenchmarkTest {
                         "f { def Z {d?; Z} main {Z}}"
 
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test, "-l", "c, f"))
-
-        val strategy = param.second
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy( strategyName )
+        Extraction.extractChoreography( test, strategy, ArrayList(listOf("c", "f")) ).toString()
         //assertEquals(expected, actual)
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun health(strategy: String, debugMode: Boolean) {
+    fun health(strategyName: String, debugMode: Boolean) {
         val test =
                 "hs{def X{p?; ss!<subscribed>; ss&{" +
                         "ok: p+subscribed; as!<account>; as?; t!<fwd>; t?; X, " +
@@ -225,13 +199,8 @@ class BenchmarkTest {
                         "t{def X{hs?; hs!<fwdOk>; es!<helpReq>; X} main{X}} | " +
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test, "-l", "as, t, es"))
-
-        val strategy = param.second
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy( strategyName )
+        val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("as", "t", "es")) ).toString()
         val expected = "def X1 { p.sendData->hs; X2 } def X2 { hs.subscribed->ss; if ss.ok then ss->hs[ok]; hs->p[subscribed]; hs.account->as; as.logCreated->hs; hs.fwd->t; t.fwdOk->hs; t.helpReq->es; es.provideService->p; p.sendData->hs; X2 else ss->hs[nok]; hs->p[notSubscribed]; X1 } main {X1}"
 
         assertEquals(expected, actual)
@@ -239,7 +208,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun filter(strategy: String, debugMode: Boolean) {
+    fun filter(strategyName: String, debugMode: Boolean) {
         val test =
                 "filter {" +
                         "def X {data!<newFilterRequest>; Y} " +
@@ -255,12 +224,8 @@ class BenchmarkTest {
                         "main {X}}"
 
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy( strategyName )
+        val actual = Extraction.extractChoreography( test, strategy ).toString()
         val expected =
                 "def X1 { filter.newFilterRequest->data; X2 } def X2 { if data.itemToBeFiltered then data->filter[item]; data.itemToBeFiltered->filter; if filter.itemToBeFiltered then filter.ok->data; X2 else filter.remove->data; X2 else data->filter[noItem]; X1 } main {X1}"
 
@@ -269,7 +234,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun filter2x(strategy: String, debugMode: Boolean) {
+    fun filter2x(strategyName: String, debugMode: Boolean) {
         val test =
                 "filter1 {" +
                         "def X {data1!<newFilterRequest>; Y} " +
@@ -297,19 +262,15 @@ class BenchmarkTest {
                         "main {X}}"
 
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy( strategyName )
+        Extraction.extractChoreography( test, strategy ).toString()
 
         //assertEquals(expected, actual)
     }
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun logistic(strategy: String, debugMode: Boolean) {
+    fun logistic(strategyName: String, debugMode: Boolean) {
         val test =
                 "supplier {" +
                         "def X {shipper?; Y} " +
@@ -327,13 +288,8 @@ class BenchmarkTest {
                         "def Y {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Y}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test, "-l", "retailer"))
-
-        val strategy = param.second
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy( strategyName )
+        val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("retailer")) ).toString()
         val expected =
                 "def X1 { supplier->shipper[item]; shipper.DeliveryItem->supplier; " +
                         "if supplier.needToShip then X1 else supplier->shipper[done]; supplier.UpdatePOandDeliverySchedule->retailer; " +
@@ -347,7 +303,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun logistic2(strategy: String, debugMode: Boolean) {
+    fun logistic2(strategyName: String, debugMode: Boolean) {
         val test =
                 "supplier {" +
                         "def X {shipper?; consignee?; Y} " +
@@ -371,12 +327,8 @@ class BenchmarkTest {
                         "main{Z}}"
 
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test, "-l", "retailer"))
-        val strategy = param.second
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy( strategyName )
+        val actual = Extraction.extractChoreography(test, strategy, ArrayList(listOf("retailer"))).toString()
         val expected =
                 "def X1 { supplier->shipper[item]; supplier->consignee[item]; shipper.DeliveryItem->supplier; consignee.DeliveryItem->supplier; if supplier.needToShip then X1 else supplier->shipper[done]; supplier->consignee[done]; supplier.UpdatePOandDeliverySchedule->retailer; retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; supplier.FinalizedPOandDeliverySchedule->retailer; stop } main {supplier.PlannedOrderVariations->retailer; retailer.OrderDeliveryVariations->supplier; retailer.DeliverCheckPointRequest->supplier; if supplier.needToShip then X1 else supplier->shipper[done]; supplier->consignee[done]; supplier.UpdatePOandDeliverySchedule->retailer; retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; supplier.FinalizedPOandDeliverySchedule->retailer; stop}"
 
@@ -385,7 +337,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun cloudSystem(strategy: String, debugMode: Boolean) {
+    fun cloudSystem(strategyName: String, debugMode: Boolean) {
         val test =
                 "cl{" +
                         "def X{int!<connect>; int?; Y} " +
@@ -402,13 +354,8 @@ class BenchmarkTest {
                         "def X{appli?; X} " +
                         "main {X}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test, "-l", "db, int"))
-
-        val strategy = param.second
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy( strategyName )
+        val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("db", "int")) ).toString()
         val expected =
                 "def X1 { cl.connect->int; int.setup->appli; int.syncAccess->cl; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } def X2 { cl->appli[awaitcl]; cl.access->appli; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } main {X1}"
 
@@ -417,7 +364,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
-    fun sanitaryAgency(strategy: String, debugMode: Boolean) {
+    fun sanitaryAgency(strategyName: String, debugMode: Boolean) {
         val test =
                 "citizen{" +
                         "def X{" +
@@ -445,13 +392,8 @@ class BenchmarkTest {
                         "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
                         "main{X}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test, "-l", "coop, bank"))
-
-        val strategy = param.second
-
-        val actual = Extraction.main(args).toString()
+        val strategy = Utils.parseStrategy( strategyName )
+        val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("coop", "bank")) ).toString()
         val expected =
                 "def X1 { citizen.request->sanagency; X2 } def X2 { sanagency.askInfo->citizen; citizen.provInf->sanagency; if sanagency.infoProved then sanagency->citizen[acceptance]; sanagency.req->coop; if coop.fine then coop.provT->citizen; coop->bank[recMoneyPossT]; bank.paymentT->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen.request->sanagency; X2 else coop.provM->citizen; coop->bank[recMoneyPossM]; bank.paymentM->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen.request->sanagency; X2 else sanagency->citizen[refusal]; X1 } main {X1}"
 
@@ -460,7 +402,7 @@ class BenchmarkTest {
 
     /*@ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun sanitaryAgency2x(strategy: String, debugMode: Boolean) {
+    fun sanitaryAgency2x(strategyName: String, debugMode: Boolean) {
         val test =
                 "citizen1{def X{sanagency1!<request>; sanagency1?; sanagency1!<provInf>; sanagency1&{refusal: X, acceptance: coop1?; bank1!<paymentPrivateFee>; X}} main{X}} | " +
                 "sanagency1{def X{citizen1?; citizen1!<askInfo>; citizen1?; if infoProved then citizen1+acceptance; coop1!<req>; bank1!<paymentPublicFee>; bank1?; X else citizen1+refusal; X} main {X}} | " +
@@ -495,7 +437,7 @@ class BenchmarkTest {
 
     /*@ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun tst(strategy: String, debugMode: Boolean) {
+    fun tst(strategyName: String, debugMode: Boolean) {
         value f =
                 "r{def X{`value`!<e>; X} main{X}} | " +
                         "`value`{def X{r?; X} main{X}} | " +
@@ -530,7 +472,7 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun tst2(strategy: String, debugMode: Boolean) {
+    fun tst2(strategyName: String, debugMode: Boolean) {
         value f =
                 "r{def X {`value`!<0>; X} main {X}} | " +
                         "`value`{def X {r?; X} main {X}} | " +

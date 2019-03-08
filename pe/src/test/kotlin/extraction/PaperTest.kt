@@ -1,10 +1,10 @@
 package extraction
 
-import Utils.Companion.resolveArgs
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
+
 
 class PaperTest {
     @Test
@@ -12,9 +12,7 @@ class PaperTest {
         val test = "c { def X {a!<pwd>; a&{ok: s?; stop, ko: X}} main {X}} | " +
                 "a { def X {c?; s?; if s then c+ok; s+ok; stop else c+ko; s+ko; X} main {X}} | " +
                 "s { def X {a!<s>; a&{ok: c!<t>; stop, ko:X}} main {X}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { c.pwd->a; s.s->a; if a.s then a->c[ok]; a->s[ok]; s.t->c; stop else a->c[ko]; a->s[ko]; X1 } main {X1}"
 
         assertEquals(expected, actual)
@@ -26,9 +24,7 @@ class PaperTest {
                 "q { def Y {p?; Y} main {Y}} | " +
                 "r { def Z {s!<e2>; Z} main {Z}} | " +
                 "s { def W {r?; W} main {W}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { r.e2->s; p.e1->q; X1 } main {p.e1->q; X1}"
 
         assertEquals(expected, actual)
@@ -40,9 +36,7 @@ class PaperTest {
                 "q { def Y {p?; Y} main {Y}} | " +
                 "r { main {s!<e2>; stop}} | " +
                 "s { main {r?; stop}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
 
         assertEquals(expected, actual)
@@ -52,9 +46,7 @@ class PaperTest {
     fun l1() {
         val test = "p { def X {q!<e>; q!<e>; q!<e>; X} main {X}} | " +
                 "q { def Y {p?; p?; Y} main {p?; Y}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; p.e->q; X1 } main {X1}"
 
         assertEquals(expected, actual)
@@ -65,9 +57,7 @@ class PaperTest {
         val test = "p { def X {q!<e>; Y} def Y {r!<e>; Z} def Z {q!<e>; X} main {X}} | " +
                 "q { def W {p?; W} main {W}} | " +
                 "r { def T {p?; T} main {T}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { p.e->r; p.e->q; p.e->q; X1 } main {p.e->q; X1}"
 
         assertEquals(expected, actual)
@@ -77,9 +67,7 @@ class PaperTest {
     fun ex8() { /* 2-bit protocol*/
         val test = "a { def X {b?;b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                 "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
 
         assertEquals(expected, actual)
@@ -97,12 +85,7 @@ class PaperTest {
                         "accept: shipper+send; shipper!<deliv>; shipper?; buyer!<details>; stop, " +
                         "reject: shipper+wait; stop}}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test, Utils.parseStrategy(strategy)).toString()
         val expected =
                 "main {buyer.quote->seller; seller.quote->buyer; if buyer.ok then buyer->seller[accept]; seller->shipper[send]; seller.deliv->shipper; shipper.t->seller; seller.details->buyer; stop else buyer->seller[reject]; seller->shipper[wait]; stop}"
         assertEquals(expected, actual)
@@ -120,12 +103,7 @@ class PaperTest {
                         "accept: shipper+send; shipper!<deliv>; shipper?; buyer!<details>; stop, " +
                         "reject: shipper+wait; X}} main {buyer?; X}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test, Utils.parseStrategy(strategy)).toString()
         val expected =
                 "def X1 { if buyer.ok then buyer->seller[accept]; seller->shipper[send]; seller.deliv->shipper; shipper.t->seller; seller.details->buyer; stop else buyer->seller[reject]; seller->shipper[wait]; seller.quote->buyer; X1 } main {buyer.quote->seller; seller.quote->buyer; X1}"
         assertEquals(expected, actual)
@@ -140,12 +118,7 @@ class PaperTest {
                         "buyer2{def X {seller?; buyer1?; if ok then seller+accept; seller!<address>; seller?; X else seller+decline; X} main {X}} | " +
                         "seller{def X {buyer1?; buyer1!<quote>; buyer2!<quote>; buyer2&{accept: buyer2?; buyer2!<date>; X, decline: X}} main {X}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test, Utils.parseStrategy(strategy)).toString()
         val expected =
                 "def X1 { buyer1.book->seller; seller.quote->buyer1; X2 } def X2 { seller.quote->buyer2; buyer1.quote->buyer2; if buyer2.ok then buyer2->seller[accept]; buyer2.address->seller; seller.date->buyer2; buyer1.book->seller; seller.quote->buyer1; X2 else buyer2->seller[decline]; X1 } main {X1}"
         assertEquals(expected, actual)
@@ -160,12 +133,7 @@ class PaperTest {
                         "key{def X{kernel!<data>; X} main{X}} | " +
                         "consumer{def X{kernel?; X} main{X}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test, Utils.parseStrategy(strategy)).toString()
         val expected =
                 "def X1 { data.data->kernel; key.data->kernel; kernel.xor->consumer; X1 } main {X1}"
         assertEquals(expected, actual)
@@ -207,12 +175,7 @@ class PaperTest {
                         "ok: X, " +
                         "no: stop}}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        val strategy = param.second
-        args.add(test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test, Utils.parseStrategy(strategy)).toString()
         val expected =
                 "main {user.high->operator; if operator.ok then operator->user[ok]; operator->instrument[ok]; user->instrument[move]; user->instrument[photo]; user->instrument[quit]; stop else operator->user[no]; operator->instrument[no]; stop}"
         assertEquals(expected, actual)

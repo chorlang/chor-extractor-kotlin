@@ -206,20 +206,22 @@ fun extractionSoundnessC41() {
         val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
 
         networkFiles.forEach { fileId, networkMap ->
-//            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" ) {
+            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" ) {
 //            if ( fileId == "50-6-50-0" || fileId == "50-6-40-0" ) {
                 val extractionMap = HashMap<String, Pair<Program, Long>>()
                 networkMap.forEach { id, network ->
                     println("Extracting $id from $PROJECTION_PREFIX$fileId")
                     val start = System.currentTimeMillis()
-                    val program = Extraction.extractChoreography(network, Strategy.Default, ArrayList<String>(), true)
+
+                    // TODO we need to test all different strategies
+                    val program = Extraction.extractChoreography(network, Strategy.Default)
                     val executionTime = System.currentTimeMillis() - start
 
                     extractionMap[id] = Pair(program, executionTime)
                 }
                 writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
                 writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX$fileId")
-//            }
+            }
         }
     }
 
@@ -251,9 +253,9 @@ fun extractionSoundnessC41() {
 
                         //try and fail to extract body
                         val start = System.currentTimeMillis()
-                        val program = Extraction.extractChoreography(network, Strategy.Default, ArrayList(), true)
+                        val program = Extraction.extractChoreography(network, Strategy.Default, ArrayList())
                         val executionTime = System.currentTimeMillis() - start
-                        val graphStatistic = program.statistics.first()
+                        val graphStatistic = program.statistics.first() // TODO all over the place: all program statistics should be aggregated instead of picking the first one
 
 
                         //collect data

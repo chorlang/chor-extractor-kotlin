@@ -11,9 +11,7 @@ class InteractionTest{
         val test = "p { main {q!<e>; q?; stop}} " +
                 "| q { main {p?; p!<u>; stop}} " +
                 "| r { main {stop}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {p.e->q; q.u->p; stop}"
 
         assertEquals(expected, actual)
@@ -25,9 +23,7 @@ class InteractionTest{
         val test = "p { def X {q!<e>; stop} main {X}} " +
                 "| q { def X {p?; stop} main {X}} " +
                 "| r { main {stop}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {p.e->q; stop}"
 
         assertEquals(expected, actual)
@@ -37,9 +33,7 @@ class InteractionTest{
     @Test
     fun tst3(){
         val test = "p {main{q?;stop}} | q { def X {p!<e>;stop} main{X}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {q.e->p; stop}"
 
         assertEquals(expected, actual)
@@ -51,9 +45,7 @@ class InteractionTest{
         val test = "p {def X {q!<e>;X} main {X}} " +
                 "| q {def Y{p?; Y} main {Y}} " +
                 "| r { main {stop}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { p.e->q; X1 } main {X1}"
 
         assertEquals(expected, actual)

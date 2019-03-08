@@ -8,9 +8,7 @@ class TerminationTest {
     @Test
     fun tst1(){
         val test = "p {main{stop}} | q {main{stop}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {stop}"
 
         assertEquals(expected, actual)
@@ -19,9 +17,7 @@ class TerminationTest {
     @Test
     fun tst2(){
         val test = "p {main{stop}} | q {def X {stop} main{X}}"
-        val args = arrayListOf("-c", test)
-
-        val actual = Extraction.main(args).toString()
+        val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {stop}"
 
         assertEquals(expected, actual)

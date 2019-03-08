@@ -9,195 +9,195 @@ import kotlin.collections.LinkedHashMap
  */
 enum class Strategy {
     SelectionFirst {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
 
-            net.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
-            net.forEach { process -> if (process.value.main is SendSP || process.value.main is ReceiveSP) network[process.key] = process.value.copy() }
-            net.forEach { process -> network[process.key] = process.value.copy() }
+            node.network.processes.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
+            node.network.processes.forEach { process -> if (process.value.main is SendSP || process.value.main is ReceiveSP) network[process.key] = process.value.copy() }
+            node.network.processes.forEach { process -> network[process.key] = process.value.copy() }
             return network
         }
     },
     ConditionFirst() {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
 
-            net.forEach { process -> if (process.value.main is ConditionSP) network[process.key] = process.value.copy() }
-            net.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
-            net.forEach { process -> network[process.key] = process.value.copy() }
+            node.network.processes.forEach { process -> if (process.value.main is ConditionSP) network[process.key] = process.value.copy() }
+            node.network.processes.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
+            node.network.processes.forEach { process -> network[process.key] = process.value.copy() }
             return network
         }
     },
     UnmarkedFirst() {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
-            marking.forEach { processName, marked ->
-                if (!marked) {
-                    ret[processName] = net.remove(processName)!!
+            node.network.processes.forEach { processName, processTerm ->
+                if ( !node.marking[processName]!! ) {
+                    ret[processName] = processTerm.copy()
                 }
             }
 
-            ret.putAll(net)
+            node.network.processes.forEach { processName, processTerm ->
+                if ( node.marking[processName]!! ) {
+                    ret[processName] = processTerm.copy()
+                }
+            }
+
             return ret
         }
     },
-    RandomProcess() {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+    Random() {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
-            net.keys.shuffled().forEach { ret[it] = net[it]!! }
+            node.network.processes.keys.shuffled().forEach { ret[it] = node.network.processes[it]!!.copy() }
             return ret
         }
     },
     LengthFirst() {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
-            val sortedProcessesist = net.entries.sortedBy { 0 - it.value.main.toString().length }
-            sortedProcessesist.forEach { ret[it.key] = it.value }
-
+            node.network.processes.entries.sortedByDescending { it.value.main.toString().length }.forEach { ret[it.key] = it.value.copy() }
             return ret
         }
     },
     ShortestFirst() {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
-            val sortedProcessesist = net.entries.sortedBy { it.value.main.toString().length }
-            sortedProcessesist.forEach { ret[it.key] = it.value }
-
+            node.network.processes.entries.sortedBy { it.value.main.toString().length }.forEach { ret[it.key] = it.value.copy() }
             return ret
         }
     },
     UnmarkedThenRandom() {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
-            val markedList = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val unmarkedList = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val markedList = ArrayList<ProcessName>()
+            val unmarkedList = ArrayList<ProcessName>()
 
-            marking.forEach { processName, marked ->
-                val processTerm = net[processName]!!
-                if (marked){
-                    markedList.add(AbstractMap.SimpleEntry(processName, processTerm))
+            node.marking.forEach { processName, marked ->
+                if (marked) {
+                    markedList.add(processName)
                 } else {
-                    unmarkedList.add(AbstractMap.SimpleEntry(processName, processTerm))
+                    unmarkedList.add(processName)
                 }
             }
 
-            markedList.shuffle()
             unmarkedList.shuffle()
+            markedList.shuffle()
 
-            unmarkedList.forEach { ret[it.key] = it.value }
-            markedList.forEach { ret[it.key] = it.value }
+            unmarkedList.forEach { ret[it] = node.network.processes[it]!!.copy() }
+            markedList.forEach { ret[it] = node.network.processes[it]!!.copy() }
 
             return ret
         }
     },
     UnmarkedThenSelection() {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
-            val markedSelections = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val unmarkedSelections = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val markedSending = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val unmarkedSending = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val markedElse = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val unmarkedElse = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val markedSelections = ArrayList<ProcessName>()
+            val unmarkedSelections = ArrayList<ProcessName>()
+            val markedSending = ArrayList<ProcessName>()
+            val unmarkedSending = ArrayList<ProcessName>()
+            val markedElse = ArrayList<ProcessName>()
+            val unmarkedElse = ArrayList<ProcessName>()
 
-            marking.forEach { processName, marked ->
-                val processTerm = net[processName]
-                val main = processTerm!!.main
+            node.marking.forEach { processName, marked ->
+                val main = node.network.processes[processName]!!.main
                 when (main) {
                     is SelectionSP, is OfferingSP -> {
                         if (!marked) {
-                            unmarkedSelections.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            unmarkedSelections.add(processName)
                         } else {
-                            markedSelections.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            markedSelections.add(processName)
                         }
                     }
                     is SendSP, is ReceiveSP -> {
                         if (!marked) {
-                            unmarkedSending.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            unmarkedSending.add(processName)
                         } else {
-                            markedSending.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            markedSending.add(processName)
                         }
                     }
                     else -> {
                         if (!marked) {
-                            unmarkedElse.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            unmarkedElse.add(processName)
                         } else {
-                            markedElse.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            markedElse.add(processName)
                         }
                     }
 
                 }
             }
 
-            unmarkedSelections.forEach { ret[it.key] = it.value }
-            unmarkedSending.forEach { ret[it.key] = it.value }
-            unmarkedElse.forEach { ret[it.key] = it.value }
-            markedSelections.forEach { ret[it.key] = it.value }
-            markedSending.forEach { ret[it.key] = it.value }
-            markedElse.forEach { ret[it.key] = it.value }
+            val copyFun = { processName:ProcessName -> ret[processName] = node.network.processes[processName]!!.copy() }
+
+            unmarkedSelections.forEach(copyFun)
+            unmarkedSending.forEach(copyFun)
+            unmarkedElse.forEach(copyFun)
+            markedSelections.forEach(copyFun)
+            markedSending.forEach(copyFun)
+            markedElse.forEach(copyFun)
 
             return ret
         }
     },
     UnmarkedThenCondition() {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
-            val markedSelections = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val unmarkedSelections = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val markedCondition = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val unmarkedCondition = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val markedElse = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
-            val unmarkedElse = LinkedList<Map.Entry<ProcessName, ProcessTerm>>()
+            val markedSelections = ArrayList<ProcessName>()
+            val unmarkedSelections = ArrayList<ProcessName>()
+            val markedConditions = ArrayList<ProcessName>()
+            val unmarkedConditions = ArrayList<ProcessName>()
+            val markedElse = ArrayList<ProcessName>()
+            val unmarkedElse = ArrayList<ProcessName>()
 
-            marking.forEach { processName, marked ->
-                val processTerm = net[processName]
-                val main = processTerm!!.main
+            node.marking.forEach { processName, marked ->
+                val main = node.network.processes[processName]!!.main
                 when (main) {
                     is SelectionSP, is OfferingSP -> {
                         if (!marked) {
-                            unmarkedSelections.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            unmarkedSelections.add(processName)
                         } else {
-                            markedSelections.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            markedSelections.add(processName)
                         }
                     }
                     is ConditionSP -> {
                         if (!marked) {
-                            unmarkedCondition.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            unmarkedConditions.add(processName)
                         } else {
-                            markedCondition.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            markedConditions.add(processName)
                         }
                     }
                     else -> {
                         if (!marked) {
-                            unmarkedElse.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            unmarkedElse.add(processName)
                         } else {
-                            markedElse.add(AbstractMap.SimpleEntry(processName, processTerm))
+                            markedElse.add(processName)
                         }
                     }
 
                 }
             }
 
-            unmarkedCondition.forEach { ret[it.key] = it.value }
-            unmarkedSelections.forEach { ret[it.key] = it.value }
-            unmarkedElse.forEach { ret[it.key] = it.value }
-            markedCondition.forEach { ret[it.key] = it.value }
-            markedSelections.forEach { ret[it.key] = it.value }
-            markedElse.forEach { ret[it.key] = it.value }
+            val copyFun = { processName:ProcessName -> ret[processName] = node.network.processes[processName]!!.copy() }
+
+            unmarkedConditions.forEach(copyFun)
+            unmarkedSelections.forEach(copyFun)
+            unmarkedElse.forEach(copyFun)
+            markedConditions.forEach(copyFun)
+            markedSelections.forEach(copyFun)
+            markedElse.forEach(copyFun)
 
             return ret
         }
     },
 
     Default() {
-        override fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
-            return SelectionFirst.sort(marking, net)
-        }
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> = SelectionFirst.copyAndSort(node)
     };
 
-    abstract fun sort(marking: Marking, net: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm>
+    abstract fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm>
 }
