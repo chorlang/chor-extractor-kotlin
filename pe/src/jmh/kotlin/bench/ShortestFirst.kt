@@ -2,7 +2,9 @@
 package bench
 
 import extraction.Extraction
+import extraction.Strategy
 import org.openjdk.jmh.annotations.*
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 @Warmup(iterations = 1)
@@ -12,45 +14,42 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 
 
-open class ShortestFirst{
+open class ShortestFirst {
     @Benchmark
     fun runningExample(){
         val test = "a {def X " +
                 "{if e " +
-                    "then b+win; c+lose; b?; c?; d!<free>; X " +
-                    "else b+lose; c+win; b?; c?; d!<free>; X} " +
+                "then b+win; c+lose; b?; c?; d!<free>; X " +
+                "else b+lose; c+win; b?; c?; d!<free>; X} " +
                 "main {X}} |" +
                 "b {def X " +
-                    "{a&{" +
-                    "win: c!<lose>; a!<sig>; X, " +
-                    "lose: c?; a!<sig>; X}} " +
-                    "main {X}} |" +
+                "{a&{" +
+                "win: c!<lose>; a!<sig>; X, " +
+                "lose: c?; a!<sig>; X}} " +
+                "main {X}} |" +
                 "c {def X " +
-                    "{d!<busy>; a&{" +
-                    "win: b!<lose>; a!<msg>; X, " +
-                    "lose: b?; a!<msg>; X}} " +
-                    "main {X}} |" +
+                "{d!<busy>; a&{" +
+                "win: b!<lose>; a!<msg>; X, " +
+                "lose: b?; a!<msg>; X}} " +
+                "main {X}} |" +
                 "d {def X " +
-                    "{c?; a?; X} " +
-                    "main {X}}"
-        val args = arrayListOf("-c", test, "-s", "ShortestFirst")
-        Extraction.main(args)
+                "{c?; a?; X} " +
+                "main {X}}"
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
-    fun runnigExample2x(){
+    fun runningExample2x(){
         val test =
                 "a1 {def X {if e then b1+win; c1+lose; b1?; c1?; d1!<free>; X else b1+lose; c1+win; b1?; c1?; d1!<free>; X} main {X}} |" +
-                "b1 {def X {a1&{win: a1!<sig>; X, lose: a1!<sig>; X}} main {X}} |" +
-                "c1 {def X {d1!<busy>; a1&{win: a1!<msg>; X, lose: a1!<msg>; X}} main {X}} |" +
-                "d1 {def X {c1?; a1?; X} main {X}} | " +
-                "a2 {def X {if e then b2+win; c2+lose; b2?; c2?; d2!<free>; X else b2+lose; c2+win; b2?; c2?; d2!<free>; X} main {X}} |" +
-                "b2 {def X {a2&{win: a2!<sig>; X, lose: a2!<sig>; X}} main {X}} |" +
-                "c2 {def X {d2!<busy>; a2&{win: a2!<msg>; X, lose: a2!<msg>; X}} main {X}} |" +
-                "d2 {def X {c2?; a2?; X} main {X}}"
-
-        val args = arrayListOf("-c", test, "-s", "ShortestFirst")
-        Extraction.main(args)
+                        "b1 {def X {a1&{win: a1!<sig>; X, lose: a1!<sig>; X}} main {X}} |" +
+                        "c1 {def X {d1!<busy>; a1&{win: a1!<msg>; X, lose: a1!<msg>; X}} main {X}} |" +
+                        "d1 {def X {c1?; a1?; X} main {X}} | " +
+                        "a2 {def X {if e then b2+win; c2+lose; b2?; c2?; d2!<free>; X else b2+lose; c2+win; b2?; c2?; d2!<free>; X} main {X}} |" +
+                        "b2 {def X {a2&{win: a2!<sig>; X, lose: a2!<sig>; X}} main {X}} |" +
+                        "c2 {def X {d2!<busy>; a2&{win: a2!<msg>; X, lose: a2!<msg>; X}} main {X}} |" +
+                        "d2 {def X {c2?; a2?; X} main {X}}"
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -59,8 +58,7 @@ open class ShortestFirst{
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
-        val args = arrayListOf("-c", test, "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -71,8 +69,7 @@ open class ShortestFirst{
                         "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
-        val args = arrayListOf("-c", test, "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -82,8 +79,7 @@ open class ShortestFirst{
                         "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
                         "c { main {a?; stop}}"
 
-        val args = arrayListOf("-c", test, "-l", "c", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("c"))).toString()
     }
 
     @Benchmark
@@ -97,8 +93,7 @@ open class ShortestFirst{
                         "f { def Z {d?; Z} main {Z}}"
 
 
-        val args = arrayListOf("-c", test, "-l", "c, f", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("c", "f"))).toString()
     }
 
     @Benchmark
@@ -113,8 +108,7 @@ open class ShortestFirst{
                         "t{def X{hs?; hs!<fwdOk>; es!<helpReq>; X} main{X}} | " +
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
-        val args = arrayListOf("-c", test, "-l", "as, t, es", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("as", "t", "es"))).toString()
     }
 
     @Benchmark
@@ -133,8 +127,7 @@ open class ShortestFirst{
                         "t2{def X{hs2?; hs2!<fwdOk>; es2!<helpReq>; X} main{X}} | " +
                         "es2{def X{t2?; p2!<provideService>; X} main{X}}"
 
-        val args = arrayListOf("-c", test, "-l", "as1, t1, es1, as2, t2, es2", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("as1", "t1", "es1", "as2", "t2", "es2"))).toString()
     }
 
     @Benchmark
@@ -154,8 +147,7 @@ open class ShortestFirst{
                         "main {X}}"
 
 
-        val args = arrayListOf("-c", test, "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -187,8 +179,7 @@ open class ShortestFirst{
                         "main {X}}"
 
 
-        val args = arrayListOf("-c", test, "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -210,8 +201,7 @@ open class ShortestFirst{
                         "def Y {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Y}}"
 
-        val args = arrayListOf("-c", test, "-l", "retailer", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("retailer"))).toString()
     }
 
     @Benchmark
@@ -238,8 +228,7 @@ open class ShortestFirst{
                         "def Z {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Z}}"
 
-        val args = arrayListOf("-c", test, "-l", "retailer", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("retailer"))).toString()
     }
 
     @Benchmark
@@ -260,8 +249,7 @@ open class ShortestFirst{
                         "def X{appli?; X} " +
                         "main {X}}"
 
-        val args = arrayListOf("-c", test, "-l", "db, int", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("db","int"))).toString()
     }
 
     @Benchmark
@@ -276,8 +264,7 @@ open class ShortestFirst{
                         "int2{def X{cl2?; appli2!<setup>; cl2!<syncAccess>; cl2?; X} main {X}} | " +
                         "db2{def X{appli2?; X} main {X}}"
 
-        val args = arrayListOf("-c", test, "-l", "db1, int1, db2, int2", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("db1","int1","db2","int2"))).toString()
     }
 
     @Benchmark
@@ -309,8 +296,7 @@ open class ShortestFirst{
                         "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
                         "main{X}}"
 
-        val args = arrayListOf("-c", test, "-l", "coop, bank", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("coop","bank"))).toString()
     }
 
     @Benchmark
@@ -367,7 +353,6 @@ open class ShortestFirst{
                         "def Y{citizen2?; sanagency2?; sanagency2!<done>; X} " +
                         "main{X}}"
 
-        val args = arrayListOf("-c", test, "-l", "coop, bank, coop2, bank2", "-s", "ShortestFirst")
-        Extraction.main(args)
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("coop","bank","coop2","bank2"))).toString()
     }
 }*/

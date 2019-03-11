@@ -12,8 +12,6 @@ class ConditionTest{
                         "| q { main {p?; stop}} " +
                         "| r { main {stop}}"
 
-        val args = arrayListOf("-c", test)
-
         val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {if p.e then p.e1->q; stop else p.e2->q; stop}"
 
@@ -26,8 +24,6 @@ class ConditionTest{
                 "p { main {if e then q+R; q!<e1>; q?; stop else q+L; q!<e2>; q?; stop}} | " +
                         "q { main {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}}} | " +
                         "r { main {stop}}"
-
-        val args = arrayListOf("-c", test)
 
         val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"
@@ -42,8 +38,6 @@ class ConditionTest{
                         "| q { main {p?; stop}} " +
                         "| r { main {stop}}"
 
-        val args = arrayListOf("-c", test)
-
         val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {if p.e then if p.u then p.e1->q; stop else p.e2->q; stop else p.e3->q; stop}"
 
@@ -56,8 +50,6 @@ class ConditionTest{
                 "p {def X {if e then q!<u>;stop else q!<o>;stop} main {X}} " +
                         "| q {def Y{p?;stop} main {Y}} " +
                         "| r { main {stop}}"
-
-        val args = arrayListOf("-c", test)
 
         val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {if p.e then p.u->q; stop else p.o->q; stop}"
@@ -72,8 +64,6 @@ class ConditionTest{
                         "| q {def Y{p?;Y} main {Y}} " +
                         "| r { main {stop}}"
 
-        val args = arrayListOf("-c", test)
-
         val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { if p.e then p.u->q; X1 else p.o->q; X1 } main {X1}"
 
@@ -86,8 +76,6 @@ class ConditionTest{
                 "p { def X {if e then q+R; q!<e1>; q?; stop else q+L; q!<e2>; q?; stop} main {X}} | " +
                         "q { def X {p&{R: p?; p!<u1>; stop, L: p?; p!<u2>; stop}} main {X}} | " +
                         "r { main {stop}}"
-
-        val args = arrayListOf("-c", test)
 
         val actual = Extraction.extractChoreography(test).toString()
         val expected = "main {if p.e then p->q[R]; p.e1->q; q.u1->p; stop else p->q[L]; p.e2->q; q.u2->p; stop}"
@@ -102,8 +90,6 @@ class ConditionTest{
                         "q { def Y {p?; Y} main {Y}} | " +
                         "r { main {s!<e2>; stop}} | " +
                         "s { main {r?; stop}}"
-
-        val args = arrayListOf("-c", test)
 
         val actual = Extraction.extractChoreography(test).toString()
         val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
