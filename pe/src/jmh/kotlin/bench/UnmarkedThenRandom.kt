@@ -78,7 +78,7 @@ open class UnmarkedThenRandom {
                         "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
                         "c { main {a?; stop}}"
 
-        Extraction.extractChoreography(test, Strategy.LengthFirst, ArrayList(listOf("c"))).toString()
+        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("c"))).toString()
     }
 
     @Benchmark
@@ -92,7 +92,7 @@ open class UnmarkedThenRandom {
                         "f { def Z {d?; Z} main {Z}}"
 
 
-        Extraction.extractChoreography(test, Strategy.LengthFirst, ArrayList(listOf("c", "f"))).toString()
+        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("c", "f"))).toString()
     }
 
     @Benchmark
@@ -107,7 +107,7 @@ open class UnmarkedThenRandom {
                         "t{def X{hs?; hs!<fwdOk>; es!<helpReq>; X} main{X}} | " +
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
-        Extraction.extractChoreography(test, Strategy.LengthFirst, ArrayList(listOf("as", "t", "es"))).toString()
+        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("as", "t", "es"))).toString()
     }
 
     @Benchmark
@@ -126,7 +126,7 @@ open class UnmarkedThenRandom {
                         "t2{def X{hs2?; hs2!<fwdOk>; es2!<helpReq>; X} main{X}} | " +
                         "es2{def X{t2?; p2!<provideService>; X} main{X}}"
 
-        Extraction.extractChoreography(test, Strategy.LengthFirst, ArrayList(listOf("as1", "t1", "es1", "as2", "t2", "es2"))).toString()
+        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("as1", "t1", "es1", "as2", "t2", "es2"))).toString()
     }
 
     @Benchmark
@@ -200,7 +200,7 @@ open class UnmarkedThenRandom {
                         "def Y {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Y}}"
 
-        Extraction.extractChoreography(test, Strategy.LengthFirst, ArrayList(listOf("retailer"))).toString()
+        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("retailer"))).toString()
     }
 
     @Benchmark
@@ -227,7 +227,7 @@ open class UnmarkedThenRandom {
                         "def Z {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Z}}"
 
-        Extraction.extractChoreography(test, Strategy.LengthFirst, ArrayList(listOf("retailer"))).toString()
+        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("retailer"))).toString()
     }
 
     @Benchmark
@@ -248,7 +248,7 @@ open class UnmarkedThenRandom {
                         "def X{appli?; X} " +
                         "main {X}}"
 
-        Extraction.extractChoreography(test, Strategy.LengthFirst, ArrayList(listOf("db","int"))).toString()
+        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("db","int"))).toString()
     }
 
     @Benchmark
@@ -263,7 +263,7 @@ open class UnmarkedThenRandom {
                         "int2{def X{cl2?; appli2!<setup>; cl2!<syncAccess>; cl2?; X} main {X}} | " +
                         "db2{def X{appli2?; X} main {X}}"
 
-        Extraction.extractChoreography(test, Strategy.LengthFirst, ArrayList(listOf("db1","int1","db2","int2"))).toString()
+        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("db1","int1","db2","int2"))).toString()
     }
 
     @Benchmark
@@ -295,7 +295,7 @@ open class UnmarkedThenRandom {
                         "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
                         "main{X}}"
 
-        Extraction.extractChoreography(test, Strategy.LengthFirst, ArrayList(listOf("coop","bank"))).toString()
+        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("coop","bank"))).toString()
     }
 
     @Benchmark

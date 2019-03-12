@@ -37,10 +37,10 @@ object Merging {
     }
 
     private fun merge(left: SelectionSP, right: SelectionSP): Behaviour {
-        if (left.process != right.process || left.expression != right.expression) throw MergingException("Can't merge ${left.process}+${left.expression} and ${right.process}+${right.expression}")
+        if (left.process != right.process || left.label != right.label) throw MergingException("Can't merge ${left.process}+${left.label} and ${right.process}+${right.label}")
 
         val continuation = merge(left.continuation, right.continuation)
-        return SelectionSP(continuation, left.process, left.expression)
+        return SelectionSP(continuation, left.process, left.label)
     }
 
     private fun merge(left: OfferingSP, right: OfferingSP): Behaviour {

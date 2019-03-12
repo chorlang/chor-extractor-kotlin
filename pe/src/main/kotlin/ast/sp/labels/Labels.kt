@@ -19,8 +19,8 @@ sealed class ExtractionLabel(var flipped: Boolean = false){
     }
 
     sealed class InteractionLabel(open val sender: String, open val receiver: String, open val expression: String) : ExtractionLabel(){
-        class SendingLabel(override val sender: String, override val receiver: String, override val expression: String): InteractionLabel(sender, receiver, expression){
-            override fun copy() = SendingLabel(sender, receiver, expression)
+        class CommunicationLabel(override val sender: String, override val receiver: String, override val expression: String): InteractionLabel(sender, receiver, expression){
+            override fun copy() = CommunicationLabel(sender, receiver, expression)
 
             override fun toString(): String = sender
         }

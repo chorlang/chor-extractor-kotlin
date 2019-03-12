@@ -7,12 +7,11 @@ import ast.sp.labels.ExtractionLabel
 import ast.sp.labels.ExtractionLabel.ConditionLabel.ElseLabel
 import ast.sp.labels.ExtractionLabel.ConditionLabel.ThenLabel
 import ast.sp.labels.ExtractionLabel.InteractionLabel.SelectionLabel
-import ast.sp.labels.ExtractionLabel.InteractionLabel.SendingLabel
+import ast.sp.labels.ExtractionLabel.InteractionLabel.CommunicationLabel
 import ast.sp.labels.ExtractionLabel.MulticomLabel
 import ast.sp.nodes.ProcedureName
 import util.ChoreographyASTToProgram
 import util.ParseUtils.parseChoreography
-import util.choreographyStatistics.NumberOfActions
 
 fun bisimilar( c1:String, c2:String ):Boolean
 {
@@ -97,7 +96,7 @@ private fun pn(label: ExtractionLabel):Set<String>
     return when( label ) {
         is ThenLabel -> setOf(label.process)
         is ElseLabel -> setOf(label.process)
-        is SendingLabel -> setOf(label.sender, label.receiver)
+        is CommunicationLabel -> setOf(label.sender, label.receiver)
         is SelectionLabel -> setOf(label.sender, label.receiver)
         is MulticomLabel -> TODO()
     }
@@ -174,7 +173,7 @@ fun getContinuation( c:ChoreographyBody, label:ExtractionLabel, procedures:List<
 fun equalLabels( l1:ExtractionLabel, l2:ExtractionLabel ):Boolean
 {
     return when( l1 ) {
-        is SendingLabel -> when( l2 ) { is SendingLabel -> l1.sender == l2.sender && l1.receiver == l2.receiver && l1.expression == l2.expression else -> false }
+        is CommunicationLabel -> when( l2 ) { is CommunicationLabel -> l1.sender == l2.sender && l1.receiver == l2.receiver && l1.expression == l2.expression else -> false }
         is SelectionLabel -> when( l2 ) { is SelectionLabel -> l1.sender == l2.sender && l1.receiver == l2.receiver && l1.label == l2.label else -> false }
         is ThenLabel -> when( l2 ) { is ThenLabel -> l1.process == l2.process && l1.expression == l2.expression else -> false }
         is ElseLabel -> when( l2 ) { is ElseLabel -> l1.process == l2.process && l1.expression == l2.expression else -> false }
@@ -209,7 +208,7 @@ fun getProcedure( name:ProcedureName, procedures:List<ProcedureDefinition> ):Cho
 fun labelFromInteraction(interaction:Interaction):ExtractionLabel
 {
     return when( interaction ) {
-        is Communication -> SendingLabel(interaction.sender, interaction.receiver, interaction.expression)
+        is Communication -> CommunicationLabel(interaction.sender, interaction.receiver, interaction.expression)
         is Selection -> SelectionLabel(interaction.sender, interaction.receiver, interaction.label)
         else -> throw IllegalArgumentException()
     }

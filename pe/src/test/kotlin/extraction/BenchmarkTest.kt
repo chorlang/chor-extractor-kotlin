@@ -18,7 +18,7 @@ class BenchmarkTest {
         val actual = Extraction.extractChoreography( test, strategy ).toString()
         
         when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst, Strategy.UnmarkedFirst, Strategy.UnmarkedThenCondition, Strategy.UnmarkedThenSelection -> {
+            Strategy.SelectionsFirst, Strategy.ConditionsFirst, Strategy.UnmarkedFirst, Strategy.UnmarkedThenConditions, Strategy.UnmarkedThenSelections -> {
                 val expected =
                         "def X1 { if a.e then a->b[win]; c.busy->d; a->c[lose]; b.sig->a; c.msg->a; a.free->d; X1 else a->b[lose]; c.busy->d; a->c[win]; b.sig->a; c.msg->a; a.free->d; X1 } main {X1}"
 
@@ -52,13 +52,13 @@ class BenchmarkTest {
         val actual = Extraction.extractChoreography( test, strategy ).toString()
 
         when (strategy) {
-            Strategy.SelectionFirst -> {
+            Strategy.SelectionsFirst -> {
                 val expected =
                         "def X1 { if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; a1->c1[lose]; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; c2.busy->d2; a1->b1[win]; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; a1->b1[lose]; a1->c1[win]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; a1->c1[lose]; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; c2.busy->d2; a1->b1[win]; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; a1->b1[lose]; a1->c1[win]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; a1->c1[win]; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; a1->b1[win]; a1->c1[lose]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; c2.busy->d2; a1->b1[lose]; a1->c1[win]; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; a1->c1[win]; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; a1->b1[win]; a1->c1[lose]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; c2.busy->d2; a1->b1[lose]; a1->c1[win]; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 } main {X1}"
 
                 assertEquals(expected, actual)
             }
-            Strategy.ConditionFirst -> {
+            Strategy.ConditionsFirst -> {
                 //if it doesn't fail then we are happy
             }
             Strategy.UnmarkedFirst -> {
@@ -67,13 +67,13 @@ class BenchmarkTest {
 
                 assertEquals(expected, actual)
             }
-            Strategy.UnmarkedThenCondition -> {
+            Strategy.UnmarkedThenConditions -> {
                 val expected =
                         "def X1 { c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X2 } def X10 { c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X11 } def X11 { c1.lose->b1; X12 } def X12 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X12 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X12 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X11 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10 } def X2 { b1.lose->c1; X3 } def X3 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X2 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X3 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X3 } def X4 { c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; X5 } def X5 { b1.lose->c1; X6 } def X6 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; X5 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; X6 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; X6 } def X7 { c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; X8 } def X8 { c1.lose->b1; X9 } def X9 { b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; X9 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; X9 else b2.sig->a2; c2.msg->a2; a2.free->d2; if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; X8 } main {if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; X4 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; X7 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; X10}"
 
                 assertEquals(expected, actual)
             }
-            Strategy.UnmarkedThenSelection -> {
+            Strategy.UnmarkedThenSelections -> {
                 val expected =
                         "def X1 { if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; c2.busy->d2; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[lose]; b2.lose->c2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; c2.busy->d2; a1->c1[win]; a2->c2[win]; c2.lose->b2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; b2.sig->a2; c2.msg->a2; a2.free->d2; X1 } main {X1}"
 
@@ -96,7 +96,7 @@ class BenchmarkTest {
             Strategy.UnmarkedThenRandom, Strategy.Random -> {
                 //Random result, can't assert
             }
-            Strategy.LengthFirst -> {
+            Strategy.LongestFirst -> {
                 val expected = "def X1 { (b.ack0->a, a.1->b); (a.0->b, b.ack1->a); X1 } main {a.0->b; X1}"
                 assertEquals(expected, actual)
             }
@@ -124,14 +124,14 @@ class BenchmarkTest {
         val actual = Extraction.extractChoreography( test, strategy ).toString()
 
         when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst -> {
+            Strategy.SelectionsFirst, Strategy.ConditionsFirst -> {
                 val expected =
                         "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); (c.1->d, d.ack0->c); (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); (c.0->d, d.ack1->c); X1 } main {a.0->b; c.0->d; X1}"
 
                 assertEquals(expected, actual)
             }
 
-            Strategy.UnmarkedFirst, Strategy.UnmarkedThenCondition, Strategy.UnmarkedThenSelection -> {
+            Strategy.UnmarkedFirst, Strategy.UnmarkedThenConditions, Strategy.UnmarkedThenSelections -> {
                 val expected =
                         "def X1 { (a.1->b, b.ack0->a); (c.1->d, d.ack0->c); (a.0->b, b.ack1->a); (c.0->d, d.ack1->c); X1 } main {a.0->b; c.0->d; X1}"
 

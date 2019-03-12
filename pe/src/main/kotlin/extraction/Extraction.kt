@@ -11,10 +11,12 @@ import ast.sp.nodes.*
 import org.jgrapht.graph.DirectedPseudograph
 import util.ParseUtils
 import java.lang.IllegalArgumentException
+import java.lang.IllegalStateException
 
 /**
  * services are allowed to be livelocked
  */
+// TODO we're assuming that the network is well-formed (all process actions point to other processes that actually exist and there are no self-comms): CHECK FOR THIS!!
 class Extraction(private val strategy: Strategy, private val services: ArrayList<String>) {
     companion object {
 //        @Throws(Exception::class)
@@ -170,35 +172,41 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
         val unfoldedProcesses = HashSet<String>()
         val processes = copyAndSortProcesses(currentNode)
 
-        //try to find a single-action communication
-        for (processPair in processes) {
-            //if the processPair has name invocation on top, try to unfold it
-            if (unfold(processPair.key, processes[processPair.key]!!)) unfoldedProcesses.add(processPair.key)
-            val processesCopy = processesCopy(processes)
+        // If the process is calling a procedure, try to unfold it
+        processes.forEach { (processName, processTerm) ->
+            if (unfold(processName, processTerm))
+                unfoldedProcesses.add(processName)
+        }
 
-            //try to find interaction
-            val communication = findCommunication(processesCopy, processPair.key)
+        // Try to find an interaction or a conditional
+        for ((processName, processTerm) in processes) {
+            // Copy all processes, for backtracking
+            val processesCopy = copyProcesses(processes)
+
+            // Try to find an interaction
+            val communication = findCommunication(processesCopy, processName, processTerm)
             if (communication != null) {
                 if (buildCommunication(communication, currentNode, unfoldedProcesses, graph)) return true else continue
             }
 
-            //try to find condition
-            val condition = findCondition(processesCopy)
-            if (condition != null) {
-                if (buildCondition(condition, currentNode, unfoldedProcesses, graph)) return true else continue
+            // Try to find a conditional
+            val conditional = findConditional(processesCopy, processName, processTerm)
+            if (conditional != null) {
+                if (buildConditional(conditional, currentNode, unfoldedProcesses, graph)) return true else continue
             }
-
-            //check if there are no possible actions left
-            if (allTerminated(processes)) return true
         }
 
+        // Check if there are no possible actions left
+        // This is after the previous loop because we might need to unfold processes to realise this
+        if (allTerminated(processes)) return true
+
         //try to find a multi-action communication
-        for (p in processes) {
-            val processesCopy = processesCopy(processes)
+        for ((processName, processTerm) in processes) {
+            val processesCopy = copyProcesses(processes)
             val actions = ArrayList<ExtractionLabel.InteractionLabel>()
             val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
 
-            val interactionLabel = createInteractionLabel(p.key, processesCopy)
+            val interactionLabel = createInteractionLabel(processName, processesCopy)
             if (interactionLabel != null) waiting.add(interactionLabel)
             val receivers = ArrayList<String>()
 
@@ -215,7 +223,7 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
         return false
     }
 
-    private fun buildCondition(condition: ResultCondition, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun buildConditional(condition: ResultCondition, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
         val (targetNetworkThen, labelThen, targetNetworkElse, labelElse) = condition
         val targetMarking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
 
@@ -421,7 +429,7 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
             1 -> {
                 val edge = edges.first()
                 return when (edge) {
-                    is ExtractionLabel.InteractionLabel.SendingLabel -> CommunicationSelection(Communication(edge.sender, edge.receiver, edge.expression), bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
+                    is ExtractionLabel.InteractionLabel.CommunicationLabel -> CommunicationSelection(Communication(edge.sender, edge.receiver, edge.expression), bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
                     is ExtractionLabel.InteractionLabel.SelectionLabel -> CommunicationSelection(Selection(edge.receiver, edge.sender, edge.label), bh(graph.getEdgeTarget(edge), graph, fakeNodesList))
 
                     is ExtractionLabel.MulticomLabel -> {
@@ -429,7 +437,7 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
                         for (label in edge.labels) {
                             when (label) {
                                 is ExtractionLabel.InteractionLabel.SelectionLabel -> actions.add(Selection(label.sender, label.receiver, label.label))
-                                is ExtractionLabel.InteractionLabel.SendingLabel -> actions.add(Communication(label.sender, label.receiver, label.expression))
+                                is ExtractionLabel.InteractionLabel.CommunicationLabel -> actions.add(Communication(label.sender, label.receiver, label.expression))
 
                             }
                         }
@@ -437,7 +445,7 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
                     }
 
                     is ExtractionLabel.ConditionLabel -> {
-                        TODO("Something very wrong has just happened, the universe should be collapsed by now")
+                        TODO("Something very wrong has just happened, the universe should collapse now")
                     }
                 }
             }
@@ -515,32 +523,31 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
     //endregion
 
     //region Creating interaction and condition nodes
-    private fun findCommunication(processes: ProcessMap, processName: String): GraphNode? {
-        val processTerm = processes[processName]
-        val mainBehaviour = processTerm?.main
+    private fun findCommunication(processes: ProcessMap, processName: String, processTerm: ProcessTerm): GraphNode? {
+        val behaviour = processTerm.main
 
-        when (mainBehaviour) {
+        when (behaviour) {
             is SendSP -> {
-                val receiverTerm = processes[mainBehaviour.process]
-                if (receiverTerm != null && receiverTerm.main is ReceiveSP && (receiverTerm.main as ReceiveSP).sender == processName) {
+                val receiverTerm = processes[behaviour.process]!!
+                if (receiverTerm.main is ReceiveSP && (receiverTerm.main as ReceiveSP).sender == processName) {
                     return consumeCommunication(processes, processTerm, receiverTerm)
                 }
             }
             is ReceiveSP -> {
-                val senderTerm = processes[(processTerm.main as ReceiveSP).process]
-                if (senderTerm != null && senderTerm.main is SendSP && (senderTerm.main as SendSP).receiver == processName) {
+                val senderTerm = processes[(processTerm.main as ReceiveSP).process]!!
+                if (senderTerm.main is SendSP && (senderTerm.main as SendSP).receiver == processName) {
                     return consumeCommunication(processes, senderTerm, processTerm)
                 }
             }
             is SelectionSP -> {
-                val offerTerm = processes[mainBehaviour.process]
-                if (offerTerm != null && offerTerm.main is OfferingSP && (offerTerm.main as OfferingSP).sender == processName) {
+                val offerTerm = processes[behaviour.process]!!
+                if (offerTerm.main is OfferingSP && (offerTerm.main as OfferingSP).sender == processName) {
                     return consumeSelection(processes, offerTerm, processTerm)
                 }
             }
             is OfferingSP -> {
-                val selectTerm = processes[mainBehaviour.process]
-                if (selectTerm != null && selectTerm.main is SelectionSP && (selectTerm.main as SelectionSP).receiver == processName) {
+                val selectTerm = processes[behaviour.process]!!
+                if (selectTerm.main is SelectionSP && (selectTerm.main as SelectionSP).receiver == processName) {
                     return consumeSelection(processes, processTerm, selectTerm)
                 }
             }
@@ -549,55 +556,48 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
         return null
     }
 
+    private fun consumeCommunication(processes: ProcessMap, senderTerm: ProcessTerm, receiverTerm: ProcessTerm): GraphNode {
+        val processCopy = copyProcesses(processes)
+        val receiverName = (senderTerm.main as SendSP).receiver
+        val senderName = (receiverTerm.main as ReceiveSP).sender
+
+        processCopy.replace(receiverName, ProcessTerm(receiverTerm.procedures, (receiverTerm.main as ReceiveSP).continuation))
+        processCopy.replace(senderName, ProcessTerm(senderTerm.procedures, (senderTerm.main as SendSP).continuation))
+
+        val label = ExtractionLabel.InteractionLabel.CommunicationLabel(senderName, receiverName, (senderTerm.main as SendSP).expression)
+
+        return GraphNode(Network(processCopy), label)
+    }
+
     private fun consumeSelection(processes: ProcessMap, offerTerm: ProcessTerm, selectTerm: ProcessTerm): GraphNode {
-        val newProcesses = ProcessMap()
-        processes.forEach { key, value -> newProcesses[key] = value.copy() }
+        val processCopy = copyProcesses(processes)
 
         val selectionProcess = (offerTerm.main as OfferingSP).process
         val offeringProcess = (selectTerm.main as SelectionSP).process
 
-        val offeringBehavior = (offerTerm.main as OfferingSP).branches[(selectTerm.main as SelectionSP).expression]
-                ?: throw Exception("Trying to senderTerm the label that wasn't offered")
+        val offeringBehavior = (offerTerm.main as OfferingSP).branches[(selectTerm.main as SelectionSP).label]
+                ?: throw IllegalStateException("${selectionProcess} is trying to select label ${(selectTerm.main as SelectionSP).label} from ${offeringProcess}, which does not offer it")
 
-        newProcesses.replace(offeringProcess, ProcessTerm(offerTerm.procedures, offeringBehavior))
-        newProcesses.replace(selectionProcess, ProcessTerm(selectTerm.procedures, (selectTerm.main as SelectionSP).continuation))
+        processCopy.replace(offeringProcess, ProcessTerm(offerTerm.procedures, offeringBehavior))
+        processCopy.replace(selectionProcess, ProcessTerm(selectTerm.procedures, (selectTerm.main as SelectionSP).continuation))
 
-        val label = ExtractionLabel.InteractionLabel.SelectionLabel(offeringProcess, selectionProcess, (selectTerm.main as SelectionSP).expression)
+        val label = ExtractionLabel.InteractionLabel.SelectionLabel(offeringProcess, selectionProcess, (selectTerm.main as SelectionSP).label)
 
-        return GraphNode(Network(newProcesses), label)
+        return GraphNode(Network(processCopy), label)
     }
 
-    private fun consumeCommunication(processes: ProcessMap, senderTerm: ProcessTerm, receiverTerm: ProcessTerm): GraphNode {
-        val newProcesses = ProcessMap()
-        processes.forEach { key, value -> newProcesses[key] = value.copy() }
-        val receiverName = (senderTerm.main as SendSP).receiver
-        val senderName = (receiverTerm.main as ReceiveSP).sender
+    private fun findConditional(processes: ProcessMap, processName: String, processTerm: ProcessTerm): ResultCondition? {
+        if ( !(processTerm.main is ConditionSP) )
+            return null
 
-        newProcesses.replace(receiverName, ProcessTerm(receiverTerm.procedures, (receiverTerm.main as ReceiveSP).continuation))
-        newProcesses.replace(senderName, ProcessTerm(senderTerm.procedures, (senderTerm.main as SendSP).continuation))
+        val conditional = processTerm.main as ConditionSP
+        val thenProcessesMap = HashMap<String, ProcessTerm>(processes)
+        val elseProcessesMap = HashMap<String, ProcessTerm>(processes)
 
-        val label = ExtractionLabel.InteractionLabel.SendingLabel(senderName, receiverName, (senderTerm.main as SendSP).expression)
+        thenProcessesMap.replace(processName, ProcessTerm(processTerm.procedures, conditional.thenBehaviour))
+        elseProcessesMap.replace(processName, ProcessTerm(processTerm.procedures, conditional.elseBehaviour))
 
-        return GraphNode(Network(newProcesses), label)
-    }
-
-    private fun findCondition(n: ProcessMap): ResultCondition? {
-        val c = n.entries.stream().filter { it.value.main is ConditionSP }.findFirst()
-        if (c.isPresent) {
-            val condition = c.get()
-            val process = condition.key
-            val conditionProcessTerm = condition.value
-            val conditionMain = conditionProcessTerm.main as ConditionSP
-
-            val elseProcessesMap = HashMap<String, ProcessTerm>(n)
-            val thenProcessesMap = HashMap<String, ProcessTerm>(n)
-
-            elseProcessesMap.replace(process, ProcessTerm(conditionProcessTerm.procedures, conditionMain.elseBehaviour))
-            thenProcessesMap.replace(process, ProcessTerm(conditionProcessTerm.procedures, conditionMain.thenBehaviour))
-
-            return ResultCondition(Network(thenProcessesMap), ExtractionLabel.ConditionLabel.ThenLabel(process, conditionMain.expression), Network(elseProcessesMap), ExtractionLabel.ConditionLabel.ElseLabel(process, conditionMain.expression))
-        }
-        return null
+        return ResultCondition(Network(thenProcessesMap), ExtractionLabel.ConditionLabel.ThenLabel(processName, conditional.expression), Network(elseProcessesMap), ExtractionLabel.ConditionLabel.ElseLabel(processName, conditional.expression))
     }
     //endregion
 
@@ -773,20 +773,14 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
     //region Utils
     private fun copyAndSortProcesses(node: ConcreteNode): HashMap<String, ProcessTerm> = strategy.copyAndSort(node)
 
-//    {
-//        val net = HashMap<String, ProcessTerm>()
-//        node.network.processes.forEach { k, v -> net[k] = v.copy() }
-//        return strategy.copyAndSort(node)
-//    }
-
     private fun createInteractionLabel(processName: String, processes: HashMap<String, ProcessTerm>): ExtractionLabel.InteractionLabel? {
         val processTerm = processes[processName]?.main
         return when (processTerm) {
             is SendSP -> {
-                ExtractionLabel.InteractionLabel.SendingLabel(processName, processTerm.receiver, processTerm.expression)
+                ExtractionLabel.InteractionLabel.CommunicationLabel(processName, processTerm.receiver, processTerm.expression)
             }
             is SelectionSP -> {
-                ExtractionLabel.InteractionLabel.SelectionLabel(processName, processTerm.receiver, processTerm.expression)
+                ExtractionLabel.InteractionLabel.SelectionLabel(processName, processTerm.receiver, processTerm.label)
             }
             else -> null
         }
@@ -800,10 +794,10 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
         return Pair(n, marking).hashCode()
     }
 
-    private fun processesCopy(processes: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
-        val processesCopy = HashMap<String, ProcessTerm>()
-        processes.forEach { t, u -> processesCopy[t] = u.copy() }
-        return processesCopy
+    private fun copyProcesses(processes: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
+        val copy = HashMap<String, ProcessTerm>()
+        processes.forEach { t, u -> copy[t] = u.copy() }
+        return copy
     }
 
     private fun fillWaiting(waiting: ArrayList<ExtractionLabel.InteractionLabel>, actions: ArrayList<ExtractionLabel.InteractionLabel>, label: ExtractionLabel.InteractionLabel, receiverProcessTermMain: Behaviour, receiverProcesses: HashMap<String, Behaviour>, marking: HashMap<ProcessName, Boolean>): Behaviour? {
@@ -813,7 +807,7 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
                 val sendingContinuation = fillWaiting(waiting, actions, label, receiverProcessTermMain.continuation, receiverProcesses, marking)
 
                 return if (sendingContinuation != null) {
-                    val newLabel = ExtractionLabel.InteractionLabel.SendingLabel(label.receiver, receiverProcessTermMain.receiver, receiverProcessTermMain.expression)
+                    val newLabel = ExtractionLabel.InteractionLabel.CommunicationLabel(label.receiver, receiverProcessTermMain.receiver, receiverProcessTermMain.expression)
                     if (!actions.contains(newLabel)) waiting.add(newLabel)
                     SendSP(sendingContinuation, newLabel.receiver, newLabel.expression)
                 } else {
@@ -825,12 +819,12 @@ class Extraction(private val strategy: Strategy, private val services: ArrayList
                 val selectionContinuation = fillWaiting(waiting, actions, label, receiverProcessTermMain.continuation, receiverProcesses, marking)
 
                 if (selectionContinuation != null) {
-                    val newLabel = ExtractionLabel.InteractionLabel.SelectionLabel(label.receiver, receiverProcessTermMain.receiver, receiverProcessTermMain.expression)
+                    val newLabel = ExtractionLabel.InteractionLabel.SelectionLabel(label.receiver, receiverProcessTermMain.receiver, receiverProcessTermMain.label)
                     if (!actions.contains(newLabel)) waiting.add(newLabel)
                     return SelectionSP(selectionContinuation, label.receiver, label.expression)
                 }
             }
-            is ReceiveSP -> if (label.sender == receiverProcessTermMain.sender && label is ExtractionLabel.InteractionLabel.SendingLabel) return receiverProcessTermMain.continuation
+            is ReceiveSP -> if (label.sender == receiverProcessTermMain.sender && label is ExtractionLabel.InteractionLabel.CommunicationLabel) return receiverProcessTermMain.continuation
 
             is OfferingSP -> if (label.sender == receiverProcessTermMain.sender && label is ExtractionLabel.InteractionLabel.SelectionLabel) return receiverProcessTermMain.branches[label.label]!!
 

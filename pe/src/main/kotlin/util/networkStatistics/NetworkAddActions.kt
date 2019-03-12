@@ -59,7 +59,7 @@ class NetworkAddActions : SPVisitor<Behaviour> {
     override fun visit(n: SelectionSP): Behaviour {
         return if (counter > 0) {
             counter--
-            SelectionSP(n.continuation.accept(this), n.receiver, n.expression)
+            SelectionSP(n.continuation.accept(this), n.receiver, n.label)
         } else generateAction(n.continuation)
 
     }

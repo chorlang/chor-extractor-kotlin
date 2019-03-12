@@ -8,7 +8,7 @@ import kotlin.collections.LinkedHashMap
  * Sorting strategy for the first action of each process in a network
  */
 enum class Strategy {
-    SelectionFirst {
+    SelectionsFirst {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
 
@@ -18,7 +18,7 @@ enum class Strategy {
             return network
         }
     },
-    ConditionFirst() {
+    ConditionsFirst() {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
 
@@ -54,7 +54,7 @@ enum class Strategy {
             return ret
         }
     },
-    LengthFirst() {
+    LongestFirst() {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
             node.network.processes.entries.sortedByDescending { it.value.main.toString().length }.forEach { ret[it.key] = it.value.copy() }
@@ -92,7 +92,7 @@ enum class Strategy {
             return ret
         }
     },
-    UnmarkedThenSelection() {
+    UnmarkedThenSelections() {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
@@ -143,7 +143,7 @@ enum class Strategy {
             return ret
         }
     },
-    UnmarkedThenCondition() {
+    UnmarkedThenConditions() {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
@@ -196,7 +196,7 @@ enum class Strategy {
     },
 
     Default() {
-        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> = SelectionFirst.copyAndSort(node)
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> = SelectionsFirst.copyAndSort(node)
     };
 
     abstract fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm>

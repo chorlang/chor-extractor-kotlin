@@ -206,7 +206,8 @@ fun extractionSoundnessC41() {
         val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
 
         networkFiles.forEach { fileId, networkMap ->
-            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" ) {
+            if ( !fileId.startsWith("50-6") ) {
+//            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" ) {
 //            if ( fileId == "50-6-50-0" || fileId == "50-6-40-0" ) {
                 val extractionMap = HashMap<String, Pair<Program, Long>>()
                 networkMap.forEach { id, network ->
