@@ -1,11 +1,14 @@
-package util.networkStatistics
+package util
 
 import ast.sp.interfaces.Behaviour
 import ast.sp.interfaces.SPVisitor
 import ast.sp.nodes.*
 import javax.naming.OperationNotSupportedException
 
-class NetworkProcessesInvolved : SPVisitor<HashSet<String>> {
+class NetworkUsedProcesses : SPVisitor<HashSet<String>> {
+    companion object {
+        fun compute(n: ProcessTerm): HashSet<String> = NetworkUsedProcesses().visit(n)
+    }
     override fun visit(n: ConditionSP): HashSet<String> {
         return n.elseBehaviour.accept(this).plus(n.thenBehaviour.accept(this)) as HashSet<String>
     }
@@ -15,9 +18,9 @@ class NetworkProcessesInvolved : SPVisitor<HashSet<String>> {
     }
 
     override fun visit(n: OfferingSP): HashSet<String> {
-        val processesSet = hashSetOf<String>()
-        n.branches.values.forEach { behaviour -> processesSet.addAll(behaviour.accept(this)) }
-        return processesSet
+        val processes = hashSetOf(n.sender)
+        n.branches.values.forEach { behaviour -> processes.addAll(behaviour.accept(this)) }
+        return processes
     }
 
     override fun visit(n: ParallelNetworks): HashSet<String> {
@@ -29,10 +32,10 @@ class NetworkProcessesInvolved : SPVisitor<HashSet<String>> {
     }
 
     override fun visit(n: ProcessTerm): HashSet<String> {
-        val processesSet = hashSetOf<String>()
-        processesSet.addAll(n.main.accept(this))
-        n.procedures.forEach { p -> processesSet.addAll(p.value.accept(this)) }
-        return processesSet
+        val processes = hashSetOf<String>()
+        processes.addAll(n.main.accept(this))
+        n.procedures.forEach { p -> processes.addAll(p.value.accept(this)) }
+        return processes
     }
 
     override fun visit(n: ReceiveSP): HashSet<String> {

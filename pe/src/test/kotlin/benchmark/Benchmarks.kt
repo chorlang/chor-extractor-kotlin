@@ -1,5 +1,6 @@
 package benchmark
 
+import ast.cc.nodes.GraphStatistics
 import ast.cc.nodes.Program
 import ast.sp.nodes.Network
 import bisim.bisimilar
@@ -179,22 +180,21 @@ fun extractionSoundnessC41() {
             out.println(EXTRACTION_STATISTICS_HEADER)
             extractionMap.forEach { id, pair ->
                 val program = pair.first
-                if (program.choreographies.size == 1 && program.statistics.size == 1) {
-                    val statistic = program.statistics.first()
-                    val choreography = program.choreographies.first()
-                    val lengthOfProcedures = LengthOfProcedures().getLength(choreography!!)
+                val statistics = program.statistics.fold( GraphStatistics( 0, 0 ), { one, two -> GraphStatistics( one.nodes + two.nodes, one.badLoops + two.badLoops ) } )
+                val choreographyProcedures = program.choreographies.map { it!!.procedures.size }.fold( 0, Int::plus )
+                val lengthOfProcedures = program.choreographies.flatMap { LengthOfProcedures().getLength(it!!) }
+                val numberOfActions = program.choreographies.map { NumberOfActions.compute(it!!) }.fold( 0, Int::plus )
 
-                    out.println("$id," +
-                            "${pair.second}," +
-                            "${statistic.nodes}," +
-                            "${statistic.badLoops}," +
-                            "${NumberOfActions.compute(choreography)}," +
-                            "${choreography.procedures.size}," +
-                            "${lengthOfProcedures.min() ?: 0}," +
-                            "${lengthOfProcedures.max() ?: 0}," +
-                            "${lengthOfProcedures.average().toInt()}"
-                    )
-                } else throw OperationNotSupportedException()
+                out.println("$id," +
+                        "${pair.second}," +
+                        "${statistics.nodes}," +
+                        "${statistics.badLoops}," +
+                        "${numberOfActions}," +
+                        "${choreographyProcedures}," +
+                        "${lengthOfProcedures.min() ?: 0}," +
+                        "${lengthOfProcedures.max() ?: 0}," +
+                        "${lengthOfProcedures.average().toInt()}"
+                )
             }
         }
     }
@@ -213,7 +213,7 @@ fun extractionSoundnessC41() {
                 networkMap.forEach { id, network ->
                     println("Extracting $id from $PROJECTION_PREFIX$fileId")
                     val start = System.currentTimeMillis()
-                    val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList(), true)
+                    val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList())
                     val executionTime = System.currentTimeMillis() - start
 
                     extractionMap[id] = Pair(program, executionTime)
@@ -253,7 +253,7 @@ fun extractionSoundnessC41() {
 
                         //try and fail to extract body
                         val start = System.currentTimeMillis()
-                        val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList(), true)
+                        val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList())
                         val executionTime = System.currentTimeMillis() - start
                         val graphStatistic = program.statistics.first()
 

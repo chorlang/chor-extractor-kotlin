@@ -10,6 +10,7 @@ import ast.sp.labels.ExtractionLabel
 import ast.sp.nodes.*
 import org.jgrapht.graph.DirectedPseudograph
 import util.ParseUtils
+import util.NetworkUsedProcesses
 import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 
@@ -24,23 +25,71 @@ typealias Hash = Int
 // TODO we're assuming that the network is well-formed (all process actions point to other processes that actually exist and there are no self-comms): CHECK FOR THIS!!
 class Extraction { //(private val strategy: ExtractionStrategy, private val services: ArrayList<String>) {
     companion object {
-        fun extractChoreography(n: String, strategy: ExtractionStrategy = ExtractionStrategy.Default, livelocked: ArrayList<String> = arrayListOf(), debugMode: Boolean = false): Program {
-
-            val parallelNetworks = ParseUtils.stringToNetworks(n)
-
-            //val parallelNetworks = arrayListOf<Network>(ParseUtils.stringToNetwork(n))
+        fun extractChoreography(n: String, strategy: ExtractionStrategy = ExtractionStrategy.Default, services: ArrayList<String> = arrayListOf()): Program {
+            val network = ParseUtils.stringToNetwork(n)
+            val processSets = getProcessSets(network)
+            val parallelNetworks = splitNetwork(processSets, network)
 
             val program = ArrayList<Choreography?>()
             val statistics = ArrayList<GraphStatistics>()
 
             parallelNetworks.parallelStream().forEach { network ->
-                if (livelocked.isEmpty() || network.processes.keys.containsAll(livelocked)) {
-                    val (choreography, graphStatistics) = Extraction().extract(network, strategy, livelocked)
+                if (services.isEmpty() || network.processes.keys.containsAll(services)) { // TODO come back here to check what's happening with services
+                    val (choreography, graphStatistics) = Extraction().extract(network, strategy, services)
                     program.add(choreography)
                     statistics.add(graphStatistics)
-                } else throw IllegalArgumentException("List of livelocked processes contains not existing processes")
+                } else throw IllegalArgumentException("List of service processes contains not existing processes")
             }
             return Program(program, statistics)
+        }
+
+        private fun splitNetwork(processSets: ArrayList<HashSet<String>>, network: Network): HashSet<Network> {
+            val networks = hashSetOf<Network>()
+
+            for (processSet in processSets) {
+                val processes = hashMapOf<ProcessName, ProcessTerm>()
+                processSet.forEach { process -> processes.put(process, network.processes[process]!!) }
+                networks.add(Network(processes))
+            }
+
+            return networks
+        }
+
+        private fun getProcessSets(network: Network): ArrayList<HashSet<String>> {
+            val processSets = ArrayList<HashSet<String>>()
+            network.processes.forEach { processName, processTerm ->
+                val processNames = hashSetOf(processName)
+                processNames.addAll(NetworkUsedProcesses.compute(processTerm))
+                processSets.add(processNames)
+            }
+
+            var i = 0
+            while( i < processSets.size ) {
+                var j = 0
+                while( j < processSets.size ) {
+                    if ( i != j && processSets[i].intersect( processSets[j] ).isNotEmpty() ) {
+                        processSets[i].addAll( processSets[j] )
+                        processSets.removeAt( j )
+                        if ( j < i ) {
+                            i--
+                        }
+                    } else {
+                        j++
+                    }
+                }
+                i++
+            }
+
+            processSets.forEach {
+                print( "[" )
+                it.forEach {
+                    print( "$it," )
+                }
+                print( "] " )
+            }
+            println()
+
+            return processSets
         }
     }
 
