@@ -1,3 +1,4 @@
+/*
 package bench
 
 import extraction.Extraction
@@ -354,4 +355,4 @@ open class ShortestFirst {
 
         Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("coop","bank","coop2","bank2"))).toString()
     }
-}
+}*/

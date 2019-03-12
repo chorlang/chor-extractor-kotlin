@@ -1,3 +1,4 @@
+/*
 package bench
 
 import extraction.Extraction
@@ -354,4 +355,4 @@ open class UnmarkedThenSelection {
 
         Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections, ArrayList(listOf("coop","bank","coop2","bank2"))).toString()
     }
-}
+}*/

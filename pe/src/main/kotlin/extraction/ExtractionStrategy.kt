@@ -7,7 +7,7 @@ import kotlin.collections.LinkedHashMap
 /**
  * Sorting strategy for the first action of each process in a network
  */
-enum class Strategy {
+enum class ExtractionStrategy {
     SelectionsFirst {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
