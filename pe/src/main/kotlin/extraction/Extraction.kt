@@ -15,7 +15,7 @@ import java.lang.IllegalArgumentException
 import java.lang.IllegalStateException
 
 typealias ProcessMap = HashMap<String, ProcessTerm>
-typealias GraphNode = Pair<Network, ExtractionLabel.InteractionLabel>
+typealias CommunicationEdgeTo = Pair<Network, ExtractionLabel.InteractionLabel>
 typealias Marking = HashMap<ProcessName, Boolean>
 typealias Hash = Int
 
@@ -23,7 +23,7 @@ typealias Hash = Int
  * services are allowed to be livelocked
  */
 // TODO we're assuming that the network is well-formed (all process actions point to other processes that actually exist and there are no self-comms): CHECK FOR THIS!!
-class Extraction { //(private val strategy: ExtractionStrategy, private val services: ArrayList<String>) {
+class Extraction(val strategy: ExtractionStrategy) { //(private val strategy: ExtractionStrategy, private val services: ArrayList<String>) {
     companion object {
         fun extractChoreography(n: String, strategy: ExtractionStrategy = ExtractionStrategy.Default, services: ArrayList<String> = arrayListOf()): Program {
             val network = ParseUtils.stringToNetwork(n)
@@ -34,11 +34,9 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
             val statistics = ArrayList<GraphStatistics>()
 
             parallelNetworks.parallelStream().forEach { network ->
-                if (services.isEmpty() || network.processes.keys.containsAll(services)) { // TODO come back here to check what's happening with services
-                    val (choreography, graphStatistics) = Extraction().extract(network, strategy, services)
-                    program.add(choreography)
-                    statistics.add(graphStatistics)
-                } else throw IllegalArgumentException("List of service processes contains not existing processes")
+                val (choreography, graphStatistics) = Extraction(strategy).extract(network, services)
+                program.add(choreography)
+                statistics.add(graphStatistics)
             }
             return Program(program, statistics)
         }
@@ -58,9 +56,11 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
         private fun getProcessSets(network: Network): ArrayList<HashSet<String>> {
             val processSets = ArrayList<HashSet<String>>()
             network.processes.forEach { processName, processTerm ->
-                val processNames = hashSetOf(processName)
-                processNames.addAll(NetworkUsedProcesses.compute(processTerm))
-                processSets.add(processNames)
+                if ( !(processTerm.main is TerminationSP) ) {
+                    val processNames = hashSetOf(processName)
+                    processNames.addAll(NetworkUsedProcesses.compute(processTerm))
+                    processSets.add(processNames)
+                }
             }
 
             var i = 0
@@ -89,12 +89,20 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
             }
             println()
 
-            return processSets
+            if (processSets.isEmpty()) {
+                val set = HashSet<String>()
+                network.processes.keys.forEach { set.add(it) }
+                val ret = ArrayList<HashSet<String>>()
+                ret.add(set)
+                return ret
+            } else {
+                return processSets
+            }
         }
     }
 
     private var nodeIdCounter = 0
-    private val hashesMap = HashMap<Hash, ArrayList<ConcreteNode>>()
+    private val nodeHashes = HashMap<Hash, ArrayList<ConcreteNode>>()
     private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processesInChoreography used in badNodesList loop calculations
     private var badLoopCounter = 0
 
@@ -106,7 +114,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
      * @return the extracted choreography
      */
     @Suppress("UNCHECKED_CAST")
-    private fun extract(n: Network, strategy: ExtractionStrategy = ExtractionStrategy.Default, livelocked: ArrayList<String> = arrayListOf()): Pair<Choreography?, GraphStatistics> {
+    private fun extract(n: Network, livelocked: ArrayList<String> = arrayListOf()): Pair<Choreography?, GraphStatistics> {
         val graph = DirectedPseudograph<Node, ExtractionLabel>(ExtractionLabel::class.java)
         val marking = HashMap<ProcessName, Boolean>()
 
@@ -118,7 +126,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
         addToChoicePathMap(node)
         addToHashMap(node)
 
-        return if (buildGraph(node, graph as DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy, livelocked)) {
+        return if (buildGraph(node, graph as DirectedPseudograph<ConcreteNode, ExtractionLabel>, livelocked)) {
             val unrolledGraphNodesList = unrollGraph(node, graph as DirectedPseudograph<Node, ExtractionLabel>)
             Pair(buildChoreography(node, unrolledGraphNodesList, graph), GraphStatistics(graph.vertexSet().size, badLoopCounter))
         } else {
@@ -126,51 +134,11 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
         }
     }
 
-    private fun buildCommunication(findCommunication: GraphNode, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy: ExtractionStrategy, livelocked: ArrayList<String>): Boolean {
-        val (targetNetwork, label) = findCommunication
+    private fun fold(unfoldedProcesses: HashSet<String>, targetNetwork: Network, currentNode: ConcreteNode) = unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
 
-        //remove processesInChoreography that were unfoldedProcesses but don't participate in the current communication
-        @Suppress("UNCHECKED_CAST")
-        val targetMarking = currentNode.marking.clone() as Marking
-
-        markProcess(targetMarking, label.receiver, unfoldedProcesses)
-        markProcess(targetMarking, label.sender, unfoldedProcesses)
-
-        // revert unfolding all processesInChoreography not involved in the communication
-        revertUnfolding(unfoldedProcesses, targetNetwork, currentNode)
-
-        //if all processes were "fired", flip all markings
-        if (targetMarking.values.all { it }) flipAndWash(label, targetMarking, targetNetwork, livelocked)
-
-        //check if the eta with the same network and markings already exists in the graph
-        val node = findNodeInGraph(targetNetwork, targetMarking, currentNode)
-
-        /* case 1 */
-        return if (node == null) {
-            val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
-            //if the edge can not be added - return false
-            addNodeAndEdgeToGraph(currentNode, newNode, label, graph)
-
-            if (buildGraph(newNode, graph, strategy, livelocked)) true else {
-                removeNodeFromGraph(graph, newNode)
-                false
-            }
-        }
-        /* case 2 */
-        else addEdgeToGraph(currentNode, node, label, graph)
-    }
-
-    private fun markProcess(targetMarking: Marking, processName: String, unfoldedProcesses: HashSet<String>) {
-        targetMarking[processName] = true
-        unfoldedProcesses.remove(processName)
-    }
-
-    private fun revertUnfolding(unfoldedProcesses: HashSet<String>, targetNetwork: Network, currentNode: ConcreteNode) = unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
-
-
-    private fun buildGraph(currentNode: ConcreteNode, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy: ExtractionStrategy, livelocked: ArrayList<String>): Boolean {
+    private fun buildGraph(currentNode: ConcreteNode, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, livelocked: ArrayList<String>): Boolean {
         val unfoldedProcesses = HashSet<String>()
-        val processes = copyAndSortProcesses(currentNode, strategy)
+        val processes = copyAndSortProcesses(currentNode)
 
         // If the process is calling a procedure, try to unfold it
         processes.forEach { (processName, processTerm) ->
@@ -182,17 +150,26 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
         for ((processName, processTerm) in processes) {
             // Copy all processes, for backtracking
             val processesCopy = copyProcesses(processes)
+            val unfoldedProcessesCopy = HashSet(unfoldedProcesses)
 
             // Try to find an interaction
             val communication = findCommunication(processesCopy, processName, processTerm)
             if (communication != null) {
-                if (buildCommunication(communication, currentNode, unfoldedProcesses, graph, strategy, livelocked)) return true else continue
+                val (targetNetwork, label) = communication
+                // revert unfolding all processes not involved in the communication
+                unfoldedProcessesCopy.removeAll( arrayOf(label.sender, label.receiver) )
+                fold(unfoldedProcessesCopy, targetNetwork, currentNode)
+
+                if (buildCommunication(targetNetwork, label, currentNode, graph, livelocked))
+                    return true
+                else
+                    continue
             }
 
             // Try to find a conditional
             val conditional = findConditional(processesCopy, processName, processTerm)
             if (conditional != null) {
-                if (buildConditional(conditional, currentNode, unfoldedProcesses, graph, strategy, livelocked)) return true else continue
+                if (buildConditional(conditional, currentNode, unfoldedProcessesCopy, graph, livelocked)) return true else continue
             }
         }
 
@@ -201,7 +178,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
         if (allTerminated(processes)) return true
 
         //try to find a multi-action communication
-        for ((processName, processTerm) in processes) {
+        for ((processName, _) in processes) {
             val processesCopy = copyProcesses(processes)
             val actions = ArrayList<ExtractionLabel.InteractionLabel>()
             val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
@@ -216,25 +193,58 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
             if (actions.size >= 2) {
                 if (buildMulticom(actions, currentNode, processesCopy, unfoldedProcesses, graph, strategy, livelocked)) return true else continue
             }
-
         }
 
         //System.err.println("No possible actions at eta $currentNode")
         return false
     }
 
-    private fun buildConditional(condition: ResultCondition, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy: ExtractionStrategy, livelocked: ArrayList<String>): Boolean {
+    private fun buildCommunication(targetNetwork: Network, label: ExtractionLabel.InteractionLabel, currentNode: ConcreteNode, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, livelocked: ArrayList<String>): Boolean {
+        val targetMarking = Marking(currentNode.marking)
+
+        targetMarking[label.sender] = true
+        targetMarking[label.receiver] = true
+
+        // if all processes reduced, reset the marking
+        if (targetMarking.values.all { it })
+            flipAndResetMarking(label, targetMarking, targetNetwork, livelocked)
+
+        // check if a node with same network and marking is already in the graph
+        val node = findNodeInGraph(targetNetwork, targetMarking, currentNode)
+
+        /* case 1 */
+        return if (node == null) {
+            val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
+            //if the edge cannot be added - return false
+
+            if ( !addNodeAndEdgeToGraph(currentNode, newNode, label, graph) ) {
+                false
+            } else if ( buildGraph(newNode, graph, livelocked)) {
+                true
+            } else {
+                removeNodeFromGraph(graph, newNode)
+                false
+            }
+        }
+        /* case 2 */
+        else addEdgeToGraph(currentNode, node, label, graph)
+    }
+
+    private fun buildConditional(condition: ResultCondition, currentNode: ConcreteNode, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, livelocked: ArrayList<String>): Boolean {
         val (targetNetworkThen, labelThen, targetNetworkElse, labelElse) = condition
         val targetMarking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
 
-        if (unfoldedProcesses.contains(labelThen.process)) markProcess(targetMarking, labelThen.process, unfoldedProcesses)
+        if (unfoldedProcesses.contains(labelThen.process)) {
+            targetMarking[labelThen.process] = true
+            unfoldedProcesses.remove(labelThen.process)
+        }
 
-        revertUnfolding(unfoldedProcesses, targetNetworkThen, currentNode)
-        revertUnfolding(unfoldedProcesses, targetNetworkElse, currentNode)
+        fold(unfoldedProcesses, targetNetworkThen, currentNode)
+        fold(unfoldedProcesses, targetNetworkElse, currentNode)
 
         if (targetMarking.values.all { it }) {
-            flipAndWash(labelThen, targetMarking, targetNetworkThen, livelocked)
-            flipAndWash(labelElse, targetMarking, targetNetworkElse, livelocked)
+            flipAndResetMarking(labelThen, targetMarking, targetNetworkThen, livelocked)
+            flipAndResetMarking(labelElse, targetMarking, targetNetworkElse, livelocked)
         }
 
         //check if the eta with the same network and markings already exists in the graph
@@ -246,7 +256,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
             newNodeThen = createNewNode(targetNetworkThen, labelThen, currentNode, targetMarking)
             addNodeAndEdgeToGraph(currentNode, newNodeThen, labelThen, graph)
 
-            if (!buildGraph(newNodeThen, graph, strategy, livelocked)) {
+            if (!buildGraph(newNodeThen, graph, livelocked)) {
                 removeNodeFromGraph(graph, newNodeThen)
                 return false
             }
@@ -266,7 +276,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
             newNodeElse = createNewNode(targetNetworkElse, labelElse, currentNode, targetMarking)
             addNodeAndEdgeToGraph(currentNode, newNodeElse, labelElse, graph)
 
-            if (!buildGraph(newNodeElse, graph, strategy, livelocked)) {
+            if (!buildGraph(newNodeElse, graph, livelocked)) {
                 if (nodeThen == null) {
                     removeNodeFromGraph(graph, newNodeThen)
                 } else graph.removeEdge(currentNode, newNodeThen)
@@ -327,20 +337,20 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
     private fun buildMulticom(actions: ArrayList<ExtractionLabel.InteractionLabel>, currentNode: ConcreteNode, processesCopy: HashMap<String, ProcessTerm>, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, strategy: ExtractionStrategy, livelocked: ArrayList<String>): Boolean {
         val label = ExtractionLabel.MulticomLabel(actions)
 
-        @Suppress("UNCHECKED_CAST")
-        val targetMarking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
+        val targetMarking = Marking(currentNode.marking)
         val targetNetwork = Network(processesCopy)
 
         //fold back unfoldedProcesses procedures that were not participating in communication
         label.labels.forEach {
-            markProcess(targetMarking, it.receiver, unfoldedProcesses)
-            markProcess(targetMarking, it.sender, unfoldedProcesses)
+            targetMarking[it.sender] = true
+            targetMarking[it.receiver] = true
+            unfoldedProcesses.removeAll(arrayOf(it.sender, it.receiver))
         }
 
-        revertUnfolding(unfoldedProcesses, targetNetwork, currentNode)
+        fold(unfoldedProcesses, targetNetwork, currentNode)
 
         //if all procedures were visited, flip all markings
-        if (targetMarking.values.all { it }) flipAndWash(label, targetMarking, targetNetwork, livelocked)
+        if (targetMarking.values.all { it }) flipAndResetMarking(label, targetMarking, targetNetwork, livelocked)
 
         //check if the eta with the same network and markings already exists in the graph
         val existingNode = findNodeInGraph(targetNetwork, targetMarking, currentNode)
@@ -348,7 +358,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
         if (existingNode == null) {
             val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
             addNodeAndEdgeToGraph(currentNode, newNode, label, graph)
-            return buildGraph(newNode, graph, strategy, livelocked)
+            return buildGraph(newNode, graph, livelocked)
         } else {
             if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
         }
@@ -356,8 +366,10 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
         return false
     }
 
+    // We look for a node with same content in the same choice path.
+    // There is at most one such node, since we never add it if it's there and closing the loop would make a bad loop.
     private fun findNodeInGraph(targetNetwork: Network, targetMarking: Marking, currentNode: ConcreteNode): ConcreteNode? {
-        val existingNodes = hashesMap[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
+        val existingNodes = nodeHashes[hash(targetNetwork, targetMarking)]?.filter { currentNode.choicePath.startsWith(it.choicePath) }
         return existingNodes?.firstOrNull { it.network == targetNetwork && it.marking == targetMarking }
     }
 
@@ -366,9 +378,11 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
      * we mark the label between the source and target node as it was "flipped" and
      * we wash all previous markings from the target node
      */
-    private fun flipAndWash(label: ExtractionLabel, targetMarking: Marking, targetNetwork: Network, livelocked: ArrayList<String>) {
+    private fun flipAndResetMarking(label: ExtractionLabel, marking: Marking, network: Network, services: ArrayList<String>) {
         label.flipped = true
-        wash(targetMarking, targetNetwork.processes, livelocked)
+        for (key in marking.keys) {
+            marking[key] = network.processes[key]!!.main is TerminationSP || services.contains(key)
+        }
     }
 
     private fun unrollGraph(root: ConcreteNode, graph: DirectedPseudograph<Node, ExtractionLabel>): ArrayList<FakeNode> {
@@ -481,15 +495,6 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
         } else false
     }
 
-    /***
-     * if the process is not terminated yet and not in the list of the livelocked processess
-     * we mark it as false meaning that it wasn't "fired" yet
-     */
-    private fun wash(marking: HashMap<ProcessName, Boolean>, processes: ProcessMap, livelocked: ArrayList<String>) {
-        for (key in marking.keys) {
-            marking[key] = processes[key]!!.main is TerminationSP || livelocked.contains(key)
-        }
-    }
     //endregion
 
     //region Termination checks
@@ -523,7 +528,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
     //endregion
 
     //region Creating interaction and condition nodes
-    private fun findCommunication(processes: ProcessMap, processName: String, processTerm: ProcessTerm): GraphNode? {
+    private fun findCommunication(processes: ProcessMap, processName: String, processTerm: ProcessTerm): CommunicationEdgeTo? {
         val behaviour = processTerm.main
 
         when (behaviour) {
@@ -556,7 +561,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
         return null
     }
 
-    private fun consumeCommunication(processes: ProcessMap, senderTerm: ProcessTerm, receiverTerm: ProcessTerm): GraphNode {
+    private fun consumeCommunication(processes: ProcessMap, senderTerm: ProcessTerm, receiverTerm: ProcessTerm): CommunicationEdgeTo {
         val processCopy = copyProcesses(processes)
         val receiverName = (senderTerm.main as SendSP).receiver
         val senderName = (receiverTerm.main as ReceiveSP).sender
@@ -566,10 +571,10 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
 
         val label = ExtractionLabel.InteractionLabel.CommunicationLabel(senderName, receiverName, (senderTerm.main as SendSP).expression)
 
-        return GraphNode(Network(processCopy), label)
+        return CommunicationEdgeTo(Network(processCopy), label)
     }
 
-    private fun consumeSelection(processes: ProcessMap, offerTerm: ProcessTerm, selectTerm: ProcessTerm): GraphNode {
+    private fun consumeSelection(processes: ProcessMap, offerTerm: ProcessTerm, selectTerm: ProcessTerm): CommunicationEdgeTo {
         val processCopy = copyProcesses(processes)
 
         val selectionProcess = (offerTerm.main as OfferingSP).process
@@ -583,7 +588,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
 
         val label = ExtractionLabel.InteractionLabel.SelectionLabel(offeringProcess, selectionProcess, (selectTerm.main as SelectionSP).label)
 
-        return GraphNode(Network(processCopy), label)
+        return CommunicationEdgeTo(Network(processCopy), label)
     }
 
     private fun findConditional(processes: ProcessMap, processName: String, processTerm: ProcessTerm): ResultCondition? {
@@ -622,7 +627,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
 
     private fun addToHashMap(newNode: ConcreteNode) {
         val hash = hash(newNode.network, newNode.marking)
-        hashesMap.compute(hash) { _, value ->
+        nodeHashes.compute(hash) { _, value ->
             if (value == null) {
                 val array = ArrayList<ConcreteNode>()
                 assert(array.add(newNode))
@@ -636,7 +641,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
 
     private fun removeFromHashMap(newNode: ConcreteNode) {
         val hash = hash(newNode.network, newNode.marking)
-        hashesMap.compute(hash) { _, value ->
+        nodeHashes.compute(hash) { _, value ->
             if (value != null) {
                 assert(value.remove(newNode))
                 value
@@ -773,7 +778,7 @@ class Extraction { //(private val strategy: ExtractionStrategy, private val serv
     //endregion
 
     //region Utils
-    private fun copyAndSortProcesses(node: ConcreteNode, strategy: ExtractionStrategy): HashMap<String, ProcessTerm> {
+    private fun copyAndSortProcesses(node: ConcreteNode): HashMap<String, ProcessTerm> {
         val net = HashMap<String, ProcessTerm>()
         node.network.processes.forEach { k, v -> net[k] = v.copy() }
         return strategy.copyAndSort(node)

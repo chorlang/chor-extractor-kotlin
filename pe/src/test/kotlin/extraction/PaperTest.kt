@@ -25,7 +25,7 @@ class PaperTest {
                 "r { def Z {s!<e2>; Z} main {Z}} | " +
                 "s { def W {r?; W} main {W}}"
         val actual = Extraction.extractChoreography(test).toString()
-        val expected = "def X1 { r.e2->s; p.e1->q; X1 } main {p.e1->q; X1}"
+        val expected = "def X1 { p.e1->q; X1 } main {X1} || def X1 { r.e2->s; X1 } main {X1}"
 
         assertEquals(expected, actual)
     }
@@ -37,7 +37,7 @@ class PaperTest {
                 "r { main {s!<e2>; stop}} | " +
                 "s { main {r?; stop}}"
         val actual = Extraction.extractChoreography(test).toString()
-        val expected = "def X1 { p.e->q; X1 } main {r.e2->s; X1}"
+        val expected = "main {r.e2->s; stop} || def X1 { p.e->q; X1 } main {X1}"
 
         assertEquals(expected, actual)
     }
