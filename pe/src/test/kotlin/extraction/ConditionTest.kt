@@ -92,7 +92,7 @@ class ConditionTest{
                         "s { main {r?; stop}}"
 
         val actual = Extraction.extractChoreography(test).toString()
-        val expected = "main {r.e2->s; stop} || def X1 { p.e->q; X1 } main {X1}"
+        val expected = "def X1 { p.e->q; X1 } main {X1} || main {r.e2->s; stop}"
 
         assertEquals(expected, actual)
     }

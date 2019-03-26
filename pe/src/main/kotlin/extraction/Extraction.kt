@@ -11,7 +11,7 @@ import ast.sp.nodes.*
 import org.jgrapht.graph.DirectedPseudograph
 import util.ParseUtils
 import util.NetworkUsedProcesses
-import java.lang.IllegalArgumentException
+import util.NetworkUtils
 import java.lang.IllegalStateException
 
 typealias ProcessMap = HashMap<String, ProcessTerm>
@@ -26,19 +26,26 @@ typealias Hash = Int
 class Extraction(val strategy: ExtractionStrategy) { //(private val strategy: ExtractionStrategy, private val services: ArrayList<String>) {
     companion object {
         fun extractChoreography(n: String, strategy: ExtractionStrategy = ExtractionStrategy.Default, services: ArrayList<String> = arrayListOf()): Program {
-            val network = ParseUtils.stringToNetwork(n)
-            val processSets = getProcessSets(network)
-            val parallelNetworks = splitNetwork(processSets, network)
+            val inputNetwork = NetworkUtils.purgeNetwork(ParseUtils.stringToNetwork(n))
+            val processSets = getProcessSets(inputNetwork)
+            val parallelNetworks = splitNetwork(processSets, inputNetwork)
 
-            val program = ArrayList<Choreography?>()
-            val statistics = ArrayList<GraphStatistics>()
+            val results =
+                    parallelNetworks.parallelStream().map { network ->
+                        arrayListOf(Extraction(strategy).extract(network, services))
+                    }.reduce( ArrayList() ) { list1, list2 ->
+                        val ret = ArrayList(list1)
+                        ret.addAll(list2)
+                        ret
+                    }
 
-            parallelNetworks.parallelStream().forEach { network ->
-                val (choreography, graphStatistics) = Extraction(strategy).extract(network, services)
-                program.add(choreography)
-                statistics.add(graphStatistics)
+            results.sortBy {
+                pair ->
+                    if ( pair.first == null ) "null" else pair.first.toString() // Hoooooly guacamole......
+                // TODO: maybe we don't need to check for null since buildGraph always throws an exception
             }
-            return Program(program, statistics)
+
+            return Program(results.map { it.first }, results.map { it.second })
         }
 
         private fun splitNetwork(processSets: ArrayList<HashSet<String>>, network: Network): HashSet<Network> {
@@ -54,30 +61,28 @@ class Extraction(val strategy: ExtractionStrategy) { //(private val strategy: Ex
         }
 
         private fun getProcessSets(network: Network): ArrayList<HashSet<String>> {
-            val processSets = ArrayList<HashSet<String>>()
+            val unprocessed = HashSet<ProcessName>(network.processes.keys)//.sorted())
+
+            val map = HashMap<ProcessName, HashSet<ProcessName>>()
             network.processes.forEach { processName, processTerm ->
-                if ( !(processTerm.main is TerminationSP) ) {
-                    val processNames = hashSetOf(processName)
-                    processNames.addAll(NetworkUsedProcesses.compute(processTerm))
-                    processSets.add(processNames)
-                }
+                map[processName] = NetworkUsedProcesses.compute(processTerm)
             }
 
-            var i = 0
-            while( i < processSets.size ) {
-                var j = 0
-                while( j < processSets.size ) {
-                    if ( i != j && processSets[i].intersect( processSets[j] ).isNotEmpty() ) {
-                        processSets[i].addAll( processSets[j] )
-                        processSets.removeAt( j )
-                        if ( j < i ) {
-                            i--
-                        }
-                    } else {
-                        j++
-                    }
+            val processSets = ArrayList<HashSet<ProcessName>>()
+            while( unprocessed.isNotEmpty() ) {
+                val component = HashSet<ProcessName>()
+                val processName = unprocessed.first()
+                component.add( processName )
+                unprocessed.remove( processName )
+
+                val visible = map[processName]!!
+                visible.add( processName )
+                while( visible != component ) {
+                    val intersection = (visible - component) //.sorted()
+                    intersection.forEach { component.add( it ); unprocessed.remove( it ); visible.addAll( map[it]!! ) }
                 }
-                i++
+
+                processSets.add( component )
             }
 
             processSets.forEach {
@@ -89,21 +94,60 @@ class Extraction(val strategy: ExtractionStrategy) { //(private val strategy: Ex
             }
             println()
 
-            if (processSets.isEmpty()) {
-                val set = HashSet<String>()
-                network.processes.keys.forEach { set.add(it) }
-                val ret = ArrayList<HashSet<String>>()
-                ret.add(set)
-                return ret
-            } else {
-                return processSets
-            }
+            return processSets
         }
+
+//        private fun getProcessSets(network: Network): ArrayList<HashSet<String>> {
+//            val processSets = ArrayList<HashSet<String>>()
+//            network.processes.forEach { processName, processTerm ->
+//                if ( !(processTerm.main is TerminationSP) ) {
+//                    val processNames = hashSetOf(processName)
+//                    processNames.addAll(NetworkUsedProcesses.compute(processTerm))
+//                    processSets.add(processNames)
+//                }
+//            }
+//
+//            var i = 0
+//            while( i < processSets.size ) {
+//                var j = 0
+//                while( j < processSets.size ) {
+//                    if ( i != j && processSets[i].intersect( processSets[j] ).isNotEmpty() ) {
+//                        processSets[i].addAll( processSets[j] )
+//                        processSets.removeAt( j )
+//                        if ( j < i ) {
+//                            i--
+//                        }
+//                    } else {
+//                        j++
+//                    }
+//                }
+//                i++
+//            }
+//
+//            processSets.forEach {
+//                print( "[" )
+//                it.forEach {
+//                    print( "$it," )
+//                }
+//                print( "] " )
+//            }
+//            println()
+//
+//            if (processSets.isEmpty()) {
+//                val set = HashSet<String>()
+//                network.processes.keys.forEach { set.add(it) }
+//                val ret = ArrayList<HashSet<String>>()
+//                ret.add(set)
+//                return ret
+//            } else {
+//                return processSets
+//            }
+//        }
     }
 
     private var nodeIdCounter = 0
     private val nodeHashes = HashMap<Hash, ArrayList<ConcreteNode>>()
-    private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processesInChoreography used in badNodesList loop calculations
+    private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processes used in badNodesList loop calculations
     private var badLoopCounter = 0
 
     /**
@@ -114,19 +158,19 @@ class Extraction(val strategy: ExtractionStrategy) { //(private val strategy: Ex
      * @return the extracted choreography
      */
     @Suppress("UNCHECKED_CAST")
-    private fun extract(n: Network, livelocked: ArrayList<String> = arrayListOf()): Pair<Choreography?, GraphStatistics> {
+    private fun extract(n: Network, services: ArrayList<String> = arrayListOf()): Pair<Choreography?, GraphStatistics> {
         val graph = DirectedPseudograph<Node, ExtractionLabel>(ExtractionLabel::class.java)
         val marking = HashMap<ProcessName, Boolean>()
 
         //we mark as visited processes which has no active actions in the main name or which are in the list of livelocked processes
-        n.processes.forEach { name, term -> marking[name] = term.main is TerminationSP || livelocked.contains(name) }
+        n.processes.forEach { name, term -> marking[name] = term.main is TerminationSP || services.contains(name) }
 
         val node = ConcreteNode(network = n, choicePath = "0", id = nextNodeId(), badNodesList = ArrayList(), marking = marking)
         graph.addVertex(node)
         addToChoicePathMap(node)
         addToHashMap(node)
 
-        return if (buildGraph(node, graph as DirectedPseudograph<ConcreteNode, ExtractionLabel>, livelocked)) {
+        return if (buildGraph(node, graph as DirectedPseudograph<ConcreteNode, ExtractionLabel>, services)) {
             val unrolledGraphNodesList = unrollGraph(node, graph as DirectedPseudograph<Node, ExtractionLabel>)
             Pair(buildChoreography(node, unrolledGraphNodesList, graph), GraphStatistics(graph.vertexSet().size, badLoopCounter))
         } else {
@@ -435,7 +479,7 @@ class Extraction(val strategy: ExtractionStrategy) { //(private val strategy: Ex
                     }
                     for (process in node.network.processes) {
                         if (process.value.main !is TerminationSP) {
-                            throw Exception("Bad graph. No more edges found, but not all processesInChoreography were terminated.")
+                            throw Exception("Bad graph. No more edges found, but not all processes were terminated.")
                         } else return Termination()
                     }
                 }
