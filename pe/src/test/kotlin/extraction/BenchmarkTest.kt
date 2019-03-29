@@ -355,7 +355,7 @@ class BenchmarkTest {
                         "main {X}}"
 
         val strategy = Utils.parseStrategy( strategyName )
-        val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("db", "int")) ).toString()
+        val actual = Extraction.extractChoreography( test, strategy, listOf("db", "int") ).toString()
         val expected =
                 "def X1 { cl.connect->int; int.setup->appli; int.syncAccess->cl; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } def X2 { cl->appli[awaitcl]; cl.access->appli; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } main {X1}"
 
