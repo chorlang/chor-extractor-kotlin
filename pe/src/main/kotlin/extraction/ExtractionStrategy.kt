@@ -8,13 +8,12 @@ import kotlin.collections.LinkedHashMap
  * Sorting strategy for the first action of each process in a network
  */
 enum class ExtractionStrategy {
-    SelectionsFirst {
+    InteractionsFirst {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
 
-            node.network.processes.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
-            node.network.processes.forEach { process -> if (process.value.main is SendSP || process.value.main is ReceiveSP) network[process.key] = process.value.copy() }
-            node.network.processes.forEach { process -> network[process.key] = process.value.copy() }
+            node.network.processes.forEach { process -> if (process.value.main is SendSP || process.value.main is ReceiveSP || process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
+            node.network.processes.forEach { process -> if (!network.contains(process.key)) network[process.key] = process.value.copy() }
             return network
         }
     },
@@ -24,7 +23,7 @@ enum class ExtractionStrategy {
 
             node.network.processes.forEach { process -> if (process.value.main is ConditionSP) network[process.key] = process.value.copy() }
             node.network.processes.forEach { process -> if (process.value.main is SelectionSP || process.value.main is OfferingSP) network[process.key] = process.value.copy() }
-            node.network.processes.forEach { process -> network[process.key] = process.value.copy() }
+            node.network.processes.forEach { process -> if (!network.contains(process.key)) network[process.key] = process.value.copy() }
             return network
         }
     },
@@ -196,7 +195,7 @@ enum class ExtractionStrategy {
     },
 
     Default() {
-        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> = SelectionsFirst.copyAndSort(node)
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> = InteractionsFirst.copyAndSort(node)
     };
 
     abstract fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm>

@@ -84,7 +84,7 @@ class ChoreographyASTToProgram : ChoreographyBaseVisitor<CCNode>() {
 
     override fun visitProcedureInvocation(ctx: ProcedureInvocationContext): CCNode {
         val procedureName = ctx.procedure().text
-        return ProcedureInvocation(procedureName, processesInChoreography[iteration])
+        return ProcedureInvocation(procedureName)
     }
 
     override fun visitTerminal(node: TerminalNode?): CCNode {

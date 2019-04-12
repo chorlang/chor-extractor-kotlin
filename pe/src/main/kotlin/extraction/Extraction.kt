@@ -439,67 +439,76 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         }
     }
 
-    private fun unrollGraph(root: ConcreteNode, graph: DirectedPseudograph<Node, ExtractionLabel>): ArrayList<ProcedureNode> {
-        val procedureNodes = ArrayList<ProcedureNode>()
+    private fun unrollGraph(root: ConcreteNode, graph: DirectedPseudograph<Node, ExtractionLabel>): ArrayList<InvocationNode> {
+        val invocations = ArrayList<InvocationNode>()
 
         var count = 1
-        val recursiveNodes = HashMap<Int, ConcreteNode>()
+        val recursiveNodes = HashMap<String, ConcreteNode>()
 
         if (graph.incomingEdgesOf(root).size == 1)
-            recursiveNodes[count++] = root
+            recursiveNodes["X${count++}"] = root
 
         graph.vertexSet().forEach { node ->
             if (node is ConcreteNode && graph.incomingEdgesOf(node).size > 1)
-                recursiveNodes[count++] = node
+                recursiveNodes["X${count++}"] = node
         }
 
-        recursiveNodes.forEach { node ->
-            val fakeNode = ProcedureNode("X${node.key}", node.value)
-            graph.addVertex(fakeNode)
-            procedureNodes.add(fakeNode)
+        recursiveNodes.forEach { pair ->
+            val invocationNode = InvocationNode(pair.key, pair.value)
+            graph.addVertex(invocationNode)
+            invocations.add(invocationNode)
 
-            val outgoingLabels = graph.outgoingEdgesOf(node.value)
-            val targets = ArrayList<Pair<Extraction.Node, ExtractionLabel>>()
-            outgoingLabels.forEach { targets.add(Pair(graph.getEdgeTarget(it), it)) }
-            graph.removeAllEdges(ArrayList(outgoingLabels))
-            targets.forEach { target -> graph.addEdge(fakeNode, target.first, target.second) }
+            val incomingEdges = HashSet(graph.incomingEdgesOf(pair.value))
+            incomingEdges.forEach {
+                val source = graph.getEdgeSource(it)
+                graph.removeEdge(it)
+                graph.addEdge(source, invocationNode, it)
+            }
         }
 
-        return procedureNodes
+        return invocations
     }
 
-    private fun buildChoreography(root: Node, procedureNodes: ArrayList<ProcedureNode>, graph: DirectedPseudograph<Node, ExtractionLabel>): Choreography {
-        val main = buildChoreographyBody(root, graph, procedureNodes)
+    private fun buildChoreography(root: Node, invocationNodes: ArrayList<InvocationNode>, graph: DirectedPseudograph<Node, ExtractionLabel>): Choreography {
+        val mainInvokers = invocationNodes.filter { it.node === root }
+
+        val main =
+                if ( mainInvokers.isNotEmpty() ) {
+                    ProcedureInvocation(mainInvokers.first().procedureName)
+                } else {
+                    buildChoreographyBody(root, graph)
+                }
+
         val procedures = ArrayList<ProcedureDefinition>()
-        for (procedureNode in procedureNodes) {
-            procedures.add(ProcedureDefinition(procedureNode.procedureName, buildChoreographyBody(procedureNode, graph, procedureNodes), HashSet()))
+        for (procedureNode in invocationNodes) {
+            procedures.add(ProcedureDefinition(procedureNode.procedureName, buildChoreographyBody(procedureNode.node, graph), HashSet()))
         }
 
         return Choreography(main, procedures)
     }
 
-    private fun buildChoreographyBody(node: Node, graph: DirectedPseudograph<Node, ExtractionLabel>, procedureNodesList: ArrayList<ProcedureNode>): ChoreographyBody {
+    private fun buildChoreographyBody(node: Node, graph: DirectedPseudograph<Node, ExtractionLabel>): ChoreographyBody {
         val edges = graph.outgoingEdgesOf(node)
 
-        // TODO look at this
         when (edges.size) {
             0 -> {
-                if (node is ConcreteNode) {
-                    for (fakeNode in procedureNodesList) {
-                        if (fakeNode.node == node) return ProcedureInvocation(fakeNode.procedureName, HashSet())
+                when (node) {
+                    is ConcreteNode -> {
+                        if ( node.network.processes.all { it.value.main is TerminationSP } ) {
+                            return Termination()
+                        } else {
+                            throw IllegalStateException("Bad graph. No more edges found, but not all processes were terminated.")
+                        }
                     }
-                    for (process in node.network.processes) {
-                        if (process.value.main !is TerminationSP) {
-                            throw Exception("Bad graph. No more edges found, but not all processes were terminated.")
-                        } else return Termination()
-                    }
+                    is InvocationNode -> return ProcedureInvocation(node.procedureName)
+                    else -> throw IllegalStateException("Ill-formed graph: unknown node type")
                 }
             }
             1 -> {
                 val edge = edges.first()
                 return when (edge) {
-                    is ExtractionLabel.InteractionLabel.CommunicationLabel -> CommunicationSelection(Communication(edge.sender, edge.receiver, edge.expression), buildChoreographyBody(graph.getEdgeTarget(edge), graph, procedureNodesList))
-                    is ExtractionLabel.InteractionLabel.SelectionLabel -> CommunicationSelection(Selection(edge.receiver, edge.sender, edge.label), buildChoreographyBody(graph.getEdgeTarget(edge), graph, procedureNodesList))
+                    is ExtractionLabel.InteractionLabel.CommunicationLabel -> CommunicationSelection(Communication(edge.sender, edge.receiver, edge.expression), buildChoreographyBody(graph.getEdgeTarget(edge), graph))
+                    is ExtractionLabel.InteractionLabel.SelectionLabel -> CommunicationSelection(Selection(edge.receiver, edge.sender, edge.label), buildChoreographyBody(graph.getEdgeTarget(edge), graph))
 
                     is ExtractionLabel.MulticomLabel -> {
                         val actions = ArrayList<Interaction>()
@@ -510,26 +519,22 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
                             }
                         }
-                        Multicom(actions, buildChoreographyBody(graph.getEdgeTarget(edge), graph, procedureNodesList))
+                        Multicom(actions, buildChoreographyBody(graph.getEdgeTarget(edge), graph))
                     }
 
                     is ExtractionLabel.ConditionLabel -> {
-                        TODO("Something very wrong has just happened, the universe should collapse now")
+                        throw IllegalStateException("Unary condition label in graph")
                     }
                 }
             }
             2 -> {
-                val left = edges.first() as ExtractionLabel.ConditionLabel
-                val right = edges.last()
+                val thenLabel = edges.filterIsInstance<ExtractionLabel.ConditionLabel.ThenLabel>().first()
+                val elseLabel = edges.filterIsInstance<ExtractionLabel.ConditionLabel.ElseLabel>().first()
 
-                return when (left) {
-                    is ExtractionLabel.ConditionLabel.ThenLabel -> Condition(left.process, left.expression, buildChoreographyBody(graph.getEdgeTarget(left), graph, procedureNodesList), buildChoreographyBody(graph.getEdgeTarget(right), graph, procedureNodesList))
-                    is ExtractionLabel.ConditionLabel.ElseLabel -> Condition(left.process, left.expression, buildChoreographyBody(graph.getEdgeTarget(right), graph, procedureNodesList), buildChoreographyBody(graph.getEdgeTarget(left), graph, procedureNodesList))
-                }
+                return Condition(thenLabel.process, thenLabel.expression, buildChoreographyBody(graph.getEdgeTarget(thenLabel), graph), buildChoreographyBody(graph.getEdgeTarget(elseLabel), graph))
             }
-            else -> throw Exception("Bad graph. A node has more than 2 outgoing edges.")
+            else -> throw IllegalStateException("Bad graph. A node has more than 2 outgoing edges.")
         }
-        return Termination()
     }
     //endregion
 
@@ -835,7 +840,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         override fun hashCode(): Int = network.hashCode() + 31 * choicePath.hashCode() + 31 * 31 * id + 31 * 31 * 31 * badNodes.hashCode() + 31 * 31 * 31 * 31 * marking.hashCode()
     }
 
-    data class ProcedureNode(val procedureName: String, val node: Node) : Node
+    data class InvocationNode(val procedureName: String, val node: Node) : Node
     //endregion
 
     //region Utils

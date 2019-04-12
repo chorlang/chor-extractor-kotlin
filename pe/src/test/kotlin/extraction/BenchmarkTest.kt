@@ -18,7 +18,7 @@ class BenchmarkTest {
         val actual = Extraction.extractChoreography( test, strategy ).toString()
         
         when (strategy) {
-            ExtractionStrategy.SelectionsFirst, ExtractionStrategy.ConditionsFirst, ExtractionStrategy.UnmarkedFirst, ExtractionStrategy.UnmarkedThenConditions, ExtractionStrategy.UnmarkedThenSelections -> {
+            ExtractionStrategy.InteractionsFirst, ExtractionStrategy.ConditionsFirst, ExtractionStrategy.UnmarkedFirst, ExtractionStrategy.UnmarkedThenConditions, ExtractionStrategy.UnmarkedThenSelections -> {
                 val expected =
                         "def X1 { if a.e then a->b[win]; c.busy->d; a->c[lose]; b.sig->a; c.msg->a; a.free->d; X1 else a->b[lose]; c.busy->d; a->c[win]; b.sig->a; c.msg->a; a.free->d; X1 } main {X1}"
 
@@ -52,7 +52,7 @@ class BenchmarkTest {
         val actual = Extraction.extractChoreography( test, strategy ).toString()
 
         when (strategy) {
-            ExtractionStrategy.SelectionsFirst -> {
+            ExtractionStrategy.InteractionsFirst -> {
                 val expected =
                         "def X1 { if a1.e then if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[win]; a1->c1[lose]; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; c2.busy->d2; a1->b1[win]; a1->c1[lose]; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; a1->b1[lose]; a1->c1[win]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[win]; a1->c1[lose]; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; c2.busy->d2; a1->b1[win]; a1->c1[lose]; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; a1->b1[lose]; a1->c1[win]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else if a2.e then a2->b2[win]; c1.busy->d1; a1->b1[lose]; a1->c1[win]; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; a1->b1[win]; a1->c1[lose]; c2.busy->d2; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; c2.busy->d2; a1->b1[lose]; a1->c1[win]; a2->c2[lose]; b2.lose->c2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else a2->b2[lose]; c1.busy->d1; a1->b1[lose]; a1->c1[win]; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; if a1.e then c1.busy->d1; a1->b1[win]; a1->c1[lose]; c2.busy->d2; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; b1.lose->c1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 else c1.busy->d1; c2.busy->d2; a1->b1[lose]; a1->c1[win]; a2->c2[win]; c2.lose->b2; b2.sig->a2; c2.msg->a2; a2.free->d2; c1.lose->b1; b1.sig->a1; c1.msg->a1; a1.free->d1; X1 } main {X1}"
 
@@ -124,7 +124,7 @@ class BenchmarkTest {
         val actual = Extraction.extractChoreography( test, strategy ).toString()
 
         when (strategy) {
-            ExtractionStrategy.SelectionsFirst, ExtractionStrategy.ConditionsFirst -> {
+            ExtractionStrategy.InteractionsFirst, ExtractionStrategy.ConditionsFirst -> {
                 val expected =
                         "def X1 { (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); (c.1->d, d.ack0->c); (a.1->b, b.ack0->a); (a.0->b, b.ack1->a); (c.0->d, d.ack1->c); X1 } main {a.0->b; c.0->d; X1}"
 
