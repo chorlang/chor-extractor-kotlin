@@ -29,8 +29,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     companion object {
         fun extractChoreography(n: String, strategy: ExtractionStrategy = ExtractionStrategy.Default, services: List<String> = arrayListOf()): Program {
             val inputNetwork = NetworkUtils.purgeNetwork(ParseUtils.stringToNetwork(n))
-            val processSets = getProcessSets(inputNetwork)
-            val parallelNetworks = splitNetwork(processSets, inputNetwork)
+            val parallelNetworks = splitNetwork(inputNetwork)
 
             val results =
                     parallelNetworks.parallelStream().map { network ->
@@ -50,7 +49,8 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             return Program(results.map { it.first }, results.map { it.second })
         }
 
-        private fun splitNetwork(processSets: ArrayList<HashSet<String>>, network: Network): HashSet<Network> {
+        private fun splitNetwork(network: Network): HashSet<Network> {
+            val processSets = getProcessSets(network)
             val networks = hashSetOf<Network>()
 
             for (processSet in processSets) {
@@ -151,6 +151,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     private val nodeHashes = HashMap<Hash, ArrayList<ConcreteNode>>()
     private var choicePaths = HashMap<String, ArrayList<ConcreteNode>>() //global map of processes used in badNodes loop calculations
     private var badLoopCounter = 0
+    private val graph: DirectedPseudograph<Node, ExtractionLabel> = DirectedPseudograph(ExtractionLabel::class.java)
 
     /**
      * 1. build graph with nodes as networks and edges as body actions
@@ -161,7 +162,6 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
      */
     @Suppress("UNCHECKED_CAST")
     private fun extract(n: Network): Pair<Choreography?, GraphStatistics> {
-        val graph = DirectedPseudograph<Node, ExtractionLabel>(ExtractionLabel::class.java)
         val marking = HashMap<ProcessName, Boolean>()
 
         //we mark as visited processes which has no active actions in the main name or which are in the list of livelocked processes
