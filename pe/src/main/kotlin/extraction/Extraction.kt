@@ -87,64 +87,8 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 processSets.add(component)
             }
 
-//            processSets.forEach {
-//                print( "[" )
-//                it.forEach {
-//                    print( "$it," )
-//                }
-//                print( "] " )
-//            }
-//            println()
-
             return processSets
         }
-
-//        private fun getProcessSets(network: Network): ArrayList<HashSet<String>> {
-//            val processSets = ArrayList<HashSet<String>>()
-//            network.processes.forEach { processName, processTerm ->
-//                if ( !(processTerm.main is TerminationSP) ) {
-//                    val processNames = hashSetOf(processName)
-//                    processNames.addAll(NetworkUsedProcesses.compute(processTerm))
-//                    processSets.add(processNames)
-//                }
-//            }
-//
-//            var i = 0
-//            while( i < processSets.size ) {
-//                var j = 0
-//                while( j < processSets.size ) {
-//                    if ( i != j && processSets[i].intersect( processSets[j] ).isNotEmpty() ) {
-//                        processSets[i].addAll( processSets[j] )
-//                        processSets.removeAt( j )
-//                        if ( j < i ) {
-//                            i--
-//                        }
-//                    } else {
-//                        j++
-//                    }
-//                }
-//                i++
-//            }
-//
-//            processSets.forEach {
-//                print( "[" )
-//                it.forEach {
-//                    print( "$it," )
-//                }
-//                print( "] " )
-//            }
-//            println()
-//
-//            if (processSets.isEmpty()) {
-//                val set = HashSet<String>()
-//                network.processes.keys.forEach { set.add(it) }
-//                val ret = ArrayList<HashSet<String>>()
-//                ret.add(set)
-//                return ret
-//            } else {
-//                return processSets
-//            }
-//        }
     }
 
     private var nodeIdCounter = 0
@@ -172,9 +116,9 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         addToChoicePathMap(node)
         addToHashMap(node)
 
-        return if (buildGraph(node, graph as DirectedPseudograph<ConcreteNode, ExtractionLabel>)) {
-            val procedureNodes = unrollGraph(node, graph as DirectedPseudograph<Node, ExtractionLabel>)
-            Pair(buildChoreography(node, procedureNodes, graph), GraphStatistics(graph.vertexSet().size, badLoopCounter))
+        return if (buildGraph(node)) {
+            val procedureNodes = unrollGraph(node)
+            Pair(buildChoreography(node, procedureNodes), GraphStatistics(graph.vertexSet().size, badLoopCounter))
         } else {
             Pair(null, GraphStatistics(graph.vertexSet().size, badLoopCounter))
         }
@@ -182,7 +126,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
     private fun fold(unfoldedProcesses: HashSet<String>, targetNetwork: Network, currentNode: ConcreteNode) = unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
 
-    private fun buildGraph(currentNode: ConcreteNode, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun buildGraph(currentNode: ConcreteNode): Boolean {
         val unfoldedProcesses = HashSet<String>()
         val processes = copyAndSortProcesses(currentNode)
 
@@ -204,7 +148,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 unfoldedProcessesCopy.removeAll(arrayOf(label.sender, label.receiver))
                 fold(unfoldedProcessesCopy, targetNetwork, currentNode)
 
-                if (buildCommunication(targetNetwork, label, currentNode, graph))
+                if (buildCommunication(targetNetwork, label, currentNode))
                     return true
                 else
                     continue
@@ -218,7 +162,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 fold(unfoldedProcessesCopy, thenNetwork, currentNode)
                 fold(unfoldedProcessesCopy, elseNetwork, currentNode)
 
-                if (buildConditional(thenNetwork, thenLabel, elseNetwork, elseLabel, currentNode, graph))
+                if (buildConditional(thenNetwork, thenLabel, elseNetwork, elseLabel, currentNode))
                     return true
                 else
                     continue
@@ -244,7 +188,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
             //if we managed to collect some actions for a multicom
             if (actions.size >= 2) {
-                if (buildMulticom(actions, currentNode, processes, unfoldedProcesses, graph)) return true else continue
+                if (buildMulticom(actions, currentNode, processes, unfoldedProcesses)) return true else continue
             }
         }
 
@@ -252,7 +196,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return false
     }
 
-    private fun buildCommunication(targetNetwork: Network, label: ExtractionLabel.InteractionLabel, currentNode: ConcreteNode, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun buildCommunication(targetNetwork: Network, label: ExtractionLabel.InteractionLabel, currentNode: ConcreteNode): Boolean {
         val targetMarking = Marking(currentNode.marking)
 
         targetMarking[label.sender] = true
@@ -268,11 +212,11 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         if (node == null) { /* case 1 */
             val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
 
-            if (addNodeAndEdgeToGraph(currentNode, newNode, label, graph)) { // TODO: This test is actually unnecessary (the side effects are not)
-                if (buildGraph(newNode, graph)) {
+            if (addNodeAndEdgeToGraph(currentNode, newNode, label)) { // TODO: This test is actually unnecessary (the side effects are not)
+                if (buildGraph(newNode)) {
                     return true
                 } else {
-                    removeNodeFromGraph(graph, newNode)
+                    removeNodeFromGraph(newNode)
                     return false
                 }
             } else {
@@ -283,11 +227,11 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             If targetNode already exists, then the whole subgraph from that node is already built.
             So we don't need to update any badNodes list.
             */
-            return addEdgeToGraph(currentNode, node, label, graph)
+            return addEdgeToGraph(currentNode, node, label)
         }
     }
 
-    private fun buildConditional(thenNetwork: Network, thenLabel: ExtractionLabel.ConditionLabel.ThenLabel, elseNetwork: Network, elseLabel: ExtractionLabel.ConditionLabel.ElseLabel, currentNode: ConcreteNode, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun buildConditional(thenNetwork: Network, thenLabel: ExtractionLabel.ConditionLabel.ThenLabel, elseNetwork: Network, elseLabel: ExtractionLabel.ConditionLabel.ElseLabel, currentNode: ConcreteNode): Boolean {
         val targetMarking = Marking(currentNode.marking)
 
         targetMarking[thenLabel.process] = true
@@ -304,17 +248,17 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         /* case 4 */
         if (thenNode == null) {
             newThenNode = createNewNode(thenNetwork, thenLabel, currentNode, targetMarking)
-            addNodeAndEdgeToGraph(currentNode, newThenNode, thenLabel, graph)
+            addNodeAndEdgeToGraph(currentNode, newThenNode, thenLabel)
 
-            if (!buildGraph(newThenNode, graph)) {
-                removeNodeFromGraph(graph, newThenNode)
+            if (!buildGraph(newThenNode)) {
+                removeNodeFromGraph(newThenNode)
                 return false
             }
         }
         /* case 5 */
         else {
             newThenNode = thenNode
-            if (!addEdgeToGraph(currentNode, thenNode, thenLabel, graph)) return false
+            if (!addEdgeToGraph(currentNode, thenNode, thenLabel)) return false
         }
 
         //check if the else node with the same network and markings already exists in the graph
@@ -323,7 +267,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
         val garbageCollectThen = {
             if (thenNode == null) {
-                removeNodeFromGraph(graph, newThenNode) // TODO: pass the choice path for recursive removal of nodes
+                removeNodeFromGraph(newThenNode) // TODO: pass the choice path for recursive removal of nodes
             } else {
                 graph.removeEdge(currentNode, newThenNode)
             }
@@ -332,18 +276,18 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         /* case 7 */
         if (elseNode == null) {
             newElseNode = createNewNode(elseNetwork, elseLabel, currentNode, targetMarking)
-            addNodeAndEdgeToGraph(currentNode, newElseNode, elseLabel, graph)
+            addNodeAndEdgeToGraph(currentNode, newElseNode, elseLabel)
 
-            if (!buildGraph(newElseNode, graph)) {
+            if (!buildGraph(newElseNode)) {
                 garbageCollectThen()
-                removeNodeFromGraph(graph, newElseNode)
+                removeNodeFromGraph(newElseNode)
                 return false
             }
         }
         /* case 8 */
         else {
             newElseNode = elseNode
-            if (!addEdgeToGraph(currentNode, newElseNode, elseLabel, graph)) {
+            if (!addEdgeToGraph(currentNode, newElseNode, elseLabel)) {
                 garbageCollectThen()
                 return false
             }
@@ -389,7 +333,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         }
     }
 
-    private fun buildMulticom(actions: ArrayList<ExtractionLabel.InteractionLabel>, currentNode: ConcreteNode, processesCopy: HashMap<String, ProcessTerm>, unfoldedProcesses: HashSet<String>, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun buildMulticom(actions: ArrayList<ExtractionLabel.InteractionLabel>, currentNode: ConcreteNode, processesCopy: HashMap<String, ProcessTerm>, unfoldedProcesses: HashSet<String>): Boolean {
         val label = ExtractionLabel.MulticomLabel(actions)
 
         val targetMarking = Marking(currentNode.marking)
@@ -412,10 +356,10 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
         if (existingNode == null) {
             val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
-            addNodeAndEdgeToGraph(currentNode, newNode, label, graph)
-            return buildGraph(newNode, graph)
+            addNodeAndEdgeToGraph(currentNode, newNode, label)
+            return buildGraph(newNode)
         } else {
-            if (addEdgeToGraph(currentNode, existingNode, label, graph)) return true
+            if (addEdgeToGraph(currentNode, existingNode, label)) return true
         }
 
         return false
@@ -440,7 +384,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         }
     }
 
-    private fun unrollGraph(root: ConcreteNode, graph: DirectedPseudograph<Node, ExtractionLabel>): ArrayList<InvocationNode> {
+    private fun unrollGraph(root: ConcreteNode): ArrayList<InvocationNode> {
         val invocations = ArrayList<InvocationNode>()
 
         var count = 1
@@ -470,25 +414,25 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return invocations
     }
 
-    private fun buildChoreography(root: Node, invocationNodes: ArrayList<InvocationNode>, graph: DirectedPseudograph<Node, ExtractionLabel>): Choreography {
+    private fun buildChoreography(root: Node, invocationNodes: ArrayList<InvocationNode>): Choreography {
         val mainInvokers = invocationNodes.filter { it.node === root }
 
         val main =
                 if (mainInvokers.isNotEmpty()) {
                     ProcedureInvocation(mainInvokers.first().procedureName)
                 } else {
-                    buildChoreographyBody(root, graph)
+                    buildChoreographyBody(root)
                 }
 
         val procedures = ArrayList<ProcedureDefinition>()
         for (procedureNode in invocationNodes) {
-            procedures.add(ProcedureDefinition(procedureNode.procedureName, buildChoreographyBody(procedureNode.node, graph), HashSet()))
+            procedures.add(ProcedureDefinition(procedureNode.procedureName, buildChoreographyBody(procedureNode.node), HashSet()))
         }
 
         return Choreography(main, procedures)
     }
 
-    private fun buildChoreographyBody(node: Node, graph: DirectedPseudograph<Node, ExtractionLabel>): ChoreographyBody {
+    private fun buildChoreographyBody(node: Node): ChoreographyBody {
         val edges = graph.outgoingEdgesOf(node)
 
         when (edges.size) {
@@ -508,8 +452,8 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             1 -> {
                 val edge = edges.first()
                 return when (edge) {
-                    is ExtractionLabel.InteractionLabel.CommunicationLabel -> CommunicationSelection(Communication(edge.sender, edge.receiver, edge.expression), buildChoreographyBody(graph.getEdgeTarget(edge), graph))
-                    is ExtractionLabel.InteractionLabel.SelectionLabel -> CommunicationSelection(Selection(edge.receiver, edge.sender, edge.label), buildChoreographyBody(graph.getEdgeTarget(edge), graph))
+                    is ExtractionLabel.InteractionLabel.CommunicationLabel -> CommunicationSelection(Communication(edge.sender, edge.receiver, edge.expression), buildChoreographyBody(graph.getEdgeTarget(edge)))
+                    is ExtractionLabel.InteractionLabel.SelectionLabel -> CommunicationSelection(Selection(edge.receiver, edge.sender, edge.label), buildChoreographyBody(graph.getEdgeTarget(edge)))
 
                     is ExtractionLabel.MulticomLabel -> {
                         val actions = ArrayList<Interaction>()
@@ -520,7 +464,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
                             }
                         }
-                        Multicom(actions, buildChoreographyBody(graph.getEdgeTarget(edge), graph))
+                        Multicom(actions, buildChoreographyBody(graph.getEdgeTarget(edge)))
                     }
 
                     is ExtractionLabel.ConditionLabel -> {
@@ -532,7 +476,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 val thenLabel = edges.filterIsInstance<ExtractionLabel.ConditionLabel.ThenLabel>().first()
                 val elseLabel = edges.filterIsInstance<ExtractionLabel.ConditionLabel.ElseLabel>().first()
 
-                return Condition(thenLabel.process, thenLabel.expression, buildChoreographyBody(graph.getEdgeTarget(thenLabel), graph), buildChoreographyBody(graph.getEdgeTarget(elseLabel), graph))
+                return Condition(thenLabel.process, thenLabel.expression, buildChoreographyBody(graph.getEdgeTarget(thenLabel)), buildChoreographyBody(graph.getEdgeTarget(elseLabel)))
             }
             else -> throw IllegalStateException("Bad graph. A node has more than 2 outgoing edges.")
         }
@@ -713,7 +657,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 //        }
 //    }
 
-    private fun addNodeAndEdgeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun addNodeAndEdgeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel): Boolean {
         if (graph.addVertex(newNode)) {
             if (graph.addEdge(currentNode, newNode, label)) {
                 addToChoicePathMap(newNode)
@@ -728,14 +672,14 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         }
     }
 
-    private fun removeNodeFromGraph(graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, removingNode: ConcreteNode) {
+    private fun removeNodeFromGraph(removingNode: ConcreteNode) {
         graph.removeVertex(removingNode)
         removeFromHashMap(removingNode)
         removeFromChoicePathMap(removingNode)
     }
 
-    private fun addEdgeToGraph(sourceNode: ConcreteNode, targetNode: ConcreteNode, label: ExtractionLabel, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
-        if (checkPrefix(targetNode) && checkLoop(sourceNode, targetNode, label, graph)) {
+    private fun addEdgeToGraph(sourceNode: ConcreteNode, targetNode: ConcreteNode, label: ExtractionLabel): Boolean {
+        if (checkPrefix(targetNode) && checkLoop(sourceNode, targetNode, label)) {
             return graph.addEdge(sourceNode, targetNode, label)
         }
 
@@ -745,7 +689,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     //endregion
 
     //region Checkloop and choicePaths manipulations
-    private fun checkLoop(sourceNode: ConcreteNode, targetNode: ConcreteNode, label: ExtractionLabel, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>): Boolean {
+    private fun checkLoop(sourceNode: ConcreteNode, targetNode: ConcreteNode, label: ExtractionLabel): Boolean {
         if (label.flipped) return true
 
 //        if (targetNode.equals(sourceNode)) return false
@@ -758,7 +702,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 //            nodeset.addAll(nodeset)
 //            nodeset.add(sourceNode)
 //
-//            val tomark = recompute(targetNode, graph, HashSet())
+//            val tomark = recompute(targetNode, HashSet())
 //
             return true
         } else {
@@ -767,13 +711,13 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
     }
 
-//    private fun recompute(n: ConcreteNode, graph: DirectedPseudograph<ConcreteNode, ExtractionLabel>, tomark: HashSet<ConcreteNode>): HashSet<ConcreteNode> {
+//    private fun recompute(n: ConcreteNode, tomark: HashSet<ConcreteNode>): HashSet<ConcreteNode> {
 //        val edges = graph.outgoingEdgesOf(n)
 //        for (e in edges) {
 //            if (!e.flipped) {
 //                val tn = graph.getEdgeTarget(e)
 //                tomark.add(tn)
-//                tomark.addAll(recompute(tn, graph, tomark))
+//                tomark.addAll(recompute(tn, tomark))
 //            }
 //        }
 //        return tomark
