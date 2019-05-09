@@ -40,11 +40,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                         ret
                     }
 
-            results.sortBy { pair ->
-                pair.first.toString()
-                //if ( pair.first == null ) "null" else pair.first.toString() // Hoooooly guacamole......
-                // TODO: maybe we don't need to check for null since buildGraph always throws an exception
-            }
+            results.sortBy { pair -> pair.first.toString() }
 
             return Program(results.map { it.first }, results.map { it.second })
         }
@@ -55,7 +51,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
             for (processSet in processSets) {
                 val processes = hashMapOf<ProcessName, ProcessTerm>()
-                processSet.forEach { process -> processes.put(process, network.processes[process]!!) }
+                processSet.forEach { process -> processes[process] = network.processes[process]!! }
                 networks.add(Network(processes))
             }
 
@@ -66,7 +62,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             val unprocessed = HashSet<ProcessName>(network.processes.keys)//.sorted())
 
             val map = HashMap<ProcessName, HashSet<ProcessName>>()
-            network.processes.forEach { processName, processTerm ->
+            network.processes.forEach { (processName, processTerm) ->
                 map[processName] = NetworkUsedProcesses.compute(processTerm)
             }
 
@@ -109,7 +105,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         val marking = HashMap<ProcessName, Boolean>()
 
         //we mark as visited processes which has no active actions in the main name or which are in the list of livelocked processes
-        n.processes.forEach { name, term -> marking[name] = term.main is TerminationSP || services.contains(name) }
+        n.processes.forEach { (name, term) -> marking[name] = term.main is TerminationSP || services.contains(name) }
 
         val node = ConcreteNode(network = n, choicePath = "0", id = nextNodeId(), badNodes = HashSet(), marking = marking)
         graph.addVertex(node)
@@ -175,7 +171,6 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
         //try to find a multi-action communication
         for ((processName, _) in processes) {
-//            val processesCopy = copyProcesses(processes)
             val actions = ArrayList<ExtractionLabel.InteractionLabel>()
             val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
 
@@ -212,15 +207,15 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         if (node == null) { /* case 1 */
             val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
 
-            if (addNodeAndEdgeToGraph(currentNode, newNode, label)) { // TODO: This test is actually unnecessary (the side effects are not)
+            return if (addNodeAndEdgeToGraph(currentNode, newNode, label)) { // TODO: This test is actually unnecessary (the side effects are not)
                 if (buildGraph(newNode)) {
-                    return true
+                    true
                 } else {
                     removeNodeFromGraph(newNode)
-                    return false
+                    false
                 }
             } else {
-                return false
+                false
             }
         } else { /* case 2 */
             /*
@@ -299,7 +294,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     }
 
     private fun collectMulticomActions(waiting: ArrayList<ExtractionLabel.InteractionLabel>, receivers: ArrayList<String>, actions: ArrayList<ExtractionLabel.InteractionLabel>, processesCopy: HashMap<String, ProcessTerm>, currentNode: ConcreteNode) {
-        while (!waiting.isEmpty()) {
+        while (waiting.isNotEmpty()) {
             val label = waiting.first()
             waiting.remove(label)
 
@@ -437,21 +432,20 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
         when (edges.size) {
             0 -> {
-                when (node) {
+                return when (node) {
                     is ConcreteNode -> {
                         if (node.network.processes.all { it.value.main is TerminationSP }) {
-                            return Termination()
+                            Termination()
                         } else {
                             throw IllegalStateException("Bad graph. No more edges found, but not all processes were terminated.")
                         }
                     }
-                    is InvocationNode -> return ProcedureInvocation(node.procedureName)
+                    is InvocationNode -> ProcedureInvocation(node.procedureName)
                     else -> throw IllegalStateException("Ill-formed graph: unknown node type")
                 }
             }
             1 -> {
-                val edge = edges.first()
-                return when (edge) {
+                return when (val edge = edges.first()) {
                     is ExtractionLabel.InteractionLabel.CommunicationLabel -> CommunicationSelection(Communication(edge.sender, edge.receiver, edge.expression), buildChoreographyBody(graph.getEdgeTarget(edge)))
                     is ExtractionLabel.InteractionLabel.SelectionLabel -> CommunicationSelection(Selection(edge.receiver, edge.sender, edge.label), buildChoreographyBody(graph.getEdgeTarget(edge)))
 
@@ -534,9 +528,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
     //region Creating interaction and condition nodes
     private fun findCommunication(processes: ProcessMap, processName: String, processTerm: ProcessTerm): CommunicationEdgeTo? {
-        val behaviour = processTerm.main
-
-        when (behaviour) {
+        when (val behaviour = processTerm.main) {
             is SendSP -> {
                 val receiverTerm = processes[behaviour.process]!!
                 if (receiverTerm.main is ReceiveSP && (receiverTerm.main as ReceiveSP).sender == processName) {
@@ -586,7 +578,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         val offeringProcess = (selectTerm.main as SelectionSP).process
 
         val offeringBehavior = (offerTerm.main as OfferingSP).branches[(selectTerm.main as SelectionSP).label]
-                ?: throw IllegalStateException("${selectionProcess} is trying to select label ${(selectTerm.main as SelectionSP).label} from ${offeringProcess}, which does not offer it")
+                ?: throw IllegalStateException("$selectionProcess is trying to select label ${(selectTerm.main as SelectionSP).label} from $offeringProcess, which does not offer it")
 
         processCopy.replace(offeringProcess, ProcessTerm(offerTerm.procedures, offeringBehavior))
         processCopy.replace(selectionProcess, ProcessTerm(selectTerm.procedures, (selectTerm.main as SelectionSP).continuation))
@@ -645,30 +637,20 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     }
 
     private fun removeFromHashMap(newNode: ConcreteNode) = nodeHashes.remove(hash(newNode.network, newNode.marking))
-//
-//        val hash = hash(newNode.network, newNode.marking)
-//
-//        nodeHashes.compute(hash) { _, value ->
-//            if (value != null) {
-//                value.remove(newNode)
-//            } else {
-//                throw Exception("Vertex is in the graph but not registered in the map of hashes")
-//            }
-//        }
-//    }
+
 
     private fun addNodeAndEdgeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel): Boolean {
-        if (graph.addVertex(newNode)) {
+        return if (graph.addVertex(newNode)) {
             if (graph.addEdge(currentNode, newNode, label)) {
                 addToChoicePathMap(newNode)
                 addToHashMap(newNode)
-                return true
+                true
             } else {
                 graph.removeVertex(newNode)
-                return false
+                false
             }
         } else {
-            return false
+            false
         }
     }
 
@@ -691,37 +673,9 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     //region Checkloop and choicePaths manipulations
     private fun checkLoop(sourceNode: ConcreteNode, targetNode: ConcreteNode, label: ExtractionLabel): Boolean {
         if (label.flipped) return true
-
-//        if (targetNode.equals(sourceNode)) return false
         if (targetNode === sourceNode) return false
-
-        // if (!target_node.badNodes.badset.contains(source_node)) {
-
-        if (!sourceNode.badNodes.contains(targetNode.id)) {
-//            val nodeset = HashSet<ConcreteNode>()
-//            nodeset.addAll(nodeset)
-//            nodeset.add(sourceNode)
-//
-//            val tomark = recompute(targetNode, HashSet())
-//
-            return true
-        } else {
-            return false
-        }
-
+        return !sourceNode.badNodes.contains(targetNode.id)
     }
-
-//    private fun recompute(n: ConcreteNode, tomark: HashSet<ConcreteNode>): HashSet<ConcreteNode> {
-//        val edges = graph.outgoingEdgesOf(n)
-//        for (e in edges) {
-//            if (!e.flipped) {
-//                val tn = graph.getEdgeTarget(e)
-//                tomark.add(tn)
-//                tomark.addAll(recompute(tn, tomark))
-//            }
-//        }
-//        return tomark
-//    }
 
     private fun relabel(node: ConcreteNode) {
         val key = node.choicePath.dropLast(1)
@@ -738,15 +692,6 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     }
 
     private fun removeFromChoicePathMap(node: ConcreteNode) = choicePaths[node.choicePath]?.remove(node)
-//    {
-//        val nodesList = choicePaths[node.choicePath]
-//        if (nodesList != null) {
-//            val nd = nodesList.find { it == node }
-//            if (nd != null) {
-//                nodesList.remove(nd)
-//            }
-//        }
-//    }
 
     private fun addToChoicePathMap(node: ConcreteNode) {
         choicePaths.compute(node.choicePath) { _, value ->
@@ -769,8 +714,6 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     //endregion
 
     //region Data classes and interfaces
-    data class LabelTarget(val lbl: ExtractionLabel, val target: Node)
-
     interface Node
 
     data class ConcreteNode(val network: Network, val choicePath: String, val id: Int, val badNodes: HashSet<Int>, val marking: HashMap<ProcessName, Boolean>) : Node {
@@ -778,9 +721,6 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         fun copy(): ConcreteNode = ConcreteNode(network.copy(), choicePath, id, HashSet(badNodes), marking.clone() as HashMap<ProcessName, Boolean>)
 
         fun equals(other: ConcreteNode): Boolean = id == other.id
-//        {
-//            return id == other.id && network == other.network && choicePath == other.choicePath && badNodes == other.badNodes && marking == other.marking
-//        }
 
         override fun hashCode(): Int = network.hashCode() + 31 * choicePath.hashCode() + 31 * 31 * id + 31 * 31 * 31 * badNodes.hashCode() + 31 * 31 * 31 * 31 * marking.hashCode()
     }
@@ -791,13 +731,12 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     //region Utils
     private fun copyAndSortProcesses(node: ConcreteNode): HashMap<String, ProcessTerm> {
         val net = HashMap<String, ProcessTerm>()
-        node.network.processes.forEach { k, v -> net[k] = v.copy() }
+        node.network.processes.forEach { (k, v) -> net[k] = v.copy() }
         return strategy.copyAndSort(node)
     }
 
     private fun createInteractionLabel(processName: String, processes: HashMap<String, ProcessTerm>): ExtractionLabel.InteractionLabel? {
-        val processTerm = processes[processName]?.main
-        return when (processTerm) {
+        return when (val processTerm = processes[processName]?.main) {
             is SendSP -> {
                 ExtractionLabel.InteractionLabel.CommunicationLabel(processName, processTerm.receiver, processTerm.expression)
             }
@@ -812,12 +751,11 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return nodeIdCounter++
     }
 
-    //    private fun hash(node:ConcreteNode): Int = node.hashCode()
     private fun hash(network: Network, marking: Marking): Int = network.hashCode() + 31 * marking.hashCode()
 
     private fun copyProcesses(processes: HashMap<String, ProcessTerm>): HashMap<String, ProcessTerm> {
         val copy = HashMap<String, ProcessTerm>()
-        processes.forEach { t, u -> copy[t] = u.copy() }
+        processes.forEach { (t, u) -> copy[t] = u.copy() }
         return copy
     }
 
