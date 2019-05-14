@@ -207,9 +207,9 @@ fun extractionSoundnessC41() {
 
         networkFiles.forEach { fileId, networkMap ->
 //            if (!fileId.startsWith("50-6")) {
-            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" && fileId != "50-6-30-0" ) {
+//            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" && fileId != "50-6-30-0" ) {
 //            if ( /* fileId == "50-6-50-0" || */ fileId == "50-6-40-0" ) {
-//            if ( fileId != "50-6-50-0" ) {
+            if ( fileId != "50-6-50-0" ) {
                 val extractionMap = HashMap<String, Pair<Program, Long>>()
                 networkMap
 //                        .filter { (id, network) -> id == "C129" }
