@@ -638,7 +638,6 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
     private fun removeFromHashMap(newNode: ConcreteNode) = nodeHashes.remove(hash(newNode.network, newNode.marking))
 
-
     private fun addNodeAndEdgeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel): Boolean {
         return if (graph.addVertex(newNode)) {
             if (graph.addEdge(currentNode, newNode, label)) {
@@ -661,7 +660,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     }
 
     private fun addEdgeToGraph(sourceNode: ConcreteNode, targetNode: ConcreteNode, label: ExtractionLabel): Boolean {
-        if (checkPrefix(targetNode) && checkLoop(sourceNode, targetNode, label)) {
+        if ( /* checkPrefix(targetNode) && */ checkLoop(sourceNode, targetNode, label)) {
             return graph.addEdge(sourceNode, targetNode, label)
         }
 
@@ -677,18 +676,22 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return !sourceNode.badNodes.contains(targetNode.id)
     }
 
-    private fun relabel(node: ConcreteNode) {
-        val key = node.choicePath.dropLast(1)
-        addToChoicePathMap(ConcreteNode(node.network, key, node.id, node.badNodes, node.marking))
-        removeFromChoicePathMap(node)
-    }
-
+    /*
     private fun checkPrefix(n: ConcreteNode): Boolean {
         for (pair in choicePaths) {
             if (pair.key.startsWith(n.choicePath) && pair.value.isNotEmpty())
                 return true
         }
+
+        println("CIAO")
         return false
+    }
+    */
+
+    private fun relabel(node: ConcreteNode) {
+        val key = node.choicePath.dropLast(1)
+        addToChoicePathMap(ConcreteNode(node.network, key, node.id, node.badNodes, node.marking))
+        removeFromChoicePathMap(node)
     }
 
     private fun removeFromChoicePathMap(node: ConcreteNode) = choicePaths[node.choicePath]?.remove(node)

@@ -313,6 +313,15 @@ class BisimTests{
     }
 
     @Test
+    fun simplified_C1998_problem()
+    {
+        val orig = "def X { p.e -> q; r.e -> s; X } main { X }"
+        val extracted = "def X { p.e -> q; p.e -> q; r.e -> s; X } main { X }"
+
+        assert( bisimilar(orig, extracted) )
+    }
+
+    @Test
     fun C1998()
     {
         val orig = "def H { v.m2 -> s; v -> n[l2]; if x.c4 then n -> v[l3]; s -> j[l4]; H else n -> v[l3]; s -> j[l4]; H }\n" +
