@@ -59,14 +59,13 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         }
 
         private fun getProcessSets(network: Network): ArrayList<HashSet<String>> {
-            val unprocessed = HashSet<ProcessName>(network.processes.keys)//.sorted())
-
             val map = HashMap<ProcessName, HashSet<ProcessName>>()
             network.processes.forEach { (processName, processTerm) ->
                 map[processName] = NetworkUsedProcesses.compute(processTerm)
             }
 
             val processSets = ArrayList<HashSet<ProcessName>>()
+            val unprocessed = HashSet<ProcessName>(network.processes.keys)
             while (unprocessed.isNotEmpty()) {
                 val component = HashSet<ProcessName>()
                 val processName = unprocessed.first()
@@ -171,23 +170,20 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
         //try to find a multi-action communication
         for ((processName, _) in processes) {
-            val actions = ArrayList<ExtractionLabel.InteractionLabel>()
-            val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
-
             //TODO check this
             val interactionLabel = createInteractionLabel(processName, processes)
-            if (interactionLabel != null) waiting.add(interactionLabel)
-            val receivers = ArrayList<String>()
+            if (interactionLabel != null) {
+                val actions = ArrayList<ExtractionLabel.InteractionLabel>()
+                val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
+                waiting.add(interactionLabel)
+                collectMulticomActions(waiting, actions, processes, currentNode)
 
-            collectMulticomActions(waiting, receivers, actions, processes, currentNode)
-
-            //if we managed to collect some actions for a multicom
-            if (actions.size >= 2) {
-                if (buildMulticom(actions, currentNode, processes, unfoldedProcesses)) return true else continue
+                //if we managed to collect some actions for a multicom
+                if ((actions.size > 1) && (buildMulticom(actions, currentNode, processes, unfoldedProcesses))) return true else continue
             }
         }
 
-        //System.err.println("No possible actions at eta $currentNode")
+        //System.err.println("No possible actions at the node $currentNode")
         return false
     }
 
@@ -293,7 +289,8 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return true
     }
 
-    private fun collectMulticomActions(waiting: ArrayList<ExtractionLabel.InteractionLabel>, receivers: ArrayList<String>, actions: ArrayList<ExtractionLabel.InteractionLabel>, processesCopy: HashMap<String, ProcessTerm>, currentNode: ConcreteNode) {
+    private fun collectMulticomActions(waiting: ArrayList<ExtractionLabel.InteractionLabel>, actions: ArrayList<ExtractionLabel.InteractionLabel>, processes: HashMap<String, ProcessTerm>, currentNode: ConcreteNode) {
+        val receivers = ArrayList<String>()
         while (waiting.isNotEmpty()) {
             val label = waiting.first()
             waiting.remove(label)
@@ -306,24 +303,25 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             val receiver = label.receiver
             val sender = label.sender
 
-            val receiverProcessTerm = processesCopy[receiver] //val receiverProcessTerm = tmp_node_net[receiverTerm]
+            val receiverProcessTerm = processes[receiver]
 
             @Suppress("UNCHECKED_CAST")
             val marking = currentNode.marking.clone() as HashMap<ProcessName, Boolean>
 
             //fill the list of waiting actions with sending/selection actions from the receiverTerm process behaviour if it is in correct format
             //return the new receiverTerm pb if success and null otherwise. waiting list is populated implicitly
-            val newReceiverBehaviour = fillWaiting(waiting, actions, label, receiverProcessTerm!!.main, processesCopy[receiver]!!.procedures, marking)
+            //TODO("potential bug here - waiting might be populated even if fillWaiting returns null")
+            val newReceiverBehaviour = fillWaiting(waiting, actions, label, receiverProcessTerm!!.main, processes[receiver]!!.procedures, marking)
             if (newReceiverBehaviour != null) {
-                val senderProcessTerm = processesCopy[sender]
+                val senderProcessTerm = processes[sender]
                 val senderBehaviour = senderProcessTerm!!.main
 
-                processesCopy.replace(receiver, ProcessTerm(receiverProcessTerm.procedures, newReceiverBehaviour))
+                processes.replace(receiver, ProcessTerm(receiverProcessTerm.procedures, newReceiverBehaviour))
                 val senderBehaviourContinuation = (senderBehaviour as? SendSP)?.continuation
                         ?: ((senderBehaviour as? SelectionSP)?.continuation
                                 ?: throw UnsupportedOperationException())
 
-                processesCopy.replace(sender, ProcessTerm(senderProcessTerm.procedures, senderBehaviourContinuation))
+                processes.replace(sender, ProcessTerm(senderProcessTerm.procedures, senderBehaviourContinuation))
             }
         }
     }
@@ -605,21 +603,19 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
     //region Manipulations with nodes in the graph and auxiliary data structures
     private fun createNewNode(targetNetwork: Network, label: ExtractionLabel, predecessorNode: ConcreteNode, marking: HashMap<ProcessName, Boolean>): ConcreteNode {
-        val str = when (label) {
+        val choicePath = when (label) {
             is ExtractionLabel.ConditionLabel.ThenLabel -> "${predecessorNode.choicePath}0"
             is ExtractionLabel.ConditionLabel.ElseLabel -> "${predecessorNode.choicePath}1"
             else -> predecessorNode.choicePath
         }
 
-        val newNode: ConcreteNode
-        if (label.flipped) {
-            newNode = ConcreteNode(targetNetwork, str, nextNodeId(), HashSet(), marking)
-        } else {
-            newNode = ConcreteNode(targetNetwork, str, nextNodeId(), HashSet(predecessorNode.badNodes), marking)
-            newNode.badNodes.add(predecessorNode.id)
+        val badNodes = HashSet<Int>()
+        if (!label.flipped) {
+            badNodes.addAll(predecessorNode.badNodes)
+            badNodes.add(predecessorNode.id)
         }
 
-        return newNode
+        return ConcreteNode(targetNetwork, choicePath, nextNodeId(), badNodes, marking)
     }
 
     private fun addToHashMap(newNode: ConcreteNode) {
@@ -640,18 +636,14 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
 
     private fun addNodeAndEdgeToGraph(currentNode: ConcreteNode, newNode: ConcreteNode, label: ExtractionLabel): Boolean {
-        return if (graph.addVertex(newNode)) {
+        if (graph.addVertex(newNode)) {
             if (graph.addEdge(currentNode, newNode, label)) {
                 addToChoicePathMap(newNode)
                 addToHashMap(newNode)
-                true
-            } else {
-                graph.removeVertex(newNode)
-                false
-            }
-        } else {
-            false
+                return true
+            } else graph.removeVertex(newNode)
         }
+        return false
     }
 
     private fun removeNodeFromGraph(removingNode: ConcreteNode) {
@@ -684,10 +676,11 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     }
 
     private fun checkPrefix(n: ConcreteNode): Boolean {
-        for (pair in choicePaths) {
-            if (pair.key.startsWith(n.choicePath) && pair.value.isNotEmpty())
+        for ((path, nodes) in choicePaths) {
+            if (path.startsWith(n.choicePath) && nodes.isNotEmpty())
                 return true
         }
+        println("Ping!")
         return false
     }
 
@@ -730,8 +723,8 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
     //region Utils
     private fun copyAndSortProcesses(node: ConcreteNode): HashMap<String, ProcessTerm> {
-        val net = HashMap<String, ProcessTerm>()
-        node.network.processes.forEach { (k, v) -> net[k] = v.copy() }
+        //val net = HashMap<String, ProcessTerm>()
+        //node.network.processes.forEach { (k, v) -> net[k] = v.copy() }
         return strategy.copyAndSort(node)
     }
 
@@ -759,18 +752,17 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return copy
     }
 
-    private fun fillWaiting(waiting: ArrayList<ExtractionLabel.InteractionLabel>, actions: ArrayList<ExtractionLabel.InteractionLabel>, label: ExtractionLabel.InteractionLabel, receiverProcessTermMain: Behaviour, receiverProcesses: HashMap<String, Behaviour>, marking: HashMap<ProcessName, Boolean>): Behaviour? {
+    private fun fillWaiting(waiting: ArrayList<ExtractionLabel.InteractionLabel>, actions: ArrayList<ExtractionLabel.InteractionLabel>, label: ExtractionLabel.InteractionLabel, receiverProcessTermMain: Behaviour, receiverProcesses: HashMap<String, Behaviour>, marking: HashMap<ProcessName, Boolean>)
+            : Behaviour? {
         when (receiverProcessTermMain) {
             is SendSP -> {
                 //look into continuation to be sure that it is in the form a1;...;ak;r?;B where each ai is either the sending of a value or a label selection
                 val sendingContinuation = fillWaiting(waiting, actions, label, receiverProcessTermMain.continuation, receiverProcesses, marking)
 
-                return if (sendingContinuation != null) {
+                if (sendingContinuation != null) {
                     val newLabel = ExtractionLabel.InteractionLabel.CommunicationLabel(label.receiver, receiverProcessTermMain.receiver, receiverProcessTermMain.expression)
                     if (!actions.contains(newLabel)) waiting.add(newLabel)
-                    SendSP(sendingContinuation, newLabel.receiver, newLabel.expression)
-                } else {
-                    null
+                    return SendSP(sendingContinuation, label.receiver, label.expression)
                 }
             }
             is SelectionSP -> {
