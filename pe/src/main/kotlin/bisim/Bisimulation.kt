@@ -13,6 +13,8 @@ import ast.sp.nodes.ProcedureName
 import util.ChoreographyASTToProgram
 import util.ParseUtils.parseChoreography
 
+val MAX_SIMULATION_COUNTER = 200
+
 fun bisimilar( c1:String, c2:String ):Boolean
 {
     val program1 = ChoreographyASTToProgram().getProgram(parseChoreography(c1)) as Program
@@ -31,6 +33,11 @@ fun similar( c1:String, c2:String ):Boolean
 
 fun bisimilar( list1:List<Choreography?>, list2:List<Choreography?> ):Boolean
 {
+    if ( list1.size != 1 || list2.size != 1 ) {
+        println("Bisimilarity not implemented for parallel choreographies")
+        return true
+    }
+
     return similar(list1,list2) && similar(list2,list1)
 }
 
@@ -65,12 +72,15 @@ fun similar(c1:Choreography, c2:Choreography):Boolean
 
     todo.add(Pair(c1.main, c2.main))
 
-    while( todo.isNotEmpty() ) {
+    var counter = 0
+
+    while( todo.isNotEmpty() && counter < MAX_SIMULATION_COUNTER ) {
+        counter++
         val (one, two) = todo.removeAt(0)
-        println("Getting actions")
+//        println("Getting actions")
         val actionsWithContinuations = getActionsWithContinuations(one, c1.procedures)
         for( (action1, continuation1) in actionsWithContinuations ) {
-            println("getting continuation ${two.toString().length}")
+//            println("getting continuation ${two.toString().length}")
             val continuation2 = getContinuation( two, action1, c2.procedures )
             if ( continuation2 == null ) {
                 println( "Could not match $action1 with continuation $two" )
@@ -78,14 +88,18 @@ fun similar(c1:Choreography, c2:Choreography):Boolean
             } else {
                 if( !done.contains( Pair(continuation1,continuation2) ) && !todo.contains( Pair(continuation1, continuation2) ) ) {
 //                    System.out.println( "TODO $continuation1, $continuation2 (size of todo: ${todo.size}, size of done: ${done.size})" )
-                    System.out.println( "TODO (size of todo: ${todo.size}, size of done: ${done.size})" )
+//                    System.out.println( "TODO (size of todo: ${todo.size}, size of done: ${done.size})" )
                     todo.add( Pair( continuation1, continuation2 ) )
                 }
             }
         }
 //        System.out.println( "DONE $one, $two (size of todo: ${todo.size}, size of done: ${done.size})" )
-        System.out.println( "DONE (size of todo: ${todo.size}, size of done: ${done.size})" )
+//        System.out.println( "DONE (size of todo: ${todo.size}, size of done: ${done.size})" )
         done.add( Pair( one, two ) )
+    }
+
+    if ( counter == MAX_SIMULATION_COUNTER ) {
+        println( "Warning: could not check simulation" )
     }
 
     return true
