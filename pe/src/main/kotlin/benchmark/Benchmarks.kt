@@ -7,7 +7,6 @@ import bisim.bisimilar
 import epp.EndPointProjection
 import extraction.Extraction
 import extraction.ExtractionStrategy
-import org.junit.jupiter.api.Test
 import util.ParseUtils
 import util.choreographyStatistics.ChoreographyStatistics
 import util.choreographyStatistics.LengthOfProcedures
@@ -63,7 +62,7 @@ class Benchmarks {
      * 1. generate networks and write them to the file %original_file_name% networks
      * 2. get statistics and write to the file %original_file_name% statistics
      */
-    @Test
+
     fun epp(){
         checkOutputFolder()
         val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
@@ -127,7 +126,7 @@ class Benchmarks {
         }
     } */
 
-    @Test
+
     fun extractionSoundness() {
         val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
         val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
@@ -199,7 +198,7 @@ fun extractionSoundnessC41() {
         }
     }
 
-    @Test
+
     fun extraction() {
         checkOutputFolder()
 
@@ -229,7 +228,7 @@ fun extractionSoundnessC41() {
     }
 
     //@Test
-    private fun screwDataStatistics() {
+    fun screwDataStatistics() {
         checkOutputFolder()
         val filesWithNetworks = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) //HashMap<filename, HashMap<choreography_id, network_body>>
 
@@ -413,14 +412,14 @@ fun extractionSoundnessC41() {
         return StatHeader(stat[stat.size - 4], stat[stat.size - 3], stat[stat.size - 2], stat[stat.size - 1])
     }*/
 
-    @Test
+
     fun runAllBenchmarks() {
         epp()
         extraction()
         screwDataStatistics()
     }
 
-    @Test
+
     fun makeCombinedStatistics() {
         combineStatistics("test1", "(100|[1-9]0)-6-0-0")
         combineStatistics("test2", "50-6-[1-5]0-0")
