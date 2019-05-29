@@ -18,7 +18,7 @@ import java.text.ParseException
 import javax.naming.OperationNotSupportedException
 
 // TODO Still have to go through the screwing
-class Benchmarks {
+class Benchmarks <I> {
     //data class StatHeader(val length: String, val numOfProcesses: String, val numOfCondition: String, val numOfProcedures: String)
 
     data class ScrewedExecutionStatistics(val choreographyId: String,
@@ -426,6 +426,7 @@ fun extractionSoundnessC41() {
         combineStatistics("test2", "50-6-[1-5]0-0")
         combineStatistics("test3", "10-5-[0-5]+-[0-5]+")
         combineStatistics("test4", "40-(5|100|[1-9][0|5])+-0-0")
+        combineStatistics("combined", ".*")
     }
 
     private fun retrieveTestFileData(prefix: String, regexStr: String): HashMap<String, String> {
