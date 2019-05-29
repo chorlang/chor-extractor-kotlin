@@ -152,7 +152,7 @@ public class TestGenerator {
         logFile.newLine();
 
         niceWrite(logFile, "Test 1: communications only, increasing lengths");
-        for (int i = 10; i <= 100; i += 10)
+        for (int i = 10; i <= 10000; i += 50)
             makeALotOfTestsWithSeed(0L, i, 6, 0, 0, logFile);
         logFile.newLine();
 
@@ -169,7 +169,7 @@ public class TestGenerator {
 
         niceWrite(logFile, "Test 4: communications only, fixed length, increasing number of processesInChoreography");
         for (int i = 5; i <= 100; i += 5)
-            makeALotOfTestsWithSeed(0L, 40, i, 0, 0, logFile);
+            makeALotOfTestsWithSeed(0L, 10000, i, 0, 0, logFile);
         logFile.newLine();
 
         niceWrite(logFile, "Generated " + generatedTests + " tests, of which " + badTests + " contain dead code.");
