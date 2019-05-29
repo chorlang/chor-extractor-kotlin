@@ -17,7 +17,7 @@ enum class ExtractionStrategy {
             return network
         }
     },
-    ConditionsFirst() {
+    ConditionsFirst {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val network = LinkedHashMap<String, ProcessTerm>()
 
@@ -27,7 +27,7 @@ enum class ExtractionStrategy {
             return network
         }
     },
-    UnmarkedFirst() {
+    UnmarkedFirst {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
@@ -46,28 +46,28 @@ enum class ExtractionStrategy {
             return ret
         }
     },
-    Random() {
+    Random {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
             node.network.processes.keys.shuffled().forEach { ret[it] = node.network.processes[it]!!.copy() }
             return ret
         }
     },
-    LongestFirst() {
+    LongestFirst {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
             node.network.processes.entries.sortedByDescending { it.value.main.toString().length }.forEach { ret[it.key] = it.value.copy() }
             return ret
         }
     },
-    ShortestFirst() {
+    ShortestFirst {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
             node.network.processes.entries.sortedBy { it.value.main.toString().length }.forEach { ret[it.key] = it.value.copy() }
             return ret
         }
     },
-    UnmarkedThenRandom() {
+    UnmarkedThenRandom {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
@@ -91,7 +91,7 @@ enum class ExtractionStrategy {
             return ret
         }
     },
-    UnmarkedThenSelections() {
+    UnmarkedThenSelections {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
@@ -142,7 +142,7 @@ enum class ExtractionStrategy {
             return ret
         }
     },
-    UnmarkedThenConditions() {
+    UnmarkedThenConditions {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
             val ret = LinkedHashMap<String, ProcessTerm>()
 
@@ -194,7 +194,7 @@ enum class ExtractionStrategy {
         }
     },
 
-    Default() {
+    Default {
         override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> = InteractionsFirst.copyAndSort(node)
     };
 
