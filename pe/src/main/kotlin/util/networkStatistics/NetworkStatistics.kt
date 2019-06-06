@@ -27,7 +27,7 @@ data class NetworkStatistics(
             network.processes.forEach { _, processTerm ->
                 lengthOfProcesses.add(NetworkProcessActions().visit(processTerm))
                 numberOfProcedures.add(processTerm.procedures.size)
-                numberOfConditionals.add(NetworkProcessConditions().visit(processTerm))
+                numberOfConditionals.add(NetworkProcessConditionals().visit(processTerm))
                 lengthOfProcedures.addAll(NetworkProcessActionsPerProcedure().getLength(processTerm))
             }
 

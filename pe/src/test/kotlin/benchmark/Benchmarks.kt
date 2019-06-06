@@ -14,6 +14,8 @@ import util.choreographyStatistics.LengthOfProcedures
 import util.choreographyStatistics.NumberOfActions
 import util.networkStatistics.NetworkStatistics
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.text.ParseException
 import javax.naming.OperationNotSupportedException
 
@@ -212,22 +214,24 @@ fun extractionSoundnessC41() {
 //            if (!fileId.startsWith("50-6")) {
 //            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" && fileId != "50-6-30-0" ) {
 //            if ( /* fileId == "50-6-50-0" || */ fileId == "50-6-40-0" ) {
-            if ( fileId != "50-6-50-0" ) {
+//            if ( fileId != "50-6-50-0" ) {
+            if ( Files.notExists( Paths.get( "$OUTPUT_DIR/$EXTRACTION_PREFIX$fileId" ) ) ) {
                 val extractionMap = HashMap<String, Pair<Program, Long>>()
                 networkMap
 //                        .filter { (id, network) -> id == "C129" }
                         .forEach { id, network ->
-                    println("Extracting $id from $PROJECTION_PREFIX$fileId")
-                    val start = System.currentTimeMillis()
-                    val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList())
-                    val executionTime = System.currentTimeMillis() - start
+                            println("Extracting $id from $PROJECTION_PREFIX$fileId")
+                            val start = System.currentTimeMillis()
+                            val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList())
+                            val executionTime = System.currentTimeMillis() - start
 
-                    extractionMap[id] = Pair(program, executionTime)
-                }
+                            extractionMap[id] = Pair(program, executionTime)
+                        }
                 writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
                 writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX$fileId")
-            }
 //            }
+//            }
+            }
         }
     }
 
@@ -425,13 +429,18 @@ fun extractionSoundnessC41() {
 
     @Test
     fun makeCombinedStatistics() {
+        combineStatistics("comms-only", "(\\d+)-6-0-0")
+        combineStatistics("increasing-ifs-no-recursion", "50-6-(\\d+)-0")
+        combineStatistics("increasing-ifs-procedures", "200-5-(\\d+)-(\\d+)")
+        combineStatistics("increasing-processes", "500-(\\d+)-0-0")
+        combineStatistics("increasing-ifs-with-recursion", "100-50-(\\d+)-5")
         combineStatistics("test1", "(100|[1-9]0)-6-0-0")
         combineStatistics("test2", "50-6-[1-5]0-0")
         combineStatistics("test3", "10-5-[0-5]+-[0-5]+")
         combineStatistics("test3-0", "10-5-0-[0-5]+")
         combineStatistics("test3-5", "10-5-5-[0-5]+")
         combineStatistics("test4", "40-(5|100|[1-9][0|5])+-0-0")
-        combineStatistics("combined", ".*")
+        combineStatistics("all", ".*")
     }
 
     private fun retrieveTestFileData(prefix: String, regexStr: String): HashMap<String, String> {
