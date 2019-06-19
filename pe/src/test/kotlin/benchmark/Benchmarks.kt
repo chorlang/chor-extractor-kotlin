@@ -17,7 +17,6 @@ import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.ParseException
-import javax.naming.OperationNotSupportedException
 
 // TODO Still have to go through the screwing
 class Benchmarks <I> {
@@ -46,7 +45,7 @@ class Benchmarks <I> {
                 "minNumberOfProceduresInProcesses","maxNumberOfProceduresInProcesses","avgNumberOfProceduresInProcesses",
                 "minNumberOfConditionalsInProcesses","maxNumberOfConditionalsInProcesses","avgNumberOfConditionalsInProcesses","numberOfProcessesWithConditionals",
                 "minProcedureLengthInProcesses","maxProcedureLengthInProcesses","avgProcedureLengthInProcesses").joinToString(SEP)
-        private val EXTRACTION_STATISTICS_HEADER = arrayOf("testId","time(sec)","nodes","badLoops","mainLength","numOfProcedures","minProcedureLength","maxProcedureLength","avgProcedureLength").joinToString(SEP)
+        private val EXTRACTION_STATISTICS_HEADER = arrayOf("testId","strategy","time(msec)","nodes","badLoops","mainLength","numOfProcedures","minProcedureLength","maxProcedureLength","avgProcedureLength").joinToString(SEP)
         private val SCREWED_PROJECTION_STATISTICS_HEADER = arrayOf("testId",
                 "screwedId",
                 "screwedNetwork",
@@ -173,14 +172,14 @@ fun extractionSoundnessC41() {
         return fileToChoreographyMap
     }
 
-    private fun writeExtractionsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String) {
+    private fun writeExtractionsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String, strategyName: String) {
         File(OUTPUT_DIR, filename).printWriter().use { out ->
-            out.println("testId${SEP}choreography")
-            extractionMap.forEach { id, pair -> out.println("${id}${SEP}${pair.first}") }
+            out.println("testId${SEP}strategy${SEP}choreography")
+            extractionMap.forEach { id, pair -> out.println("${id}${SEP}$strategyName${SEP}${pair.first}") }
         }
     }
 
-    private fun writeExtractionStatisticsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String) {
+    private fun writeExtractionStatisticsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String, strategyName: String) {
         File(OUTPUT_DIR, filename).printWriter().use { out ->
             out.println(EXTRACTION_STATISTICS_HEADER)
             extractionMap.forEach { id, pair ->
@@ -191,6 +190,7 @@ fun extractionSoundnessC41() {
                 val numberOfActions = program.choreographies.map { NumberOfActions.compute(it!!) }.fold( 0, Int::plus )
 
                 out.println("$id$SEP" +
+                        "$strategyName$SEP" +
                         "${pair.second}$SEP" +
                         "${statistics.nodes}$SEP" +
                         "${statistics.badLoops}$SEP" +
@@ -205,30 +205,32 @@ fun extractionSoundnessC41() {
     }
 
     @Test
-    fun extraction() {
+    fun extractionTest() = ExtractionStrategy.values().forEach { if ( it != ExtractionStrategy.Default ) extraction(it) }
+
+    fun extraction(strategy: ExtractionStrategy) {
         checkOutputFolder()
 
         val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
 
         networkFiles.forEach { (fileId, networkMap) ->
-//            if (!fileId.startsWith("50-6")) {
+            //            if (!fileId.startsWith("50-6")) {
 //            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" && fileId != "50-6-30-0" ) {
 //            if ( /* fileId == "50-6-50-0" || */ fileId == "50-6-40-0" ) {
 //            if ( fileId != "50-6-50-0" ) {
-            if ( Files.notExists( Paths.get( "$OUTPUT_DIR/$EXTRACTION_PREFIX$fileId" ) ) ) {
+            if ( Files.notExists( Paths.get( "$OUTPUT_DIR/$EXTRACTION_PREFIX${strategy.name}-$fileId" ) ) ) {
                 val extractionMap = HashMap<String, Pair<Program, Long>>()
                 networkMap
 //                        .filter { (id, network) -> id == "C129" }
                         .forEach { id, network ->
-                            println("Extracting $id from $PROJECTION_PREFIX$fileId")
+                            println("Extracting $id from $PROJECTION_PREFIX$fileId with strategy ${strategy.name}")
                             val start = System.currentTimeMillis()
-                            val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList())
+                            val program = Extraction.extractChoreography(network, strategy, ArrayList())
                             val executionTime = System.currentTimeMillis() - start
 
                             extractionMap[id] = Pair(program, executionTime)
                         }
-                writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
-                writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX$fileId")
+                writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX${strategy.name}-$fileId", strategy.name)
+                writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX${strategy.name}-$fileId", strategy.name)
 //            }
 //            }
             }
@@ -423,7 +425,7 @@ fun extractionSoundnessC41() {
     @Test
     fun runAllBenchmarks() {
         epp()
-        extraction()
+        extractionTest()
         screwDataStatistics()
     }
 
