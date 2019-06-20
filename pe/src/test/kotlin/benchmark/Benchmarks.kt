@@ -431,18 +431,20 @@ fun extractionSoundnessC41() {
 
     @Test
     fun makeCombinedStatistics() {
-        combineStatistics("comms-only", "(\\d+)-6-0-0")
-        combineStatistics("increasing-ifs-no-recursion", "50-6-(\\d+)-0")
-        combineStatistics("increasing-ifs-procedures", "200-5-(\\d+)-(\\d+)")
-        combineStatistics("increasing-processes", "500-(\\d+)-0-0")
-        combineStatistics("increasing-ifs-with-recursion", "100-50-(\\d+)-5")
-        combineStatistics("test1", "(100|[1-9]0)-6-0-0")
-        combineStatistics("test2", "50-6-[1-5]0-0")
-        combineStatistics("test3", "10-5-[0-5]+-[0-5]+")
-        combineStatistics("test3-0", "10-5-0-[0-5]+")
-        combineStatistics("test3-5", "10-5-5-[0-5]+")
-        combineStatistics("test4", "40-(5|100|[1-9][0|5])+-0-0")
-        combineStatistics("all", ".*")
+        ExtractionStrategy.values().filter { it != ExtractionStrategy.Default }.forEach {
+            combineStatistics("comms-only", "(\\d+)-6-0-0", it)
+            combineStatistics("increasing-ifs-no-recursion", "50-6-(\\d+)-0", it)
+            combineStatistics("increasing-ifs-procedures", "200-5-(\\d+)-(\\d+)", it)
+            combineStatistics("increasing-processes", "500-(\\d+)-0-0", it)
+            combineStatistics("increasing-ifs-with-recursion", "100-50-(\\d+)-5", it)
+            combineStatistics("test1", "(100|[1-9]0)-6-0-0", it)
+            combineStatistics("test2", "50-6-[1-5]0-0", it)
+            combineStatistics("test3", "10-5-[0-5]+-[0-5]+", it)
+            combineStatistics("test3-0", "10-5-0-[0-5]+", it)
+            combineStatistics("test3-5", "10-5-5-[0-5]+", it)
+            combineStatistics("test4", "40-(5|100|[1-9][0|5])+-0-0", it)
+            combineStatistics("all", ".*", it)
+        }
     }
 
     private fun retrieveTestFileData(prefix: String, regexStr: String): HashMap<String, String> {
@@ -466,10 +468,10 @@ fun extractionSoundnessC41() {
         return data
     }
 
-    private fun combineStatistics(filename: String, regexStr: String) {
-        val outputFile = File("$TEST_DIR/$COMBINED_STATISTICS_PREFIX$filename")
+    private fun combineStatistics(filename: String, regexStr: String, strategy: ExtractionStrategy) {
+        val outputFile = File("$TEST_DIR/$COMBINED_STATISTICS_PREFIX${strategy.name}-$filename")
 
-        val statsToCombine = arrayOf(PROJECTION_STATISTICS_PREFIX, EXTRACTION_STATISTICS_PREFIX)
+        val statsToCombine = arrayOf(PROJECTION_STATISTICS_PREFIX, "$EXTRACTION_STATISTICS_PREFIX${strategy.name}-")
         val headersToCombine = arrayOf(PROJECTION_STATISTICS_HEADER, EXTRACTION_STATISTICS_HEADER)
 
         val bigData = HashMap<String, Map<String, String>>() // prefix -> choreography_id -> data
