@@ -7,17 +7,19 @@ import bisim.bisimilar
 import epp.EndPointProjection
 import extraction.Extraction
 import extraction.ExtractionStrategy
+import org.junit.Test
 import util.ParseUtils
 import util.choreographyStatistics.ChoreographyStatistics
 import util.choreographyStatistics.LengthOfProcedures
 import util.choreographyStatistics.NumberOfActions
 import util.networkStatistics.NetworkStatistics
 import java.io.File
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.text.ParseException
-import javax.naming.OperationNotSupportedException
 
 // TODO Still have to go through the screwing
-class Benchmarks {
+class Benchmarks <I> {
     //data class StatHeader(val length: String, val numOfProcesses: String, val numOfCondition: String, val numOfProcedures: String)
 
     data class ScrewedExecutionStatistics(val choreographyId: String,
@@ -35,26 +37,28 @@ class Benchmarks {
         private const val SCREWED_PROJECTION_STATISTICS_PREFIX = "stats-screwed-projection-"
         private const val SCREWED_EXTRACTION_STATISTICS_PREFIX = "stats-screwed-extraction-"
         private const val COMBINED_STATISTICS_PREFIX = "stats-"
+        private const val SEP = "\t"
 
-        private const val PROJECTION_STATISTICS_HEADER = "testId,numberOfActions,numberOfProcesses,numberOfProcedures,numberOfConditionals," +
-                "minLengthOfProcesses,maxLengthOfProcesses,avgLengthOfProcesses," +
-                "minNumberOfProceduresInProcesses,maxNumberOfProceduresInProcesses,avgNumberOfProceduresInProcesses," +
-                "minNumberOfConditionalsInProcesses,maxNumberOfConditionalsInProcesses,avgNumberOfConditionalsInProcesses,numberOfProcessesWithConditionals," +
-                "minProcedureLengthInProcesses,maxProcedureLengthInProcesses,avgProcedureLengthInProcesses"
-        private const val EXTRACTION_STATISTICS_HEADER = "testId,time(sec),nodes,badLoops,mainLength,numOfProcedures,minProcedureLength,maxProcedureLength,avgProcedureLength"
-        private const val SCREWED_PROJECTION_STATISTICS_HEADER = "testId," +
-                "screwedId," +
-                "screwedNetwork," +
-                "addProcessPosition," +
-                "removeProcessPosition," +
-                "swapProcessPosition," +
-                "time(msecs)," +
-                "badLoops," +
-                "nodes"
-        private const val SCREWED_EXTRACTION_STATISTICS_HEADER = "testId," +
-                "minExecutionTime,maxExecutionTime,avgExecutionTime," +
-                "minNodes,maxNodes,avgNodes," +
-                "minBadLoops,maxBadLoops,avgBadLoops"
+        private val PROJECTION_STATISTICS_HEADER =
+                arrayOf("testId","numberOfActions","numberOfProcesses","numberOfProcedures","numberOfConditionals",
+                "minLengthOfProcesses","maxLengthOfProcesses","avgLengthOfProcesses",
+                "minNumberOfProceduresInProcesses","maxNumberOfProceduresInProcesses","avgNumberOfProceduresInProcesses",
+                "minNumberOfConditionalsInProcesses","maxNumberOfConditionalsInProcesses","avgNumberOfConditionalsInProcesses","numberOfProcessesWithConditionals",
+                "minProcedureLengthInProcesses","maxProcedureLengthInProcesses","avgProcedureLengthInProcesses").joinToString(SEP)
+        private val EXTRACTION_STATISTICS_HEADER = arrayOf("testId","strategy","time(msec)","nodes","badLoops","mainLength","numOfProcedures","minProcedureLength","maxProcedureLength","avgProcedureLength").joinToString(SEP)
+        private val SCREWED_PROJECTION_STATISTICS_HEADER = arrayOf("testId",
+                "screwedId",
+                "screwedNetwork",
+                "addProcessPosition",
+                "removeProcessPosition",
+                "swapProcessPosition",
+                "time(msecs)",
+                "badLoops",
+                "nodes").joinToString(SEP)
+        private val SCREWED_EXTRACTION_STATISTICS_HEADER = arrayOf("testId",
+                "minExecutionTime","maxExecutionTime","avgExecutionTime",
+                "minNodes","maxNodes","avgNodes",
+                "minBadLoops","maxBadLoops","avgBadLoops").joinToString(SEP)
     }
 
     /**
@@ -63,6 +67,7 @@ class Benchmarks {
      * 2. get statistics and write to the file %original_file_name% statistics
      */
 
+    @Test
     fun epp(){
         checkOutputFolder()
         val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
@@ -80,8 +85,8 @@ class Benchmarks {
 
     private fun writeNetworksToFile(projectionMap: Map<String, Pair<Program, Network>>, filename: String) {
         File(OUTPUT_DIR, filename).printWriter().use { out ->
-            out.println("testId,network")
-            projectionMap.forEach { id, pair -> out.println("$id, ${pair.second}") }
+            out.println("testId${SEP}network")
+            projectionMap.forEach { id, pair -> out.println("$id$SEP${pair.second}") }
         }
     }
 
@@ -91,23 +96,23 @@ class Benchmarks {
             projectionMap.forEach { id, pair ->
                 val networkStatistics = NetworkStatistics.compute(pair.second)
                 val choreographyStatistics = ChoreographyStatistics.compute(pair.first)
-                out.println("$id," +
-                        "${choreographyStatistics.numberOfActions}," +
-                        "${choreographyStatistics.numberOfProcesses}," +
-                        "${choreographyStatistics.numberOfProcedures}," +
-                        "${choreographyStatistics.numberOfConditionals}," +
-                        "${networkStatistics.minLengthOfProcesses}," +
-                        "${networkStatistics.maxLengthOfProcesses}," +
-                        "${networkStatistics.avgLengthOfProcesses}," +
-                        "${networkStatistics.minNumberOfProceduresInProcesses}," +
-                        "${networkStatistics.maxNumberOfProceduresInProcesses}," +
-                        "${networkStatistics.avgNumberOfProceduresInProcesses}," +
-                        "${networkStatistics.minNumberOfConditionalsInProcesses}," +
-                        "${networkStatistics.maxNumberOfConditionalsInProcesses}," +
-                        "${networkStatistics.avgNumberOfConditionalsInProcesses}," +
-                        "${networkStatistics.numberOfProcessesWithConditionals}," +
-                        "${networkStatistics.minProcedureLengthInProcesses}," +
-                        "${networkStatistics.maxProcedureLengthInProcesses}," +
+                out.println("$id$SEP" +
+                        "${choreographyStatistics.numberOfActions}$SEP" +
+                        "${choreographyStatistics.numberOfProcesses}$SEP" +
+                        "${choreographyStatistics.numberOfProcedures}$SEP" +
+                        "${choreographyStatistics.numberOfConditionals}$SEP" +
+                        "${networkStatistics.minLengthOfProcesses}$SEP" +
+                        "${networkStatistics.maxLengthOfProcesses}$SEP" +
+                        "${networkStatistics.avgLengthOfProcesses}$SEP" +
+                        "${networkStatistics.minNumberOfProceduresInProcesses}$SEP" +
+                        "${networkStatistics.maxNumberOfProceduresInProcesses}$SEP" +
+                        "${networkStatistics.avgNumberOfProceduresInProcesses}$SEP" +
+                        "${networkStatistics.minNumberOfConditionalsInProcesses}$SEP" +
+                        "${networkStatistics.maxNumberOfConditionalsInProcesses}$SEP" +
+                        "${networkStatistics.avgNumberOfConditionalsInProcesses}$SEP" +
+                        "${networkStatistics.numberOfProcessesWithConditionals}$SEP" +
+                        "${networkStatistics.minProcedureLengthInProcesses}$SEP" +
+                        "${networkStatistics.maxProcedureLengthInProcesses}$SEP" +
                         "${networkStatistics.avgProcedureLengthInProcesses}"
                 )
             }
@@ -126,7 +131,7 @@ class Benchmarks {
         }
     } */
 
-
+    @Test
     fun extractionSoundness() {
         val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
         val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
@@ -167,14 +172,14 @@ fun extractionSoundnessC41() {
         return fileToChoreographyMap
     }
 
-    private fun writeExtractionsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String) {
+    private fun writeExtractionsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String, strategyName: String) {
         File(OUTPUT_DIR, filename).printWriter().use { out ->
-            out.println("testId,choreography")
-            extractionMap.forEach { id, pair -> out.println("$id, ${pair.first}") }
+            out.println("testId${SEP}strategy${SEP}choreography")
+            extractionMap.forEach { id, pair -> out.println("${id}${SEP}$strategyName${SEP}${pair.first}") }
         }
     }
 
-    private fun writeExtractionStatisticsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String) {
+    private fun writeExtractionStatisticsToFile(extractionMap: Map<String, Pair<Program, Long>>, filename: String, strategyName: String) {
         File(OUTPUT_DIR, filename).printWriter().use { out ->
             out.println(EXTRACTION_STATISTICS_HEADER)
             extractionMap.forEach { id, pair ->
@@ -184,46 +189,51 @@ fun extractionSoundnessC41() {
                 val lengthOfProcedures = program.choreographies.flatMap { LengthOfProcedures().getLength(it!!) }
                 val numberOfActions = program.choreographies.map { NumberOfActions.compute(it!!) }.fold( 0, Int::plus )
 
-                out.println("$id," +
-                        "${pair.second}," +
-                        "${statistics.nodes}," +
-                        "${statistics.badLoops}," +
-                        "${numberOfActions}," +
-                        "${choreographyProcedures}," +
-                        "${lengthOfProcedures.min() ?: 0}," +
-                        "${lengthOfProcedures.max() ?: 0}," +
+                out.println("$id$SEP" +
+                        "$strategyName$SEP" +
+                        "${pair.second}$SEP" +
+                        "${statistics.nodes}$SEP" +
+                        "${statistics.badLoops}$SEP" +
+                        "${numberOfActions}$SEP" +
+                        "${choreographyProcedures}$SEP" +
+                        "${lengthOfProcedures.min() ?: 0}$SEP" +
+                        "${lengthOfProcedures.max() ?: 0}$SEP" +
                         "${lengthOfProcedures.average().toInt()}"
                 )
             }
         }
     }
 
+    @Test
+    fun extractionTest() = ExtractionStrategy.values().forEach { if ( it != ExtractionStrategy.Default ) extraction(it) }
 
-    fun extraction() {
+    fun extraction(strategy: ExtractionStrategy) {
         checkOutputFolder()
 
         val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
 
         networkFiles.forEach { (fileId, networkMap) ->
-//            if (!fileId.startsWith("50-6")) {
+            //            if (!fileId.startsWith("50-6")) {
 //            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" && fileId != "50-6-30-0" ) {
 //            if ( /* fileId == "50-6-50-0" || */ fileId == "50-6-40-0" ) {
-            if ( fileId != "50-6-50-0" ) {
+//            if ( fileId != "50-6-50-0" ) {
+            if ( Files.notExists( Paths.get( "$OUTPUT_DIR/$EXTRACTION_PREFIX${strategy.name}-$fileId" ) ) ) {
                 val extractionMap = HashMap<String, Pair<Program, Long>>()
                 networkMap
 //                        .filter { (id, network) -> id == "C129" }
                         .forEach { id, network ->
-                    println("Extracting $id from $PROJECTION_PREFIX$fileId")
-                    val start = System.currentTimeMillis()
-                    val program = Extraction.extractChoreography(network, ExtractionStrategy.Default, ArrayList())
-                    val executionTime = System.currentTimeMillis() - start
+                            println("Extracting $id from $PROJECTION_PREFIX$fileId with strategy ${strategy.name}")
+                            val start = System.currentTimeMillis()
+                            val program = Extraction.extractChoreography(network, strategy, ArrayList())
+                            val executionTime = System.currentTimeMillis() - start
 
-                    extractionMap[id] = Pair(program, executionTime)
-                }
-                writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX$fileId")
-                writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX$fileId")
-            }
+                            extractionMap[id] = Pair(program, executionTime)
+                        }
+                writeExtractionsToFile(extractionMap, "$EXTRACTION_PREFIX${strategy.name}-$fileId", strategy.name)
+                writeExtractionStatisticsToFile(extractionMap, "$EXTRACTION_STATISTICS_PREFIX${strategy.name}-$fileId", strategy.name)
 //            }
+//            }
+            }
         }
     }
 
@@ -261,14 +271,14 @@ fun extractionSoundnessC41() {
 
 
                         //collect data
-                        out.println("$choreographyId," +
-                                "$screwedId," +
-                                "$screwedNetwork," +
-                                "${screwedInformation.add}," +
-                                "${screwedInformation.remove}," +
-                                "${screwedInformation.swap}," +
-                                "$executionTime," +
-                                "${graphStatistic.badLoops}," +
+                        out.println("$choreographyId$SEP" +
+                                "$screwedId$SEP" +
+                                "$screwedNetwork$SEP" +
+                                "${screwedInformation.add}$SEP" +
+                                "${screwedInformation.remove}$SEP" +
+                                "${screwedInformation.swap}$SEP" +
+                                "$executionTime$SEP" +
+                                "${graphStatistic.badLoops}$SEP" +
                                 "${graphStatistic.nodes}"
                         )
 
@@ -289,10 +299,10 @@ fun extractionSoundnessC41() {
                 out.println(SCREWED_EXTRACTION_STATISTICS_HEADER)
 
                 screwedExecutionStatistic.forEach { elem ->
-                    out.println("${elem.choreographyId}," +
-                            "${elem.minExecutionTime},${elem.maxExecutionTime},${elem.avgExecutionTime}," +
-                            "${elem.minNodes},${elem.maxNodes},${elem.avgNodes}," +
-                            "${elem.minBadLoops},${elem.maxBadLoops},${elem.avgBadLoops}")
+                    out.println("${elem.choreographyId}$SEP" +
+                            "${elem.minExecutionTime}$SEP${elem.maxExecutionTime}$SEP${elem.avgExecutionTime}$SEP" +
+                            "${elem.minNodes}$SEP${elem.maxNodes}$SEP${elem.avgNodes}$SEP" +
+                            "${elem.minBadLoops}$SEP${elem.maxBadLoops}$SEP${elem.avgBadLoops}")
                 }
             }
         }
@@ -329,7 +339,7 @@ fun extractionSoundnessC41() {
         val networks = HashMap<String, String>()
 
         file.forEachLine { line ->
-            val separator = line.indexOf(",")
+            val separator = line.indexOf(SEP)
             if (separator != -1) {
                 networks[line.substring(0, separator)] = line.substring(separator + 1)
             }
@@ -398,7 +408,7 @@ fun extractionSoundnessC41() {
                 line.startsWith("id") -> {
                 }
                 else -> {
-                    val (id, choreography) = line.split(",", limit = 2)
+                    val (id, choreography) = line.split(SEP, limit = 2)
                     choreographyMap[id] = choreography
                 }
             }
@@ -412,19 +422,29 @@ fun extractionSoundnessC41() {
         return StatHeader(stat[stat.size - 4], stat[stat.size - 3], stat[stat.size - 2], stat[stat.size - 1])
     }*/
 
-
+    @Test
     fun runAllBenchmarks() {
         epp()
-        extraction()
+        extractionTest()
         screwDataStatistics()
     }
 
-
+    @Test
     fun makeCombinedStatistics() {
-        combineStatistics("test1", "(100|[1-9]0)-6-0-0")
-        combineStatistics("test2", "50-6-[1-5]0-0")
-        combineStatistics("test3", "10-5-[0-5]+-[0-5]+")
-        combineStatistics("test4", "40-(5|100|[1-9][0|5])+-0-0")
+        ExtractionStrategy.values().filter { it != ExtractionStrategy.Default }.forEach {
+            combineStatistics("comms-only", "(\\d+)-6-0-0", it)
+            combineStatistics("increasing-ifs-no-recursion", "50-6-(\\d+)-0", it)
+            combineStatistics("increasing-ifs-procedures", "200-5-(\\d+)-(\\d+)", it)
+            combineStatistics("increasing-processes", "500-(\\d+)-0-0", it)
+            combineStatistics("increasing-ifs-with-recursion", "100-50-(\\d+)-5", it)
+            combineStatistics("test1", "(100|[1-9]0)-6-0-0", it)
+            combineStatistics("test2", "50-6-[1-5]0-0", it)
+            combineStatistics("test3", "10-5-[0-5]+-[0-5]+", it)
+            combineStatistics("test3-0", "10-5-0-[0-5]+", it)
+            combineStatistics("test3-5", "10-5-5-[0-5]+", it)
+            combineStatistics("test4", "40-(5|100|[1-9][0|5])+-0-0", it)
+            combineStatistics("all", ".*", it)
+        }
     }
 
     private fun retrieveTestFileData(prefix: String, regexStr: String): HashMap<String, String> {
@@ -438,7 +458,7 @@ fun extractionSoundnessC41() {
                 val lines = File("$TEST_DIR/$filename").readLines()
                 var i = 1
                 while (i < lines.size) {
-                    val split = lines[i].split(",", limit = 2)
+                    val split = lines[i].split(SEP, limit = 2)
                     data[split[0]] = split[1]
                     i++
                 }
@@ -448,10 +468,10 @@ fun extractionSoundnessC41() {
         return data
     }
 
-    private fun combineStatistics(filename: String, regexStr: String) {
-        val outputFile = File("$TEST_DIR/$COMBINED_STATISTICS_PREFIX$filename")
+    private fun combineStatistics(filename: String, regexStr: String, strategy: ExtractionStrategy) {
+        val outputFile = File("$TEST_DIR/$COMBINED_STATISTICS_PREFIX${strategy.name}-$filename")
 
-        val statsToCombine = arrayOf(PROJECTION_STATISTICS_PREFIX, EXTRACTION_STATISTICS_PREFIX)
+        val statsToCombine = arrayOf(PROJECTION_STATISTICS_PREFIX, "$EXTRACTION_STATISTICS_PREFIX${strategy.name}-")
         val headersToCombine = arrayOf(PROJECTION_STATISTICS_HEADER, EXTRACTION_STATISTICS_HEADER)
 
         val bigData = HashMap<String, Map<String, String>>() // prefix -> choreography_id -> data
@@ -460,12 +480,12 @@ fun extractionSoundnessC41() {
         }
 
         outputFile.printWriter().use { out ->
-            out.println("id," + headersToCombine.joinToString(",") { it.split(",", limit = 2)[1] })
+            out.println("id$SEP" + headersToCombine.joinToString(SEP) { it.split(SEP, limit = 2)[1] })
 
             for (key in bigData[statsToCombine[0]]!!.keys.map { Integer.parseInt(it.substring(1)) }.sorted()) {
                 val ckey = "C$key"
-                out.print("$ckey,")
-                out.println(bigData.map { it.value[ckey] }.joinToString(","))
+                out.print("$ckey$SEP")
+                out.println(bigData.map { it.value[ckey] }.joinToString(SEP))
             }
         }
     }
