@@ -198,7 +198,7 @@ fun extractionSoundnessC41() {
                         "${choreographyProcedures}$SEP" +
                         "${lengthOfProcedures.min() ?: 0}$SEP" +
                         "${lengthOfProcedures.max() ?: 0}$SEP" +
-                        "${lengthOfProcedures.average().toInt()}"
+                        "${lengthOfProcedures.average()}"
                 )
             }
         }

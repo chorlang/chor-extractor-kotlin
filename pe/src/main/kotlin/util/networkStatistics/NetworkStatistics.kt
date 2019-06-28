@@ -5,17 +5,17 @@ import ast.sp.nodes.Network
 data class NetworkStatistics(
         val minLengthOfProcesses: Int,
         val maxLengthOfProcesses: Int,
-        val avgLengthOfProcesses: Int,
+        val avgLengthOfProcesses: Double,
         val minNumberOfProceduresInProcesses: Int,
         val maxNumberOfProceduresInProcesses: Int,
-        val avgNumberOfProceduresInProcesses: Int,
+        val avgNumberOfProceduresInProcesses: Double,
         val minNumberOfConditionalsInProcesses: Int,
         val maxNumberOfConditionalsInProcesses: Int,
-        val avgNumberOfConditionalsInProcesses: Int,
+        val avgNumberOfConditionalsInProcesses: Double,
         val numberOfProcessesWithConditionals: Int,
         val minProcedureLengthInProcesses: Int,
         val maxProcedureLengthInProcesses: Int,
-        val avgProcedureLengthInProcesses: Int
+        val avgProcedureLengthInProcesses: Double
 ) {
     companion object {
         fun compute(network: Network): NetworkStatistics {
@@ -34,17 +34,17 @@ data class NetworkStatistics(
             return NetworkStatistics(
                     minLengthOfProcesses = lengthOfProcesses.min()?:0,
                     maxLengthOfProcesses = lengthOfProcesses.max()?:0,
-                    avgLengthOfProcesses = lengthOfProcesses.average().toInt(),
+                    avgLengthOfProcesses = lengthOfProcesses.average(),
                     minNumberOfProceduresInProcesses = numberOfProcedures.min()?:0,
                     maxNumberOfProceduresInProcesses = numberOfProcedures.max()?:0,
-                    avgNumberOfProceduresInProcesses = numberOfProcedures.average().toInt(),
+                    avgNumberOfProceduresInProcesses = numberOfProcedures.average(),
                     minNumberOfConditionalsInProcesses = numberOfConditionals.min()?:0,
                     maxNumberOfConditionalsInProcesses = numberOfConditionals.max()?:0,
-                    avgNumberOfConditionalsInProcesses = numberOfConditionals.average().toInt(),
+                    avgNumberOfConditionalsInProcesses = numberOfConditionals.average(),
                     numberOfProcessesWithConditionals = numberOfConditionals.filter { it != 0 }.size,
                     minProcedureLengthInProcesses = lengthOfProcedures.min()?:0,
                     maxProcedureLengthInProcesses = lengthOfProcedures.max()?:0,
-                    avgProcedureLengthInProcesses = lengthOfProcedures.average().toInt()
+                    avgProcedureLengthInProcesses = lengthOfProcedures.average()
             )
         }
     }
