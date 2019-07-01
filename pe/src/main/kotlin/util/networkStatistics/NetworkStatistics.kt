@@ -37,14 +37,14 @@ data class NetworkStatistics(
                     avgLengthOfProcesses = lengthOfProcesses.average(),
                     minNumberOfProceduresInProcesses = numberOfProcedures.min()?:0,
                     maxNumberOfProceduresInProcesses = numberOfProcedures.max()?:0,
-                    avgNumberOfProceduresInProcesses = numberOfProcedures.average(),
+                    avgNumberOfProceduresInProcesses = if (numberOfProcedures.isNotEmpty()) numberOfProcedures.average() else 0.0,
                     minNumberOfConditionalsInProcesses = numberOfConditionals.min()?:0,
                     maxNumberOfConditionalsInProcesses = numberOfConditionals.max()?:0,
-                    avgNumberOfConditionalsInProcesses = numberOfConditionals.average(),
+                    avgNumberOfConditionalsInProcesses = if (numberOfConditionals.isNotEmpty()) numberOfConditionals.average() else 0.0,
                     numberOfProcessesWithConditionals = numberOfConditionals.filter { it != 0 }.size,
                     minProcedureLengthInProcesses = lengthOfProcedures.min()?:0,
                     maxProcedureLengthInProcesses = lengthOfProcedures.max()?:0,
-                    avgProcedureLengthInProcesses = lengthOfProcedures.average()
+                    avgProcedureLengthInProcesses = if (lengthOfProcedures.isNotEmpty()) lengthOfProcedures.average() else 0.0
             )
         }
     }

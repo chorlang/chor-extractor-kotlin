@@ -3,7 +3,7 @@ package benchmark
 import ast.cc.nodes.GraphStatistics
 import ast.cc.nodes.Program
 import ast.sp.nodes.Network
-import bisim.bisimilar
+//import bisim.bisimilar
 import epp.EndPointProjection
 import extraction.Extraction
 import extraction.ExtractionStrategy
@@ -131,7 +131,7 @@ class Benchmarks <I> {
         }
     } */
 
-    @Test
+    /*@Test
     fun extractionSoundness() {
         val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
         val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
@@ -145,7 +145,7 @@ class Benchmarks <I> {
                 }
 //            }
         }
-    }
+    }*/
 
     /*@Test
 fun extractionSoundnessC41() {
@@ -198,7 +198,7 @@ fun extractionSoundnessC41() {
                         "${choreographyProcedures}$SEP" +
                         "${lengthOfProcedures.min() ?: 0}$SEP" +
                         "${lengthOfProcedures.max() ?: 0}$SEP" +
-                        "${lengthOfProcedures.average()}"
+                        "${if (lengthOfProcedures.isNotEmpty()) lengthOfProcedures.average() else 0}"
                 )
             }
         }
@@ -213,10 +213,6 @@ fun extractionSoundnessC41() {
         val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
 
         networkFiles.forEach { (fileId, networkMap) ->
-            //            if (!fileId.startsWith("50-6")) {
-//            if ( fileId != "50-6-50-0" && fileId != "50-6-40-0" && fileId != "50-6-30-0" ) {
-//            if ( /* fileId == "50-6-50-0" || */ fileId == "50-6-40-0" ) {
-//            if ( fileId != "50-6-50-0" ) {
             if ( Files.notExists( Paths.get( "$OUTPUT_DIR/$EXTRACTION_PREFIX${strategy.name}-$fileId" ) ) ) {
                 val extractionMap = HashMap<String, Pair<Program, Long>>()
                 networkMap
@@ -426,7 +422,8 @@ fun extractionSoundnessC41() {
     fun runAllBenchmarks() {
         epp()
         extractionTest()
-        screwDataStatistics()
+        //screwDataStatistics()
+        makeCombinedStatistics()
     }
 
     @Test
@@ -485,7 +482,7 @@ fun extractionSoundnessC41() {
             for (key in bigData[statsToCombine[0]]!!.keys.map { Integer.parseInt(it.substring(1)) }.sorted()) {
                 val ckey = "C$key"
                 out.print("$ckey$SEP")
-                out.println(bigData.map { it.value[ckey] }.joinToString(SEP))
+                out.println(bigData.toSortedMap(reverseOrder()).map { it.value[ckey] }.joinToString(SEP))
             }
         }
     }
