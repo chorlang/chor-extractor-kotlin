@@ -1,5 +1,6 @@
 package util
 
+import ast.sp.interfaces.Behaviour
 import ast.sp.nodes.*
 
 object NetworkUtils {
@@ -24,4 +25,6 @@ object NetworkUtils {
 
         return Network(map)
     }
+
+    fun isInteraction(b: Behaviour):Boolean = b is SendSP || b is ReceiveSP || b is SelectionSP || b is OfferingSP
 }

@@ -1,6 +1,8 @@
 package extraction
 
+import ast.sp.interfaces.Behaviour
 import ast.sp.nodes.*
+import util.NetworkUtils
 import java.util.*
 import kotlin.collections.LinkedHashMap
 
@@ -42,6 +44,33 @@ enum class ExtractionStrategy {
                     ret[processName] = processTerm.copy()
                 }
             }
+
+            return ret
+        }
+    },
+    UnmarkedThenInteractions {
+        override fun copyAndSort(node: Extraction.ConcreteNode): HashMap<String, ProcessTerm> {
+            val ret = LinkedHashMap<String, ProcessTerm>()
+
+            val markedList = ArrayList<ProcessName>()
+            val unmarkedInteractionsList = ArrayList<ProcessName>()
+            val unmarkedOthersList = ArrayList<ProcessName>()
+
+            node.marking.forEach { processName, marked ->
+                if (marked) {
+                    markedList.add(processName)
+                } else {
+                    if ( NetworkUtils.isInteraction(node.network.processes[processName]!!.main) ) {
+                        unmarkedInteractionsList.add(processName)
+                    } else {
+                        unmarkedOthersList.add(processName)
+                    }
+                }
+            }
+
+            unmarkedInteractionsList.forEach { ret[it] = node.network.processes[it]!!.copy() }
+            unmarkedOthersList.forEach { ret[it] = node.network.processes[it]!!.copy() }
+            markedList.forEach { ret[it] = node.network.processes[it]!!.copy() }
 
             return ret
         }
