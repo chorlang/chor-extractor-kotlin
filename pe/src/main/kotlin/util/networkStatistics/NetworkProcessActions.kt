@@ -15,7 +15,7 @@ class NetworkProcessActions: SPVisitor<Int> {
     }
 
     override fun visit(n: OfferingSP): Int {
-        return n.branches.values.sumBy { behaviour -> behaviour.accept(this) }
+        return n.branches.values.sumBy { behaviour -> behaviour.accept(this) } + 1
     }
 
     override fun visit(n: ParallelNetworks): Int {
