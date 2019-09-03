@@ -12,6 +12,7 @@ import org.jgrapht.graph.DirectedPseudograph
 import util.ParseUtils
 import util.NetworkUsedProcesses
 import util.NetworkUtils
+import util.networkStatistics.WellFormedness
 import java.lang.IllegalStateException
 
 typealias ProcessMap = HashMap<String, ProcessTerm>
@@ -24,12 +25,20 @@ typealias Hash = Int
 /**
  * services are allowed to be livelocked
  */
-// TODO we're assuming that the network is well-formed (all process actions point to other processes that actually exist and there are no self-comms): CHECK FOR THIS!!
+// TODO we're assuming that the network contains no self-comms: CHECK FOR THIS!!
 class Extraction(private val strategy: ExtractionStrategy, private val services: Set<String>) {
     companion object {
         fun extractChoreography(n: String, strategy: ExtractionStrategy = ExtractionStrategy.Default, services: List<String> = arrayListOf()): Program {
             val inputNetwork = NetworkUtils.purgeNetwork(ParseUtils.stringToNetwork(n))
+            if ( !WellFormedness.compute(inputNetwork) ) {
+                return Program(listOf(null), emptyList())
+            }
+
             val parallelNetworks = splitNetwork(inputNetwork)
+
+            if (parallelNetworks == null) {
+                return Program(emptyList(), emptyList())
+            }
 
             val results =
                     parallelNetworks.parallelStream().map { network ->
@@ -45,8 +54,9 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             return Program(results.map { it.first }, results.map { it.second })
         }
 
-        private fun splitNetwork(network: Network): HashSet<Network> {
+        private fun splitNetwork(network: Network): HashSet<Network>? {
             val processSets = getProcessSets(network)
+            if ( processSets == null ) return null
             val networks = hashSetOf<Network>()
 
             for (processSet in processSets) {
@@ -58,7 +68,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             return networks
         }
 
-        private fun getProcessSets(network: Network): ArrayList<HashSet<String>> {
+        private fun getProcessSets(network: Network): ArrayList<HashSet<String>>? {
             val map = HashMap<ProcessName, HashSet<ProcessName>>()
             network.processes.forEach { (processName, processTerm) ->
                 map[processName] = NetworkUsedProcesses.compute(processTerm)
@@ -76,7 +86,11 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 visible.add(processName)
                 while (visible != component) {
                     val intersection = (visible - component) //.sorted()
-                    intersection.forEach { component.add(it); unprocessed.remove(it); visible.addAll(map[it]!!) }
+                    try {
+                        intersection.forEach { component.add(it); unprocessed.remove(it); visible.addAll(map[it]!!) }
+                    } catch( e:NullPointerException ) {
+                        return null
+                    }
                 }
 
                 processSets.add(component)
@@ -143,10 +157,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 unfoldedProcessesCopy.removeAll(arrayOf(label.sender, label.receiver))
                 fold(unfoldedProcessesCopy, targetNetwork, currentNode)
 
-                if (buildCommunication(targetNetwork, label, currentNode))
-                    return true
-                else
-                    continue
+                return buildCommunication(targetNetwork, label, currentNode)
             }
 
             // Try to find a conditional
@@ -157,10 +168,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 fold(unfoldedProcessesCopy, thenNetwork, currentNode)
                 fold(unfoldedProcessesCopy, elseNetwork, currentNode)
 
-                if (buildConditional(thenNetwork, thenLabel, elseNetwork, elseLabel, currentNode))
-                    return true
-                else
-                    continue
+                return buildConditional(thenNetwork, thenLabel, elseNetwork, elseLabel, currentNode)
             }
         }
 
@@ -169,19 +177,19 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         if (allTerminated(processes)) return true
 
         //try to find a multi-action communication
-        for ((processName, _) in processes) {
-            //TODO check this
-            val interactionLabel = createInteractionLabel(processName, processes)
-            if (interactionLabel != null) {
-                val actions = ArrayList<ExtractionLabel.InteractionLabel>()
-                val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
-                waiting.add(interactionLabel)
-                collectMulticomActions(waiting, actions, processes, currentNode)
-
-                //if we managed to collect some actions for a multicom
-                if ((actions.size > 1) && (buildMulticom(actions, currentNode, processes, unfoldedProcesses))) return true else continue
-            }
-        }
+//        for ((processName, _) in processes) {
+//            //TODO check this
+//            val interactionLabel = createInteractionLabel(processName, processes)
+//            if (interactionLabel != null) {
+//                val actions = ArrayList<ExtractionLabel.InteractionLabel>()
+//                val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
+//                waiting.add(interactionLabel)
+//                collectMulticomActions(waiting, actions, processes, currentNode)
+//
+//                //if we managed to collect some actions for a multicom
+//                if ((actions.size > 1) && (buildMulticom(actions, currentNode, processes, unfoldedProcesses))) return true else continue
+//            }
+//        }
 
         //System.err.println("No possible actions at the node $currentNode")
         return false
@@ -249,7 +257,8 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         /* case 5 */
         else {
             newThenNode = thenNode
-            if (!addEdgeToGraph(currentNode, thenNode, thenLabel)) return false
+            if (!addEdgeToGraph(currentNode, thenNode, thenLabel))
+                return false
         }
 
         //check if the else node with the same network and markings already exists in the graph
@@ -289,14 +298,17 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return true
     }
 
-    private fun collectMulticomActions(waiting: ArrayList<ExtractionLabel.InteractionLabel>, actions: ArrayList<ExtractionLabel.InteractionLabel>, processes: HashMap<String, ProcessTerm>, currentNode: ConcreteNode) {
+    private fun collectMulticomActions(waiting: ArrayList<ExtractionLabel.InteractionLabel>, actions: ArrayList<ExtractionLabel.InteractionLabel>, processes: HashMap<String, ProcessTerm>, currentNode: ConcreteNode):Boolean {
         val receivers = ArrayList<String>()
         while (waiting.isNotEmpty()) {
             val label = waiting.first()
             waiting.remove(label)
 
             //multicom can't contain actions with the same receiver
-            if (receivers.contains(label.receiver)) throw MulticomException("multicom can't contain actions with the same receiver")
+            if (receivers.contains(label.receiver)) {
+                return false
+//                throw MulticomException("multicom can't contain actions with the same receiver")
+            }
             actions.add(label)
             receivers.add(label.receiver)
 
@@ -324,6 +336,8 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 processes.replace(sender, ProcessTerm(senderProcessTerm.procedures, senderBehaviourContinuation))
             }
         }
+
+        return true
     }
 
     private fun buildMulticom(actions: ArrayList<ExtractionLabel.InteractionLabel>, currentNode: ConcreteNode, processesCopy: HashMap<String, ProcessTerm>, unfoldedProcesses: HashSet<String>): Boolean {
@@ -386,9 +400,9 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         if (graph.incomingEdgesOf(root).size == 1)
             recursiveNodes["X${count++}"] = root
 
-        graph.vertexSet().forEach { node ->
-            if (node is ConcreteNode && graph.incomingEdgesOf(node).size > 1)
-                recursiveNodes["X${count++}"] = node
+        graph.vertexSet().forEach {
+            if (it is ConcreteNode && graph.incomingEdgesOf(it).size > 1)
+                recursiveNodes["X${count++}"] = it
         }
 
         recursiveNodes.forEach { pair ->
@@ -569,14 +583,13 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return CommunicationEdgeTo(Network(processCopy), label)
     }
 
-    private fun consumeSelection(processes: ProcessMap, offerTerm: ProcessTerm, selectTerm: ProcessTerm): CommunicationEdgeTo {
+    private fun consumeSelection(processes: ProcessMap, offerTerm: ProcessTerm, selectTerm: ProcessTerm): CommunicationEdgeTo? {
         val processCopy = copyProcesses(processes)
 
         val selectionProcess = (offerTerm.main as OfferingSP).process
         val offeringProcess = (selectTerm.main as SelectionSP).process
 
-        val offeringBehavior = (offerTerm.main as OfferingSP).branches[(selectTerm.main as SelectionSP).label]
-                ?: throw IllegalStateException("$selectionProcess is trying to select label ${(selectTerm.main as SelectionSP).label} from $offeringProcess, which does not offer it")
+        val offeringBehavior = (offerTerm.main as OfferingSP).branches[(selectTerm.main as SelectionSP).label] ?: return null
 
         processCopy.replace(offeringProcess, ProcessTerm(offerTerm.procedures, offeringBehavior))
         processCopy.replace(selectionProcess, ProcessTerm(selectTerm.procedures, (selectTerm.main as SelectionSP).continuation))

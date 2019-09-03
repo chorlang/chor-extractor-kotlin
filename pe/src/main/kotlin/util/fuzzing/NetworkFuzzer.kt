@@ -1,12 +1,12 @@
 package util.fuzzing
 
-import antlrgen.NetworkParser
 import ast.sp.interfaces.Behaviour
 import ast.sp.nodes.*
 import util.NetworkUtils
 import util.ParseUtils
 import java.lang.IllegalStateException
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 data class FuzzerParams(var deletions:Int, var swaps:Int)
 
@@ -17,9 +17,13 @@ object NetworkFuzzer {
         val processTerm = n.processes[processName]!!
 
         val keys = processTerm.procedures.keys.toMutableList()
+        val sizeList = keys.map {
+            ProcessSize.compute( processTerm.procedures[it]!! )
+        }.toMutableList()
         keys.add("main")
+        sizeList.add( ProcessSize.compute( processTerm.main ) )
 
-        val paramsMap = splitParams(FuzzerParams(deletions, swaps), keys)
+        val paramsMap = splitParams(FuzzerParams(deletions, swaps), mkSizes(keys, sizeList))
 
         paramsMap.forEach { procName, params ->
             if( procName == "main" ) {
@@ -31,11 +35,19 @@ object NetworkFuzzer {
         return n
     }
 
+    private fun mkSizes(keys:List<String>, values:List<Int>):Map<String, Int> {
+        assert(keys.size == values.size)
+        val map = HashMap<String, Int>()
+        for( i in 0 until keys.size ) {
+            map[keys[i]] = values[i]
+        }
+        return map
+    }
+
     private fun decDels(params:FuzzerParams) = FuzzerParams(params.deletions - 1, params.swaps)
     private fun decSwaps(params:FuzzerParams) = FuzzerParams(params.deletions, params.swaps - 1)
 
     private fun fuzzProcess(b: Behaviour, size:Int, params:FuzzerParams): Behaviour {
-        println(b)
         if( params.deletions + params.swaps == 0 )
             return b
 
@@ -69,7 +81,7 @@ object NetworkFuzzer {
                         is ReceiveSP -> return ReceiveSP(fuzzProcess(SendSP(cont.continuation, b.receiver, b.expression), size - 1, decSwaps(params)), cont.sender)
                         is SelectionSP -> return SelectionSP(fuzzProcess(SendSP(cont.continuation, b.receiver, b.expression), size - 1, decSwaps(params)), cont.receiver, cont.label)
                         is OfferingSP -> {
-                            val splitParams = splitParams(decSwaps(params), cont.branches.keys.toList())
+                            val splitParams = splitParams(decSwaps(params), mkSizes( cont.branches.keys.toList(), cont.branches.values.map { ProcessSize.compute(it) }.toList() ))
                             val branches = HashMap<String, Behaviour>()
                             val chosen = cont.branches.keys.random()
                             splitParams.forEach { label, lblParams ->
@@ -86,7 +98,7 @@ object NetworkFuzzer {
                             return OfferingSP(cont.sender, branches)
                         }
                         is ConditionSP -> {
-                            val splitParams = splitParams(decSwaps(params), listOf("then", "else"))
+                            val splitParams = splitParams(decSwaps(params), mkSizes( listOf("then", "else"), listOf( ProcessSize.compute(cont.thenBehaviour), ProcessSize.compute(cont.elseBehaviour) ) ) )
                             return ConditionSP(
                                     cont.expression,
                                     fuzzProcess( SendSP(cont.thenBehaviour, b.receiver, b.expression), ProcessSize.compute(cont.thenBehaviour), splitParams["then"]!! ),
@@ -101,7 +113,7 @@ object NetworkFuzzer {
                         is ReceiveSP -> return ReceiveSP(fuzzProcess(ReceiveSP(cont.continuation, b.sender), size - 1, decSwaps(params)), cont.sender)
                         is SelectionSP -> return SelectionSP(fuzzProcess(ReceiveSP(cont.continuation, b.sender), size - 1, decSwaps(params)), cont.receiver, cont.label)
                         is OfferingSP -> {
-                            val splitParams = splitParams(decSwaps(params), cont.branches.keys.toList())
+                            val splitParams = splitParams(decSwaps(params), mkSizes( cont.branches.keys.toList(), cont.branches.values.map { ProcessSize.compute(it) }.toList() ) )
                             val branches = HashMap<String, Behaviour>()
                             val chosen = cont.branches.keys.random()
                             splitParams.forEach { label, lblParams ->
@@ -118,7 +130,7 @@ object NetworkFuzzer {
                             return OfferingSP(cont.sender, branches)
                         }
                         is ConditionSP -> {
-                            val splitParams = splitParams(decSwaps(params), listOf("then", "else"))
+                            val splitParams = splitParams(decSwaps(params), mkSizes( listOf("then", "else"), listOf( ProcessSize.compute(cont.thenBehaviour), ProcessSize.compute(cont.elseBehaviour) ) ))
                             return ConditionSP(
                                     cont.expression,
                                     fuzzProcess( ReceiveSP(cont.thenBehaviour, b.sender), ProcessSize.compute(cont.thenBehaviour), splitParams["then"]!! ),
@@ -133,7 +145,7 @@ object NetworkFuzzer {
                         is ReceiveSP -> return ReceiveSP(fuzzProcess(SelectionSP(cont.continuation, b.receiver, b.label), size - 1, decSwaps(params)), cont.sender)
                         is SelectionSP -> return SelectionSP(fuzzProcess(SelectionSP(cont.continuation, b.receiver, b.label), size - 1, decSwaps(params)), cont.receiver, cont.label)
                         is OfferingSP -> {
-                            val splitParams = splitParams(decSwaps(params), cont.branches.keys.toList())
+                            val splitParams = splitParams(decSwaps(params), mkSizes( cont.branches.keys.toList(), cont.branches.values.map { ProcessSize.compute(it) }.toList() ))
                             val branches = HashMap<String, Behaviour>()
                             val chosen = cont.branches.keys.random()
                             splitParams.forEach { label, lblParams ->
@@ -150,7 +162,7 @@ object NetworkFuzzer {
                             return OfferingSP(cont.sender, branches)
                         }
                         is ConditionSP -> {
-                            val splitParams = splitParams(decSwaps(params), listOf("then", "else"))
+                            val splitParams = splitParams(decSwaps(params), mkSizes( listOf("then", "else"), listOf( ProcessSize.compute(cont.thenBehaviour), ProcessSize.compute(cont.elseBehaviour) ) ))
                             return ConditionSP(
                                     cont.expression,
                                     fuzzProcess( SelectionSP(cont.thenBehaviour, b.receiver, b.label), ProcessSize.compute(cont.thenBehaviour), splitParams["then"]!! ),
@@ -186,7 +198,7 @@ object NetworkFuzzer {
                             is ReceiveSP -> ReceiveSP( fuzzProcess(OfferingSP(b.sender, branches), ProcessSize.compute(OfferingSP(b.sender, branches)), decSwaps(params)), cont.sender )
                             is SelectionSP -> SelectionSP( fuzzProcess(OfferingSP(b.sender, branches), ProcessSize.compute(OfferingSP(b.sender, branches)), decSwaps(params)), cont.receiver, cont.label )
                             is OfferingSP -> {
-                                val splitParams = splitParams(decSwaps(params), cont.branches.keys.toList())
+                                val splitParams = splitParams(decSwaps(params), mkSizes( cont.branches.keys.toList(), cont.branches.values.map { ProcessSize.compute(it) }.toList() ))
                                 val newBranches = HashMap<String, Behaviour>()
                                 splitParams.forEach { label, lblParams ->
                                     newBranches[label] =
@@ -202,7 +214,7 @@ object NetworkFuzzer {
                                 return OfferingSP(cont.sender, newBranches)
                             }
                             is ConditionSP -> {
-                                val splitParams = splitParams(decSwaps(params), listOf("then", "else"))
+                                val splitParams = splitParams(decSwaps(params), mkSizes( listOf("then", "else"), listOf( ProcessSize.compute(cont.thenBehaviour), ProcessSize.compute(cont.elseBehaviour) ) ))
                                 ConditionSP(
                                         cont.expression,
                                         fuzzProcess(OfferingSP(b.sender, branches), ProcessSize.compute(OfferingSP(b.sender, branches)), splitParams["then"]!!),
@@ -216,48 +228,94 @@ object NetworkFuzzer {
                     }
                     is TerminationSP -> throw IllegalStateException("Reached termination")
                     is ProcedureInvocationSP -> return fuzzProcess(TerminationSP(), 0, decSwaps(params))
+                    is ConditionSP -> return when( val cont = b.thenBehaviour ) {
+                        is SendSP -> SendSP( fuzzProcess(ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour), ProcessSize.compute(ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour)), decSwaps(params)), cont.receiver, cont.expression)
+                        is ReceiveSP -> ReceiveSP( fuzzProcess(ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour), ProcessSize.compute(ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour)), decSwaps(params)), cont.sender )
+                        is SelectionSP -> SelectionSP( fuzzProcess(ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour), ProcessSize.compute(ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour)), decSwaps(params)), cont.receiver, cont.label )
+                        is OfferingSP -> {
+                            val splitParams = splitParams(decSwaps(params), mkSizes( cont.branches.keys.toList(), cont.branches.values.map { ProcessSize.compute(it) }.toList() ))
+                            val newBranches = HashMap<String, Behaviour>()
+                            splitParams.forEach { label, lblParams ->
+                                newBranches[label] =
+                                        if (label == cont.branches.keys.sorted().first())
+                                            fuzzProcess(
+                                                    ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour),
+                                                    ProcessSize.compute(ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour)),
+                                                    lblParams
+                                            )
+                                        else
+                                            fuzzProcess(cont.branches[label]!!, ProcessSize.compute(cont.branches[label]!!), lblParams)
+                            }
+                            return OfferingSP(cont.sender, newBranches)
+                        }
+                        is ConditionSP -> {
+                            val splitParams = splitParams(decSwaps(params), mkSizes( listOf("then", "else"), listOf( ProcessSize.compute(cont.thenBehaviour), ProcessSize.compute(cont.elseBehaviour) ) ))
+                            ConditionSP(
+                                    cont.expression,
+                                    fuzzProcess(ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour), ProcessSize.compute(ConditionSP(b.expression, b.thenBehaviour, b.elseBehaviour)), splitParams["then"]!!),
+                                    fuzzProcess(cont.elseBehaviour, ProcessSize.compute(cont.elseBehaviour), splitParams["else"]!!)
+                            )
+                        }
+                        is TerminationSP -> return fuzzProcess(cont, 0, decSwaps(params))
+                        is ProcedureInvocationSP -> return fuzzProcess(cont, 1, decSwaps(params))
+                        else -> throw IllegalStateException("Unreachable case")
+                    }
+                    else -> throw IllegalStateException("Unreachable code")
                 }
             }
+            throw IllegalStateException("Unreachable code")
         } else {
             // We fuzz the continuation
-            when( b ) {
+            when (b) {
                 is SendSP -> return SendSP(fuzzProcess(b.continuation, size - 1, params), b.receiver, b.expression)
                 is ReceiveSP -> return ReceiveSP(fuzzProcess(b.continuation, size - 1, params), b.sender)
                 is SelectionSP -> return SelectionSP(fuzzProcess(b.continuation, size - 1, params), b.receiver, b.label)
                 is OfferingSP -> {
-                    val splitParams = splitParams(params, b.branches.keys.toList())
+                    val splitParams = splitParams(params, mkSizes(b.branches.keys.toList(), b.branches.values.map { ProcessSize.compute(it) }.toList()))
                     val branches = HashMap<String, Behaviour>()
                     splitParams.forEach { label, lblParams ->
-                        branches[label] = fuzzProcess( b.branches[label]!!, ProcessSize.compute(b.branches[label]!!), lblParams )
+                        branches[label] = fuzzProcess(b.branches[label]!!, ProcessSize.compute(b.branches[label]!!), lblParams)
                     }
                     return OfferingSP(b.sender, branches)
                 }
                 is ConditionSP -> {
-                    val splitParams = splitParams(params, listOf("then", "else"))
+                    val splitParams = splitParams(params, mkSizes(listOf("then", "else"), listOf(ProcessSize.compute(b.thenBehaviour), ProcessSize.compute(b.elseBehaviour))))
                     return ConditionSP(
                             b.expression,
-                            fuzzProcess( b.thenBehaviour, ProcessSize.compute(b.thenBehaviour), splitParams["then"]!! ),
-                            fuzzProcess( b.elseBehaviour, ProcessSize.compute(b.elseBehaviour), splitParams["else"]!! )
+                            fuzzProcess(b.thenBehaviour, ProcessSize.compute(b.thenBehaviour), splitParams["then"]!!),
+                            fuzzProcess(b.elseBehaviour, ProcessSize.compute(b.elseBehaviour), splitParams["else"]!!)
                     )
                 }
                 is TerminationSP -> throw IllegalStateException("Reached termination")
                 is ProcedureInvocationSP -> throw IllegalStateException("Reached procedure call")
+                else -> throw IllegalStateException("Unreachable code")
             }
         }
-
-        throw IllegalStateException("Unreachable code")
     }
 
-    private fun splitParams(params:FuzzerParams, keys:List<String>): Map<String, FuzzerParams> {
+    private fun splitParams(params:FuzzerParams, sizes:Map<String, Int>): Map<String, FuzzerParams> {
         val paramsMap = HashMap<String, FuzzerParams>()
-        keys.forEach { paramsMap[it] = FuzzerParams(0, 0) }
+        sizes.keys.forEach { paramsMap[it] = FuzzerParams(0, 0) }
 
-        for (i in params.deletions downTo 1 ) {
-            paramsMap[paramsMap.keys.random()]!!.deletions++
-        }
+        var dels = params.deletions
+        var swaps = params.swaps
+        while(dels + swaps > 0) {
+            val chooseDel = Random.nextInt(dels + swaps) < dels
 
-        for (i in params.swaps downTo 1 ) {
-            paramsMap[paramsMap.keys.random()]!!.swaps++
+            var flag = false
+            while( !flag ) {
+                val random = paramsMap.keys.random()
+                if ( paramsMap[random]!!.deletions + paramsMap[random]!!.swaps < sizes[random]!!) {
+                    if ( chooseDel ) {
+                        paramsMap[random]!!.deletions++
+                        dels--
+                    } else {
+                        paramsMap[random]!!.swaps++
+                        swaps--
+                    }
+                    flag = true
+                }
+            }
         }
 
         return paramsMap

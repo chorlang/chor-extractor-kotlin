@@ -14,14 +14,16 @@ import util.choreographyStatistics.LengthOfProcedures
 import util.choreographyStatistics.NumberOfActions
 import util.fuzzing.NetworkFuzzer
 import util.networkStatistics.NetworkStatistics
+import util.refactor.NetworkShifter
+import util.refactor.NetworkUnfolder
 import java.io.File
+import java.lang.IllegalStateException
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.text.ParseException
 import java.util.*
 
-// TODO Still have to go through the screwing
-class Benchmarks <I> {
+class Benchmarks {
     //data class StatHeader(val length: String, val numOfProcesses: String, val numOfCondition: String, val numOfProcedures: String)
 
     data class ScrewedExecutionStatistics(val choreographyId: String,
@@ -34,6 +36,8 @@ class Benchmarks <I> {
         private const val CHOREOGRAPHY_PREFIX = "choreography-"
         private const val PROJECTION_PREFIX = "projection-"
         private const val FUZZ_PREFIX = "projection-fuzzed-"
+        private const val UNROLLED_PREFIX = "projection-unrolled-"
+        private const val UNROLLED_STATISTICS_PREFIX = "stats-unrolled-"
         private const val EXTRACTION_FUZZED_PREFIX = "extraction-fuzzed-"
         private const val EXTRACTION_PREFIX = "extraction-"
         private const val PROJECTION_STATISTICS_PREFIX = "stats-projection-"
@@ -78,7 +82,7 @@ class Benchmarks <I> {
      */
 
     @Test
-    fun epp(){
+    fun epp() {
         checkOutputFolder()
         val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
         choreographyFiles.forEach { fileId, choreographyMap ->
@@ -219,27 +223,70 @@ fun extractionSoundnessC41() {
     @Test
     fun extractionTest() = ExtractionStrategy.values().forEach { if ( it != ExtractionStrategy.Default ) extraction(it) }
 
-    @Test
-    fun fuzz() {
+    private fun fuzzUntilItWorks(network:String, dels:Int, swaps:Int):Network {
+        do {
+          try {
+              return NetworkFuzzer.fuzz(network, dels, swaps)
+          } catch( e:IllegalStateException ) {
+              println("Refuzzing...")
+          }
+        } while( true )
+    }
+
+    private fun fuzz(dels:Int, swaps:Int) {
         checkOutputFolder()
 
         val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
         networkFiles.forEach { (fileId, networkMap) ->
-            if ( Files.notExists( Paths.get( "$OUTPUT_DIR/$FUZZ_PREFIX$fileId" ) ) ) {
+            val filePrefix = "$dels-$swaps-$fileId"
+            if ( Files.notExists( Paths.get( "$OUTPUT_DIR/$FUZZ_PREFIX$filePrefix" ) ) && !fileId.contains("fuzzed") && !fileId.contains("unrolled")) {
                 val fuzzMap = HashMap<String, Pair<Network, Long>>()
                 networkMap
 //                        .filter { (id, network) -> id == "C129" }
                         .forEach { id, network ->
                             println("Fuzzing $id from $PROJECTION_PREFIX$fileId")
                             val start = System.currentTimeMillis()
-                            val fuzzedNetwork = NetworkFuzzer.fuzz(network, 1, 0)
+                            val fuzzedNetwork = fuzzUntilItWorks( network, dels, swaps )
                             val executionTime = System.currentTimeMillis() - start
 
                             fuzzMap[id] = Pair(fuzzedNetwork, executionTime)
                         }
-                writeFuzzedNetworksToFile(fuzzMap, "$FUZZ_PREFIX$fileId")
-                writeFuzzingStatisticsToFile(fuzzMap, "$FUZZ_STATISTICS_PREFIX$fileId")
+                writeFuzzedNetworksToFile(fuzzMap, "$FUZZ_PREFIX$filePrefix")
+                writeFuzzingStatisticsToFile(fuzzMap, "$FUZZ_STATISTICS_PREFIX$filePrefix")
 //            }
+            }
+        }
+    }
+
+    @Test
+    fun fuzzThemAll() {
+        fuzz(0, 1)
+        fuzz(1, 0)
+        fuzz(2, 2)
+    }
+
+    @Test
+    fun unrollAndShift() {
+        checkOutputFolder()
+
+        val networkFiles = parseNetworkFiles(TEST_DIR, PROJECTION_PREFIX) // HashMap<filename, HashMap<id, network_body>>
+        networkFiles.forEach { (fileId, networkMap) ->
+            if ( Files.notExists( Paths.get( "$OUTPUT_DIR/$UNROLLED_PREFIX$fileId" ) ) && !fileId.contains("fuzzed") && !fileId.contains("unrolled") && fileId.matches("\\d+-\\d+-\\d+-[1-9]+".toRegex()) ) {
+                val resultMap = HashMap<String, Pair<Network, Long>>()
+                networkMap
+                        .forEach { id, network ->
+                            println("Doing stuff with $id from $PROJECTION_PREFIX$fileId")
+                            val start = System.currentTimeMillis()
+                            val pShift = 0.6
+                            val pUnfold = 0.2
+                            val iterations = 0
+                            val newNetworks = NetworkShifter.compute(NetworkUnfolder.compute( network, pUnfold, iterations ).toString(), pShift)
+                            val executionTime = System.currentTimeMillis() - start
+
+                            resultMap[id] = Pair(newNetworks, executionTime)
+                        }
+                writeFuzzedNetworksToFile(resultMap, "$UNROLLED_PREFIX$fileId")
+                writeFuzzingStatisticsToFile(resultMap, "$UNROLLED_STATISTICS_PREFIX$fileId")
             }
         }
     }
@@ -288,7 +335,11 @@ fun extractionSoundnessC41() {
                         .forEach { id, network ->
                             println("Extracting $id from $PROJECTION_PREFIX$fileId with strategy ${strategy.name}")
                             val start = System.currentTimeMillis()
-                            val program = Extraction.extractChoreography(network, strategy, ArrayList())
+                            var program = Extraction.extractChoreography(network, strategy, ArrayList())
+                            if ( program.choreographies.contains(null) ) {
+                                println("There's an unextractable network in $id from $PROJECTION_PREFIX$fileId with strategy ${strategy.name}")
+                                program = Program(emptyList(), program.statistics)
+                            }
                             val executionTime = System.currentTimeMillis() - start
 
                             extractionMap[id] = Pair(program, executionTime)
