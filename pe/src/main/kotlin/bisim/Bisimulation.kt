@@ -15,7 +15,13 @@ import util.ParseUtils.parseChoreography
 
 val MAX_SIMULATION_COUNTER = 200
 
-fun bisimilar( c1:String, c2:String ):Boolean
+enum class Throolean {
+    OK,
+    MAYBE,
+    FAIL
+}
+
+fun bisimilar( c1:String, c2:String ):Throolean
 {
     val program1 = ChoreographyASTToProgram().getProgram(parseChoreography(c1)) as Program
     val program2 = ChoreographyASTToProgram().getProgram(parseChoreography(c2)) as Program
@@ -23,29 +29,36 @@ fun bisimilar( c1:String, c2:String ):Boolean
     return bisimilar( program1.choreographies, program2.choreographies )
 }
 
-fun similar( c1:String, c2:String ):Boolean
-{
-    val program1 = ChoreographyASTToProgram().getProgram(parseChoreography(c1)) as Program
-    val program2 = ChoreographyASTToProgram().getProgram(parseChoreography(c2)) as Program
+//fun similar( c1:String, c2:String ):Throolean
+//{
+//    val program1 = ChoreographyASTToProgram().getProgram(parseChoreography(c1)) as Program
+//    val program2 = ChoreographyASTToProgram().getProgram(parseChoreography(c2)) as Program
+//
+//    return similar( program1.choreographies, program2.choreographies )
+//}
 
-    return similar( program1.choreographies, program2.choreographies )
-}
-
-fun bisimilar( list1:List<Choreography?>, list2:List<Choreography?> ):Boolean
+fun bisimilar( list1:List<Choreography?>, list2:List<Choreography?> ):Throolean
 {
     if ( list1.size != 1 || list2.size != 1 ) {
         println("Bisimilarity not implemented for parallel choreographies")
-        return true
+        return Throolean.MAYBE
     }
-
-    return similar(list1,list2) && similar(list2,list1)
+    return when( similar(list1, list2) ) {
+        Throolean.FAIL -> Throolean.FAIL
+        Throolean.OK -> similar(list2, list1)
+        Throolean.MAYBE -> when( similar(list2, list1) ) {
+            Throolean.FAIL -> Throolean.FAIL
+            else -> Throolean.MAYBE
+        }
+    }
 }
 
-fun similar( list1:List<Choreography?>, list2:List<Choreography?> ):Boolean
+fun similar( list1:List<Choreography?>, list2:List<Choreography?> ):Throolean
 {
+    var result = Throolean.OK
     for( c1 in list1 ) {
         if ( c1 == null )
-            return false
+            return Throolean.FAIL
 
         var ok = false
         for( c2 in list2 ) {
@@ -53,19 +66,20 @@ fun similar( list1:List<Choreography?>, list2:List<Choreography?> ):Boolean
                 continue
 
             if ( c1.processes.containsAll( c2.processes ) ) {
-                if ( !similar( c1, c2 ) )
-                    return false
-                else
-                    ok = true
+                when( similar( c1, c2 ) ) {
+                    Throolean.FAIL -> return Throolean.FAIL
+                    Throolean.MAYBE -> { ok = true; result = Throolean.MAYBE }
+                    Throolean.OK -> ok = true
+                }
             }
         }
         if (!ok)
-            return false
+            return Throolean.FAIL
     }
-    return true
+    return result
 }
 
-fun similar(c1:Choreography, c2:Choreography):Boolean
+fun similar(c1:Choreography, c2:Choreography):Throolean
 {
     val done:ArrayList<Pair<ChoreographyBody, ChoreographyBody>> = ArrayList()
     val todo:ArrayList<Pair<ChoreographyBody, ChoreographyBody>> = ArrayList()
@@ -84,7 +98,7 @@ fun similar(c1:Choreography, c2:Choreography):Boolean
             val continuation2 = getContinuation( two, action1, c2.procedures )
             if ( continuation2 == null ) {
                 println( "Could not match $action1 with continuation $two" )
-                return false
+                return Throolean.FAIL
             } else {
                 if( !done.contains( Pair(continuation1,continuation2) ) && !todo.contains( Pair(continuation1, continuation2) ) ) {
 //                    System.out.println( "TODO $continuation1, $continuation2 (size of todo: ${todo.size}, size of done: ${done.size})" )
@@ -99,10 +113,10 @@ fun similar(c1:Choreography, c2:Choreography):Boolean
     }
 
     if ( counter == MAX_SIMULATION_COUNTER ) {
-        println( "Warning: could not check simulation" )
+        return Throolean.MAYBE
     }
 
-    return true
+    return Throolean.OK
 }
 
 private fun pn(label: ExtractionLabel):Set<String>

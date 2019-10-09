@@ -22,7 +22,7 @@ sealed class ExtractionLabel(var flipped: Boolean = false){
         class CommunicationLabel(override val sender: String, override val receiver: String, override val expression: String): InteractionLabel(sender, receiver, expression){
             override fun copy() = CommunicationLabel(sender, receiver, expression)
 
-            override fun toString(): String = sender
+            override fun toString(): String = "$sender.$expression->$receiver"
         }
         class SelectionLabel(override val sender: String, override val receiver: String, val label: String): InteractionLabel(sender, receiver, label){
             override fun copy() = SelectionLabel(sender, receiver, expression)

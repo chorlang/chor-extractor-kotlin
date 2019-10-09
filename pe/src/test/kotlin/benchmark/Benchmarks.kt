@@ -3,6 +3,8 @@ package benchmark
 import ast.cc.nodes.GraphStatistics
 import ast.cc.nodes.Program
 import ast.sp.nodes.Network
+import bisim.Throolean
+import bisim.bisimilar
 //import bisim.bisimilar
 import epp.EndPointProjection
 import extraction.Extraction
@@ -147,21 +149,31 @@ class Benchmarks {
         }
     } */
 
-    /*@Test
+    @Test
     fun extractionSoundness() {
         val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
-        val extractedChoreographies = parseExtractionFiles(TEST_DIR, EXTRACTION_PREFIX)
-        originalChoreographies.forEach { fileId, choreographyData ->
-//            if ( !fileId.startsWith("50") ) {
+        var ok = 0
+        var maybe = 0
+        var fail = 0
+        ExtractionStrategy.values().filter { it != ExtractionStrategy.Default }.forEach { strategy ->
+            val extractedChoreographies = parseExtractionFiles(TEST_DIR, "$EXTRACTION_PREFIX${strategy}-")
+            originalChoreographies.forEach { fileId, choreographyData ->
                 choreographyData.forEach { id, choreography ->
-                    System.out.println("Checking $id in $fileId")
-                    if (!bisimilar(choreography, (extractedChoreographies[fileId]!!)[id]!!)) {
-                        println("$id failed the bisimilarity check")
+//                    println((extractedChoreographies[fileId]!!)[id]!!)
+                    print("Checking $id in $fileId against strategy $strategy. ")
+                    when( bisimilar(choreography, (extractedChoreographies[fileId]!!)[id]!!) ) {
+                        Throolean.OK -> { println( "Done" ); ok++ }
+                        Throolean.MAYBE -> { println( "Timeout" ); maybe++ }
+                        Throolean.FAIL -> { println( "Fail" ); fail++ }
                     }
                 }
-//            }
+            }
         }
-    }*/
+        println("And the grand totals are:")
+        println("\tOk: $ok")
+        println("\tTimeout: $maybe")
+        println("\tFail: $fail")
+    }
 
     /*@Test
 fun extractionSoundnessC41() {
@@ -452,7 +464,7 @@ fun extractionSoundnessC41() {
                 line.startsWith("id") -> {
                 }
                 else -> {
-                    val (id, choreography) = line.split(SEP, limit = 2)
+                    val (id, _, choreography) = line.split(SEP, limit = 3)
                     choreographyMap[id] = choreography
                 }
             }

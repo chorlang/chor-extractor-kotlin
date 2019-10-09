@@ -25,14 +25,22 @@ typealias Hash = Int
 /**
  * services are allowed to be livelocked
  */
-// TODO we're assuming that the network contains no self-comms: CHECK FOR THIS!!
 class Extraction(private val strategy: ExtractionStrategy, private val services: Set<String>) {
+    private enum class BuildGraphResult {
+        OK,
+        BADLOOP,
+        FAIL
+    }
+    
     companion object {
         fun extractChoreography(n: String, strategy: ExtractionStrategy = ExtractionStrategy.Default, services: List<String> = arrayListOf()): Program {
             val inputNetwork = NetworkUtils.purgeNetwork(ParseUtils.stringToNetwork(n))
             if ( !WellFormedness.compute(inputNetwork) ) {
                 return Program(listOf(null), emptyList())
             }
+
+//            val r = Extraction(strategy, HashSet(services)).extract(inputNetwork)
+//            return Program(listOf(r.first), listOf(r.second))
 
             val parallelNetworks = splitNetwork(inputNetwork)
 
@@ -125,7 +133,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         addToChoicePathMap(node)
         addToHashMap(node)
 
-        return if (buildGraph(node)) {
+        return if (buildGraph(node) == BuildGraphResult.OK) {
             val procedureNodes = unrollGraph(node)
             Pair(buildChoreography(node, procedureNodes), GraphStatistics(graph.vertexSet().size, badLoopCounter))
         } else {
@@ -135,7 +143,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
     private fun fold(unfoldedProcesses: HashSet<String>, targetNetwork: Network, currentNode: ConcreteNode) = unfoldedProcesses.forEach { targetNetwork.processes[it]?.main = currentNode.network.processes[it]?.main?.copy()!! }
 
-    private fun buildGraph(currentNode: ConcreteNode): Boolean {
+    private fun buildGraph(currentNode: ConcreteNode): BuildGraphResult {
         val unfoldedProcesses = HashSet<String>()
         val processes = copyAndSortProcesses(currentNode)
 
@@ -157,7 +165,11 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 unfoldedProcessesCopy.removeAll(arrayOf(label.sender, label.receiver))
                 fold(unfoldedProcessesCopy, targetNetwork, currentNode)
 
-                return buildCommunication(targetNetwork, label, currentNode)
+                when ( buildCommunication(targetNetwork, label, currentNode) ) {
+                    BuildGraphResult.OK -> return BuildGraphResult.OK
+                    BuildGraphResult.FAIL -> return BuildGraphResult.FAIL
+                }
+                continue
             }
 
             // Try to find a conditional
@@ -168,34 +180,43 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
                 fold(unfoldedProcessesCopy, thenNetwork, currentNode)
                 fold(unfoldedProcessesCopy, elseNetwork, currentNode)
 
-                return buildConditional(thenNetwork, thenLabel, elseNetwork, elseLabel, currentNode)
+                when ( buildConditional(thenNetwork, thenLabel, elseNetwork, elseLabel, currentNode) ) {
+                    BuildGraphResult.OK -> return BuildGraphResult.OK
+                    BuildGraphResult.FAIL -> return BuildGraphResult.FAIL
+                }
+                continue
             }
         }
 
         // Check if there are no possible actions left
         // This is after the previous loop because we might need to unfold processes to realise this
-        if (allTerminated(processes)) return true
+        if (allTerminated(processes)) return BuildGraphResult.OK
 
         //try to find a multi-action communication
-//        for ((processName, _) in processes) {
-//            //TODO check this
-//            val interactionLabel = createInteractionLabel(processName, processes)
-//            if (interactionLabel != null) {
-//                val actions = ArrayList<ExtractionLabel.InteractionLabel>()
-//                val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
-//                waiting.add(interactionLabel)
-//                collectMulticomActions(waiting, actions, processes, currentNode)
-//
-//                //if we managed to collect some actions for a multicom
-//                if ((actions.size > 1) && (buildMulticom(actions, currentNode, processes, unfoldedProcesses))) return true else continue
-//            }
-//        }
+        for ((processName, _) in processes) {
+            //TODO check this
+            val interactionLabel = createInteractionLabel(processName, processes)
+            if (interactionLabel != null) {
+                val actions = ArrayList<ExtractionLabel.InteractionLabel>()
+                val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
+                waiting.add(interactionLabel)
+                collectMulticomActions(waiting, actions, processes, currentNode)
+
+                //if we managed to collect some actions for a multicom
+                if ( actions.isEmpty() ) continue
+                else when (buildMulticom(actions, currentNode, processes, unfoldedProcesses)) {
+                    BuildGraphResult.OK -> return BuildGraphResult.OK
+                    BuildGraphResult.FAIL -> return BuildGraphResult.FAIL
+                }
+                continue
+            }
+        }
 
         //System.err.println("No possible actions at the node $currentNode")
-        return false
+        return BuildGraphResult.FAIL
     }
 
-    private fun buildCommunication(targetNetwork: Network, label: ExtractionLabel.InteractionLabel, currentNode: ConcreteNode): Boolean {
+    private fun buildCommunication(targetNetwork: Network, label: ExtractionLabel.InteractionLabel, currentNode: ConcreteNode): BuildGraphResult {
         val targetMarking = Marking(currentNode.marking)
 
         targetMarking[label.sender] = true
@@ -212,25 +233,30 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             val newNode = createNewNode(targetNetwork, label, currentNode, targetMarking)
 
             return if (addNodeAndEdgeToGraph(currentNode, newNode, label)) { // TODO: This test is actually unnecessary (the side effects are not)
-                if (buildGraph(newNode)) {
-                    true
-                } else {
-                    removeNodeFromGraph(newNode)
-                    false
+                when(val res = buildGraph(newNode)) {
+                    BuildGraphResult.OK -> BuildGraphResult.OK
+                    else -> {
+                        removeNodeFromGraph(newNode)
+                        res
+                    }
                 }
             } else {
-                false
+                BuildGraphResult.FAIL
             }
         } else { /* case 2 */
             /*
             If targetNode already exists, then the whole subgraph from that node is already built.
             So we don't need to update any badNodes list.
             */
-            return addEdgeToGraph(currentNode, node, label)
+            return if( addEdgeToGraph(currentNode, node, label) ) {
+                BuildGraphResult.OK
+            } else {
+                BuildGraphResult.BADLOOP
+            }
         }
     }
 
-    private fun buildConditional(thenNetwork: Network, thenLabel: ExtractionLabel.ConditionLabel.ThenLabel, elseNetwork: Network, elseLabel: ExtractionLabel.ConditionLabel.ElseLabel, currentNode: ConcreteNode): Boolean {
+    private fun buildConditional(thenNetwork: Network, thenLabel: ExtractionLabel.ConditionLabel.ThenLabel, elseNetwork: Network, elseLabel: ExtractionLabel.ConditionLabel.ElseLabel, currentNode: ConcreteNode): BuildGraphResult {
         val targetMarking = Marking(currentNode.marking)
 
         targetMarking[thenLabel.process] = true
@@ -249,16 +275,18 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             newThenNode = createNewNode(thenNetwork, thenLabel, currentNode, targetMarking)
             addNodeAndEdgeToGraph(currentNode, newThenNode, thenLabel)
 
-            if (!buildGraph(newThenNode)) {
-                removeNodeFromGraph(newThenNode)
-                return false
+            when( val res = buildGraph(newThenNode) ) {
+                BuildGraphResult.BADLOOP, BuildGraphResult.FAIL -> {
+                    removeNodeFromGraph(newThenNode)
+                    return res
+                }
             }
         }
         /* case 5 */
         else {
             newThenNode = thenNode
             if (!addEdgeToGraph(currentNode, thenNode, thenLabel))
-                return false
+                return BuildGraphResult.BADLOOP
         }
 
         //check if the else node with the same network and markings already exists in the graph
@@ -278,10 +306,12 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             newElseNode = createNewNode(elseNetwork, elseLabel, currentNode, targetMarking)
             addNodeAndEdgeToGraph(currentNode, newElseNode, elseLabel)
 
-            if (!buildGraph(newElseNode)) {
-                garbageCollectThen()
-                removeNodeFromGraph(newElseNode)
-                return false
+            when( val res = buildGraph(newElseNode) ) {
+                BuildGraphResult.BADLOOP, BuildGraphResult.FAIL -> {
+                    garbageCollectThen()
+                    removeNodeFromGraph(newElseNode)
+                    return res
+                }
             }
         }
         /* case 8 */
@@ -289,13 +319,13 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             newElseNode = elseNode
             if (!addEdgeToGraph(currentNode, newElseNode, elseLabel)) {
                 garbageCollectThen()
-                return false
+                return BuildGraphResult.BADLOOP
             }
         }
 
         relabel(newThenNode)
         relabel(newElseNode)
-        return true
+        return BuildGraphResult.OK
     }
 
     private fun collectMulticomActions(waiting: ArrayList<ExtractionLabel.InteractionLabel>, actions: ArrayList<ExtractionLabel.InteractionLabel>, processes: HashMap<String, ProcessTerm>, currentNode: ConcreteNode):Boolean {
@@ -340,7 +370,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return true
     }
 
-    private fun buildMulticom(actions: ArrayList<ExtractionLabel.InteractionLabel>, currentNode: ConcreteNode, processesCopy: HashMap<String, ProcessTerm>, unfoldedProcesses: HashSet<String>): Boolean {
+    private fun buildMulticom(actions: ArrayList<ExtractionLabel.InteractionLabel>, currentNode: ConcreteNode, processesCopy: HashMap<String, ProcessTerm>, unfoldedProcesses: HashSet<String>): BuildGraphResult {
         val label = ExtractionLabel.MulticomLabel(actions)
 
         val targetMarking = Marking(currentNode.marking)
@@ -366,10 +396,10 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             addNodeAndEdgeToGraph(currentNode, newNode, label)
             return buildGraph(newNode)
         } else {
-            if (addEdgeToGraph(currentNode, existingNode, label)) return true
+            if (addEdgeToGraph(currentNode, existingNode, label)) return BuildGraphResult.OK
         }
 
-        return false
+        return BuildGraphResult.FAIL
     }
 
     // We look for a node with same content in the same choice path.
@@ -387,7 +417,15 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     private fun flipAndResetMarking(label: ExtractionLabel, marking: Marking, network: Network) {
         label.flipped = true
         for (key in marking.keys) {
-            marking[key] = network.processes[key]!!.main is TerminationSP || services.contains(key)
+            marking[key] = isTerminated( network.processes[key]!!.main, network.processes[key]!!.procedures ) || services.contains(key)
+        }
+    }
+
+    private fun isTerminated( b:Behaviour, procedures:Map<String, Behaviour>):Boolean {
+        return when( b ) {
+            is TerminationSP -> true
+            is ProcedureInvocationSP -> isTerminated( procedures[b.procedure]!!, procedures )
+            else -> false
         }
     }
 
@@ -446,7 +484,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             0 -> {
                 return when (node) {
                     is ConcreteNode -> {
-                        if (node.network.processes.all { it.value.main is TerminationSP }) {
+                        if (node.network.processes.all { isTerminated( it.value.main, it.value.procedures ) }) {
                             Termination()
                         } else {
                             throw IllegalStateException("Bad graph. No more edges found, but not all processes were terminated.")
@@ -723,12 +761,10 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     interface Node
 
     data class ConcreteNode(val network: Network, val choicePath: String, val id: Int, val badNodes: HashSet<Int>, val marking: HashMap<ProcessName, Boolean>) : Node {
-        @Suppress("UNCHECKED_CAST")
-        fun copy(): ConcreteNode = ConcreteNode(network.copy(), choicePath, id, HashSet(badNodes), marking.clone() as HashMap<ProcessName, Boolean>)
-
         fun equals(other: ConcreteNode): Boolean = id == other.id
 
-        override fun hashCode(): Int = network.hashCode() + 31 * choicePath.hashCode() + 31 * 31 * id + 31 * 31 * 31 * badNodes.hashCode() + 31 * 31 * 31 * 31 * marking.hashCode()
+        override fun hashCode(): Int = id
+                //network.hashCode() + 31 * choicePath.hashCode() + 31 * 31 * id + 31 * 31 * 31 * badNodes.hashCode() + 31 * 31 * 31 * 31 * marking.hashCode()
     }
 
     data class InvocationNode(val procedureName: String, val node: Node) : Node

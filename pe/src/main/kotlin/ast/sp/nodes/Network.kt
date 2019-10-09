@@ -44,13 +44,13 @@ data class Network(val processes: HashMap<ProcessName, ProcessTerm>) : SPNode {
     override fun hashCode(): Int {
         //return processesInChoreography.hashCode()
         var hash = 0
-        for (p in processes) {
+        for (p in processes.toSortedMap()) {
             hash += p.key.hashCode() * 31 + p.value.hashCode() * 29
         }
         return hash
     }
 
-    companion object { var i = 0 }
+    companion object { var printMainOnly = true }
 }
 
 

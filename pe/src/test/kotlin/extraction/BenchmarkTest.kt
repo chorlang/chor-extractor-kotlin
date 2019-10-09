@@ -37,7 +37,6 @@ class BenchmarkTest {
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun runningExample2x(strategyName: String, debugMode: Boolean) {
-
         val test =
                 "a1 {def X {if e then b1+win; c1+lose; b1?; c1?; d1!<free>; X else b1+lose; c1+win; b1?; c1?; d1!<free>; X} main {X}} |" +
                         "b1 {def X {a1&{win: c1!<lose>; a1!<sig>; X, lose: c1?; a1!<sig>; X}} main {X}} |" +
@@ -91,6 +90,7 @@ class BenchmarkTest {
 
         val strategy = Utils.parseStrategy(strategyName)
         val actual = Extraction.extractChoreography( test, strategy ).toString()
+//        println(actual)
 
         when (strategy) {
             ExtractionStrategy.UnmarkedThenRandom, ExtractionStrategy.Random -> {
@@ -122,6 +122,7 @@ class BenchmarkTest {
 
         val strategy = Utils.parseStrategy(strategyName)
         val actual = Extraction.extractChoreography( test, strategy ).toString()
+        println(actual)
 
         when (strategy) {
             ExtractionStrategy.InteractionsFirst, ExtractionStrategy.ConditionsFirst -> {
@@ -182,7 +183,7 @@ class BenchmarkTest {
 
 
         val strategy = Utils.parseStrategy( strategyName )
-        Extraction.extractChoreography( test, strategy, ArrayList(listOf("c", "f")) ).toString()
+        println(Extraction.extractChoreography( test, strategy, ArrayList(listOf("c", "f")) ))
         //assertEquals(expected, actual)
     }
 
@@ -204,6 +205,31 @@ class BenchmarkTest {
         val expected = "def X1 { p.sendData->hs; X2 } def X2 { hs.subscribed->ss; if ss.ok then ss->hs[ok]; hs->p[subscribed]; hs.account->as; as.logCreated->hs; hs.fwd->t; t.fwdOk->hs; t.helpReq->es; es.provideService->p; p.sendData->hs; X2 else ss->hs[nok]; hs->p[notSubscribed]; X1 } main {X1}"
 
         assertEquals(expected, actual)
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
+    fun health2x(strategyName: String, debugMode: Boolean) {
+        val test =
+                "hs{def X{p?; ss!<subscribed>; ss&{" +
+                        "ok: p+subscribed; as!<account>; as?; t!<fwd>; t?; X, " +
+                        "nok: p+notSubscribed; X}} main{X}} | " +
+                        "p{def X{hs!<sendData>; hs&{subscribed: es?; X, notSubscribed: X}} main{X}} | " +
+                        "ss{def X{hs?; if ok then hs+ok; X else hs+nok; X} main{X}} | " +
+                        "as{def X{hs?; hs!<logCreated>; X} main{X}} | " +
+                        "t{def X{hs?; hs!<fwdOk>; es!<helpReq>; X} main{X}} | " +
+                        "es{def X{t?; p!<provideService>; X} main{X}} | " +
+                    "hs2{def X{p2?; ss2!<subscribed>; ss2&{" +
+                        "ok: p2+subscribed; as2!<account>; as2?; t2!<fwd>; t2?; X, " +
+                        "nok: p2+notSubscribed; X}} main{X}} | " +
+                        "p2{def X{hs2!<sendData>; hs2&{subscribed: es2?; X, notSubscribed: X}} main{X}} | " +
+                        "ss2{def X{hs2?; if ok then hs2+ok; X else hs2+nok; X} main{X}} | " +
+                        "as2{def X{hs2?; hs2!<logCreated>; X} main{X}} | " +
+                        "t2{def X{hs2?; hs2!<fwdOk>; es2!<helpReq>; X} main{X}} | " +
+                        "es2{def X{t2?; p2!<provideService>; X} main{X}}"
+
+        val strategy = Utils.parseStrategy( strategyName )
+        println(Extraction.extractChoreography( test, strategy, ArrayList(listOf("as", "t", "es", "as2", "t2", "es2")) ))
     }
 
     @ParameterizedTest
@@ -303,6 +329,45 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
+    fun logistic2x(strategyName: String, debugMode: Boolean) {
+        val test =
+                "supplier {" +
+                        "def X {shipper?; Y} " +
+                        "def Y {if needToShip " +
+                        "then shipper+item; X " +
+                        "else shipper+done; retailer!<UpdatePOandDeliverySchedule>; retailer?; retailer?; retailer!<FinalizedPOandDeliverySchedule>; stop}" +
+                        "main { retailer!<PlannedOrderVariations>; retailer?; retailer?; Y}" + "} | " +
+                        "retailer {" +
+                        "main {" +
+                        "supplier?; supplier!<OrderDeliveryVariations>; supplier!<DeliverCheckPointRequest>; " +
+                        "supplier?; supplier!<POandDeliveryScheduleMods>; shipper!<ConfirmationofDeliverySchedule>; " +
+                        "supplier!<AcceptPOandDeliverySchedule>; supplier?; stop}} |" +
+                        "shipper {" +
+                        "def X{supplier!<DeliveryItem>; Y} " +
+                        "def Y {supplier&{item: X, done: retailer?; stop}}" +
+                        "main{Y}} | " +
+                    "supplier2 {" +
+                        "def X {shipper2?; Y} " +
+                        "def Y {if needToShip " +
+                        "then shipper2+item; X " +
+                        "else shipper2+done; retailer2!<UpdatePOandDeliverySchedule>; retailer2?; retailer2?; retailer2!<FinalizedPOandDeliverySchedule>; stop}" +
+                        "main { retailer2!<PlannedOrderVariations>; retailer2?; retailer2?; Y}" + "} | " +
+                        "retailer2 {" +
+                        "main {" +
+                        "supplier2?; supplier2!<OrderDeliveryVariations>; supplier2!<DeliverCheckPointRequest>; " +
+                        "supplier2?; supplier2!<POandDeliveryScheduleMods>; shipper2!<ConfirmationofDeliverySchedule>; " +
+                        "supplier2!<AcceptPOandDeliverySchedule>; supplier2?; stop}} |" +
+                        "shipper2 {" +
+                        "def X{supplier2!<DeliveryItem>; Y} " +
+                        "def Y {supplier2&{item: X, done: retailer2?; stop}}" +
+                        "main{Y}}"
+
+        val strategy = Utils.parseStrategy( strategyName )
+        println(Extraction.extractChoreography( test, strategy, ArrayList(listOf("retailer", "retailer2")) ))
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun logistic2(strategyName: String, debugMode: Boolean) {
         val test =
                 "supplier {" +
@@ -364,6 +429,43 @@ class BenchmarkTest {
 
     @ParameterizedTest
     @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
+    fun cloudSystem2x(strategyName: String, debugMode: Boolean) {
+        val test =
+                "cl{" +
+                        "def X{int!<connect>; int?; Y} " +
+                        "def Y{if access then appli+awaitcl; appli!<access>; Y else int!<logout>; appli+syncLogout; appli?; X} " +
+                        "main {X}} | " +
+                        "appli{" +
+                        "def X{int?; Y} " +
+                        "def Y{cl&{awaitcl: cl?; Y, syncLogout: db!<log>; cl!<syncLog>; X}} " +
+                        "main {X}} | " +
+                        "int{" +
+                        "def X{cl?; appli!<setup>; cl!<syncAccess>; cl?; X} " +
+                        "main {X}} | " +
+                        "db{" +
+                        "def X{appli?; X} " +
+                        "main {X}} | " +
+                    "cl2{" +
+                        "def X{int2!<connect>; int2?; Y} " +
+                        "def Y{if access then appli2+awaitcl; appli2!<access>; Y else int2!<logout>; appli2+syncLogout; appli2?; X} " +
+                        "main {X}} | " +
+                        "appli2{" +
+                        "def X{int2?; Y} " +
+                        "def Y{cl2&{awaitcl: cl2?; Y, syncLogout: db2!<log>; cl2!<syncLog>; X}} " +
+                        "main {X}} | " +
+                        "int2{" +
+                        "def X{cl2?; appli2!<setup>; cl2!<syncAccess>; cl2?; X} " +
+                        "main {X}} | " +
+                        "db2{" +
+                        "def X{appli2?; X} " +
+                        "main {X}}"
+
+        val strategy = Utils.parseStrategy( strategyName )
+        println(Extraction.extractChoreography( test, strategy, listOf("db", "int", "db2", "int2") ))
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun sanitaryAgency(strategyName: String, debugMode: Boolean) {
         val test =
                 "citizen{" +
@@ -400,108 +502,62 @@ class BenchmarkTest {
         assertEquals(expected, actual)
     }
 
-    /*@ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
+    @ParameterizedTest
+    @CsvFileSource(resources = ["/settings.csv"], numLinesToSkip = 1)
     fun sanitaryAgency2x(strategyName: String, debugMode: Boolean) {
         val test =
-                "citizen1{def X{sanagency1!<request>; sanagency1?; sanagency1!<provInf>; sanagency1&{refusal: X, acceptance: coop1?; bank1!<paymentPrivateFee>; X}} main{X}} | " +
-                "sanagency1{def X{citizen1?; citizen1!<askInfo>; citizen1?; if infoProved then citizen1+acceptance; coop1!<req>; bank1!<paymentPublicFee>; bank1?; X else citizen1+refusal; X} main {X}} | " +
-                "coop1{def X{sanagency1?; if fine then citizen1!<provT>; bank1+recMoneyPossT; bank1?; X else citizen1!<provM>; bank1+recMoneyPossM; bank1?; X} main{X}} | " +
-                "bank1{def X{ coop1&{recMoneyPossT: coop1!<paymentT>; Y, recMoneyPossM: coop1!<paymentM>; Y}} def Y{citizen1?; sanagency1?; sanagency1!<done>; X} main{X}} | " +
-                "citizen2{def X{sanagency2!<request>; sanagency2?; sanagency2!<provInf>; sanagency2&{refusal: X, acceptance: coop2?; bank2!<paymentPrivateFee>; X}} main{X}} | " +
-                "sanagency2{def X{citizen2?; citizen2!<askInfo>; citizen2?; if infoProved then citizen2+acceptance; coop2!<req>; bank2!<paymentPublicFee>; bank2?; X else citizen2+refusal; X} main {X}} | " +
-                "coop2{def X{sanagency2?; if fine then citizen2!<provT>; bank2+recMoneyPossT; bank2?; X else citizen2!<provM>; bank2+recMoneyPossM; bank2?; X} main{X}} | " +
-                "bank2{def X{ coop2&{recMoneyPossT: coop2!<paymentT>; Y, recMoneyPossM: coop2!<paymentM>; Y}} def Y{citizen2?; sanagency2?; sanagency2!<done>; X} main{X}}"
+                "citizen{" +
+                        "def X{" +
+                        "sanagency!<request>; sanagency?; sanagency!<provInf>; sanagency&{" +
+                        "refusal: X, " +
+                        "acceptance: coop?; bank!<paymentPrivateFee>; X}} " +
+                        "main{X}" +
+                        "} | " +
+                        "sanagency{" +
+                        "def X{" +
+                        "citizen?; citizen!<askInfo>; citizen?; if infoProved " +
+                        "then citizen+acceptance; coop!<req>; bank!<paymentPublicFee>; bank?; X " +
+                        "else citizen+refusal; X }" +
+                        "main {X}} | " +
+                        "coop{def X{" +
+                        "sanagency?; " +
+                        "if fine " +
+                        "then citizen!<provT>; bank+recMoneyPossT; bank?; X " +
+                        "else citizen!<provM>; bank+recMoneyPossM; bank?; X} " +
+                        "main{X}} | " +
+                        "bank{" +
+                        "def X{ coop&{" +
+                        "recMoneyPossT: coop!<paymentT>; Y, " +
+                        "recMoneyPossM: coop!<paymentM>; Y}} " +
+                        "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
+                        "main{X}} | " +
+                "citizen2{" +
+                        "def X{" +
+                        "sanagency2!<request>; sanagency2?; sanagency2!<provInf>; sanagency2&{" +
+                        "refusal: X, " +
+                        "acceptance: coop2?; bank2!<paymentPrivateFee>; X}} " +
+                        "main{X}" +
+                        "} | " +
+                        "sanagency2{" +
+                        "def X{" +
+                        "citizen2?; citizen2!<askInfo>; citizen2?; if infoProved " +
+                        "then citizen2+acceptance; coop2!<req>; bank2!<paymentPublicFee>; bank2?; X " +
+                        "else citizen2+refusal; X }" +
+                        "main {X}} | " +
+                        "coop2{def X{" +
+                        "sanagency2?; " +
+                        "if fine " +
+                        "then citizen2!<provT>; bank2+recMoneyPossT; bank2?; X " +
+                        "else citizen2!<provM>; bank2+recMoneyPossM; bank2?; X} " +
+                        "main{X}} | " +
+                        "bank2{" +
+                        "def X{ coop2&{" +
+                        "recMoneyPossT: coop2!<paymentT>; Y, " +
+                        "recMoneyPossM: coop2!<paymentM>; Y}} " +
+                        "def Y{citizen2?; sanagency2?; sanagency2!<done>; X} " +
+                        "main{X}}"
 
-        val param = resolveArgs(strategy, debugMode)
-        val args = param.first
-        args.addAll(arrayListOf(test, "-l", "coop1, bank1, coop2, bank2"))
-
-        val strategy = param.second
-
-        val actual = Extraction.main(args).toString()
-
-        when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst -> {
-                val expected =
-                        "def X1 { citizen.provInf->sanagency; if sanagency.infoProved then sanagency->citizen[acceptance]; sanagency.req->coop; if coop.fine then coop.provT->citizen; coop->bank[recMoneyPossT]; bank.paymentT->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop.provM->citizen; coop->bank[recMoneyPossM]; bank.paymentM->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency->citizen[refusal]; citizen2.request->sanagency2; sanagency2.askInfo->citizen2; citizen2.provInf->sanagency2; if sanagency2.infoProved then sanagency2->citizen2[acceptance]; sanagency2.req->coop2; if coop2.fine then coop2.provT->citizen2; coop2->bank2[recMoneyPossT]; bank2.paymentT->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else coop2.provM->citizen2; coop2->bank2[recMoneyPossM]; bank2.paymentM->coop2; citizen2.paymentPrivateFee->bank2; sanagency2.paymentPublicFee->bank2; bank2.done->sanagency2; citizen.request->sanagency; sanagency.askInfo->citizen; X1 else sanagency2->citizen2[refusal]; citizen.request->sanagency; sanagency.askInfo->citizen; X1 } main {citizen.request->sanagency; sanagency.askInfo->citizen; X1}"
-
-                assertEquals(expected, actual)
-            }
-
-            Strategy.UnmarkedFirst, Strategy.UnmarkedThenSelection, Strategy.UnmarkedThenCondition, Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
-                //"If it doesn't fail, we are happy "
-            }
-        }
-    }*/
-
-    /*@ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun tst(strategyName: String, debugMode: Boolean) {
-        value f =
-                "r{def X{`value`!<e>; X} main{X}} | " +
-                        "`value`{def X{r?; X} main{X}} | " +
-                "p{def Y{q+l; X} def X{q+r; q!<e>; if e then Y else X} main{Y}} | " +
-                "q{def X{p&{r: Z}} def Z{p?; p&{l: X, r: Z}} main{p&{l:X}}}"
-
-
-        value param = resolveArgs(strategy, debugMode)
-        value args = param.first
-        args.addAll(arrayListOf(f))
-
-        value strategy = param.second
-
-        value actual = Extraction.main(args)
-
-        value expected = "def X1 { p->q[r]; X2 } def X2 { p.e->q; if p.e then r.e->`value`; p->q[l]; X1 else r.e->`value`; p->q[r]; X2 } main {p->q[l]; X1}"
-        assertEquals(expected, actual)
-
-        *//*when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst -> {
-                value expected =
-                        ""
-
-                assertEquals(expected, actual)
-            }
-
-            Strategy.UnmarkedFirst, Strategy.UnmarkedThenSelection, Strategy.UnmarkedThenCondition, Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
-                //"If it doesn't fail, we are happy "
-            }
-        }*//*
+        val strategy = Utils.parseStrategy( strategyName )
+        println(Extraction.extractChoreography( test, strategy, ArrayList(listOf("coop", "bank", "coop2", "bank2")) ))
     }
-
-    @ParameterizedTest
-    @CsvFileSource(resources = arrayOf("/settings.csv"), numLinesToSkip = 1)
-    fun tst2(strategyName: String, debugMode: Boolean) {
-        value f =
-                "r{def X {`value`!<0>; X} main {X}} | " +
-                        "`value`{def X {r?; X} main {X}} | " +
-                "p{def X {q!<1>; if e then q+L; q!<2>; X else q+R; X } main {q!<0>; q!<3>; X }} | " +
-                "q{def X {p?; p&{L: p?; X, R: X} main {p?; p?; X}}"
-
-
-        value param = resolveArgs(strategy, debugMode)
-        value args = param.first
-        args.addAll(arrayListOf(f))
-
-        value strategy = param.second
-
-        value actual = Extraction.main(args)
-
-        value expected = ""
-        assertEquals(expected, actual)
-
-        *//*when (strategy) {
-            Strategy.SelectionFirst, Strategy.ConditionFirst -> {
-                value expected =
-                        ""
-
-                assertEquals(expected, actual)
-            }
-
-            Strategy.UnmarkedFirst, Strategy.UnmarkedThenSelection, Strategy.UnmarkedThenCondition, Strategy.RandomProcess, Strategy.UnmarkedThenRandom -> {
-                //"If it doesn't fail, we are happy "
-            }
-        }*//*
-    }*/
 }

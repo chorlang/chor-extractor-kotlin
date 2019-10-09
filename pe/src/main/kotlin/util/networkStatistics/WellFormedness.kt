@@ -32,11 +32,22 @@ class WellFormedness(val self:ProcessName, val processNames:Set<ProcessName>): S
             val processNames = n.processes.keys
             return n.processes.all { (name, term) ->
                 checkWellFormedness(term.main, name, processNames) && term.procedures.all { (procName, procBehaviour) ->
-                    procBehaviour !is ProcedureInvocationSP && checkWellFormedness(procBehaviour, name, processNames)
+                    isGuarded( hashSetOf(procName), procBehaviour, term.procedures ) && checkWellFormedness(procBehaviour, name, processNames)
                 }
             }
         }
 
         private fun checkWellFormedness(behaviour: Behaviour, name:ProcessName, processNames: Set<ProcessName>) = behaviour.accept( WellFormedness(name, processNames) )
+
+        private fun isGuarded(procedureNames: Set<String>, b:Behaviour, procedures:Map<String, Behaviour>):Boolean {
+            return when( b ) {
+                is ProcedureInvocationSP -> {
+                    val newProcedureNames = HashSet( procedureNames )
+                    newProcedureNames.add( b.procedure )
+                    !procedureNames.contains( b.procedure ) && isGuarded( newProcedureNames, procedures[b.procedure]!!, procedures )
+                }
+                else -> true
+            }
+        }
     }
 }
