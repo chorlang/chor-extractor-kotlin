@@ -193,24 +193,24 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         if (allTerminated(processes)) return BuildGraphResult.OK
 
         //try to find a multi-action communication
-        for ((processName, _) in processes) {
-            //TODO check this
-            val interactionLabel = createInteractionLabel(processName, processes)
-            if (interactionLabel != null) {
-                val actions = ArrayList<ExtractionLabel.InteractionLabel>()
-                val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
-                waiting.add(interactionLabel)
-                collectMulticomActions(waiting, actions, processes, currentNode)
-
-                //if we managed to collect some actions for a multicom
-                if ( actions.isEmpty() ) continue
-                else when (buildMulticom(actions, currentNode, processes, unfoldedProcesses)) {
-                    BuildGraphResult.OK -> return BuildGraphResult.OK
-                    BuildGraphResult.FAIL -> return BuildGraphResult.FAIL
-                }
-                continue
-            }
-        }
+//        for ((processName, _) in processes) {
+//            //TODO check this
+//            val interactionLabel = createInteractionLabel(processName, processes)
+//            if (interactionLabel != null) {
+//                val actions = ArrayList<ExtractionLabel.InteractionLabel>()
+//                val waiting = ArrayList<ExtractionLabel.InteractionLabel>()
+//                waiting.add(interactionLabel)
+//                collectMulticomActions(waiting, actions, processes, currentNode)
+//
+//                //if we managed to collect some actions for a multicom
+//                if ( actions.isEmpty() ) continue
+//                else when (buildMulticom(actions, currentNode, processes, unfoldedProcesses)) {
+//                    BuildGraphResult.OK -> return BuildGraphResult.OK
+//                    BuildGraphResult.FAIL -> return BuildGraphResult.FAIL
+//                }
+//                continue
+//            }
+//        }
 
         //System.err.println("No possible actions at the node $currentNode")
         return BuildGraphResult.FAIL
@@ -295,7 +295,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
 
         val garbageCollectThen = {
             if (thenNode == null) {
-                removeNodeFromGraph(newThenNode) // TODO: pass the choice path for recursive removal of nodes
+                removeNodesFromGraph(newThenNode.choicePath)
             } else {
                 graph.removeEdge(currentNode, newThenNode)
             }
@@ -323,8 +323,8 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             }
         }
 
-        relabel(newThenNode)
-        relabel(newElseNode)
+//        relabel(newThenNode)
+//        relabel(newElseNode)
         return BuildGraphResult.OK
     }
 
@@ -697,14 +697,30 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return false
     }
 
-    private fun removeNodeFromGraph(removingNode: ConcreteNode) {
-        graph.removeVertex(removingNode)
-        removeFromHashMap(removingNode)
-        removeFromChoicePathMap(removingNode)
+    private fun removeNodesFromGraph(choicePath: String) {
+        for ((path, nodes) in choicePaths) {
+            if (path.startsWith(choicePath)) {
+                nodes.forEach {
+                    graph.removeVertex(it)
+                    removeFromHashMap(it)
+                }
+                nodes.clear()
+            }
+        }
+    }
+
+    private fun removeNodeFromGraph(n: ConcreteNode) {
+        graph.removeVertex(n)
+        removeFromHashMap(n)
+        removeFromChoicePathMap(n)
     }
 
     private fun addEdgeToGraph(sourceNode: ConcreteNode, targetNode: ConcreteNode, label: ExtractionLabel): Boolean {
-        if (checkPrefix(targetNode) && checkLoop(sourceNode, targetNode, label)) {
+//        if (checkPrefix(targetNode) && checkLoop(sourceNode, targetNode, label)) {
+//            return graph.addEdge(sourceNode, targetNode, label)
+//        }
+
+        if (checkLoop(sourceNode, targetNode, label)) {
             return graph.addEdge(sourceNode, targetNode, label)
         }
 
@@ -720,20 +736,20 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         return !sourceNode.badNodes.contains(targetNode.id)
     }
 
-    private fun relabel(node: ConcreteNode) {
-        val key = node.choicePath.dropLast(1)
-        addToChoicePathMap(ConcreteNode(node.network, key, node.id, node.badNodes, node.marking))
-        removeFromChoicePathMap(node)
-    }
+//    private fun relabel(node: ConcreteNode) {
+//        val key = node.choicePath.dropLast(1)
+//        addToChoicePathMap(ConcreteNode(node.network, key, node.id, node.badNodes, node.marking))
+//        removeFromChoicePathMap(node)
+//    }
 
-    private fun checkPrefix(n: ConcreteNode): Boolean {
-        for ((path, nodes) in choicePaths) {
-            if (path.startsWith(n.choicePath) && nodes.isNotEmpty())
-                return true
-        }
-        println("Ping!")
-        return false
-    }
+//    private fun checkPrefix(n: ConcreteNode): Boolean {
+//        for ((path, nodes) in choicePaths) {
+//            if (path.startsWith(n.choicePath) && nodes.isNotEmpty())
+//                return true
+//        }
+//        println("Ping!")
+//        return false
+//    }
 
     private fun removeFromChoicePathMap(node: ConcreteNode) = choicePaths[node.choicePath]?.remove(node)
 

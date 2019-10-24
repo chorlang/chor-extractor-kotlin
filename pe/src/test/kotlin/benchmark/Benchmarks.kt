@@ -21,6 +21,7 @@ import util.refactor.NetworkUnfolder
 import java.io.File
 import java.lang.IllegalStateException
 import java.nio.file.Files
+import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.ParseException
 import java.util.*
@@ -487,27 +488,57 @@ fun extractionSoundnessC41() {
     }
 
     @Test
+    fun myTest() {
+        val group = "fuzzed-0-1"
+//        val group = ""
+//        val group = "unrolled"
+        val pair = Pair("all", ".*^(?!.*(fuzzed|unrolled))\\d.*\$")
+//        val pair = Pair("comms-only", "(\\d+)-6-0-0")
+//        val pair = Pair("increasing-ifs-procedures", "200-5-(\\d+)-(\\d+)")
+        val strategy = ExtractionStrategy.LongestFirst
+//        combineStatistics("${group}-${pair.first}", "${group}${pair.second}", strategy) right for ""
+        combineStatistics(pair.first, pair.second, strategy, group)
+    }
+
+    @Test
     fun makeCombinedStatistics() {
-        ExtractionStrategy.values().filter { it != ExtractionStrategy.Default }.forEach {
-            combineStatistics("comms-only", "(\\d+)-6-0-0", it)
-            combineStatistics("increasing-ifs-no-recursion", "50-6-(\\d+)-0", it)
-            combineStatistics("increasing-ifs-procedures", "200-5-(\\d+)-(\\d+)", it)
-            combineStatistics("increasing-processes", "500-(\\d+)-0-0", it)
-            combineStatistics("increasing-ifs-with-recursion", "100-10-(\\d+)-5", it)
-            combineStatistics("increasing-procedures-no-ifs", "1000-5-0-(\\d+)", it)
-            combineStatistics("increasing-procedures-fixed-ifs", "200-10-20-(\\d+)", it)
-            combineStatistics("all", ".*", it)
+        val tests = arrayOf(
+                Pair("comms-only", "(\\d+)-6-0-0"),
+                Pair("increasing-ifs-no-recursion", "50-6-(\\d+)-0"),
+                Pair("increasing-ifs-procedures", "200-5-(\\d+)-(\\d+)"),
+                Pair("increasing-processes", "500-(\\d+)-0-0"),
+                Pair("increasing-ifs-with-recursion", "100-10-(\\d+)-5"),
+                Pair("increasing-procedures-no-ifs", "1000-5-0-(\\d+)"),
+                Pair("increasing-procedures-fixed-ifs", "200-10-20-(\\d+)"),
+//                Pair("all", ".*")
+                Pair("all", ".*^(?!.*(fuzzed|unrolled))\\d.*\$")
+        )
+
+        val groups = arrayOf( "", "fuzzed-0-1", "fuzzed-1-0", "fuzzed-2-2", "unrolled" )
+
+        groups.forEach { group ->
+            tests.forEach { pair ->
+                ExtractionStrategy.values().filter { it != ExtractionStrategy.Default }.forEach { strategy ->
+                    combineStatistics(pair.first, pair.second, strategy, group)
+                }
+                doTheRightThing(group, pair.first)
+            }
         }
     }
 
     private fun retrieveTestFileData(prefix: String, regexStr: String): HashMap<String, String> {
         val dir = File(TEST_DIR)
         val regex = regexStr.toRegex()
-
+        println("Prefix $prefix and regex $regexStr")
         val data = HashMap<String, String>()
 
         for (filename in dir.list()) {
-            if (filename.startsWith(prefix) && regex.matches(filename.removePrefix(prefix))) {
+//            println("Filename: $filename, Prefix: $prefix, Regexp: $regexStr")
+            if (
+                    filename.startsWith(prefix) && regex.matches("${filename.removePrefix(prefix)}")
+            ) {
+//                if (filename.contains("fuzzed"))
+                println("Matched $filename w/ regex $regexStr")
                 val lines = File("$TEST_DIR/$filename").readLines()
                 var i = 1
                 while (i < lines.size) {
@@ -521,16 +552,28 @@ fun extractionSoundnessC41() {
         return data
     }
 
-    private fun combineStatistics(filename: String, regexStr: String, strategy: ExtractionStrategy) {
-        val outputFile = File("$TEST_DIR/$COMBINED_STATISTICS_PREFIX${strategy.name}-$filename")
+    private fun combineStatistics(filename: String, regexStr: String, strategy: ExtractionStrategy, group:String) {
+        val dash = if ( group == "" ) "" else "-"
+        val outputFile = File("$TEST_DIR/$COMBINED_STATISTICS_PREFIX${strategy.name}$dash${group}-${filename}")
+        println("OUTPUT FILE ${outputFile}")
 
-        val statsToCombine = arrayOf(PROJECTION_STATISTICS_PREFIX, "$EXTRACTION_STATISTICS_PREFIX${strategy.name}-")
-        val headersToCombine = arrayOf(PROJECTION_STATISTICS_HEADER, EXTRACTION_STATISTICS_HEADER)
+        val statsToCombine = when( group ) {
+            "" -> arrayOf(PROJECTION_STATISTICS_PREFIX, "$EXTRACTION_STATISTICS_PREFIX${strategy.name}-")
+            "unrolled" -> arrayOf(UNROLLED_STATISTICS_PREFIX, "$EXTRACTION_STATISTICS_PREFIX${strategy.name}-")
+            else -> arrayOf(FUZZ_STATISTICS_PREFIX + group.substring(7) + "-", "$EXTRACTION_STATISTICS_PREFIX${strategy.name}-")
+        }
+
+        val headersToCombine = when( group ) {
+            "" -> arrayOf(PROJECTION_STATISTICS_HEADER, EXTRACTION_STATISTICS_HEADER)
+            "unrolled" -> arrayOf(FUZZ_STATISTICS_HEADER, EXTRACTION_STATISTICS_HEADER)
+            else -> arrayOf(FUZZ_STATISTICS_HEADER, EXTRACTION_STATISTICS_HEADER)
+        }
 
         val bigData = HashMap<String, Map<String, String>>() // prefix -> choreography_id -> data
-        for (prefix in statsToCombine) {
-            bigData[prefix] = retrieveTestFileData(prefix, regexStr)
-        }
+//        for (prefix in statsToCombine) {
+            bigData[statsToCombine[0]] = retrieveTestFileData(statsToCombine[0], regexStr)
+            bigData[statsToCombine[1]] = retrieveTestFileData("${statsToCombine[1]}${group}$dash", regexStr)
+//        }
 
         outputFile.printWriter().use { out ->
             out.println("id$SEP" + headersToCombine.joinToString(SEP) { it.split(SEP, limit = 2)[1] })
@@ -540,6 +583,54 @@ fun extractionSoundnessC41() {
                 out.print("$ckey$SEP")
                 out.println(bigData.toSortedMap(reverseOrder()).map { it.value[ckey] }.joinToString(SEP))
             }
+        }
+    }
+
+    private fun doTheRightThing(group:String, testName:String) {
+        val dash = if ( group == "" ) "" else "-"
+        val data = HashMap<String,MutableMap<String,MutableMap<String,String>>>() // strategy -> choreography -> header -> value
+
+        val strategies = ExtractionStrategy.values().filter { it != ExtractionStrategy.Default }
+
+        strategies.forEach { strategy ->
+            data["$strategy"] = HashMap()
+            val headers = Files.lines(Paths.get("$TEST_DIR/$COMBINED_STATISTICS_PREFIX${strategy.name}-$group$dash$testName")).findFirst().get().split(SEP)
+
+            Files.lines(Paths.get("$TEST_DIR/$COMBINED_STATISTICS_PREFIX${strategy.name}-$group$dash$testName")).skip(1).forEach {
+                val line = it.split(SEP)
+                data["$strategy"]!![line[0]] = HashMap()
+                for( i in 1 until line.size) {
+                    data["$strategy"]!![line[0]]!![headers[i]] = line[i]
+                }
+            }
+        }
+
+        val outputFile = File("${OUTPUT_DIR}/stats-$group$dash${testName}")
+
+        outputFile.printWriter().use { out ->
+            PROJECTION_STATISTICS_HEADER.split(SEP).forEach { header ->
+                out.write(header + SEP)
+            }
+            strategies.forEach { strategy ->
+                EXTRACTION_STATISTICS_HEADER.split(SEP).stream().skip(2).forEach { header ->
+                    out.write("$header-$strategy$SEP")
+                }
+            }
+            out.println()
+
+            data[ExtractionStrategy.Random.toString()]!!.keys.sorted().forEach { choreography ->
+                out.write("$choreography$SEP")
+                PROJECTION_STATISTICS_HEADER.split(SEP).stream().skip(1).forEach { header ->
+                    out.write(data[ExtractionStrategy.Random.toString()]!![choreography]!![header] + SEP)
+                }
+                strategies.forEach { strategy ->
+                    EXTRACTION_STATISTICS_HEADER.split(SEP).stream().skip(2).forEach { header ->
+                        out.write(data[strategy.toString()]!![choreography]!![header] + SEP)
+                    }
+                }
+                out.println()
+            }
+            out.flush()
         }
     }
 }
