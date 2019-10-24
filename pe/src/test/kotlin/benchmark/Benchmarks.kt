@@ -529,7 +529,7 @@ fun extractionSoundnessC41() {
     private fun retrieveTestFileData(prefix: String, regexStr: String): HashMap<String, String> {
         val dir = File(TEST_DIR)
         val regex = regexStr.toRegex()
-        println("Prefix $prefix and regex $regexStr")
+//        println("Prefix $prefix and regex $regexStr")
         val data = HashMap<String, String>()
 
         for (filename in dir.list()) {
@@ -538,7 +538,7 @@ fun extractionSoundnessC41() {
                     filename.startsWith(prefix) && regex.matches("${filename.removePrefix(prefix)}")
             ) {
 //                if (filename.contains("fuzzed"))
-                println("Matched $filename w/ regex $regexStr")
+//                println("Matched $filename w/ regex $regexStr")
                 val lines = File("$TEST_DIR/$filename").readLines()
                 var i = 1
                 while (i < lines.size) {
@@ -555,7 +555,7 @@ fun extractionSoundnessC41() {
     private fun combineStatistics(filename: String, regexStr: String, strategy: ExtractionStrategy, group:String) {
         val dash = if ( group == "" ) "" else "-"
         val outputFile = File("$TEST_DIR/$COMBINED_STATISTICS_PREFIX${strategy.name}$dash${group}-${filename}")
-        println("OUTPUT FILE ${outputFile}")
+//        println("OUTPUT FILE ${outputFile}")
 
         val statsToCombine = when( group ) {
             "" -> arrayOf(PROJECTION_STATISTICS_PREFIX, "$EXTRACTION_STATISTICS_PREFIX${strategy.name}-")
