@@ -3,6 +3,7 @@ package extraction
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
+import util.TestUtils
 
 class BenchmarkTest {
     @ParameterizedTest
@@ -14,7 +15,7 @@ class BenchmarkTest {
                         "c {def X {d!<busy>; a&{win: a!<msg>; X, lose: a!<msg>; X}} main {X}} |" +
                         "d {def X {c?; a?; X} main {X}}"
 
-        val strategy = Utils.parseStrategy(strategyName)
+        val strategy = TestUtils.parseStrategy(strategyName)
         val actual = Extraction.extractChoreography( test, strategy ).toString()
         
         when (strategy) {
@@ -47,7 +48,7 @@ class BenchmarkTest {
                         "c2 {def X {d2!<busy>; a2&{win: b2!<lose>; a2!<msg>; X, lose: b2?; a2!<msg>; X}} main {X}} |" +
                         "d2 {def X {c2?; a2?; X} main {X}} "
 
-        val strategy = Utils.parseStrategy(strategyName)
+        val strategy = TestUtils.parseStrategy(strategyName)
         val actual = Extraction.extractChoreography( test, strategy ).toString()
 
         when (strategy) {
@@ -88,7 +89,7 @@ class BenchmarkTest {
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
-        val strategy = Utils.parseStrategy(strategyName)
+        val strategy = TestUtils.parseStrategy(strategyName)
         val actual = Extraction.extractChoreography( test, strategy ).toString()
 //        println(actual)
 
@@ -120,7 +121,7 @@ class BenchmarkTest {
                         "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
-        val strategy = Utils.parseStrategy(strategyName)
+        val strategy = TestUtils.parseStrategy(strategyName)
         val actual = Extraction.extractChoreography( test, strategy ).toString()
         println(actual)
 
@@ -163,7 +164,7 @@ class BenchmarkTest {
                 "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
                 "c { main {a?; stop}}"
 
-        val strategy = Utils.parseStrategy(strategyName)
+        val strategy = TestUtils.parseStrategy(strategyName)
         val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("c")) ).toString()
         val expected = "def X1 { if a.notok then a->b[hag]; b.price->a; X1 else a->b[happy]; a.info->c; stop } main {X1}"
 
@@ -182,7 +183,7 @@ class BenchmarkTest {
                         "f { def Z {d?; Z} main {Z}}"
 
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         println(Extraction.extractChoreography( test, strategy, ArrayList(listOf("c", "f")) ))
         //assertEquals(expected, actual)
     }
@@ -200,7 +201,7 @@ class BenchmarkTest {
                         "t{def X{hs?; hs!<fwdOk>; es!<helpReq>; X} main{X}} | " +
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("as", "t", "es")) ).toString()
         val expected = "def X1 { p.sendData->hs; X2 } def X2 { hs.subscribed->ss; if ss.ok then ss->hs[ok]; hs->p[subscribed]; hs.account->as; as.logCreated->hs; hs.fwd->t; t.fwdOk->hs; t.helpReq->es; es.provideService->p; p.sendData->hs; X2 else ss->hs[nok]; hs->p[notSubscribed]; X1 } main {X1}"
 
@@ -228,7 +229,7 @@ class BenchmarkTest {
                         "t2{def X{hs2?; hs2!<fwdOk>; es2!<helpReq>; X} main{X}} | " +
                         "es2{def X{t2?; p2!<provideService>; X} main{X}}"
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         println(Extraction.extractChoreography( test, strategy, ArrayList(listOf("as", "t", "es", "as2", "t2", "es2")) ))
     }
 
@@ -250,7 +251,7 @@ class BenchmarkTest {
                         "main {X}}"
 
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         val actual = Extraction.extractChoreography( test, strategy ).toString()
         val expected =
                 "def X1 { filter.newFilterRequest->data; X2 } def X2 { if data.itemToBeFiltered then data->filter[item]; data.itemToBeFiltered->filter; if filter.itemToBeFiltered then filter.ok->data; X2 else filter.remove->data; X2 else data->filter[noItem]; X1 } main {X1}"
@@ -288,7 +289,7 @@ class BenchmarkTest {
                         "main {X}}"
 
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         Extraction.extractChoreography( test, strategy ).toString()
 
         //assertEquals(expected, actual)
@@ -314,7 +315,7 @@ class BenchmarkTest {
                         "def Y {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Y}}"
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("retailer")) ).toString()
         val expected =
                 "def X1 { supplier->shipper[item]; shipper.DeliveryItem->supplier; " +
@@ -362,7 +363,7 @@ class BenchmarkTest {
                         "def Y {supplier2&{item: X, done: retailer2?; stop}}" +
                         "main{Y}}"
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         println(Extraction.extractChoreography( test, strategy, ArrayList(listOf("retailer", "retailer2")) ))
     }
 
@@ -392,7 +393,7 @@ class BenchmarkTest {
                         "main{Z}}"
 
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         val actual = Extraction.extractChoreography(test, strategy, ArrayList(listOf("retailer"))).toString()
         val expected =
                 "def X1 { supplier->shipper[item]; supplier->consignee[item]; shipper.DeliveryItem->supplier; consignee.DeliveryItem->supplier; if supplier.needToShip then X1 else supplier->shipper[done]; supplier->consignee[done]; supplier.UpdatePOandDeliverySchedule->retailer; retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; supplier.FinalizedPOandDeliverySchedule->retailer; stop } main {supplier.PlannedOrderVariations->retailer; retailer.OrderDeliveryVariations->supplier; retailer.DeliverCheckPointRequest->supplier; if supplier.needToShip then X1 else supplier->shipper[done]; supplier->consignee[done]; supplier.UpdatePOandDeliverySchedule->retailer; retailer.POandDeliveryScheduleMods->supplier; retailer.ConfirmationofDeliverySchedule->shipper; retailer.AcceptPOandDeliverySchedule->supplier; supplier.FinalizedPOandDeliverySchedule->retailer; stop}"
@@ -419,7 +420,7 @@ class BenchmarkTest {
                         "def X{appli?; X} " +
                         "main {X}}"
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         val actual = Extraction.extractChoreography( test, strategy, listOf("db", "int") ).toString()
         val expected =
                 "def X1 { cl.connect->int; int.setup->appli; int.syncAccess->cl; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } def X2 { cl->appli[awaitcl]; cl.access->appli; if cl.access then X2 else cl.logout->int; cl->appli[syncLogout]; appli.log->db; appli.syncLog->cl; X1 } main {X1}"
@@ -460,7 +461,7 @@ class BenchmarkTest {
                         "def X{appli2?; X} " +
                         "main {X}}"
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         println(Extraction.extractChoreography( test, strategy, listOf("db", "int", "db2", "int2") ))
     }
 
@@ -494,7 +495,7 @@ class BenchmarkTest {
                         "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
                         "main{X}}"
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         val actual = Extraction.extractChoreography( test, strategy, ArrayList(listOf("coop", "bank")) ).toString()
         val expected =
                 "def X1 { citizen.request->sanagency; X2 } def X2 { sanagency.askInfo->citizen; citizen.provInf->sanagency; if sanagency.infoProved then sanagency->citizen[acceptance]; sanagency.req->coop; if coop.fine then coop.provT->citizen; coop->bank[recMoneyPossT]; bank.paymentT->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen.request->sanagency; X2 else coop.provM->citizen; coop->bank[recMoneyPossM]; bank.paymentM->coop; citizen.paymentPrivateFee->bank; sanagency.paymentPublicFee->bank; bank.done->sanagency; citizen.request->sanagency; X2 else sanagency->citizen[refusal]; X1 } main {X1}"
@@ -557,7 +558,7 @@ class BenchmarkTest {
                         "def Y{citizen2?; sanagency2?; sanagency2!<done>; X} " +
                         "main{X}}"
 
-        val strategy = Utils.parseStrategy( strategyName )
+        val strategy = TestUtils.parseStrategy( strategyName )
         println(Extraction.extractChoreography( test, strategy, ArrayList(listOf("coop", "bank", "coop2", "bank2")) ))
     }
 }

@@ -62,7 +62,7 @@ idea {
     }
 }
 
-mainClassName = "Hi!"
+mainClassName = "cmd.ExtractionCmd"
 
 task singleJar(type: Jar) {
     manifest {
