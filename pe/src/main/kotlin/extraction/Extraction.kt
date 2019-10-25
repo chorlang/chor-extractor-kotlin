@@ -62,6 +62,16 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             return Program(results.map { it.first }, results.map { it.second })
         }
 
+        fun extractChoreographySequentially(n: String, strategy: ExtractionStrategy = ExtractionStrategy.Default, services: List<String> = arrayListOf()): Program {
+            val inputNetwork = NetworkUtils.purgeNetwork(ParseUtils.stringToNetwork(n))
+            if ( !WellFormedness.compute(inputNetwork) ) {
+                return Program(listOf(null), emptyList())
+            }
+
+            val r = Extraction(strategy, HashSet(services)).extract(inputNetwork)
+            return Program(listOf(r.first), listOf(r.second))
+        }
+
         private fun splitNetwork(network: Network): HashSet<Network>? {
             val processSets = getProcessSets(network)
             if ( processSets == null ) return null

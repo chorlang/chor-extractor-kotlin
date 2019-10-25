@@ -1,15 +1,13 @@
-package benchmark
+package cmd.internal
 
 import ast.cc.nodes.GraphStatistics
 import ast.cc.nodes.Program
 import ast.sp.nodes.Network
 import bisim.Throolean
 import bisim.bisimilar
-//import bisim.bisimilar
 import epp.EndPointProjection
 import extraction.Extraction
 import extraction.ExtractionStrategy
-import org.junit.Test
 import util.ParseUtils
 import util.choreographyStatistics.ChoreographyStatistics
 import util.choreographyStatistics.LengthOfProcedures
@@ -21,12 +19,11 @@ import util.refactor.NetworkUnfolder
 import java.io.File
 import java.lang.IllegalStateException
 import java.nio.file.Files
-import java.nio.file.Path
 import java.nio.file.Paths
 import java.text.ParseException
 import java.util.*
 
-class Benchmarks {
+object Benchmarks {
     //data class StatHeader(val length: String, val numOfProcesses: String, val numOfCondition: String, val numOfProcedures: String)
 
     data class ScrewedExecutionStatistics(val choreographyId: String,
@@ -34,7 +31,7 @@ class Benchmarks {
                                           val minNodes: Int, val maxNodes: Int, val avgNodes: Int,
                                           val minBadLoops: Int, val maxBadLoops: Int, val avgBadLoops: Int)
 
-    companion object {
+//    companion object {
         private const val TEST_DIR = "tests"
         private const val CHOREOGRAPHY_PREFIX = "choreography-"
         private const val PROJECTION_PREFIX = "projection-"
@@ -76,7 +73,7 @@ class Benchmarks {
                 "minNumberOfProceduresInProcesses","maxNumberOfProceduresInProcesses","avgNumberOfProceduresInProcesses",
                 "minNumberOfConditionalsInProcesses","maxNumberOfConditionalsInProcesses","avgNumberOfConditionalsInProcesses","numberOfProcessesWithConditionals",
                 "minProcedureLengthInProcesses","maxProcedureLengthInProcesses","avgProcedureLengthInProcesses").joinToString(SEP)
-    }
+//    }
 
     /**
      * for each file with choreographies
@@ -84,7 +81,7 @@ class Benchmarks {
      * 2. get statistics and write to the file %original_file_name% statistics
      */
 
-    @Test
+//    @Test
     fun epp() {
         checkOutputFolder()
         val choreographyFiles = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX) //HashMap<filename, HashMap<choreography_id, choreography_body>>
@@ -150,7 +147,7 @@ class Benchmarks {
         }
     } */
 
-    @Test
+//    @Test
     fun extractionSoundness() {
         val originalChoreographies = parseChoreographyFiles(TEST_DIR, CHOREOGRAPHY_PREFIX)
         var ok = 0
@@ -161,11 +158,15 @@ class Benchmarks {
             originalChoreographies.forEach { fileId, choreographyData ->
                 choreographyData.forEach { id, choreography ->
 //                    println((extractedChoreographies[fileId]!!)[id]!!)
-                    print("Checking $id in $fileId against strategy $strategy. ")
-                    when( bisimilar(choreography, (extractedChoreographies[fileId]!!)[id]!!) ) {
-                        Throolean.OK -> { println( "Done" ); ok++ }
-                        Throolean.MAYBE -> { println( "Timeout" ); maybe++ }
-                        Throolean.FAIL -> { println( "Fail" ); fail++ }
+                    print("Checking $id in $fileId extracted with strategy $strategy. ")
+                    try {
+                        when( bisimilar(choreography, (extractedChoreographies[fileId]!!)[id]!!) ) {
+                            Throolean.OK -> { println( "Done" ); ok++ }
+                            Throolean.MAYBE -> { println( "Timeout" ); maybe++ }
+                            Throolean.FAIL -> { println( "Fail" ); fail++ }
+                        }
+                    } catch (ex:KotlinNullPointerException) {
+                        println("This choreography has not been extracted yet.")
                     }
                 }
             }
@@ -233,7 +234,7 @@ fun extractionSoundnessC41() {
         }
     }
 
-    @Test
+//    @Test
     fun extractionTest() = ExtractionStrategy.values().forEach { if ( it != ExtractionStrategy.Default ) extraction(it) }
 
     private fun fuzzUntilItWorks(network:String, dels:Int, swaps:Int):Network {
@@ -271,14 +272,14 @@ fun extractionSoundnessC41() {
         }
     }
 
-    @Test
+//    @Test
     fun fuzzThemAll() {
         fuzz(0, 1)
         fuzz(1, 0)
         fuzz(2, 2)
     }
 
-    @Test
+//    @Test
     fun unrollAndShift() {
         checkOutputFolder()
 
@@ -479,7 +480,7 @@ fun extractionSoundnessC41() {
         return StatHeader(stat[stat.size - 4], stat[stat.size - 3], stat[stat.size - 2], stat[stat.size - 1])
     }*/
 
-    @Test
+//    @Test
     fun runAllBenchmarks() {
         epp()
         extractionTest()
@@ -487,7 +488,7 @@ fun extractionSoundnessC41() {
         makeCombinedStatistics()
     }
 
-    @Test
+//    @Test
     fun myTest() {
         val group = "fuzzed-0-1"
 //        val group = ""
@@ -500,14 +501,14 @@ fun extractionSoundnessC41() {
         combineStatistics(pair.first, pair.second, strategy, group)
     }
 
-    @Test
+//    @Test
     fun makeCombinedStatistics() {
         val tests = arrayOf(
                 Pair("comms-only", "(\\d+)-6-0-0"),
                 Pair("increasing-ifs-no-recursion", "50-6-(\\d+)-0"),
                 Pair("increasing-ifs-procedures", "200-5-(\\d+)-(\\d+)"),
                 Pair("increasing-processes", "500-(\\d+)-0-0"),
-                Pair("increasing-ifs-with-recursion", "200-5-(\\d+)-5"),
+                Pair("increasing-ifs-with-recursion", "100-10-(\\d+)-5"),
                 Pair("increasing-procedures-no-ifs", "1000-5-0-(\\d+)"),
                 Pair("increasing-procedures-fixed-ifs", "200-10-20-(\\d+)"),
 //                Pair("all", ".*")
