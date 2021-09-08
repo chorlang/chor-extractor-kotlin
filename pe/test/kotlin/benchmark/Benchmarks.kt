@@ -225,8 +225,8 @@ fun extractionSoundnessC41() {
                         "${statistics.badLoops}$SEP" +
                         "${numberOfActions}$SEP" +
                         "${choreographyProcedures}$SEP" +
-                        "${lengthOfProcedures.min() ?: 0}$SEP" +
-                        "${lengthOfProcedures.max() ?: 0}$SEP" +
+                        "${lengthOfProcedures.minOrNull() ?: 0}$SEP" +
+                        "${lengthOfProcedures.maxOrNull() ?: 0}$SEP" +
                         "${if (lengthOfProcedures.isNotEmpty()) lengthOfProcedures.average() else 0}"
                 )
             }

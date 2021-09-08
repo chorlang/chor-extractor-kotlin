@@ -3,7 +3,7 @@ package bench
 
 import extraction.Extraction
 import extraction.Strategy
-import org.openjdk.jmh.annotations.*
+import org.openjdk.kotlin.jmh.annotations.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 
 
-open class UnmarkedThenSelection {
+open class ShortestFirst {
     @Benchmark
     fun runningExample(){
         val test = "a {def X " +
@@ -35,7 +35,7 @@ open class UnmarkedThenSelection {
                 "d {def X " +
                 "{c?; a?; X} " +
                 "main {X}}"
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -49,7 +49,7 @@ open class UnmarkedThenSelection {
                         "b2 {def X {a2&{win: a2!<sig>; X, lose: a2!<sig>; X}} main {X}} |" +
                         "c2 {def X {d2!<busy>; a2&{win: a2!<msg>; X, lose: a2!<msg>; X}} main {X}} |" +
                         "d2 {def X {c2?; a2?; X} main {X}}"
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -58,7 +58,7 @@ open class UnmarkedThenSelection {
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -69,7 +69,7 @@ open class UnmarkedThenSelection {
                         "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -79,7 +79,7 @@ open class UnmarkedThenSelection {
                         "b { def Y {a&{hag: a!<price>; Y, happy: stop}} main {Y}} | " +
                         "c { main {a?; stop}}"
 
-        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("c"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("c"))).toString()
     }
 
     @Benchmark
@@ -93,7 +93,7 @@ open class UnmarkedThenSelection {
                         "f { def Z {d?; Z} main {Z}}"
 
 
-        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("c", "f"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("c", "f"))).toString()
     }
 
     @Benchmark
@@ -108,7 +108,7 @@ open class UnmarkedThenSelection {
                         "t{def X{hs?; hs!<fwdOk>; es!<helpReq>; X} main{X}} | " +
                         "es{def X{t?; p!<provideService>; X} main{X}}"
 
-        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("as", "t", "es"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("as", "t", "es"))).toString()
     }
 
     @Benchmark
@@ -127,7 +127,7 @@ open class UnmarkedThenSelection {
                         "t2{def X{hs2?; hs2!<fwdOk>; es2!<helpReq>; X} main{X}} | " +
                         "es2{def X{t2?; p2!<provideService>; X} main{X}}"
 
-        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("as1", "t1", "es1", "as2", "t2", "es2"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("as1", "t1", "es1", "as2", "t2", "es2"))).toString()
     }
 
     @Benchmark
@@ -147,7 +147,7 @@ open class UnmarkedThenSelection {
                         "main {X}}"
 
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -179,7 +179,7 @@ open class UnmarkedThenSelection {
                         "main {X}}"
 
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst).toString()
     }
 
     @Benchmark
@@ -201,7 +201,7 @@ open class UnmarkedThenSelection {
                         "def Y {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Y}}"
 
-        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("retailer"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("retailer"))).toString()
     }
 
     @Benchmark
@@ -228,7 +228,7 @@ open class UnmarkedThenSelection {
                         "def Z {supplier&{item: X, done: retailer?; stop}}" +
                         "main{Z}}"
 
-        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("retailer"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("retailer"))).toString()
     }
 
     @Benchmark
@@ -249,7 +249,7 @@ open class UnmarkedThenSelection {
                         "def X{appli?; X} " +
                         "main {X}}"
 
-        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("db","int"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("db","int"))).toString()
     }
 
     @Benchmark
@@ -264,7 +264,7 @@ open class UnmarkedThenSelection {
                         "int2{def X{cl2?; appli2!<setup>; cl2!<syncAccess>; cl2?; X} main {X}} | " +
                         "db2{def X{appli2?; X} main {X}}"
 
-        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("db1","int1","db2","int2"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("db1","int1","db2","int2"))).toString()
     }
 
     @Benchmark
@@ -296,7 +296,7 @@ open class UnmarkedThenSelection {
                         "def Y{citizen?; sanagency?; sanagency!<done>; X} " +
                         "main{X}}"
 
-        Extraction.extractChoreography(test, Strategy.LongestFirst, ArrayList(listOf("coop","bank"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("coop","bank"))).toString()
     }
 
     @Benchmark
@@ -353,6 +353,6 @@ open class UnmarkedThenSelection {
                         "def Y{citizen2?; sanagency2?; sanagency2!<done>; X} " +
                         "main{X}}"
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections, ArrayList(listOf("coop","bank","coop2","bank2"))).toString()
+        Extraction.extractChoreography(test, Strategy.ShortestFirst, ArrayList(listOf("coop","bank","coop2","bank2"))).toString()
     }
 }*/

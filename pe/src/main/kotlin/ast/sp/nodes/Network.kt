@@ -50,7 +50,7 @@ data class Network(val processes: HashMap<ProcessName, ProcessTerm>) : SPNode {
         return hash
     }
 
-    companion object { var printMainOnly = true }
+    companion object { var printMainOnly = false }
 }
 
 

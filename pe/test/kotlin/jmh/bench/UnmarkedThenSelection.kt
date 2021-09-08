@@ -3,7 +3,7 @@ package bench
 
 import extraction.Extraction
 import extraction.Strategy
-import org.openjdk.jmh.annotations.*
+import org.openjdk.kotlin.jmh.annotations.*
 import java.util.*
 import java.util.concurrent.TimeUnit
 
@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 
 
-open class UnmarkedThenCondition {
+open class UnmarkedThenSelection {
     @Benchmark
     fun runningExample(){
         val test = "a {def X " +
@@ -35,7 +35,7 @@ open class UnmarkedThenCondition {
                 "d {def X " +
                 "{c?; a?; X} " +
                 "main {X}}"
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenConditions).toString()
+        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
     }
 
     @Benchmark
@@ -49,7 +49,7 @@ open class UnmarkedThenCondition {
                         "b2 {def X {a2&{win: a2!<sig>; X, lose: a2!<sig>; X}} main {X}} |" +
                         "c2 {def X {d2!<busy>; a2&{win: a2!<msg>; X, lose: a2!<msg>; X}} main {X}} |" +
                         "d2 {def X {c2?; a2?; X} main {X}}"
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenConditions).toString()
+        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
     }
 
     @Benchmark
@@ -58,7 +58,7 @@ open class UnmarkedThenCondition {
                 "a { def X {b?; b!<0>;b?;b!<1>;X} main {b!<0>;b!<1>;X}} | " +
                         "b { def Y {a?;a!<ack0>;a?;a!<ack1>;Y} main {Y}}"
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenConditions).toString()
+        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
     }
 
     @Benchmark
@@ -69,7 +69,7 @@ open class UnmarkedThenCondition {
                         "c { def X {d?;d!<0>;d?;d!<1>;X} main {d!<0>;d!<1>;X}} | " +
                         "d { def Y {c?;c!<ack0>;c?;c!<ack1>; Y} main {Y}}"
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenConditions).toString()
+        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
     }
 
     @Benchmark
@@ -147,7 +147,7 @@ open class UnmarkedThenCondition {
                         "main {X}}"
 
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenConditions).toString()
+        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
     }
 
     @Benchmark
@@ -179,7 +179,7 @@ open class UnmarkedThenCondition {
                         "main {X}}"
 
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenConditions).toString()
+        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections).toString()
     }
 
     @Benchmark
@@ -353,6 +353,6 @@ open class UnmarkedThenCondition {
                         "def Y{citizen2?; sanagency2?; sanagency2!<done>; X} " +
                         "main{X}}"
 
-        Extraction.extractChoreography(test, Strategy.UnmarkedThenConditions, ArrayList(listOf("coop","bank","coop2","bank2"))).toString()
+        Extraction.extractChoreography(test, Strategy.UnmarkedThenSelections, ArrayList(listOf("coop","bank","coop2","bank2"))).toString()
     }
 }*/

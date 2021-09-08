@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test
 class EndPointProjectionTests {
 
     @Test
-    fun tst1(){
+    fun tst1() {
         val test = "def X {Y} def Y { p.e->q; stop } main {q.e->p;X}"
 
         val actual = EndPointProjection.project(test).toString()
@@ -208,13 +208,13 @@ class EndPointProjectionTests {
         ) { EndPointProjection.project(test) }
 
     }
-    @Test
-    fun tst13(){
-        val test = "def X {Y} def Y { p.e->q; stop } main {q.e->p;X} || def X {Y} def Y { p.e->q; stop } main {q.e->p;X}"
-
-        val actual = EndPointProjection.project(test).toString()
-        val expected = "p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}} || p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}}"
-
-        assertEquals(expected, actual)
-    }
+//    @Test
+//    fun tst13(){
+//        val test = "def X {Y} def Y { p.e->q; stop } main {q.e->p;X} || def X {Y} def Y { p.e->q; stop } main {q.e->p;X}"
+//
+//        val actual = EndPointProjection.project(test).toString()
+//        val expected = "p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}} || p{def X{Y} def Y{q!<e>; stop} main {q?; X}} | q{def X{Y} def Y{p?; stop} main {p!<e>; X}}"
+//
+//        assertEquals(expected, actual)
+//    }
 }

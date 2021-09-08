@@ -80,6 +80,6 @@ class FuzzTest {
                         "ok: X, " +
                         "no: stop}}}"
 
-        testFuzz(test, 2, 2)
+        testFuzz(test, 1, 2)
     }
 }

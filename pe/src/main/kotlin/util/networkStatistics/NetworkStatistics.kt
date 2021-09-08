@@ -32,18 +32,18 @@ data class NetworkStatistics(
             }
 
             return NetworkStatistics(
-                    minLengthOfProcesses = lengthOfProcesses.min()?:0,
-                    maxLengthOfProcesses = lengthOfProcesses.max()?:0,
+                    minLengthOfProcesses = lengthOfProcesses.minOrNull()?:0,
+                    maxLengthOfProcesses = lengthOfProcesses.maxOrNull()?:0,
                     avgLengthOfProcesses = lengthOfProcesses.average(),
-                    minNumberOfProceduresInProcesses = numberOfProcedures.min()?:0,
-                    maxNumberOfProceduresInProcesses = numberOfProcedures.max()?:0,
+                    minNumberOfProceduresInProcesses = numberOfProcedures.minOrNull()?:0,
+                    maxNumberOfProceduresInProcesses = numberOfProcedures.maxOrNull()?:0,
                     avgNumberOfProceduresInProcesses = if (numberOfProcedures.isNotEmpty()) numberOfProcedures.average() else 0.0,
-                    minNumberOfConditionalsInProcesses = numberOfConditionals.min()?:0,
-                    maxNumberOfConditionalsInProcesses = numberOfConditionals.max()?:0,
+                    minNumberOfConditionalsInProcesses = numberOfConditionals.minOrNull()?:0,
+                    maxNumberOfConditionalsInProcesses = numberOfConditionals.maxOrNull()?:0,
                     avgNumberOfConditionalsInProcesses = if (numberOfConditionals.isNotEmpty()) numberOfConditionals.average() else 0.0,
                     numberOfProcessesWithConditionals = numberOfConditionals.filter { it != 0 }.size,
-                    minProcedureLengthInProcesses = lengthOfProcedures.min()?:0,
-                    maxProcedureLengthInProcesses = lengthOfProcedures.max()?:0,
+                    minProcedureLengthInProcesses = lengthOfProcedures.minOrNull()?:0,
+                    maxProcedureLengthInProcesses = lengthOfProcedures.maxOrNull()?:0,
                     avgProcedureLengthInProcesses = if (lengthOfProcedures.isNotEmpty()) lengthOfProcedures.average() else 0.0
             )
         }

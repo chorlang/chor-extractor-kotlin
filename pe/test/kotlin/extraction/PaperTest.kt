@@ -6,7 +6,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvFileSource
 import util.TestUtils
 
-
 class PaperTest {
     @Test
     fun ex2() {
