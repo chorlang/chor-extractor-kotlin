@@ -508,8 +508,8 @@ fun extractionSoundnessC41() {
                 Pair("increasing-ifs-procedures", "200-5-(\\d+)-(\\d+)"),
                 Pair("increasing-processes", "500-(\\d+)-0-0"),
                 Pair("increasing-ifs-with-recursion", "200-5-(\\d+)-5"),
-                Pair("increasing-procedures-no-ifs", "1000-5-0-(\\d+)"),
-                Pair("increasing-procedures-fixed-ifs", "200-10-20-(\\d+)"),
+                Pair("increasing-procedures-no-ifs", "200-5-0-(\\d+)"),
+                Pair("increasing-procedures-fixed-ifs", "20-5-8-(\\d+)"),
 //                Pair("all", ".*")
                 Pair("all", ".*^(?!.*(fuzzed|unrolled))\\d.*\$")
         )

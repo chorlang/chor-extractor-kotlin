@@ -138,7 +138,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
         //we mark as visited processes which has no active actions in the main name or which are in the list of livelocked processes
         n.processes.forEach { (name, term) -> marking[name] = term.main is TerminationSP || services.contains(name) }
 
-        val node = ConcreteNode(network = n, choicePath = "0", id = nextNodeId(), badNodes = HashSet(), marking = marking)
+        val node = ConcreteNode(network = n, choicePath = "0", id = nextNodeId(), flips = 0, marking = marking)
         graph.addVertex(node)
         addToChoicePathMap(node)
         addToHashMap(node)
@@ -670,13 +670,14 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
             else -> predecessorNode.choicePath
         }
 
-        val badNodes = HashSet<Int>()
-        if (!label.flipped) {
-            badNodes.addAll(predecessorNode.badNodes)
-            badNodes.add(predecessorNode.id)
-        }
+//        val badNodes = HashSet<Int>()
+//        if (!label.flipped) {
+//            badNodes.addAll(predecessorNode.badNodes)
+//            badNodes.add(predecessorNode.id)
+//        }
+        val flips = predecessorNode.flips + if( label.flipped ) 1 else 0
 
-        return ConcreteNode(targetNetwork, choicePath, nextNodeId(), badNodes, marking)
+        return ConcreteNode(targetNetwork, choicePath, nextNodeId(), flips, marking)
     }
 
     private fun addToHashMap(newNode: ConcreteNode) {
@@ -743,7 +744,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     private fun checkLoop(sourceNode: ConcreteNode, targetNode: ConcreteNode, label: ExtractionLabel): Boolean {
         if (label.flipped) return true
         if (targetNode === sourceNode) return false
-        return !sourceNode.badNodes.contains(targetNode.id)
+        return sourceNode.flips > targetNode.flips
     }
 
 //    private fun relabel(node: ConcreteNode) {
@@ -786,7 +787,7 @@ class Extraction(private val strategy: ExtractionStrategy, private val services:
     //region Data classes and interfaces
     interface Node
 
-    data class ConcreteNode(val network: Network, val choicePath: String, val id: Int, val badNodes: HashSet<Int>, val marking: HashMap<ProcessName, Boolean>) : Node {
+    data class ConcreteNode(val network: Network, val choicePath: String, val id: Int, val flips: Int, val marking: HashMap<ProcessName, Boolean>) : Node {
         fun equals(other: ConcreteNode): Boolean = id == other.id
 
         override fun hashCode(): Int = id
