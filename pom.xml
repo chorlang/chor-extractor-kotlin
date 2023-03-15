@@ -6,7 +6,7 @@
 
     <groupId>dk.sdu.chor</groupId>
     <artifactId>pe</artifactId>
-    <version>1.0</version>
+    <version>0.1</version>
     <properties>
         <!--I believe properties need to be before dependencies-->
         <maven.compiler.source>11</maven.compiler.source>
@@ -16,6 +16,7 @@
         <antlr4.visitor>true</antlr4.visitor>
         <antlr4.listener>true</antlr4.listener>
         <kotlin.version>1.5.30</kotlin.version>
+        <main.class>cmd.ExtractionCmd</main.class>
     </properties>
 
     <dependencies>
@@ -142,6 +143,28 @@
                                 <sourceDir>${project.basedir}/src/test/kotlin</sourceDir>
                                 <sourceDir>${project.basedir}/src/test/java</sourceDir>
                             </sourceDirs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals> <goal>single</goal> </goals>
+                        <configuration>
+                            <archive>
+                                <manifest>
+                                    <mainClass>${main.class}</mainClass>
+                                </manifest>
+                            </archive>
+                            <descriptorRefs>
+                                <descriptorRef>jar-with-dependencies</descriptorRef>
+                            </descriptorRefs>
                         </configuration>
                     </execution>
                 </executions>
